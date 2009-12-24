@@ -48,6 +48,10 @@
 LLPanelLandSelectObserver* LLPanelLandInfo::sObserver = NULL;
 LLPanelLandInfo* LLPanelLandInfo::sInstance = NULL;
 
+//MK
+extern BOOL RRenabled;
+//mk
+
 class LLPanelLandSelectObserver : public LLParcelObserver
 {
 public:
@@ -222,6 +226,12 @@ void LLPanelLandInfo::refresh()
 //static
 void LLPanelLandInfo::onClickClaim(void*)
 {
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	{
+		return;
+	}
+//mk
 	LLViewerParcelMgr::getInstance()->startBuyLand();
 }
 
@@ -253,5 +263,11 @@ void LLPanelLandInfo::onClickAbout(void*)
 		LLViewerParcelMgr::getInstance()->selectParcelInRectangle();
 	}
 
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	{
+		return;
+	}
+//mk
 	LLFloaterLand::showInstance();
 }

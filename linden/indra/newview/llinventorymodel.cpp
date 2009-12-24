@@ -65,6 +65,12 @@
 #include "process.h"
 #endif
 
+//MK
+#include "llviewercontrol.h"
+
+extern BOOL RRenabled;
+//mk
+
 BOOL LLInventoryModel::sBackgroundFetchActive = FALSE;
 BOOL LLInventoryModel::sAllFoldersFetched = FALSE;
 BOOL LLInventoryModel::sFullFetchStarted = FALSE;
@@ -2774,6 +2780,20 @@ void LLInventoryModel::processUpdateInventoryFolder(LLMessageSystem* msg,
 		// make sure it's not a protected folder
 		tfolder->setPreferredType(LLAssetType::AT_NONE);
 		folders.push_back(tfolder);
+//MK
+		if (RRenabled && gAgent.mRRInterface.getRlvShare() &&
+			!gSavedSettings.getBOOL("RestrainedLifeForbidGiveToRLV"))
+		{
+			std::string folder_name = tfolder->getName();
+			if(folder_name.find(RR_RLV_REDIR_FOLDER_PREFIX) == 0)
+			{
+				folder_name.erase(0, RR_HRLVS_LENGTH);
+				tfolder->rename(folder_name);
+				tfolder->updateServer(FALSE);
+			}
+		}
+//mk
+		
 		// examine update for changes.
 		LLViewerInventoryCategory* folderp = gInventory.getCategory(tfolder->getUUID());
 		if(folderp)
@@ -2918,6 +2938,19 @@ void LLInventoryModel::processBulkUpdateInventory(LLMessageSystem* msg, void**)
 		//		<< llendl;
 		if(tfolder->getUUID().notNull())
 		{
+//MK
+			if (RRenabled && gAgent.mRRInterface.getRlvShare() &&
+				!gSavedSettings.getBOOL("RestrainedLifeForbidGiveToRLV"))
+			{
+				std::string folder_name = tfolder->getName();
+				if(folder_name.find(RR_RLV_REDIR_FOLDER_PREFIX) == 0)
+				{
+					folder_name.erase(0, RR_HRLVS_LENGTH);
+					tfolder->rename(folder_name);
+					tfolder->updateServer(FALSE);
+				}
+			}
+//mk
 			folders.push_back(tfolder);
 			LLViewerInventoryCategory* folderp = gInventory.getCategory(tfolder->getUUID());
 			if(folderp)

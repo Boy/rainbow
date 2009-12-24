@@ -1,7 +1,7 @@
-RAINBOW MASTER  1.22.12.0 
+RAINBOW VIEWER  1.22.12.0 R4
 
 25 Dec 2009
-First public release of new 1.22.12.0 viewer baseline.
-Full functionality included (or so I hope). No RLV.
+First release of Rainbow Viewer 1.22.12.0 R4.
+Full functionality incl. RLV 1.22.1
 
 *details to be added here*

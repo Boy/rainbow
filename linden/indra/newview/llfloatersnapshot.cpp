@@ -74,6 +74,10 @@
 #include "llvfile.h"
 #include "llvfs.h"
 
+//MK
+extern BOOL RRenabled;
+//mk
+
 ///----------------------------------------------------------------------------
 /// Local function declarations, constants, enums, and typedefs
 ///----------------------------------------------------------------------------
@@ -949,6 +953,12 @@ void LLSnapshotLivePreview::saveTexture()
 		LLVFile::writeFile(formatted->getData(), formatted->getDataSize(), gVFS, new_asset_id, LLAssetType::AT_TEXTURE);
 		std::string pos_string;
 		gAgent.buildLocationString(pos_string);
+//MK
+		if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+		{
+			pos_string = "(Region hidden)";
+		}
+//mk
 		std::string who_took_it;
 		gAgent.buildFullname(who_took_it);
 		upload_new_resource(tid,	// tid
@@ -1274,6 +1284,14 @@ void LLFloaterSnapshot::Impl::updateControls(LLFloaterSnapshot* floater)
 		&& got_bytes
 		&& previewp->getDataSize() > MAX_POSTCARD_DATASIZE ? LLColor4::red : gColors.getColor( "LabelTextColor" ));
 
+//MK
+	if (RRenabled && gAgent.mRRInterface.mHasLockedHuds)
+	{
+		floater->childSetValue("hud_check", TRUE);
+		gSavedSettings.setBOOL( "RenderHUDInSnapshot", TRUE );
+	}
+//mk
+
 	switch(shot_type)
 	{
 	  case LLSnapshotLivePreview::SNAPSHOT_POSTCARD:
@@ -1482,6 +1500,12 @@ void LLFloaterSnapshot::Impl::onClickHUDCheck(LLUICtrl *ctrl, void* data)
 {
 	LLCheckBoxCtrl *check = (LLCheckBoxCtrl *)ctrl;
 	gSavedSettings.setBOOL( "RenderHUDInSnapshot", check->get() );
+//MK
+	if (RRenabled && gAgent.mRRInterface.mHasLockedHuds)
+	{
+		gSavedSettings.setBOOL( "RenderHUDInSnapshot", TRUE );
+	}
+//mk
 	
 	LLFloaterSnapshot *view = (LLFloaterSnapshot *)data;
 	if (view)
@@ -1986,6 +2010,13 @@ BOOL LLFloaterSnapshot::postBuild()
 
 	childSetCommitCallback("hud_check", Impl::onClickHUDCheck, this);
 	childSetValue("hud_check", gSavedSettings.getBOOL("RenderHUDInSnapshot"));
+//MK
+	if (RRenabled && gAgent.mRRInterface.mHasLockedHuds)
+	{
+		childSetValue("hud_check", TRUE);
+		gSavedSettings.setBOOL( "RenderHUDInSnapshot", TRUE );
+	}
+//mk
 
 	childSetCommitCallback("keep_open_check", Impl::onClickKeepOpenCheck, this);
 	childSetValue("keep_open_check", !gSavedSettings.getBOOL("CloseSnapshotOnKeep"));

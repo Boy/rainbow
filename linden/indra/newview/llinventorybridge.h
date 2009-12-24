@@ -197,7 +197,9 @@ public:
 	// LLInvFVBridge functionality
 	virtual void clearDisplayName() {}
 
-protected:
+//MK
+////protected:
+//mk
 	LLInvFVBridge(LLInventoryPanel* inventory, const LLUUID& uuid) :
 		mInventoryPanel(inventory), mUUID(uuid), mInvType(LLInventoryType::IT_NONE) {}
 

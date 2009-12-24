@@ -89,6 +89,10 @@ BOOL LLPanelAvatar::sAllowFirstLife = FALSE;
 extern void handle_lure(const LLUUID& invitee);
 extern void handle_pay_by_id(const LLUUID& payee);
 
+//MK
+extern BOOL RRenabled;
+//mk
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Class LLDropTarget
 //
@@ -924,6 +928,12 @@ void LLPanelAvatarClassified::processAvatarClassifiedReply(LLMessageSystem* msg,
 // static
 void LLPanelAvatarClassified::onClickNew(void* data)
 {
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	{
+		return;
+	}
+//mk
 	LLPanelAvatarClassified* self = (LLPanelAvatarClassified*)data;
 
 	gViewerWindow->alertXml("AddClassified",callbackNew,self);
@@ -1098,6 +1108,12 @@ void LLPanelAvatarPicks::processAvatarPicksReply(LLMessageSystem* msg, void**)
 // static
 void LLPanelAvatarPicks::onClickNew(void* data)
 {
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	{
+		return;
+	}
+//mk
 	LLPanelAvatarPicks* self = (LLPanelAvatarPicks*)data;
 	LLPanelPick* panel_pick = new LLPanelPick(FALSE);
 	LLTabContainer* tabs =  self->getChild<LLTabContainer>("picks tab");

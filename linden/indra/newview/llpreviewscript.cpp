@@ -87,6 +87,11 @@
 
 #include "llpanelinventory.h"
 
+//MK
+#include "llvoavatar.h"
+
+extern BOOL RRenabled;
+//mk
 
 const std::string HELLO_LSL =
 	"default\n"
@@ -1932,6 +1937,13 @@ void LLLiveLSLEditor::onRunningCheckboxClicked( LLUICtrl*, void* userdata )
 	LLCheckBoxCtrl* runningCheckbox = self->getChild<LLCheckBoxCtrl>("running");
 	BOOL running =  runningCheckbox->get();
 	//self->mRunningCheckbox->get();
+//MK
+	if (RRenabled && !gAgent.mRRInterface.canDetach(object))
+	{
+		runningCheckbox->set(!running);
+		return;
+	}
+//mk
 	if( object )
 	{
 		LLMessageSystem* msg = gMessageSystem;
@@ -1957,6 +1969,12 @@ void LLLiveLSLEditor::onReset(void *userdata)
 	LLLiveLSLEditor* self = (LLLiveLSLEditor*) userdata;
 
 	LLViewerObject* object = gObjectList.findObject( self->mObjectID );
+//MK
+	if (RRenabled && !gAgent.mRRInterface.canDetach(object))
+	{
+		return;
+	}
+//mk
 	if(object)
 	{
 		LLMessageSystem* msg = gMessageSystem;
@@ -2377,7 +2395,17 @@ void LLLiveLSLEditor::onLoad(void* userdata)
 // static
 void LLLiveLSLEditor::onSave(void* userdata, BOOL close_after_save)
 {
-	LLLiveLSLEditor* self = (LLLiveLSLEditor*)userdata;
+	LLLiveLSLEditor* self = (LLLiveLSLEditor*) userdata;
+//MK
+	if (RRenabled)
+	{
+		LLViewerObject* object = gObjectList.findObject(self->mObjectID);
+		if (!gAgent.mRRInterface.canDetach(object))
+		{
+			return;
+		}
+	}
+// mk
 	self->mCloseAfterSave = close_after_save;
 	self->saveIfNeeded();
 }

@@ -66,6 +66,10 @@
 #include "llimpanel.h"
 #include "llscrolllistctrl.h"
 
+//MK
+extern BOOL RRenabled;
+//mk
+
 #if LL_DARWIN
 
 	#include "llresizehandle.h"
@@ -296,7 +300,17 @@ void LLToolBar::refresh()
 
 	childSetEnabled("fly_btn", (gAgent.canFly() || gAgent.getFlying()) && !sitting );
 
-	childSetEnabled("build_btn", LLViewerParcelMgr::getInstance()->agentCanBuild() );
+//MK
+	if (RRenabled)
+	{
+		childSetEnabled("build_btn", LLViewerParcelMgr::getInstance()->agentCanBuild() && !gAgent.mRRInterface.mContainsRez && !gAgent.mRRInterface.mContainsEdit);
+		childSetEnabled("radar_btn", !gAgent.mRRInterface.mContainsShowminimap);
+		childSetEnabled("map_btn", !gAgent.mRRInterface.mContainsShowworldmap && !gAgent.mRRInterface.mContainsShowloc);
+		childSetEnabled("inventory_btn", !gAgent.mRRInterface.mContainsShowinv);
+	}
+	else
+//mk
+		childSetEnabled("build_btn", LLViewerParcelMgr::getInstance()->agentCanBuild() );
 
 	// Check to see if we're in build mode
 	BOOL build_mode = LLToolMgr::getInstance()->inEdit();
@@ -481,6 +495,11 @@ void LLToolBar::onClickSit(void*)
 	{
 		// stand up
 		gAgent.setFlying(FALSE);
+//MK
+		if (RRenabled && gAgent.mRRInterface.mContainsUnsit) {
+			return;
+		}
+//mk
 		gAgent.setControlFlags(AGENT_CONTROL_STAND_UP);
 	}
 }

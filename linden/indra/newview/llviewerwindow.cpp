@@ -245,6 +245,10 @@ std::string	LLViewerWindow::sSnapshotDir;
 
 std::string	LLViewerWindow::sMovieBaseName;
 
+//MK
+extern BOOL RRenabled;
+//mk
+
 extern void toggle_debug_menus(void*);
 
 
@@ -3286,6 +3290,20 @@ void LLViewerWindow::renderSelections( BOOL for_gl_pick, BOOL pick_parcel_walls,
 						{
 							moveable_object_selected = TRUE;
 							this_object_movable = TRUE;
+//MK
+							// can't edit objects that someone is sitting on,
+							// when prevented from sit-tping
+							LLVOAvatar* avatar = gAgent.getAvatarObject();
+							if (RRenabled && (gAgent.mRRInterface.contains ("sittp")
+									|| (gAgent.mRRInterface.mContainsUnsit && avatar && avatar->mIsSitting)))
+							{
+								if (object->isSeat())
+								{
+									moveable_object_selected = FALSE;
+									this_object_movable = FALSE;
+								}
+							}
+//mk
 						}
 						all_selected_objects_move = all_selected_objects_move && this_object_movable;
 						all_selected_objects_modify = all_selected_objects_modify && object->permModify();
@@ -3640,7 +3658,17 @@ LLViewerObject* LLViewerWindow::cursorIntersect(S32 mouse_x, S32 mouse_y, F32 de
 			{
 		found = gPipeline.lineSegmentIntersectInHUD(mouse_hud_start, mouse_hud_end, pick_transparent,
 													face_hit, intersection, uv, normal, binormal);
-
+//MK
+		// HACK : don't allow focusing on HUDs unless we are in Mouselook mode
+		if (RRenabled && gAgent.getCameraMode() != CAMERA_MODE_MOUSELOOK)
+		{
+			MASK mask = gKeyboard->currentMask(TRUE);
+			if (mask & MASK_ALT)
+			{
+				found = NULL;
+			}
+		}
+//mk
 		if (!found) // if not found in HUD, look in world:
 
 			{
@@ -4032,6 +4060,13 @@ BOOL LLViewerWindow::thumbnailSnapshot(LLImageRaw *raw, S32 preview_width, S32 p
 		LLPipeline::sShowHUDAttachments = FALSE;
 	}
 
+//MK
+	if (RRenabled && gAgent.mRRInterface.mHasLockedHuds)
+	{
+		LLPipeline::sShowHUDAttachments = TRUE;
+	}
+//mk
+
 	S32 render_name = gSavedSettings.getS32("RenderName");
 	gSavedSettings.setS32("RenderName", 0);
 	LLVOAvatar::updateFreezeCounter(1) ; //pause avatar updating for one frame
@@ -4170,6 +4205,13 @@ BOOL LLViewerWindow::rawSnapshot(LLImageRaw *raw, S32 image_width, S32 image_hei
 		LLPipeline::sShowHUDAttachments = FALSE;
 	}
 
+//MK
+	if (RRenabled && gAgent.mRRInterface.mHasLockedHuds)
+	{
+		LLPipeline::sShowHUDAttachments = TRUE;
+	}
+//mk
+	
 	// Copy screen to a buffer
 	// crop sides or top and bottom, if taking a snapshot of different aspect ratio
 	// from window

@@ -52,6 +52,12 @@ void LLURLSimString::setString(const std::string& sim_string)
 	sInstance.mSimString.clear();
 	sInstance.mSimName.clear();
 	sInstance.mParseState = NOT_PARSED;
+//MK
+	if (gSavedSettings.getBOOL("RestrainedLife"))
+	{
+		return;
+	}
+//mk
 	if (sim_string == sLocationStringHome)
 	{
 		gSavedSettings.setBOOL("LoginLastLocation", FALSE);

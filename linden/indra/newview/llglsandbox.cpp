@@ -68,6 +68,10 @@
 #include "pipeline.h"
 #include "llspatialpartition.h"
  
+//MK
+extern BOOL RRenabled;
+//mk
+
 BOOL LLAgent::setLookAt(ELookAtType target_type, LLViewerObject *object, LLVector3 position)
 {
 	if (object && target_type != LOOKAT_TARGET_NONE && gSavedSettings.getBOOL("PrivateLookAt"))
@@ -250,6 +254,13 @@ void LLToolSelectRect::handleRectangleSelection(S32 x, S32 y, MASK mask)
 		LLViewerCamera::getInstance()->setFar(new_far);
 		LLViewerCamera::getInstance()->setNear(new_near);
 	}
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsFartouch) {
+		// don't allow select by rectangle while under fartouch
+		LLViewerCamera::getInstance()->setFar(0.0f);
+		LLViewerCamera::getInstance()->setNear(0.0f);
+	}
+//mk
 	LLViewerCamera::getInstance()->setPerspective(FOR_SELECTION, 
 							center_x-width/2, center_y-height/2, width, height, 
 							limit_select_distance);

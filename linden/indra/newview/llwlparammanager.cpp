@@ -61,6 +61,10 @@
 
 #include "curl/curl.h"
 
+//MK
+extern BOOL RRenabled;
+//mk
+
 LLWLParamManager * LLWLParamManager::sInstance = NULL;
 
 LLWLParamManager::LLWLParamManager() :
@@ -232,6 +236,12 @@ void LLWLParamManager::loadPreset(const std::string & name,bool propagate)
 		return;
 	}
 
+//MK
+	if (RRenabled) 
+	{
+		gAgent.mRRInterface.setLastLoadedPreset (name);
+	}
+//mk
 	
 	if(propagate)
 	{

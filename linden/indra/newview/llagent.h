@@ -64,6 +64,10 @@
 #include "llviewerinventory.h"
 #include "llagentdata.h"
 
+//MK
+#include "RRInterface.h"
+//mk
+
 // Ventrella
 #include "llfollowcam.h"
 // end Ventrella
@@ -132,6 +136,10 @@ public:
 	// When the agent hasn't typed anything for this duration, it leaves the 
 	// typing state (for both chat and IM).
 	static const F32 TYPING_TIMEOUT_SECS;
+
+//MK
+	RRInterface		mRRInterface;
+//mk
 
 	LLAgent();
 	~LLAgent();

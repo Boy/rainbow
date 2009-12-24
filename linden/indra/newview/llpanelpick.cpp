@@ -62,6 +62,10 @@
 //static
 std::list<LLPanelPick*> LLPanelPick::sAllPanels;
 
+//MK
+extern BOOL RRenabled;
+//mk
+
 LLPanelPick::LLPanelPick(BOOL top_pick)
 :	LLPanel(std::string("Top Picks Panel")),
 	mTopPick(top_pick),
@@ -169,6 +173,12 @@ BOOL LLPanelPick::postBuild()
 // Fill in some reasonable defaults for a new pick.
 void LLPanelPick::initNewPick()
 {
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	{
+		return;
+	}
+//mk
 	mPickID.generate();
 
 	mCreatorID = gAgent.getID();
@@ -455,7 +465,15 @@ void LLPanelPick::onClickLandmark(void* data)
 // static
 void LLPanelPick::onClickSet(void* data)
 {
-    LLPanelPick* self = (LLPanelPick*)data;
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	{
+		// don't allow to set the location while under @showloc, or it appears on the window
+		return;
+	}
+//mk
+    
+	LLPanelPick* self = (LLPanelPick*)data;
 
 	// Save location for later.
 	self->mPosGlobal = gAgent.getPositionGlobal();

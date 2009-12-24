@@ -74,6 +74,10 @@
 #include "llweb.h"
 #include "llstylemap.h"
 
+//MK
+extern BOOL RRenabled;
+//mk
+
 // Used for LCD display
 extern void AddNewIMToLCD(const std::string &newLine);
 extern void AddNewChatToLCD(const std::string &newLine);
@@ -205,11 +209,18 @@ void add_timestamped_line(LLViewerTextEditor* edit, const LLChat &chat, const LL
 		chat.mFromID != LLUUID::null &&
 		(line.length() > chat.mFromName.length() && line.find(chat.mFromName,0) == 0))
 	{
+//MK
+		if (!RRenabled || !gAgent.mRRInterface.mContainsShownames)
+		{
+//mk
 		std::string start_line = line.substr(0, chat.mFromName.length() + 1);
 		line = line.substr(chat.mFromName.length() + 1);
 		const LLStyleSP &sourceStyle = LLStyleMap::instance().lookup(chat.mFromID);
 		edit->appendStyledText(start_line, false, prepend_newline, &sourceStyle);
 		prepend_newline = false;
+//MK
+		}
+//mk
 	}
 	edit->appendColoredText(line, false, prepend_newline, color);
 }
@@ -509,7 +520,12 @@ void* LLFloaterChat::createChatPanel(void* data)
 void LLFloaterChat::onClickToggleActiveSpeakers(void* userdata)
 {
 	LLFloaterChat* self = (LLFloaterChat*)userdata;
-
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+	{
+		if (!self->childIsVisible("active_speakers_panel")) return;
+	}
+//mk
 	self->childSetVisible("active_speakers_panel", !self->childIsVisible("active_speakers_panel"));
 }
 

@@ -84,6 +84,10 @@
 
 #include <boost/regex.hpp>
 
+//MK
+extern BOOL RRenabled;
+//mk
+
 const F32 MAX_USER_FAR_CLIP = 512.f;
 const F32 MIN_USER_FAR_CLIP = 64.f;
 
@@ -417,6 +421,21 @@ void LLPanelDisplay::refresh()
 	updateSliderText(mCtrlSkyFactor, mSkyFactorText);
 
 	refreshEnabledState();
+//MK
+	// If unable to change windlight settings, make sure the Basic & Advanced
+	// Shaders checkboxes are ticked and disabled
+	if (RRenabled && gAgent.mRRInterface.mContainsSetenv)
+	{
+		mShaderEnable = TRUE;
+		mWindLight = TRUE;
+		gSavedSettings.setBOOL("VertexShaderEnable", mShaderEnable);
+		gSavedSettings.setBOOL("WindLightUseAtmosShaders", mWindLight);
+		mCtrlShaderEnable->setValue(mShaderEnable);
+		mCtrlWindLight->setValue(mWindLight);
+		mCtrlShaderEnable->setEnabled(FALSE);
+		mCtrlWindLight->setEnabled(FALSE);
+	}
+//mk
 }
 
 void LLPanelDisplay::refreshEnabledState()

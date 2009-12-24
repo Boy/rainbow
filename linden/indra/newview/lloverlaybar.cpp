@@ -70,6 +70,9 @@
 LLOverlayBar *gOverlayBar = NULL;
 
 extern S32 MENU_BAR_HEIGHT;
+//MK
+extern BOOL RRenabled;
+//mk
 
 //
 // Functions
@@ -225,6 +228,12 @@ void LLOverlayBar::refresh()
 	BOOL sitting = FALSE;
 	if (gAgent.getAvatarObject())
 	{
+//MK
+		if (RRenabled && gAgent.mRRInterface.mContainsUnsit)
+		{
+			sitting=FALSE;
+		} else // sitting = true if agent is sitting
+//mk	
 		sitting = gAgent.getAvatarObject()->mIsSitting;
 	}
 	button = getChild<LLButton>("Stand Up");
@@ -298,6 +307,14 @@ void LLOverlayBar::onClickMouselook(void*)
 //static
 void LLOverlayBar::onClickStandUp(void*)
 {
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsUnsit) {
+		if (gAgent.getAvatarObject() &&
+			gAgent.getAvatarObject()->mIsSitting) {
+			return;
+		}
+	}
+//mk
 	LLSelectMgr::getInstance()->deselectAllForStandingUp();
 	gAgent.setControlFlags(AGENT_CONTROL_STAND_UP);
 }

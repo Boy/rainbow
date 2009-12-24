@@ -34,6 +34,7 @@
 #include "llfloaterbuyland.h"
 
 // viewer includes
+#include "llxmlrpctransaction.h"
 #include "llagent.h"
 #include "llbutton.h"
 #include "llcachename.h"
@@ -61,7 +62,6 @@
 #include "llweb.h"
 #include "llwindow.h"
 #include "llworld.h"
-#include "llxmlrpctransaction.h"
 #include "llviewernetwork.h"
 #include "roles_constants.h"
 
@@ -71,6 +71,9 @@ const F64 CURRENCY_ESTIMATE_FREQUENCY = 0.5;
 	// how long of a pause in typing a currency buy amount before an
 	// esimate is fetched from the server
 
+//MK
+extern BOOL RRenabled;
+//mk
 class LLFloaterBuyLandUI
 :	public LLFloater
 {
@@ -826,6 +829,12 @@ void LLFloaterBuyLandUI::updateNames()
 	{
 		gCacheName->getFullName(parcelp->getOwnerID(), mParcelSellerName);
 	}
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+	{
+		mParcelSellerName = gAgent.mRRInterface.getDummyName (mParcelSellerName);
+	}
+//mk
 }
 
 

@@ -76,6 +76,10 @@ const F32 MAP_SCALE_INCREMENT = 16;
 
 const S32 TRACKING_RADIUS = 3;
 
+//MK
+extern BOOL RRenabled;
+//mk
+ 
 //static
 BOOL LLNetMap::sRotateMap = FALSE;
 LLNetMap* LLNetMap::sInstance = NULL;
@@ -408,6 +412,14 @@ void LLNetMap::draw()
 				if( i < regionp->mMapAvatarIDs.count())
 				{
 					show_as_friend = is_agent_friend(regionp->mMapAvatarIDs.get(i));
+//MK
+					// Don't show as friend under @shownames, since it can give away an
+					// information about the avatars who are around
+					if (RRenabled && gAgent.mRRInterface.mContainsShownames) 
+					{
+						show_as_friend = FALSE;
+					}
+//mk
 				}
 				LLWorldMapView::drawAvatar(
 					pos_map.mV[VX], pos_map.mV[VY], 
@@ -591,7 +603,12 @@ BOOL LLNetMap::handleToolTip( S32 x, S32 y, std::string& msg, LLRect* sticky_rec
 	if( region )
 	{
 		msg.assign( region->getName() );
-
+//MK
+		if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+		{
+			msg.assign ("(Region hidden)");
+		}
+//mk
 #ifndef LL_RELEASE_FOR_DOWNLOAD
 		std::string buffer;
 		msg.append("\n");

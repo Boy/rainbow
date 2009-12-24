@@ -200,6 +200,10 @@ extern BOOL gRandomizeFramerate;
 extern BOOL gPeriodicSlowFrame;
 extern BOOL gDebugGL;
 
+//MK
+extern BOOL RRenabled;
+//mk
+
 ////////////////////////////////////////////////////////////
 // All from the last globals push...
 const F32 DEFAULT_AFK_TIMEOUT = 5.f * 60.f; // time with no input before user flagged as Away From Keyboard
@@ -857,6 +861,9 @@ bool LLAppViewer::mainLoop()
 	LLTimer debugTime;
 	LLViewerJoystick* joystick(LLViewerJoystick::getInstance());
 	joystick->setNeedsReset(true);
+//MK
+	int garbage_collector_cnt=-3000; // give the garbage collector a few minutes before even kicking in the first time, in case we are logging in a very laggy place, taking time to rez
+//mk
  	
 	// Handle messages
 	while (!LLApp::isExiting())
@@ -916,6 +923,52 @@ bool LLAppViewer::mainLoop()
 					joystick->scanJoystick();
 					gKeyboard->scanKeyboard();
 				}
+
+//MK
+				// Do some RLV maintenance (garbage collector etc)
+				if (RRenabled && LLStartUp::getStartupState() == STATE_STARTED
+					&& !gViewerWindow->getShowProgress()
+					&& !gFocusMgr.focusLocked())
+				{
+					// if RLV share inventory has not been fetched yet, fetch it now
+					gAgent.mRRInterface.fetchInventory ();
+					
+					// perform some maintenance only if no object is waiting to be reattached
+					if (gAgent.mRRInterface.sAssetsToReattach.empty())
+					{
+						// fire all the stored commands that we received while initializing
+						gAgent.mRRInterface.fireCommands ();
+						
+						// fire the garbage collector for orphaned restrictions
+						if (++garbage_collector_cnt >= 600) {
+							gAgent.mRRInterface.garbageCollector (FALSE);
+							garbage_collector_cnt = 0;
+						}
+						
+					}
+					
+					// Decrease the automatic reattach timer, and reattach the object when it expires
+					if (gAgent.mRRInterface.sTimeBeforeReattaching > 0)
+					{
+						if (--gAgent.mRRInterface.sTimeBeforeReattaching <= 0)
+						{
+							// We must check whether there is an object waiting to be reattached after having been kicked off while locked.
+							// If there is one, let's reattach it here, to its default attach point.
+							if (!gAgent.mRRInterface.sAssetsToReattach.empty())
+							{
+								AssetAndTarget& at = gAgent.mRRInterface.sAssetsToReattach.front();
+								LLUUID tmp_uuid = at.uuid;
+								std::string tmp_attachpt = at.attachpt;
+								int tmp_attachpt_nb = 0;
+								LLViewerJointAttachment* attachpt = gAgent.mRRInterface.findAttachmentPointFromName(tmp_attachpt, true);
+								if (attachpt) tmp_attachpt_nb = gAgent.mRRInterface.findAttachmentPointNumber(attachpt);
+								llinfos << "Reattaching asset : " << tmp_uuid << " to point " << tmp_attachpt_nb << llendl;
+								gAgent.mRRInterface.attachObjectByUUID (tmp_uuid, tmp_attachpt_nb);
+							}
+						}
+					}
+				}
+//mk
 
 				// Update state based on messages, user input, object idle.
 				{
@@ -1838,28 +1891,38 @@ bool LLAppViewer::initConfiguration()
     // injection and steal passwords. Phoenix. SL-55321
     if(clp.hasOption("url"))
     {
-        std::string slurl = clp.getOption("url")[0];
-        if (LLURLDispatcher::isSLURLCommand(slurl))
+//MK
+        if (!gSavedSettings.getBOOL("RestrainedLife"))
         {
-	        LLStartUp::sSLURLCommand = slurl;
-        }
-        else
-        {
-	        LLURLSimString::setString(slurl);
+//mk
+            std::string slurl = clp.getOption("url")[0];
+            if (LLURLDispatcher::isSLURLCommand(slurl))
+            {
+                LLStartUp::sSLURLCommand = slurl;
+            }
+            else
+            {
+                LLURLSimString::setString(slurl);
+            }
         }
     }
     else if(clp.hasOption("slurl"))
     {
-        std::string slurl = clp.getOption("slurl")[0];
-        if(LLURLDispatcher::isSLURL(slurl))
+//MK
+        if (!gSavedSettings.getBOOL("RestrainedLife"))
         {
-            if (LLURLDispatcher::isSLURLCommand(slurl))
+//mk
+            std::string slurl = clp.getOption("slurl")[0];
+            if(LLURLDispatcher::isSLURL(slurl))
             {
-	            LLStartUp::sSLURLCommand = slurl;
-            }
-            else
-            {
-	            LLURLSimString::setString(slurl);
+                if (LLURLDispatcher::isSLURLCommand(slurl))
+                {
+                    LLStartUp::sSLURLCommand = slurl;
+                }
+                else
+                {
+                    LLURLSimString::setString(slurl);
+                }
             }
         }
     }

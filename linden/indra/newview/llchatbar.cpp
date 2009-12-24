@@ -29,6 +29,10 @@
  * $/LicenseInfo$
  */
 
+//MK
+#include "linden_common.h"
+//mk
+
 #include "llviewerprecompiledheaders.h"
 
 #include "llchatbar.h"
@@ -67,6 +71,9 @@
 #include "llviewermenu.h"
 #include "lluictrlfactory.h"
 
+//MK
+extern BOOL RRenabled;
+//mk
 
 //
 // Globals
@@ -429,13 +436,31 @@ void LLChatBar::sendChat( EChatType type )
 						utf8text.replace(0, 1, "/me ");
 					}
 				}
+//MK
+////				// discard returned "found" boolean
+////				gGestureManager.triggerAndReviseString(utf8text, &utf8_revised_text);
+				BOOL found_gesture=gGestureManager.triggerAndReviseString(utf8text, &utf8_revised_text);
 
-				// discard returned "found" boolean
-				gGestureManager.triggerAndReviseString(utf8text, &utf8_revised_text);
+				if (RRenabled && gAgent.mRRInterface.contains ("sendchat") && !gAgent.mRRInterface.containsSubstr ("redirchat:"))
+				{
+					// user is forbidden to send any chat message on channel 0 except emotes and OOC text
+					utf8_revised_text = gAgent.mRRInterface.crunchEmote (utf8_revised_text, 20);
+					if (found_gesture && utf8_revised_text=="...") utf8_revised_text="";
+				}
+//mk
 			}
 			else
 			{
-				utf8_revised_text = utf8text;
+//MK
+				std::ostringstream stream;
+				stream << "" << channel;
+				if (RRenabled && gAgent.mRRInterface.containsWithoutException ("sendchannel", stream.str()))
+				{
+					utf8_revised_text = "";
+				}
+				else
+//mk
+					utf8_revised_text = utf8text;
 			}
 
 			utf8_revised_text = utf8str_trim(utf8_revised_text);
@@ -519,7 +544,10 @@ void LLChatBar::onInputEditorKeystroke( LLLineEditor* caller, void* userdata )
 
 	if( (length > 0) && (raw_text[0] != '/') )  // forward slash is used for escape (eg. emote) sequences
 	{
-		gAgent.startTyping();
+//MK
+		if (!RRenabled || !gAgent.mRRInterface.containsSubstr ("redirchat:"))
+//mk
+			gAgent.startTyping();
 	}
 	else
 	{
@@ -621,6 +649,30 @@ void LLChatBar::sendChatFromViewer(const LLWString &wtext, EChatType type, BOOL 
 		utf8_text = utf8str_truncate(utf8_text, MAX_STRING - 1);
 	}
 
+//MK
+	if (RRenabled && channel == 0)
+	{
+		// transform the type according to chatshout, chatnormal and chatwhisper restrictions
+		if (type == CHAT_TYPE_WHISPER && gAgent.mRRInterface.contains ("chatwhisper"))
+		{
+			type = CHAT_TYPE_NORMAL;
+		}
+		if (type == CHAT_TYPE_SHOUT && gAgent.mRRInterface.contains ("chatshout"))
+		{
+			type = CHAT_TYPE_NORMAL;
+		}
+		if ((type == CHAT_TYPE_SHOUT || type == CHAT_TYPE_NORMAL)
+			&& gAgent.mRRInterface.contains ("chatnormal"))
+		{
+			type = CHAT_TYPE_WHISPER;
+		}
+		
+		if (gAgent.mRRInterface.containsSubstr ("redirchat:"))
+		{
+			animate = false;
+		}
+	}
+//mk
 	// Don't animate for chats people can't hear (chat to scripts)
 	if (animate && (channel == 0))
 	{
@@ -658,13 +710,95 @@ void LLChatBar::sendChatFromViewer(const LLWString &wtext, EChatType type, BOOL 
 
 void send_chat_from_viewer(const std::string& utf8_out_text, EChatType type, S32 channel)
 {
+//MK
+	if (RRenabled && channel >= 2147483647 && gAgent.mRRInterface.contains ("sendchat"))
+	{
+		// When prevented from talking, remove the ability to talk on the DEBUG_CHANNEL altogether, since it is a way of cheating
+		return;
+	}
+	
+	if (RRenabled && channel == 0)
+	{
+		std::string restriction;
+
+		// We might want to redirect this chat or emote (and exit this function early on)
+		if (utf8_out_text.find ("/me ") == 0 // emote
+			|| utf8_out_text.find ("/me's") == 0) // emote
+		{
+			if (gAgent.mRRInterface.containsSubstr ("rediremote:"))
+			{
+				restriction = "rediremote:";
+			}
+		}
+		else if (utf8_out_text.find ("((") != 0 || utf8_out_text.find ("))") != utf8_out_text.length () - 2)
+		{
+			if (gAgent.mRRInterface.containsSubstr ("redirchat:"))
+			{
+				restriction = "redirchat:";
+			}
+		}
+
+		if (!restriction.empty())
+		{
+			// Public chat or emote redirected => for each redirection, send the same message on the target channel
+			RRMAP::iterator it = gAgent.mRRInterface.sSpecialObjectBehaviours.begin ();
+			std::string behav;
+			while (it != gAgent.mRRInterface.sSpecialObjectBehaviours.end())
+			{
+				behav = it->second;
+				if (behav.find (restriction) == 0)
+				{
+					S32 ch = atoi (behav.substr (restriction.length()).c_str());
+					std::ostringstream stream;
+					stream << "" << ch;
+					if (!gAgent.mRRInterface.containsWithoutException ("sendchannel", stream.str()))
+					{
+						if (ch > 0 && ch < 2147483647)
+						{
+							LLMessageSystem* msg = gMessageSystem;
+							msg->newMessageFast(_PREHASH_ChatFromViewer);
+							msg->nextBlockFast(_PREHASH_AgentData);
+							msg->addUUIDFast(_PREHASH_AgentID, gAgent.getID());
+							msg->addUUIDFast(_PREHASH_SessionID, gAgent.getSessionID());
+							msg->nextBlockFast(_PREHASH_ChatData);
+							msg->addStringFast(_PREHASH_Message, utf8_out_text);
+							msg->addU8Fast(_PREHASH_Type, type);
+							msg->addS32("Channel", ch);
+
+							gAgent.sendReliableMessage();
+						}
+					}
+				}
+				it++;
+			}
+
+			LLViewerStats::getInstance()->incStat(LLViewerStats::ST_CHAT_COUNT);
+
+			// We have redirected the chat message, don't send it on the original channel
+			return;
+		}
+	}
+
+	std::string crunchedText = utf8_out_text;
+	
+	// There is a redirection in order but this particular message is an emote or an OOC text, so we didn't
+	// redirect it. However it has not gone through crunchEmote yet, so we need to do this here
+	if (RRenabled && channel == 0 && gAgent.mRRInterface.containsSubstr ("redirchat:"))
+	{
+		crunchedText = gAgent.mRRInterface.crunchEmote(crunchedText, 20);
+	}
+//mk
+	
 	LLMessageSystem* msg = gMessageSystem;
 	msg->newMessageFast(_PREHASH_ChatFromViewer);
 	msg->nextBlockFast(_PREHASH_AgentData);
 	msg->addUUIDFast(_PREHASH_AgentID, gAgent.getID());
 	msg->addUUIDFast(_PREHASH_SessionID, gAgent.getSessionID());
 	msg->nextBlockFast(_PREHASH_ChatData);
-	msg->addStringFast(_PREHASH_Message, utf8_out_text);
+////	msg->addStringFast(_PREHASH_Message, utf8_out_text);
+//MK	
+	msg->addStringFast(_PREHASH_Message, crunchedText);
+//mk
 	msg->addU8Fast(_PREHASH_Type, type);
 	msg->addS32("Channel", channel);
 
@@ -688,18 +822,25 @@ void LLChatBar::onCommitGesture(LLUICtrl* ctrl, void* data)
 		}
 		const std::string& trigger = gestures->getSelectedValue().asString();
 
-		// pretend the user chatted the trigger string, to invoke
-		// substitution and logging.
-		std::string text(trigger);
-		std::string revised_text;
-		gGestureManager.triggerAndReviseString(text, &revised_text);
-
-		revised_text = utf8str_trim(revised_text);
-		if (!revised_text.empty())
+//MK
+		if (!RRenabled || !gAgent.mRRInterface.contains ("sendchat"))
 		{
-			// Don't play nodding animation
-			self->sendChatFromViewer(revised_text, CHAT_TYPE_NORMAL, FALSE);
+//mk
+			// pretend the user chatted the trigger string, to invoke
+			// substitution and logging.
+			std::string text(trigger);
+			std::string revised_text;
+			gGestureManager.triggerAndReviseString(text, &revised_text);
+
+			revised_text = utf8str_trim(revised_text);
+			if (!revised_text.empty())
+			{
+				// Don't play nodding animation
+				self->sendChatFromViewer(revised_text, CHAT_TYPE_NORMAL, FALSE);
+			}
+//MK
 		}
+//mk
 	}
 	self->mGestureLabelTimer.start();
 	if (self->mGestureCombo != NULL)
@@ -727,7 +868,14 @@ public:
 		if (tokens.size() < 2) return false;
 		S32 channel = tokens[0].asInteger();
 		std::string mesg = tokens[1].asString();
-		send_chat_from_viewer(mesg, CHAT_TYPE_NORMAL, channel);
+		EChatType type = CHAT_TYPE_NORMAL;
+//MK
+		if (RRenabled && channel == 0 && gAgent.mRRInterface.contains ("chatnormal"))
+		{
+			type = CHAT_TYPE_WHISPER;
+		}
+//mk
+		send_chat_from_viewer(mesg, type, channel);
 		return true;
 	}
 };

@@ -52,6 +52,9 @@
 
 // Globals
 extern BOOL gAllowSelectAvatar;
+//MK
+extern BOOL RRenabled;
+//mk
 
 const F32 SELECTION_ROTATION_TRESHOLD = 0.1f;
 
@@ -64,9 +67,30 @@ LLToolSelect::LLToolSelect( LLToolComposite* composite )
 // True if you selected an object.
 BOOL LLToolSelect::handleMouseDown(S32 x, S32 y, MASK mask)
 {
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsEdit)
+	{
+		return FALSE;
+	}
+//mk
 	// do immediate pick query
 	mPick = gViewerWindow->pickImmediate(x, y, TRUE);
-
+//MK
+	LLViewerObject* object = mPick.getObject();
+	if (object)
+	{
+		if (RRenabled && gAgent.mRRInterface.mContainsFartouch)
+		{
+//			LLVector3 pos = object->getPositionRegion ();
+			LLVector3 pos = mPick.mIntersection;
+			pos -= gAgent.getPositionAgent ();
+			if (pos.magVec () >= 1.5)
+			{
+				return FALSE;
+			}
+		}
+	}
+//mk
 	// Pass mousedown to agent
 	LLTool::handleMouseDown(x, y, mask);
 
@@ -77,11 +101,32 @@ BOOL LLToolSelect::handleMouseDown(S32 x, S32 y, MASK mask)
 // static
 LLObjectSelectionHandle LLToolSelect::handleObjectSelection(const LLPickInfo& pick, BOOL ignore_group, BOOL temp_select, BOOL select_root)
 {
+//MK
+	if (RRenabled && !temp_select && gAgent.mRRInterface.mContainsEdit)
+	{
+		return FALSE;
+	}
+//mk
 	LLViewerObject* object = pick.getObject();
 	if (select_root)
 	{
 		object = object->getRootEdit();
 	}
+//MK
+	if (object)
+	{
+		if (RRenabled && gAgent.mRRInterface.mContainsFartouch && !object->isHUDAttachment())
+		{
+			LLVector3 pos = object->getPositionRegion ();
+//			LLVector3 pos = pick.mIntersection;
+			pos -= gAgent.getPositionAgent ();
+			if (pos.magVec () >= 1.5)
+			{
+				return FALSE;
+			}
+		}
+	}
+//mk
 	BOOL select_owned = gSavedSettings.getBOOL("SelectOwnedOnly");
 	BOOL select_movable = gSavedSettings.getBOOL("SelectMovableOnly");
 	

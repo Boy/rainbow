@@ -125,6 +125,10 @@ extern BOOL gHideSelectedObjects;
 extern BOOL gDisplaySwapBuffers;
 extern BOOL gDebugGL;
 
+//MK
+extern BOOL RRenabled;
+//mk
+
 // hack counter for rendering a fixed number of frames after toggling
 // fullscreen to work around DEV-5361
 static S32 sDelayedVBOEnable = 0;
@@ -1793,7 +1797,10 @@ void LLPipeline::stateSort(LLDrawable* drawablep, LLCamera& camera)
 		return;
 	}
 	
-	if (gHideSelectedObjects)
+	if (gHideSelectedObjects
+//MK
+		&& (!RRenabled || !gAgent.mRRInterface.mContainsEdit))
+//mk
 	{
 		if (drawablep->getVObj().notNull() &&
 			drawablep->getVObj()->isSelected())
@@ -2742,7 +2749,11 @@ void LLPipeline::renderForSelect(std::set<LLViewerObject*>& objects, BOOL render
 		LLDrawable* drawable = vobj->mDrawable;
 		if (vobj->isDead() || 
 			vobj->isHUDAttachment() ||
-			(gHideSelectedObjects && vobj->isSelected()) ||
+			(gHideSelectedObjects
+//MK
+				&& (!RRenabled || !gAgent.mRRInterface.mContainsEdit)
+//mk
+				&& vobj->isSelected()) ||
 			drawable->isDead() || 
 			!hasRenderType(drawable->getRenderType()))
 		{

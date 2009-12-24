@@ -75,6 +75,10 @@ const S32 ARROW_OFF_RADIUS_SQRD = 100;
 
 const S32 HUD_ARROW_SIZE = 32;
 
+//MK
+extern BOOL RRenabled;
+//mk
+
 // static
 LLTracker *LLTracker::sTrackerp = NULL;
 BOOL LLTracker::sCheesyBeacon = FALSE;
@@ -160,6 +164,13 @@ void LLTracker::render3D()
 	{
 		return;
 	}
+
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	{
+		instance()->mTrackedLocationName = "";
+	}
+//mk
 
 	// Arbitary location beacon
 	if( instance()->mIsTrackingLocation )

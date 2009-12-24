@@ -1,11 +1,9 @@
-RAINBOW MASTER  1.22.12.0 
+RAINBOW VIEWER  1.22.12.0 R4 
 
-That's the current baseline for all Rainbow and Cool Viewers.
+That's Rainbow Viewer 1.22.12.0 Release 4.
 
 Please have a look at the RELEASE_NOTES.txt and ChangeLog.txt for included changes and patches.
 
 *too be created*
-
-This is the first upload to github and I'm still figuring out how it works :).
 
 Boy

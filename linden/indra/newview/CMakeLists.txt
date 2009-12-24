@@ -437,6 +437,7 @@ set(viewer_SOURCE_FILES
     llxmlrpctransaction.cpp
     noise.cpp
     pipeline.cpp
+    RRInterface.cpp
     )
 
 set(VIEWER_BINARY_NAME "rainbowviewer-bin" CACHE STRING
@@ -846,6 +847,7 @@ set(viewer_HEADER_FILES
     randgauss.h
     VertexCache.h
     VorbisFramework.h
+    RRInterface.h
     )
 
 source_group("CMake Rules" FILES ViewerInstall.cmake)

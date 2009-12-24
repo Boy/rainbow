@@ -64,6 +64,10 @@
 #include "lluictrlfactory.h"
 #include "roles_constants.h"
 
+//MK
+extern BOOL RRenabled;
+//mk
+
 ///----------------------------------------------------------------------------
 /// Class llpanelpermissions
 ///----------------------------------------------------------------------------
@@ -331,10 +335,22 @@ void LLPanelPermissions::refresh()
 		}
 	}
 
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+	{
+		owner_name = gAgent.mRRInterface.getDummyName (owner_name);
+	}
+//mk
 	childSetText("Owner Name",owner_name);
 	childSetEnabled("Owner Name",TRUE);
 	childSetEnabled("button owner profile",owners_identical && (mOwnerID.notNull() || LLSelectMgr::getInstance()->selectIsGroupOwned()));
 
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+	{
+		last_owner_name = gAgent.mRRInterface.getDummyName (last_owner_name);
+	}
+//mk
 	childSetEnabled("Last Owner:", TRUE);
 	childSetText("Last Owner Name",last_owner_name);
 	childSetEnabled("Last Owner Name",TRUE);
@@ -876,6 +892,12 @@ void LLPanelPermissions::onClickOwner(void *data)
 	}
 	else
 	{
+//MK
+		if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+		{
+			return;
+		}
+//mk
 		LLFloaterAvatarInfo::showFromObject(self->mOwnerID);
 	}
 }

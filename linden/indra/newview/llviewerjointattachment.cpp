@@ -50,6 +50,12 @@
 
 #include "llglheaders.h"
 
+//MK
+#include "llinventoryview.h"
+#include "llagent.h"
+extern BOOL RRenabled;
+//mk
+
 extern LLPipeline gPipeline;
 
 //-----------------------------------------------------------------------------
@@ -156,8 +162,14 @@ void LLViewerJointAttachment::setupDrawable(LLDrawable* drawablep)
 //-----------------------------------------------------------------------------
 BOOL LLViewerJointAttachment::addObject(LLViewerObject* object)
 {
+//MK
+	BOOL was_empty = true;
+//mk
 	if (mAttachedObject)
 	{
+//MK
+		was_empty = false;
+//mk
 		llwarns << "Attempted to attach object where an attachment already exists!" << llendl;
 		
 		if (mAttachedObject == object) {
@@ -225,6 +237,70 @@ BOOL LLViewerJointAttachment::addObject(LLViewerObject* object)
 	calcLOD();
 	mUpdateXform = TRUE;
 
+//MK
+	if (RRenabled)
+	{
+		// If this attachment point is locked and empty, then force detach, unless the attached object was supposed to be reattached automatically
+		if (was_empty)
+		{
+			std::string name = getName();
+			LLStringUtil::toLower(name);
+			if (!gAgent.mRRInterface.canAttach(object, name))
+			{
+				bool just_reattaching = false;
+				std::deque<AssetAndTarget>::iterator it = gAgent.mRRInterface.sAssetsToReattach.begin();
+				for (; it != gAgent.mRRInterface.sAssetsToReattach.end(); ++it)
+				{
+					if (it->uuid == item_id)
+					{
+						just_reattaching = true;
+						break;
+					}
+				}
+				if (!just_reattaching)
+				{
+					llinfos << "Attached to a locked point : " << mItemID << llendl;
+					gMessageSystem->newMessage("ObjectDetach");
+					gMessageSystem->nextBlockFast(_PREHASH_AgentData);
+					gMessageSystem->addUUIDFast(_PREHASH_AgentID, gAgent.getID() );
+					gMessageSystem->addUUIDFast(_PREHASH_SessionID, gAgent.getSessionID());	
+					gMessageSystem->nextBlockFast(_PREHASH_ObjectData);
+					gMessageSystem->addU32Fast(_PREHASH_ObjectLocalID, object->getLocalID());
+					gMessageSystem->sendReliable( gAgent.getRegionHost() );
+
+					gAgent.mRRInterface.sJustDetached.uuid = item_id;
+					gAgent.mRRInterface.sJustDetached.attachpt = getName();
+				}
+			}
+		}
+
+		// If the UUID of the attached item is contained into the list of things waiting to reattach,
+		// signal it and remove it from the list (and if the list is not empty, restart the timer for the next).
+		std::deque<AssetAndTarget>::iterator it = gAgent.mRRInterface.sAssetsToReattach.begin();
+		for (; it != gAgent.mRRInterface.sAssetsToReattach.end(); ++it)
+		{
+			if (it->uuid == item_id)
+			{
+				llinfos << "Reattached asset " << item_id << " automatically" << llendl;
+				gAgent.mRRInterface.sAssetsToReattach.erase(it);
+//				gAgent.mRRInterface.sJustReattached.uuid = item_id;
+//				gAgent.mRRInterface.sJustReattached.attachpt = getName();
+				// Replace the previously stored asset id with the new viewer id in the list of restrictions
+				gAgent.mRRInterface.replace(item_id, object->getRootEdit()->getID());
+				if (!gAgent.mRRInterface.sAssetsToReattach.empty())
+				{
+					gAgent.mRRInterface.sTimeBeforeReattaching = 50; // let's wait a little before reattaching the next item
+				}
+				else
+				{
+					gAgent.mRRInterface.sTimeBeforeReattaching = 0;
+				}
+				break;
+			}
+		}
+	}
+//mk
+
 	return TRUE;
 }
 
@@ -233,6 +309,51 @@ BOOL LLViewerJointAttachment::addObject(LLViewerObject* object)
 //-----------------------------------------------------------------------------
 void LLViewerJointAttachment::removeObject(LLViewerObject *object)
 {
+//MK
+	if (RRenabled)
+	{
+		// We first need to check whether the object is locked, as some techniques (like llAttachToAvatar)
+		// can kick even a locked attachment off.
+		// If so, retain its UUID for later
+		// Note : we need to delay the reattach a little, or we risk losing the item in the inventory.
+		LLVOAvatar *avatarp = gAgent.getAvatarObject();
+		LLUUID inv_item_id = LLUUID::null;
+		LLInventoryItem* inv_item = gAgent.mRRInterface.getItem(object->getRootEdit()->getID());
+		if (inv_item) inv_item_id = inv_item->getUUID();
+		std::string target_attachpt = "";
+		if (avatarp) target_attachpt = avatarp->getAttachedPointName(inv_item_id);
+		if (!gAgent.mRRInterface.canDetach(object)
+			&& gAgent.mRRInterface.sJustDetached.attachpt != target_attachpt	// we didn't just detach something from this attach pt automatically
+			&& gAgent.mRRInterface.sJustReattached.attachpt != target_attachpt)	// we didn't just reattach something to this attach pt automatically
+		{
+			llinfos << "Detached a locked object : " << mItemID << llendl;
+
+			std::deque<AssetAndTarget>::iterator it = gAgent.mRRInterface.sAssetsToReattach.begin();
+			bool found = false;
+			bool found_for_this_point = false;
+			for (; it != gAgent.mRRInterface.sAssetsToReattach.end(); ++it)
+			{
+				if (it->uuid == mItemID) found = true;
+				if (it->attachpt == target_attachpt) found_for_this_point = true;
+			}
+
+			if (!found && !found_for_this_point)
+			{
+				AssetAndTarget at;
+				at.uuid = mItemID;
+				at.attachpt = target_attachpt;
+				gAgent.mRRInterface.sTimeBeforeReattaching = 50; // number of cycles before triggering the reattach (approx 5 seconds)
+				gAgent.mRRInterface.sAssetsToReattach.push_back(at);
+				// Little hack : store this item's asset id into the list of restrictions so they are automatically reapplied when it is reattached
+				gAgent.mRRInterface.replace(object->getRootEdit()->getID(), mItemID);
+			}
+		}
+		gAgent.mRRInterface.sJustDetached.uuid.setNull();
+		gAgent.mRRInterface.sJustDetached.attachpt = "";
+		gAgent.mRRInterface.sJustReattached.uuid.setNull();
+		gAgent.mRRInterface.sJustReattached.attachpt = "";
+	}
+//mk
 	// force object visibile
 	setAttachmentVisibility(TRUE);
 

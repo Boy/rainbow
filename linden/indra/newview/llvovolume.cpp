@@ -65,6 +65,12 @@
 #include "llselectmgr.h"
 #include "pipeline.h"
 
+//MK
+#include "llagent.h"
+
+extern BOOL RRenabled;
+//mk
+
 const S32 MIN_QUIET_FRAMES_COALESCE = 30;
 const F32 FORCE_SIMPLE_RENDER_AREA = 512.f;
 const F32 FORCE_CULL_AREA = 8.f;
@@ -2094,7 +2100,11 @@ void LLVolumeGeometryManager::registerFace(LLSpatialGroup* group, LLFace* facep,
 {
 	LLMemType mt(LLMemType::MTYPE_SPACE_PARTITION);
 
-	if (facep->getViewerObject()->isSelected() && gHideSelectedObjects)
+	if (facep->getViewerObject()->isSelected()
+//MK
+		&& (!RRenabled || !gAgent.mRRInterface.mContainsEdit)
+//mk
+		&& gHideSelectedObjects)
 	{
 		return;
 	}

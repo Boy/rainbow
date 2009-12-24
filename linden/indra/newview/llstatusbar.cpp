@@ -89,6 +89,9 @@
 LLStatusBar *gStatusBar = NULL;
 S32 STATUS_BAR_HEIGHT = 0;
 extern S32 MENU_BAR_HEIGHT;
+//MK
+extern BOOL RRenabled;
+//mk
 
 
 // TODO: these values ought to be in the XML too
@@ -552,6 +555,13 @@ void LLStatusBar::refresh()
 		mRegionDetails.mOwner = "Unknown";
 		mRegionDetails.mTraffic = 0.0f;
 	}
+//MK
+	gAgent.mRRInterface.setParcelName (mRegionDetails.mParcelName);
+	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	{
+		location_name = "(Hidden) (" + region->getSimAccessString() + ")";
+	}
+//mk
 
 	mTextParcelName->setText(location_name);
 
@@ -737,6 +747,12 @@ static void onClickParcelInfo(void* data)
 {
 	LLViewerParcelMgr::getInstance()->selectParcelAt(gAgent.getPositionGlobal());
 
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	{
+		return;
+	}
+//mk
 	LLFloaterLand::showInstance();
 }
 
@@ -799,6 +815,12 @@ static void onClickScripts(void*)
 
 static void onClickBuyLand(void*)
 {
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	{
+		return;
+	}
+//mk
 	LLViewerParcelMgr::getInstance()->selectParcelAt(gAgent.getPositionGlobal());
 	LLViewerParcelMgr::getInstance()->startBuyLand();
 }

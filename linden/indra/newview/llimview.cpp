@@ -69,6 +69,10 @@
 
 #include "llfirstuse.h"
 
+//MK
+extern BOOL RRenabled;
+//mk
+
 //
 // Globals
 //
@@ -1542,7 +1546,12 @@ public:
 			{
 				return;
 			}
-
+//MK            
+			if (RRenabled && gAgent.mRRInterface.containsWithoutException ("recvim"))
+			{
+				return;
+			}
+//mk
 			// standard message, not from system
 			std::string saved;
 			if(offline == IM_OFFLINE)
