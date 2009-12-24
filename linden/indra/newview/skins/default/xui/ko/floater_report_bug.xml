@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater name="bug_reporter" title="버그 신고">
+	<texture_picker label="작업 중..." name="screenshot" />
+	<text name="reporter_title">
+		신고자:
+	</text>
+	<text name="sim_title">
+		지역:
+	</text>
+	<text name="pos_title">
+		위치:
+	</text>
+	<text name="select_object_label">
+		버튼 클릭 후 오브젝트 클릭:
+	</text>
+	<button label="" label_selected="" name="pick_btn"
+	     tool_tip="오브젝트 피커 - 오브젝트를 본 보고서의 주제로 식별함" />
+	<text name="object_name_label">
+		이름:
+	</text>
+	<text name="object_name">
+		Consetetur Sadipscing
+	</text>
+	<text name="owner_name_label">
+		소유자:
+	</text>
+	<check_box label="스크린샷 포함" name="screen_check" />
+	<texture_picker label="작업 중..." name="스크린샷" />
+	<text name="category_label">
+		카테고리:
+	</text>
+	<text name="owner_name">
+		Hendrerit Vulputate
+	</text>
+	<combo_box name="category_combo"
+	     tool_tip="카테고리 -- 이 리포트를 가장 잘 설명하는 카테고리 선택함">
+		<combo_item name="Selectcategory">
+			카테고리 선택
+		</combo_item>
+		<combo_item name="Building">
+			제작하기
+		</combo_item>
+		<combo_item name="Character">
+			캐릭터
+		</combo_item>
+		<combo_item name="Chat/IM">
+			채팅/메신저
+		</combo_item>
+		<combo_item name="Documentation">
+			문서
+		</combo_item>
+		<combo_item name="Exploit">
+			악용
+		</combo_item>
+		<combo_item name="Graphics">
+			그래픽
+		</combo_item>
+		<combo_item name="Inventory">
+			인벤토리
+		</combo_item>
+		<combo_item name="Lag">
+			랙
+		</combo_item>
+		<combo_item name="MissingContent">
+			유실 컨텐츠
+		</combo_item>
+		<combo_item name="LindenDollars(L$)">
+			린든달러(L$)
+		</combo_item>
+		<combo_item name="Permissions">
+			권한
+		</combo_item>
+		<combo_item name="Physics">
+			물리 엔진
+		</combo_item>
+		<combo_item name="Script">
+			스크립트
+		</combo_item>
+		<combo_item name="Sound">
+			소리
+		</combo_item>
+		<combo_item name="Stipends">
+			수당
+		</combo_item>
+		<combo_item name="Userinterface">
+			사용자 인터페이스
+		</combo_item>
+		<combo_item name="Miscellaneous">
+			다목적
+		</combo_item>
+	</combo_box>
+	<text name="sum_title">
+		요약:
+	</text>
+	<text name="dscr_title">
+		세부사항: (가능한 한 많은 정보를 제공 하십시오.)
+	</text>
+	<text_editor name="details_edit">
+		버그 재생 방법:
+
+관찰 결과:
+
+예상 결과:
+	</text_editor>
+	<text name="bug_aviso">
+		참고: 불완전한 보고서는 조사 대상에서 제외됨
+이 버그로 인해 권한 밖의 일이 가능하게 되면,  
+특히 실행이나 보안에 영향을 줄 경우,  
+‘개척’ 카테고리를 선택하십시오. 감사합니다!
+	</text>
+	<button label="버그 신고" label_selected="버그 신고" name="send_btn" />
+	<button label="취소" label_selected="취소" name="cancel_btn" />
+</floater>

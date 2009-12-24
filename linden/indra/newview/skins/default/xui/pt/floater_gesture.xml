@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="gestures" title="Ativar gestos">
+	<text name="help_label">
+		Clicar duas vezes no gesto para executar animações e sons.
+	</text>
+</floater>

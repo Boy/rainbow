@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel name="chat_bar">
+	<panel/>
+	<button label="周辺チャット" name="History" tool_tip="過去の発言を表示するには、ここをクリック"/>
+	<line_editor label="チャットを開始するには、ここをクリックします。" name="Chat Editor" tool_tip="話すにはEnterを押し、叫ぶにはCtrl＋Enterを押します。" width="95"/>
+	<flyout_button label="発言" left_delta="100" name="Say" tool_tip="(Enter)">
+		<flyout_button_item name="shout_item">
+			叫ぶ
+		</flyout_button_item>
+		<flyout_button_item name="say_item">
+			発言
+		</flyout_button_item>
+		<flyout_button_item name="whisper_item">
+			ささやく
+		</flyout_button_item>
+	</flyout_button>
+	<combo_box label="ジェスチャー" name="Gesture" width="100"/>
+	<string name="gesture_label">
+		ジェスチャー
+	</string>
+</panel>

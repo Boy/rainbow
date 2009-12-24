@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater can_close="true" can_drag_on_left="false" can_minimize="true" can_resize="true"
+		min_width="470" min_height="150" width="470" height="200" name="teleporthistory"
+		rect_control="FloaterTeleportHistoryRect" title="Teleport History">
+	<scroll_list background_visible="true" draw_border="true" draw_stripes="true"
+		draw_heading="true" follows="left|top|right|bottom" left="10" top="10" width="450"
+		height="150" bottom_delta="-170" multi_select="false" name="places_list">
+		<column dynamicwidth="true" label="Region" name="region" />
+		<column dynamicwidth="true" label="Position" name="position" />
+		<column dynamicwidth="true" label="Visited" name="visited" />
+		<!--Hidden fields, used as storage for prebuilt strings, please keep at width 0-->
+		<column width="0" label="SLURL" name="slurl" />
+		<column width="0" label="Sim String" name="simstring" />
+	</scroll_list>
+	<button
+		bottom_delta="-24" enabled="false" follows="left|bottom" font="SansSerif" halign="center"
+		width="90" height="20" label="Teleport" label_selected="Teleport"
+		left="10" mouse_opaque="true" name="teleport" tool_tip="Teleport to selected location" />
+	<button bottom_delta="0" enabled="false" follows="left|bottom" font="SansSerif" halign="center"
+		height="20" label="Show On Map" label_selected="Show On Map"
+		left_delta="100" mouse_opaque="true" name="show_on_map"
+		tool_tip="Center map on this location" width="125" />
+	<button bottom_delta="0" enabled="false" follows="bottom|right" font="SansSerif"
+		height="20" label="Copy SLURL to clipboard" left="-230" name="copy_slurl"
+		tool_tip="Copies current location as SLURL to be used on the web."
+		width="222" />
+</floater>

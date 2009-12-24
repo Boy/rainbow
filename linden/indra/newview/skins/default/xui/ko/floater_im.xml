@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<multi_floater name="im_floater" title="메신저">
+	<string name="only_user_message">
+		이 세션의 유일한 사용자입니다.
+	</string>
+	<string name="offline_message">
+		[FIRST] [LAST]님은 오프라인입니다.
+	</string>
+	<string name="invite_message">
+		음성 채팅을 수락/연결하려면 [BUTTON NAME] 버튼을 클릭하십시오.
+	</string>
+	<string name="muted_message">
+		이 주민이 음소거되었습니다. 이 주민에게 메시지를 보내면 음소거가 자동으로 해제됩니다.
+	</string>
+	<string name="generic_request_error">
+		오류 보고 작성을 요청했으므로 나중에 다시 시도하십시오.
+	</string>
+	<string name="insufficient_perms_error">
+		충분한 권한이 없습니다.
+	</string>
+	<string name="session_does_not_exist_error">
+		세션이 더 이상 존재하지 않습니다.
+	</string>
+	<string name="no_ability_error">
+		해당 권한이 없습니다.
+	</string>
+	<string name="not_a_mod_error">
+		귀하는 현재 세션 진행자가 아닙니다.
+	</string>
+	<string name="muted_error">
+		그룹 진행자가 채팅 텍스트를 해제했습니다.
+	</string>
+	<!-- ALL of the event strings should have [RECIPIENT] in them -->
+	<string name="add_session_event">
+		[RECIPIENT]님과의 채팅 세션에 사용자를 추가할 수 없습니다.
+	</string>
+	<string name="message_session_event">
+		[RECIPIENT]님과의 채팅 세션에 메시지를 보낼 수 없습니다.
+	</string>
+	<string name="removed_from_group">
+		그룹에서 제거되었습니다.
+	</string>
+	<string name="close_on_no_ability">
+		채팅 세션에 더 이상 참여할 수 없습니다.
+	</string>
+</multi_floater>

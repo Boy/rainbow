@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater can_close="true" can_drag_on_left="false" can_minimize="false"
+     can_resize="false" height="270" min_height="270" min_width="350"
+     name="buy currency" title="Buy Currency" width="350">
+	<text bottom_delta="-48" follows="top|left" font="SansSerifHuge" height="24"
+	     left="16" name="info_buying" right="-20" >
+		Buying Currency:
+	</text>
+	<text bottom_delta="0" follows="top|left" font="SansSerifHuge" height="24" left="16"
+	     name="info_cannot_buy" right="-20" >
+		Cannot buy now:
+	</text>
+	<text bottom_delta="0" follows="top|left" font="SansSerifHuge" height="24" left="16"
+	     name="info_need_more" right="-20" >
+		You need more currency:
+	</text>
+	<icon bottom="-112" follows="top|left" height="64" image_name="badge_note.j2c"
+	     left="0" name="step_error" width="64" />
+	<text bottom_delta="-96" follows="top|left" height="140" left="72"
+	     name="error_message" right="-20" >
+		Something ain&apos;t right.
+	</text>
+	<button bottom_delta="-4" follows="bottom|left" height="20" label="Go to website"
+	     left="72" name="error_web" width="120" />
+	<icon bottom="-112" follows="top|left" height="64" image_name="badge_note.j2c"
+	     left="0" name="step_1" width="64" />
+	<text bottom_delta="38" follows="top|left" height="16" left="72" name="contacting"
+	     right="-20" >
+		Contacting LindeX...
+	</text>
+	<text bottom_delta="0" follows="top|left" height="16" left="72"
+	     name="buy_action_unknown" right="-20" >
+		Buy L$ on the LindeX currency exchange
+	</text>
+	<text bottom_delta="0" follows="top|left" height="16" left="72" name="buy_action"
+	     right="-20" >
+		[NAME] L$ [PRICE]
+	</text>
+	<text bottom_delta="-20" follows="top|left" height="16" left="72"
+	     name="currency_action"  width="40">
+		Buy L$
+	</text>
+	<line_editor bottom_delta="0" follows="top|right" height="16" left_delta="45"
+	     name="currency_amt" width="80">
+		1234
+	</line_editor>
+	<text bottom_delta="0" follows="top|right" height="16" left_delta="85"
+	     name="currency_est"  width="180">
+		for approx. US$ [USD]
+	</text>
+	<text bottom_delta="0" follows="top|right" height="16" left_delta="5"
+	     name="getting_data" width="180">
+		Getting data...
+	</text>
+	<text bottom_delta="-32" follows="top|left" height="16" left="80"
+	     name="balance_label" width="240">
+		You currently have
+	</text>
+	<text bottom_delta="0" follows="top|left" halign="right" height="16" left="80"
+	     name="balance_amount" width="240">
+		L$ [AMT]
+	</text>
+	<text bottom_delta="-20" follows="top|left" height="16" left="80" name="buying_label"
+	     width="240">
+		You are buying
+	</text>
+	<text bottom_delta="0" follows="top|left" halign="right" height="16" left="80"
+	     name="buying_amount" width="240">
+		L$ [AMT]
+	</text>
+	<text bottom_delta="-20" follows="top|left" height="16" left="80" name="total_label"
+	     width="240">
+		Your balance will be
+	</text>
+	<text bottom_delta="0" follows="top|left" halign="right" height="16" left="80"
+	     name="total_amount" width="240">
+		L$ [AMT]
+	</text>
+	<text bottom_delta="-48" follows="top|left" height="32" left="72"
+	     name="purchase_warning_repurchase" right="-20" >
+		Confirming this purchase only buys the currency.
+You&apos;ll need to try the operation again.
+	</text>
+	<text bottom_delta="0" follows="top|left" height="32" left="72"
+	     name="purchase_warning_notenough" right="-20" >
+		You aren&apos;t buying enough currency
+Increase the amount to buy.
+	</text>
+	<button bottom_delta="-40" follows="bottom|right" height="20" label="Cancel" left="237"
+	     name="cancel_btn" width="90" />
+	<button bottom_delta="0" follows="bottom|left" height="20" label="Purchase"
+	     left_delta="-96" name="buy_btn" width="90" />
+	<string name="buy_currency">
+		Buy L$ [LINDENS] for approx. US$ [USD]
+	</string>
+</floater>

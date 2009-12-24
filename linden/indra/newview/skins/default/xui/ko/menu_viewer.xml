@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<menu_bar name="Main Menu">
+	<menu label="파일" name="File">
+		<tearoff_menu label="~~~~~~~~~~~" name="~~~~~~~~~~~" />
+		<menu_item_call label="이미지 업로드(L$[COST])" name="Upload Image" />
+		<menu_item_call label="사운드 업로드(L$[COST])" name="Upload Sound" />
+		<menu_item_call label="애니메이션 업로드(L$[COST])" name="Upload Animation" />
+		<menu_item_call label="한꺼번에 업로드(파일당 L$[COST])" name="Bulk Upload" />
+		<menu_item_separator label="-----------" name="separator" />
+		<menu_item_call label="창 닫기" name="Close Window" />
+		<menu_item_call label="모든 창 닫기" name="Close All Windows" />
+		<menu_item_separator label="-----------" name="separator2" />
+		<menu_item_call label="텍스처를 다른 이름으로 저장" name="Save Texture As..." />
+		<menu_item_separator label="-----------" name="separator3" />
+		<menu_item_call label="스냅샷 미리보기" name="Take Snapshot" />
+		<menu_item_call label="스냅샷 찍기" name="Snapshot to Disk" />
+		<menu_item_separator label="-----------" name="separator4" />
+		<menu label="창 크기 조절" name="Set Window Size">
+			<menu_item_call label="320x240" name="320x240" />
+			<menu_item_call label="640x480" name="640x480" />
+			<menu_item_call label="800x600" name="800x600" />
+			<menu_item_separator label="-----------" name="separator" />
+			<menu_item_call label="720x480(NTSC)" name="720x480 (NTSC)" />
+			<menu_item_call label="768x576(PAL)" name="768x576 (PAL)" />
+		</menu>
+		<menu_item_separator label="-----------" name="separator5" />
+		<menu_item_call label="종료" name="Quit" />
+	</menu>
+	<menu label="편집" name="Edit">
+		<menu_item_call label="취소" name="Undo" />
+		<menu_item_call label="반복" name="Redo" />
+		<menu_item_separator label="-----------" name="separator" />
+		<menu_item_call label="잘라내기" name="Cut" />
+		<menu_item_call label="복사" name="Copy" />
+		<menu_item_call label="붙여넣기" name="Paste" />
+		<menu_item_call label="삭제" name="Delete" />
+		<menu_item_separator label="-----------" name="separator2" />
+		<menu_item_call label="검색" name="Search..." />
+		<menu_item_separator label="-----------" name="separator3" />
+		<menu_item_call label="모두 선택" name="Select All" />
+		<menu_item_call label="선택 취소" name="Deselect" />
+		<menu_item_separator label="-----------" name="separator4" />
+		<menu_item_call label="복제" name="Duplicate" />
+		<menu_item_separator label="-----------" name="separator5" />
+		<menu label="오브젝트 착용" name="Attach Object" />
+		<menu label="오브젝트 분리" name="Detach Object" />
+		<menu label="옷 벗기" name="Take Off Clothing">
+			<menu_item_call label="셔츠" name="Shirt" />
+			<menu_item_call label="바지" name="Pants" />
+			<menu_item_call label="신발" name="Shoes" />
+			<menu_item_call label="양말" name="Socks" />
+			<menu_item_call label="재킷" name="Jacket" />
+			<menu_item_call label="장갑" name="Gloves" />
+			<menu_item_call label="내의(상)" name="Menu Undershirt" />
+			<menu_item_call label="내의(하)" name="Menu Underpants" />
+			<menu_item_call label="치마" name="Skirt" />
+			<menu_item_call label="모든 의상" name="All Clothes" />
+		</menu>
+		<menu_item_separator label="-----------" name="separator6" />
+		<menu_item_call label="제스처" name="Gestures..." />
+		<menu_item_call label="프로필" name="Profile..." />
+		<menu_item_call label="내 모습" name="Appearance..." />
+		<menu_item_separator label="-----------" name="separator7" />
+		<menu_item_check label="친구" name="Friends..." />
+		<menu_item_call label="그룹" name="Groups..." />
+		<menu_item_separator label="-----------" name="separator8" />
+		<menu_item_call label="환경 설정" name="Preferences..." />
+	</menu>
+	<menu label="보기" name="View">
+		<tearoff_menu label="~~~~~~~~~~~" name="~~~~~~~~~~~" />
+		<menu_item_call label="1인칭 시점" name="Mouselook" />
+		<menu_item_check label="만들기" name="Build" />
+		<menu_item_check label="조이스틱 Flycam" name="Joystick Flycam" />
+		<menu_item_call label="보기 초기화" name="Reset View" />
+		<menu_item_call label="말한 사람 보기" name="Look at Last Chatter" />
+		<menu_item_separator label="-----------" name="separator" />
+		<menu_item_check label="툴바" name="Toolbar" />
+		<menu_item_check label="로컬 채팅" name="Chat History" />
+		<menu_item_check label="통신" name="Instant Message" />
+		<menu_item_call label="인벤토리" name="Inventory" />
+		<menu_item_check label="액티브 스피커" name="Active Speakers" />
+		<menu_item_check label="차단 목록" name="Mute List" />
+		<menu_item_separator label="-----------" name="separator2" />
+		<menu_item_check label="카메라 제어" name="Camera Controls" />
+		<menu_item_check label="움직임 제어" name="Movement Controls" />
+		<menu_item_check label="월드 지도" name="World Map" />
+		<menu_item_check label="미니지도" name="Mini-Map" />
+		<menu_item_separator label="-----------" name="separator3" />
+		<menu_item_check label="통계보기" name="Statistics Bar" />
+		<menu_item_check label="소유물 행" name="Property Lines" />
+		<menu_item_check label="토지 소유주" name="Land Owners" />
+		<menu_item_separator label="-----------" name="separator4" />
+		<menu label="팁" name="Hover Tips">
+			<menu_item_check label="팁 표시" name="Show Tips" />
+			<menu_item_separator label="-----------" name="separator" />
+			<menu_item_check label="토지 팁" name="Land Tips" />
+			<menu_item_check label="모든 오브젝트 팁" name="Tips On All Objects" />
+		</menu>
+		<menu_item_check label="Alt 키로 물리 오브젝트 보기" name="Alt Shows Physical" />
+		<menu_item_check label="표시 항상 켜기" name="Beacons Always On" />
+		<menu_item_check label="투명 오브젝트 보기" name="Highlight Transparent" />
+		<menu label="표식" name="Beacons">
+			<menu_item_check label="터치로만 스크립트된 오브젝트"
+			     name="Scripted Objects With Touch Only" />
+			<menu_item_check label="스크립트된 오브젝트" name="Scripted Objects" />
+			<menu_item_check label="물리 엔진 오브젝트" name="Physical Objects" />
+			<menu_item_check label="사운드" name="Sound Sources" />
+			<menu_item_check label="파티클" name="Particle Sources" />
+			<menu_item_check label="하이라이트 보기" name="Render Highlights" />
+			<menu_item_check label="표시 보기" name="Render Beacons" />
+			<menu_item_separator label="-----------" name="separator" />
+			<menu_item_separator label="-----------" name="separator2" />
+			<menu_item_check label="파티클 숨기기" name="Hide Particles" />
+			<menu_item_separator label="-----------" name="separator3" />
+			<menu label="표시 간격" name="Beacon Width">
+				<menu_item_call label="1" name="Beacon Width 1" />
+				<menu_item_call label="4" name="Beacon Width 4" />
+				<menu_item_call label="16" name="Beacon Width 16" />
+				<menu_item_call label="32" name="Beacon Width 32" />
+			</menu>
+		</menu>
+		<menu_item_check label="착용 HUD 보기" name="Show HUD Attachments" />
+		<menu_item_separator label="-----------" name="separator5" />
+		<menu_item_call label="확대" name="Zoom In" />
+		<menu_item_call label="기본" name="Zoom Default" />
+		<menu_item_call label="축소" name="Zoom Out" />
+		<menu_item_separator label="-----------" name="separator6" />
+		<menu_item_call label="전체 화면" name="Toggle Fullscreen" />
+		<menu_item_call label="메뉴창 기본 크기" name="Set UI Size to Default" />
+	</menu>
+	<menu label="월드" name="World">
+		<menu_item_call label="채팅" name="Chat" />
+		<menu_item_call label="제스처 시작" name="Start Gesture" />
+		<menu_item_check label="항상 뛰기" name="Always Run" />
+		<menu_item_check label="비행" name="Fly" />
+		<menu_item_separator label="-----------" name="separator" />
+		<menu_item_call label="여기에 랜드마크 생성" name="Create Landmark Here" />
+		<menu_item_call label="이곳을 홈으로 설정" name="Set Home to Here" />
+		<menu_item_separator label="-----------" name="separator2" />
+		<menu_item_call label="홈으로 텔리포트" name="Teleport Home" />
+		<menu_item_separator label="-----------" name="separator3" />
+		<menu_item_call label="자리비움 설정" name="Set Away" />
+		<menu_item_call label="다른 용무중 설정" name="Set Busy" />
+		<menu_item_call label="모든 애니메이션 중지" name="Stop All Animations" />
+		<menu_item_call label="키 해제" name="Release Keys" />
+		<menu_item_separator label="-----------" name="separator4" />
+		<menu_item_call label="계정 기록" name="Account History..." >
+			<on_click name="AccountHistory_url" userdata="WebLaunchAccountHistory,http://secondlife.com/account/transactions.php?lang=ko" />
+		</menu_item_call>
+		<menu_item_call label="내 계정 관리" name="Manage My Account..." >
+			<on_click name="ManageMyAccount_url" userdata="WebLaunchJoinNow,http://secondlife.com/account/index.php?lang=ko" />
+		</menu_item_call>
+		<menu_item_call label="린든달러(L$) 구매" name="Buy and Sell L$..." />
+		<menu_item_separator label="-----------" name="separator5" />
+		<menu_item_call label="내 토지" name="My Land..." />
+		<menu_item_call label="토지 소개" name="About Land..." />
+		<menu_item_call label="토지 구매하기" name="Buy Land..." />
+		<menu_item_call label="지역/사유지" name="Region/Estate..." />
+		<menu_item_separator label="-----------" name="separator6" />
+		<menu label="태양 조정" name="Force Sun">
+			<menu_item_call label="일출" name="Sunrise" />
+			<menu_item_call label="정오" name="Noon" />
+			<menu_item_call label="일몰" name="Sunset" />
+			<menu_item_call label="자정" name="Midnight" />
+			<menu_item_separator label="-----------" name="separator" />
+			<menu_item_call label="지역 기본 설정으로 되돌리기" name="Revert to Region Default" />
+		</menu>
+		<menu label="주변 환경 설정" name="Environment Settings">
+			<menu_item_call label="일출" name="Sunrise" />
+			<menu_item_call label="정오" name="Noon" />
+			<menu_item_call label="일몰" name="Sunset" />
+			<menu_item_call label="자정" name="Midnight" />
+			<menu_item_call label="지역 기본 설정으로 되돌리기" name="Revert to Region Default" />
+			<menu_item_separator label="-----------" name="separator" />
+			<menu_item_call label="환경 편집기" name="Environment Editor" />
+		</menu>
+	</menu>
+	<menu label="도구" name="Tools">
+		<menu_item_check label="연결된 부분 편집" name="Edit Linked Parts" />
+		<menu_item_separator label="-----------" name="separator7" />
+		<menu label="버그 신고" name="Select Tool">
+			<menu_item_call label="보기" name="Focus" />
+			<menu_item_call label="이동" name="Move" />
+			<menu_item_call label="편집" name="Edit" />
+			<menu_item_call label="만들기" name="Create" />
+			<menu_item_call label="토지" name="Land" />
+		</menu>
+		<menu_item_separator label="-----------" name="separator" />
+		<menu_item_check label="내 오브젝트만 선택" name="Select Only My Objects" />
+		<menu_item_check label="이동 가능한 오브젝트만 선택"
+		     name="Select Only Movable Objects" />
+		<menu_item_check label="환경별 선택" name="Select By Surrounding" />
+		<menu_item_check label="숨은 선택 부분 표시" name="Show Hidden Selection" />
+		<menu_item_check label="선택 사항에 대한 빛 반지름 표시"
+		     name="Show Light Radius for Selection" />
+		<menu_item_check label="선택 광선 표시" name="Show Selection Beam" />
+		<menu_item_separator label="-----------" name="separator2" />
+		<menu_item_check label="자동 정렬" name="Snap to Grid" />
+		<menu_item_call label="오브젝트 XY를 자동 정렬" name="Snap Object XY to Grid" />
+		<menu_item_call label="오브젝트 기준 자동 정렬" name="Use Selection for Grid" />
+		<menu_item_call label="그리드 옵션…" name="Grid Options..." />
+		<menu_item_separator label="-----------" name="separator3" />
+		<menu_item_call label="연결" name="Link" />
+		<menu_item_call label="연결 해제" name="Unlink" />
+		<menu_item_separator label="-----------" name="separator4" />
+		<menu_item_separator label="-----------" name="separator5" />
+		<menu_item_call label="선택 오브젝트에 초점 맞추기" name="Focus on Selection" />
+		<menu_item_call label="선택 영역 확대/축소" name="Zoom to Selection" />
+		<menu_item_call label="오브젝트 구매" name="Menu Object Take" />
+		<menu_item_call label="복사하기" name="Take Copy" />
+		<menu_item_call label="내 인벤토리에 오브젝트 다시 저장"
+		     name="Save Object Back to My Inventory" />
+		<menu_item_call label="오브젝트 컨텐츠에 오브젝트 다시 저장"
+		     name="Save Object Back to Object Contents" />
+		<menu_item_separator label="-----------" name="separator6" />
+		<menu_item_call label="스크립트 경고/오류 창 표시"
+		     name="Show Script Warning/Error Window" />
+		<menu_item_call label="선택 사항에 스크립트 리컴파일"
+		     name="Recompile Scripts in Selection">
+			<menu_item_call label="모노" name="Mono" />
+			<menu_item_call label="LSL" name="LSL" />
+		</menu_item_call>
+		<menu_item_call label="선택 사항에 스크립트 초기화"
+		     name="Reset Scripts in Selection" />
+		<menu_item_call label="선택 오브젝트에 스크립트 실행"
+		     name="Set Scripts to Running in Selection" />
+		<menu_item_call label="선택 오브젝트에 스크립트 중단"
+		     name="Set Scripts to Not Running in Selection" />
+	</menu>
+	<menu label="도움말" name="Help">
+		<menu_item_call label="세컨드라이프 도움말" name="Second Life Help" />
+		<menu_item_call label="인월드 도움말" name="In-World Help" />
+		<menu_item_call label="추가 도움말" name="Additional Help" />
+		<menu_item_call label="튜토리얼" name="Tutorial" />
+		<menu_item_separator label="-----------" name="separator" />
+		<menu_item_call label="공식 린든 블로그" name="Official Linden Blog..." />
+		<menu_item_separator label="-----------" name="separator2" />
+		<menu_item_call label="스크립팅 가이드..." name="Scripting Guide..." />
+		<menu_item_call label="스크립팅 포탈" name="Scripting Portal..." />
+		<menu_item_separator label="-----------" name="separator3" />
+		<menu_item_call label="오늘의 메시지" name="Message of the Day..." />
+		<menu_item_separator label="-----------" name="separator4" />
+		<menu_item_call label="신고하기…" name="Report Abuse..." />
+		<menu_item_call label="밀기, 타격 등 감지" name="Bumps, Pushes &amp;amp; Hits..." />
+		<menu_item_call label="지연 미터" name="Lag Meter" />
+		<menu_item_separator label="-----------" name="separator7" />
+		<menu_item_separator label="-----------" name="separator5" />
+		<menu label="버그 신고" name="Bug Reporting">
+			<menu_item_call label="일반 문제 추적하기" name="Public Issue Tracker..." />
+			<menu_item_call label="일반 문제 추적하기 도움말" name="Publc Issue Tracker Help..." />
+			<menu_item_call label="버그 보고 101" name="Bug Reporing 101..." />
+			<menu_item_call label="보안 문제" name="Security Issues..." />
+			<menu_item_call label="QA 위키" name="QA Wiki..." />
+			<menu_item_separator label="-----------" name="separator7" />
+			<menu_item_separator label="-----------" name="separator9" />
+			<menu_item_call label="버그 신고" name="Report Bug..." />
+		</menu>
+		<menu_item_call label="출시 정보" name="Release Notes..." />
+		<menu_item_separator label="-----------" name="separator6" />
+		<menu_item_call label="세컨드라이프 정보" name="About Second Life..." />
+	</menu>
+</menu_bar>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<panel name="Event" title="Event">
+	<text name="event_name_label">
+		Name:
+	</text>
+	<text name="event_name">
+		(keiner)
+	</text>
+	<text name="event_category_label">
+		Typ:
+	</text>
+	<text name="event_category">
+		(keiner)
+	</text>
+	<text name="event_mature_label">
+		Ab-18-Inhalt:
+	</text>
+	<text name="event_mature">
+		(unbekannt)
+	</text>
+	<text name="event_mature_yes">
+		Ja
+	</text>
+	<text name="event_mature_no">
+		Nein
+	</text>
+	<text name="event_date_label">
+		Datum:
+	</text>
+	<text name="event_date">
+		(keiner)
+	</text>
+	<text name="event_duration_label">
+		Event-Dauer:
+	</text>
+	<text name="event_duration">
+		(keiner)
+	</text>
+	<text name="event_runby_label">
+		Ausgeführt von:
+	</text>
+	<text name="event_runby">
+		(keiner)
+	</text>
+	<text name="event_location_label">
+		Standort:
+	</text>
+	<text name="event_location">
+		(keiner)
+	</text>
+	<text name="event_cover_label">
+		Gebühr:
+	</text>
+	<text name="event_cover">
+		(keiner)
+	</text>
+	<text name="event_desc_label">
+		Beschreibung:
+	</text>
+	<button label="Teleportieren" name="teleport_btn" />
+	<button label="Auf Karte" name="map_btn" />
+	<button label="Benachrichtigen" name="notify_btn" />
+	<button label="Event erstellen..." name="create_event_btn" />
+	<text name="none">
+		-
+	</text>
+	<text name="notify">
+		Benachrichtigen
+	</text>
+	<text name="dont_notify">
+		Nicht benachrichtigen
+	</text>
+</panel>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<panel label="웹" name="web">
+	<radio_group name="use_external_browser">
+		<radio_item name="external"
+		     tool_tip="도움말, 웹링크 등은 외부 웹브라우저를 사용하십시오. 전체 화면 모드에서는 권장하지 않습니다.">
+			외부 웹 브라우저 사용(Firefox, Safari, Internet Explorer)
+		</radio_item>
+		<radio_item name="internal"
+		     tool_tip="도움말, 웹 링크 등은 세컨드라이프 웹 브라우저로 열립니다.">
+			내부 웹 브라우저 사용
+		</radio_item>
+	</radio_group>
+	<text name="cache_size_label_l">
+		브라우저 캐시:
+	</text>
+	<button label="지금 제거" name="clear_cache" />
+	<text name="cookie_label">
+		쿠키:
+	</text>
+	<check_box label="사이트로부터 쿠키 허용" name="cookies_enabled" />
+	<button label="지금 제거" name="clear_cookies" />
+	<text name="proxy_label">
+		웹 프록시:
+	</text>
+	<check_box label="웹 프록시 사용" name="web_proxy_enabled" />
+	<text name="proxy_text_label">
+		주소:
+	</text>
+	<line_editor name="web_proxy_editor" tool_tip="사용할 프록시 이름 또는 IP 주소" />
+	<spinner label="포트 번호:" name="web_proxy_port" />
+</panel>

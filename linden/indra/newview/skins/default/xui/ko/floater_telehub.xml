@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater name="telehub" title="텔레허브">
+	<text name="status_text_connected">
+		[OBJECT] 오브젝트에 연결된 텔레허브
+	</text>
+	<text name="status_text_not_connected">
+		텔레허브가 연결되지 않음.
+	</text>
+	<text name="help_text_connected">
+		삭제하려면 &apos;연결 해제&apos;를 클릭합니다.
+	</text>
+	<text name="help_text_not_connected">
+		오브젝트를 선택하고 텔레허브 연결을 클릭하십시오.
+	</text>
+	<button label="텔레허브 연결" name="connect_btn" />
+	<button label="연결 해제" name="disconnect_btn" />
+	<text name="spawn_points_text">
+		시작 지점(오브젝트가 아닌 위치임):
+	</text>
+	<button label="자손 추가" name="add_spawn_point_btn" />
+	<button label="스폰 제거" name="remove_spawn_point_btn" />
+	<text name="spawn_point_help">
+		오브젝트를 선택하고 추가를 클릭하여 위치를 정합니다.
+그런 다음, 오브젝트를 이동, 삭제할 수 있습니다.
+위치는 텔레허브 센터에 따라 상대적입니다.
+월드 위치를 표시하기 위해 목록의 항목을 선택합니다.
+	</text>
+</floater>

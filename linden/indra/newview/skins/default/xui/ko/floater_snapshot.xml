@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="Snapshot" title="스냅샷 미리보기">
+	<text name="type_label">
+		스냅샷 대상
+	</text>
+	<radio_group label="스냅샷 유형" name="snapshot_type_radio">
+		<radio_item name="postcard">
+			이메일로 보내기
+		</radio_item>
+		<radio_item name="texture">
+			인벤토리에 저장(L$10)
+		</radio_item>
+		<radio_item name="local">
+			하드 드라이브에 저장
+		</radio_item>
+	</radio_group>
+	<text name="file_size_label">
+		파일 크기: [SIZE] KB
+	</text>
+	<button label="새 스냅샷" name="new_snapshot_btn"/>
+	<button label="보내기" name="send_btn"/>
+	<button label="저장(L$10)" name="upload_btn"/>
+	<flyout_button label="저장" name="save_btn" tool_tip="파일에 이미지 저장">
+		<flyout_button_item name="save_item">
+			저장
+		</flyout_button_item>
+		<flyout_button_item name="saveas_item">
+			다른 이름으로 저장
+		</flyout_button_item>
+	</flyout_button>
+	<button label="취소" name="discard_btn"/>
+	<button label="자세히 &gt;&gt;" name="more_btn" tool_tip="고급 옵션"/>
+	<button label="&lt;&lt; 축소" name="less_btn" tool_tip="고급 옵션"/>
+	<text name="type_label2">
+		크기
+	</text>
+	<text name="format_label">
+		파일 형식
+	</text>
+	<combo_box label="해상도" name="postcard_size_combo">
+		<combo_item name="CurrentWindow">
+			현재 창
+		</combo_item>
+		<combo_item name="640x480">
+			640x480
+		</combo_item>
+		<combo_item name="800x600">
+			800x600
+		</combo_item>
+		<combo_item name="1024x768">
+			1024x768
+		</combo_item>
+		<combo_item name="Custom">
+			사용자 크기
+		</combo_item>
+	</combo_box>
+	<combo_box label="해상도" name="texture_size_combo">
+		<combo_item name="CurrentWindow">
+			현재 창
+		</combo_item>
+		<combo_item name="Small(128x128)">
+			소(128x128)
+		</combo_item>
+		<combo_item name="Medium(256x256)">
+			중 (256 x256)
+		</combo_item>
+		<combo_item name="Large(512x512)">
+			대 (512x512)
+		</combo_item>
+		<combo_item name="Custom">
+			사용자 크기
+		</combo_item>
+	</combo_box>
+	<combo_box label="해상도" name="local_size_combo">
+		<combo_item name="CurrentWindow">
+			현재 창
+		</combo_item>
+		<combo_item name="320x240">
+			320x240
+		</combo_item>
+		<combo_item name="640x480">
+			640x480
+		</combo_item>
+		<combo_item name="800x600">
+			800x600
+		</combo_item>
+		<combo_item name="1024x768">
+			1024x768
+		</combo_item>
+		<combo_item name="1280x1024">
+			1280x1024
+		</combo_item>
+		<combo_item name="1600x1200">
+			1600x1200
+		</combo_item>
+		<combo_item name="Custom">
+			사용자 크기
+		</combo_item>
+	</combo_box>
+	<combo_box label="파일 형식" name="local_format_combo">
+		<combo_item name="PNG">
+			PNG
+		</combo_item>
+		<combo_item name="JPEG">
+			JPEG
+		</combo_item>
+		<combo_item name="BMP">
+			BMP
+		</combo_item>
+	</combo_box>
+	<spinner label="폭" name="snapshot_width"/>
+	<spinner label="높이" name="snapshot_height"/>
+	<check_box label="화상비 유지하기" name="keep_aspect_check"/>
+	<slider label="이미지 해상도" name="image_quality_slider"/>
+	<text name="layer_type_label">
+		스타일:
+	</text>
+	<combo_box label="이미지 레이어" name="layer_types">
+		<combo_item name="Colors">
+			색
+		</combo_item>
+		<combo_item name="Depth">
+			실루엣
+		</combo_item>
+		<combo_item name="ObjectMattes">
+			오브젝트
+		</combo_item>
+	</combo_box>
+	<check_box label="메뉴 보이기" name="ui_check"/>
+	<check_box label="HUD 보이기" name="hud_check"/>
+	<check_box label="저장후 열어두기" name="keep_open_check"/>
+	<check_box label="전체 화면으로 미리보기" name="freeze_frame_check"/>
+	<check_box label="자동 새로 고침" name="auto_snapshot_check"/>
+	<string name="unknown">
+		알 수 없음
+	</string>
+</floater>

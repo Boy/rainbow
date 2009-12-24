@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="buy land" title="Comprar terreno">
+	<text name="region_name_label">
+		Região:
+	</text>
+	<text name="region_name_text">
+		(desconhecido)
+	</text>
+	<text name="estate_name_label">
+		Estado:
+	</text>
+	<text name="estate_name_text">
+		(desconhecido)
+	</text>
+	<text name="estate_owner_label">
+		Proprietário da Região:
+	</text>
+	<text name="estate_owner_text">
+		(desconhecido)
+	</text>
+	<text name="resellable_changeable_label">
+		Adquiriu um lote nesta região:
+	</text>
+	<text name="resellable_clause">
+		O lote adquirido nesta região pode, ou não, ser revendido.
+	</text>
+	<text name="changeable_clause">
+		Pode, ou não, ser unido ou subdividido.
+	</text>
+	<text name="covenant_text">
+		Você deve concordar com o Corretor da Região:
+	</text>
+	<text_editor name="covenant_editor">
+		Carregando...
+	</text_editor>
+	<check_box label="Eu concordo com as definições do Corretor feitas acima." name="agree_covenant"/>
+	<text name="info_parcel_label">
+		Lote:
+	</text>
+	<text name="info_parcel">
+		Scotopteryx 138,204
+	</text>
+	<text name="info_size_label">
+		Tamanho:
+	</text>
+	<text name="info_size">
+		1024 m²
+	</text>
+	<text name="info_price_label">
+		Preço:
+	</text>
+	<text name="info_price">
+		L$ 1500, objetos inclusos
+	</text>
+	<text name="info_action">
+		Comprar este lote irá:
+	</text>
+	<text name="error_message">
+		Algo ainda não está correto.
+	</text>
+	<button label="Ir para a página" name="error_web"/>
+	<text name="account_action">
+		Evoluir sua conta para membro Premium
+	</text>
+	<text name="account_reason">
+		Somente membros Premium podem possuir um lote.
+	</text>
+	<combo_box name="account_level">
+		<combo_item name="US$9.95/month,billedmonthly">
+			US$9.95/mês, debitado mensalmente
+		</combo_item>
+		<combo_item name="US$7.50/month,billedquarterly">
+			US$7.50/mês, debitado trimestralmente
+		</combo_item>
+		<combo_item name="US$6.00/month,billedannually">
+			US$6.00/mês, debitado anualmente
+		</combo_item>
+	</combo_box>
+	<text name="land_use_action">
+		Aumente sua taxa de locação de lote para US$ 40/mês.
+	</text>
+	<text name="land_use_reason">
+		Você possui 1.309 metros quadrados de terra. 
+Este terreno tem 512 metros quadrados de terra.
+	</text>
+	<text name="purchase_action">
+		Pagar ao Residente Joe L$4000 pelo lote
+	</text>
+	<text name="currency_reason">
+		Você tem L$2,100.
+	</text>
+	<text name="currency_action">
+		Compre L$ adicionais
+	</text>
+	<line_editor name="currency_amt">
+		1000
+	</line_editor>
+	<text name="currency_est">
+		por aproxim. US$ [AMOUNT2]
+	</text>
+	<text name="currency_balance">
+		Você tem L$2,100.
+	</text>
+	<check_box label="Remover Contribuição do Grupo nas Aquisições" name="remove_contribution"/>
+	<button label="Adquirir" name="buy_btn"/>
+	<button label="Cancelar" name="cancel_btn"/>
+	<string name="can_resell">
+		Pode ser revendida.
+	</string>
+	<string name="can_not_resell">
+		Não pode ser revendida.
+	</string>
+	<string name="can_change">
+		Pode ser unida ou subdivida.
+	</string>
+	<string name="can_not_change">
+		Não pode ser unida ou subdividida.
+	</string>
+	<string name="cant_buy_for_group">
+		Você não tem permissão para comprar um lote para seu grupo ativo.
+	</string>
+	<string name="no_land_selected">
+		Nenhum lote selecionado.
+	</string>
+	<string name="multiple_parcels_selected">
+		Múltiplos e diferentes terrenos selecionados. Tente selecionar uma área menor.
+	</string>
+	<string name="no_permission">
+		Você não tem permissão para comprar um lote para seu grupo ativo.
+	</string>
+	<string name="parcel_not_for_sale">
+		O lote selecionado não está a venda.
+	</string>
+	<string name="group_already_owns">
+		O grupo já possui o lote.
+	</string>
+	<string name="you_already_own">
+		Você já possui o lote.
+	</string>
+	<string name="set_to_sell_to_other">
+		O lote selecionado está configurado para ser vendido para outro grupo.
+	</string>
+	<string name="no_public_land">
+		A área selecionada não é um lote público.
+	</string>
+	<string name="not_owned_by_you">
+		Está selecionada uma terra pertencente a outro usuário. Tente selecionar uma área menor.
+	</string>
+	<string name="processing">
+		Processando sua compra...
+ 
+(Isso pode levar um minuto.)
+	</string>
+	<string name="fetching_error">
+		Houve um erro ao buscar informações sobre compra de lotes.
+	</string>
+	<string name="buying_will">
+		Comprar este lote irá:
+	</string>
+	<string name="buying_for_group">
+		Comprar terra para o grupo:
+	</string>
+	<string name="cannot_buy_now">
+		Não foi possível comprar agora:
+	</string>
+	<string name="not_for_sale">
+		Não disponível para venda:
+	</string>
+	<string name="none_needed">
+		não necessário
+	</string>
+	<string name="must_upgrade">
+		Sua conta deve ser evoluída para adquirir um lote.
+	</string>
+	<string name="cant_own_land">
+		Sua conta pode possuir um lote.
+	</string>
+	<string name="land_holdings">
+		Você possui [BUYER] metros quadrados de terra.
+	</string>
+	<string name="pay_to_for_land">
+		Pagar L$ [AMOUNT] para [SELLER] por este lote
+	</string>
+	<string name="buy_for_US">
+		Comprar L$ [AMOUNT] por aproximadamente US$ [AMOUNT2] ,
+	</string>
+	<string name="parcel_meters">
+		Este lote está a [AMOUNT] metros quadrados.
+	</string>
+	<string name="premium_land">
+		Este lote é Premium, e irá cobrar como [AMOUNT] metros quadrados.
+	</string>
+	<string name="discounted_land">
+		Este lote é promocional, e será cobrado como [AMOUNT] metros quadrados.
+	</string>
+	<string name="meters_supports_object">
+		[AMOUNT] metros quadrados
+suporta [AMOUNT2] objetos
+	</string>
+	<string name="sold_with_objects">
+		vendido com objetos
+	</string>
+	<string name="insufficient_land_credits">
+		O grupo [GROUP] precisará de fundos suficientes de terras
+contribuídas para cobrir este lote antes da aquisição se completar.
+	</string>
+	<string name="have_enough_lindens">
+		Você tem L$ [AMOUNT], o qual é suficiente para comprar este lote.
+	</string>
+	<string name="not_enough_lindens">
+		Você tem somente L$ [AMOUNT], e precisa de mais L$ [AMOUNT2].
+	</string>
+	<string name="balance_left">
+		Após a compra, restará L$ [AMOUNT].
+	</string>
+	<string name="balance_needed">
+		Você precisa comprar pelo menos L$ [AMOUNT] para ter recursos para este lote.
+	</string>
+	<string name="no_parcel_selected">
+		(nenhum terreno selecionado)
+	</string>
+	<string name="buy_currency">
+		Comprar L$ [LINDENS] por aproxim. US$ [USD]
+	</string>
+</floater>

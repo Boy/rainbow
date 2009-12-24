@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater name="bug_reporter" title="バグの報告">
+	<text name="reporter_title">
+		報告者：
+	</text>
+	<text name="sim_title">
+		地域：
+	</text>
+	<text name="pos_title">
+		位置：
+	</text>
+	<text name="select_object_label">
+		ﾎﾞﾀﾝをｸﾘｯｸしてからｵﾌﾞｼﾞｪｸﾄをｸﾘｯｸ：
+	</text>
+	<button label="" label_selected="" name="pick_btn"
+	     tool_tip="オブジェクト・ピッカー - この報告の主題となるオブジェクトを特定" />
+	<text name="object_name_label">
+		名前：
+	</text>
+	<text name="object_name">
+		Consetetur Sadipscing
+	</text>
+	<text name="owner_name_label">
+		ｵｰﾅｰ：
+	</text>
+	<check_box label="ｽｸﾘｰﾝｼｮｯﾄを含める" name="screen_check" />
+	<texture_picker label="作業中..." name="screenshot" />
+	<text name="category_label">
+		カテゴリー：
+	</text>
+	<text name="owner_name">
+		Hendrerit Vulputate
+	</text>
+	<combo_box name="category_combo"
+	     tool_tip="Category -- select the category that best describes this report">
+		<combo_item name="Selectcategory">
+			カテゴリーを選択
+		</combo_item>
+		<combo_item name="Building">
+			建造物
+		</combo_item>
+		<combo_item name="Character">
+			キャラクター
+		</combo_item>
+		<combo_item name="Chat/IM">
+			チャット／IM
+		</combo_item>
+		<combo_item name="Documentation">
+			文書
+		</combo_item>
+		<combo_item name="Exploit">
+			開発する
+		</combo_item>
+		<combo_item name="Graphics">
+			表示
+		</combo_item>
+		<combo_item name="Inventory">
+			持ち物
+		</combo_item>
+		<combo_item name="Lag">
+			ラグ
+		</combo_item>
+		<combo_item name="MissingContent">
+			コンテンツなし
+		</combo_item>
+		<combo_item name="LindenDollars(L$)">
+			リンデン・ドル(L$)
+		</combo_item>
+		<combo_item name="Permissions">
+			権限
+		</combo_item>
+		<combo_item name="Physics">
+			物理的作用
+		</combo_item>
+		<combo_item name="Script">
+			スクリプト
+		</combo_item>
+		<combo_item name="Sound">
+			音
+		</combo_item>
+		<combo_item name="Stipends">
+			給金
+		</combo_item>
+		<combo_item name="Userinterface">
+			ユーザー・インターフェース
+		</combo_item>
+		<combo_item name="Miscellaneous">
+			その他
+		</combo_item>
+	</combo_box>
+	<text name="sum_title">
+		概要：
+	</text>
+	<text name="dscr_title">
+		詳細：（できるだけ詳しい情報を提供してください）
+	</text>
+	<text_editor name="details_edit">
+		バグを再現する手順：
+
+観察結果：
+
+予測結果：
+	</text_editor>
+	<text name="bug_aviso">
+		補足：レポートが不完全である場合は調査されません。
+このバグによって本来できないことが可能になる場合、特にパフォーマンスやセキュリティに影響を与える場合には、
+[違反]カテゴリーを選択してください。よろしくお願いします。
+	</text>
+	<button label="バグの報告" label_selected="バグの報告" name="send_btn" />
+	<button label="取り消し" label_selected="取り消し" name="cancel_btn" />
+</floater>

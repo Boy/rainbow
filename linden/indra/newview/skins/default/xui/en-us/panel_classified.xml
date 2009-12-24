@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<panel border="false" bottom="0" follows="bottom|left" height="490" left="330"
+     name="Classified" title="Classified" width="450">
+	<texture_picker bottom="-315" follows="left|top" height="300" left="20" name="snapshot_ctrl"
+	     width="400" />
+	<line_editor bottom_delta="-8" enabled="false" follows="left|top"
+	     font="SansSerif" height="20" left="20" name="given_name_editor"
+	     tool_tip="Name must begin with a letter or number, not punctuation."
+	     width="400" />
+	<text_editor enabled="false" follows="left|top"
+	     font="SansSerifSmall" height="90" left="20" max_length="1023"
+	     name="desc_editor"  width="400" word_wrap="true" />
+	<line_editor enabled="false" follows="left|top" font="SansSerif"
+	     height="20" left="20" name="location_editor" 
+	     tool_tip="Set the location for this classified to your current position."
+	     width="400" />
+	<button bottom_delta="0" follows="left|top" height="20" label="Set" left="380"
+	     name="set_location_btn" width="60" />
+	<button bottom_delta="-28" follows="left|top" height="20" label="Teleport" left="20"
+	     name="classified_teleport_btn" width="100" />
+	<button bottom_delta="0" follows="left|top" height="20" label="Show on Map" left="125"
+	     name="classified_map_btn" width="100" />
+	<button bottom_delta="0" follows="left|top" height="20" label="Profile" left="230"
+	     name="classified_profile_btn" width="100" />
+  <combo_box allow_text_entry="false" bottom="422" follows="left|top" height="20" left="30"
+         max_chars="20" mouse_opaque="true" name="classified_mature_check" width="130">
+    <combo_item name="select_mature" value="Select">
+      - Select Mature -
+    </combo_item>
+    <combo_item name="mature" value="Mature">
+      Mature Content
+    </combo_item>
+    <combo_item name="pg" value="PG">
+      PG Content
+    </combo_item>
+  </combo_box>
+	<combo_box bg_readonly_color="grey" bottom="445" follows="left|top" height="18" label=""
+	     left="20" name="classified_category_combo" right="150"
+	     text_readonly_color="white" />
+	<button bottom="400" follows="left|top" height="20" label="Update" left="30"
+	     name="classified_update_btn" width="70" />
+	<string name="ad_placed_paid">
+		Ad placed: [DATE], Paid L$[AMT] for listing.
+	</string>
+	<string name="update_txt">
+		Update
+	</string>
+	<string name="publish_txt">
+		Publish...
+	</string>
+</panel>

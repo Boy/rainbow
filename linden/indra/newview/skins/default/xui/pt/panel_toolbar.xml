@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel name="toolbar">
+	<string name="Redock Windows">
+		Reagrupar as janelas
+	</string>
+	<layout_stack name="toolbar_stack">
+		<button label="" name="chat_btn" tool_tip="Mostrar a barra de Conversa por Texto. (Enter)"/>
+		<flyout_button label="Comunicar-se" name="communicate_btn" tool_tip="Comunicar-se com seus Amigos e Grupos."/>
+		<button label="Voar" label_selected="Parar de voar." name="fly_btn" tool_tip="Começar a voar. Use E/C ou  PgUp/PgDn  para voar para cima ou para baixo."/>
+		<button label="Instantâneo" name="snapshot_btn" tool_tip="Salvar uma foto da tela no disco ou no inventário."/>
+		<button label="Busca" name="directory_btn" tool_tip="Busca a lugares, eventos, pessoas e mais."/>
+		<button label="Construir" name="build_btn" tool_tip="Criar novos objetos."/>
+		<button label="Mapa" name="map_btn" tool_tip="Mapa do Mundo. (Ctrl-M)"/>
+		<button label="Mini-Mapa" name="radar_btn" tool_tip="Mapa da área ao seu redor. (Ctrl-Shift-M)"/>
+		<button label="Inventário" name="inventory_btn" tool_tip="Seus itens. (Ctrl-I)"/>
+	</layout_stack>
+</panel>

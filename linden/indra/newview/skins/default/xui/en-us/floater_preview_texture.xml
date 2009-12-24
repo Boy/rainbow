@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater bottom="-331" can_close="true" can_drag_on_left="false" can_minimize="true"
+     can_resize="true" enabled="true" height="324" left="300" min_height="120"
+     min_width="300" mouse_opaque="true" name="preview_texture" width="335">
+	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+	     bottom="-40" drop_shadow_visible="true" enabled="true" follows="left|top"
+	     font="SansSerif" h_pad="0" halign="left" height="19" left="13"
+	     mouse_opaque="true" name="desc txt" v_pad="0" width="80">
+		Description:
+	</text>
+	<line_editor bevel_style="in" border_style="line" border_thickness="1" bottom="-38"
+	     enabled="true" follows="left|top|right" font="SansSerif"
+	     handle_edit_keys_directly="false" height="19" left="93" max_length="127"
+	     mouse_opaque="true" name="desc" select_all_on_focus_received="false"
+	     select_on_focus="false" width="229" />
+	<button bottom="8" enabled="true" follows="left|bottom" font="SansSerif"
+	     halign="center" height="20" label="Keep" label_selected="Keep" left="9"
+	     mouse_opaque="true" name="Keep" scale_image="true" width="100" />
+	<button bottom="8" enabled="true" follows="left|bottom" font="SansSerif"
+	     halign="center" height="20" label="Discard" label_selected="Discard"
+	     left="114" mouse_opaque="true" name="Discard" scale_image="true"
+	     width="100" />
+	<button bottom="8" enabled="true" follows="left|bottom" font="SansSerif"
+	     halign="center" height="20" label="Copy To Inventory" left="9"
+	     mouse_opaque="true" name="Copy To Inventory" scale_image="true" width="170" />
+	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+	     bottom="35" drop_shadow_visible="true" enabled="true" follows="left|bottom"
+	     font="SansSerifSmall" h_pad="0" halign="left" height="14" left="13"
+	     mouse_opaque="true" name="dimensions" v_pad="0" width="135">
+		Dimensions: [WIDTH] x [HEIGHT]
+	</text>
+	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+	     bottom="35" drop_shadow_visible="true" enabled="true" follows="right|bottom"
+	     font="SansSerifSmall" h_pad="0" halign="right" height="14" left="86"
+	     mouse_opaque="true" name="aspect_ratio" v_pad="0" width="110">
+		Preview Aspect Ratio
+	</text>
+	<combo_box allow_text_entry="true" bottom="32" follows="right|bottom" height="20"
+	     left="202" max_chars="20" mouse_opaque="true" enabled="true" width="108"
+	     name="combo_aspect_ratio" tool_tip="Preview at a fixed aspect ratio">
+		<combo_item name="Unconstrained" value="Unconstrained">
+			Unconstrained
+		</combo_item>
+		<combo_item name="1:1" value="1:1" tool_tip="Group Insignia or 1st Life Profile">
+			1:1
+		</combo_item>
+		<combo_item name="4:3" value="4:3" tool_tip="2nd Life Profile">
+			4:3
+		</combo_item>
+		<combo_item name="10:7" value="10:7" tool_tip="Classifieds and search listings, landmarks">
+			10:7
+		</combo_item>
+		<combo_item name="3:2" value="3:2" tool_tip="About land">
+			3:2
+		</combo_item>
+		<combo_item name="16:10" value="16:10">
+			16:10
+		</combo_item>
+		<combo_item name="16:9" value="16:9" tool_tip="Profile Picks">
+			16:9
+		</combo_item>
+		<combo_item name="2:1" value="2:1">
+			2:1
+		</combo_item>
+	</combo_box>
+</floater>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<panel border="true" bottom="0" follows="top|left" height="320" label="Debug" left="0"
+     name="Debug" width="480">
+	<text bottom="-30" follows="left|top" font="SansSerif" height="20" left="10"
+	     name="region_text_lbl" width="100">
+		Region:
+	</text>
+	<text bottom_delta="0" follows="left|top" font="SansSerif" height="20" left="60"
+	     name="region_text" width="400">
+		unknown
+	</text>
+	<check_box bottom_delta="-20" follows="left|top" height="20" label="Disable Scripts"
+	     left="10" name="disable_scripts_check"
+	     tool_tip="Disable all scripts in this region" width="80" />
+	<button bottom_delta="0" follows="left|top" font="SansSerifSmall" height="18" label="?"
+	     left="160" name="disable_scripts_help" width="18" />
+	<check_box bottom_delta="-20" follows="left|top" height="20" label="Disable Collisions"
+	     left="10" name="disable_collisions_check"
+	     tool_tip="Disable non-avatar collisions in this region" width="80" />
+	<button bottom_delta="0" follows="left|top" font="SansSerifSmall" height="18" label="?"
+	     left="160" name="disable_collisions_help" width="18" />
+	<check_box bottom_delta="-20" follows="left|top" height="20" label="Disable Physics"
+	     left="10" name="disable_physics_check"
+	     tool_tip="Disable all physics in this region" width="80" />
+	<button bottom_delta="0" follows="left|top" font="SansSerifSmall" height="18" label="?"
+	     left="160" name="disable_physics_help" width="18" />
+	<button bottom_delta="-30" enabled="false" follows="left|top" height="20" label="Apply"
+	     left="60" name="apply_btn" width="100" />
+	<text bottom_delta="-50" follows="left|top" height="20" left="10" width="90" name="objret_text_lbl">
+	  Object Return
+	</text>
+	<text bottom_delta="-25" follows="left|top" height="20" left="30" width="60" name="resident_text_lbl">
+	  Resident:
+	</text>
+	<line_editor bottom_delta="2" follows="left|top" height="20" left="90" 
+		 border_style="line" border_thickness="1" enabled="false" max_length="254" mouse_opaque="false"
+	     name="target_avatar_name" width="180">
+	  (none)
+    </line_editor>
+	<button bottom_delta="0" follows="left|top" height="20" label="Choose..."
+	     left="280" name="choose_avatar_btn" width="80" />
+	<text bottom_delta="-25" follows="left|top" height="20" left="30" width="60" name="options_text_lbl">
+	  Options:
+	</text>
+    <check_box bottom_delta="0" follows="left|top" height="20" label="Return only those objects with scripts"
+         left="90" name="return_scripts"
+         tool_tip="Return only objects which have scripts." width="80" />
+    <check_box bottom_delta="-20" follows="left|top" height="20" label="Return only those objects on someone else's land"
+         left="90" name="return_other_land"
+         tool_tip="Return only objects which are on land belonging to someone else" width="80" />
+    <check_box bottom_delta="-20" follows="left|top" height="20" label="Return objects in every region of this estate"
+         left="90" name="return_estate_wide"
+         tool_tip="Return objects in all of the regions that make up this estate" width="80" />
+	<button bottom_delta="-25" follows="left|top" height="20"
+	     label="Return"
+	     left="30" name="return_btn" width="80" />
+	<button bottom_delta="-50" follows="left|top" height="20" label="Get Top Colliders..."
+	     left="10" name="top_colliders_btn"
+	     tool_tip="List of objects experiencing the most potential collisions"
+	     width="150" />
+	<button bottom_delta="0" follows="left|top" font="SansSerifSmall" height="18" label="?"
+	     left="170" name="top_colliders_help" width="18" />
+	<button bottom_delta="-23" follows="left|top" height="20" label="Get Top Scripts..."
+	     left="10" name="top_scripts_btn"
+	     tool_tip="List of objects spending the most time running scripts"
+	     width="150" />
+	<button bottom_delta="0" follows="left|top" font="SansSerifSmall" height="18" label="?"
+	     left="170" name="top_scripts_help" width="18" />
+	<button bottom_delta="-50" follows="left|top" height="20" label="Restart Region"
+	     left="10" name="restart_btn"
+	     tool_tip="Give 2 minute countdown and restart region" width="130" />
+	<button bottom_delta="0" follows="left|top" font="SansSerifSmall" height="18" label="?"
+	     left="150" name="restart_help" width="18" />
+	<button bottom_delta="-23" follows="left|top" height="20" label="Delay Restart"
+	     left="10" name="cancel_restart_btn"
+	     tool_tip="Delay region restart by one hour" width="130" />
+</panel>

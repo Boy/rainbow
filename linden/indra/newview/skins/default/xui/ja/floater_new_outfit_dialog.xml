@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater name="modal container" title=" ">
+	<button label="保存" label_selected="保存" name="Save" />
+	<button label="取り消し" label_selected="取り消し" name="Cancel" />
+	<check_box label="シェイプ(体型)" name="checkbox_Shape" />
+	<check_box label="スキン" name="checkbox_Skin" />
+	<check_box label="髪" name="checkbox_Hair" />
+	<check_box label="眼" name="checkbox_Eyes" />
+	<check_box label="服をフォルダと同じ名前に変更" name="rename" />
+	<check_box label="シャツ" name="checkbox_Shirt" />
+	<check_box label="ズボン" name="checkbox_Pants" />
+	<check_box label="靴" name="checkbox_Shoes" />
+	<check_box label="靴下" name="checkbox_Socks" />
+	<check_box label="ジャケット" name="checkbox_Jacket" />
+	<check_box label="手袋" name="checkbox_Gloves" />
+	<check_box label="(下着)のｼｬﾂ" name="checkbox_Undershirt" />
+	<check_box label="(下着)のﾊﾟﾝﾂ" name="checkbox_Underpants" />
+	<check_box label="スカート" name="checkbox_Skirt" />
+	<check_box label="胸" name="checkbox_Chest" left="212"  />
+	<check_box label="頭骨" name="checkbox_Skull" left="212" />
+	<check_box label="左肩" name="checkbox_Left Shoulder" left="212" />
+	<check_box label="右肩" name="checkbox_Right Shoulder" left="212" />
+	<check_box label="左手" name="checkbox_Left Hand" left="212" />
+	<check_box label="右手" name="checkbox_Right Hand" left="212" />
+	<check_box label="左足" name="checkbox_Left Foot" left="212" />
+	<check_box label="右足" name="checkbox_Right Foot" left="212" />
+	<check_box label="背骨" name="checkbox_Spine" left="212" />
+	<check_box label="骨盤" name="checkbox_Pelvis" left="212" />
+	<check_box label="口" name="checkbox_Mouth" left="212" />
+	<check_box label="あご" name="checkbox_Chin" left="212" />
+	<check_box label="左耳" name="checkbox_Left Ear" left="212" />
+	<check_box label="右耳" name="checkbox_Right Ear" left="312" />
+	<check_box label="左目眼球" name="checkbox_Left Eyeball" left="312"/>
+	<check_box label="右目眼球" name="checkbox_Right Eyeball" left="312" />
+	<check_box label="鼻" name="checkbox_Nose" left="312" />
+	<check_box label="右上腕" name="checkbox_R Upper Arm" left="312" />
+	<check_box label="右前腕" name="checkbox_R Forearm" left="312" />
+	<check_box label="左上腕" name="checkbox_L Upper Arm" left="312" />
+	<check_box label="左前腕" name="checkbox_L Forearm" left="312" />
+	<check_box label="右腰" name="checkbox_Right Hip" left="312" />
+	<check_box label="右上脚" name="checkbox_R Upper Leg" left="312" />
+	<check_box label="右下脚" name="checkbox_R Lower Leg" left="312" />
+	<check_box label="左腰" name="checkbox_Left Hip" left="312" />
+	<check_box label="左上脚" name="checkbox_L Upper Leg" left="312" />
+	<check_box label="左下脚" name="checkbox_L Lower Leg" />
+	<check_box label="腹" name="checkbox_Stomach" />
+	<check_box label="左胸筋" name="checkbox_Left Pec" />
+	<check_box label="右胸筋" name="checkbox_Right Pec" />
+	<check_box label="センター2" name="checkbox_Center 2" />
+	<check_box label="右上部" name="checkbox_Top Right" />
+	<check_box label="トップ" name="checkbox_Top" />
+	<check_box label="左上部" name="checkbox_Top Left" />
+	<check_box label="センター" name="checkbox_Center" />
+	<check_box label="左下" name="checkbox_Bottom Left" />
+	<check_box label="下部" name="checkbox_Bottom" />
+	<check_box label="右下" name="checkbox_Bottom Right" />
+	<text type="string" length="1" name="Make New Outfit">
+		新しい服装を作成
+	</text>
+	<text type="string" length="1"
+	     name="Outfits are folders that contain clothing and body parts. Drag an outfit folder onto your avatar to put it on.   &quot;Make New Outfit&quot; makes a new folder and saves copies of the items you are now wearing into it.">
+		服装とは服や身体部位が入ったフォルダです。
+服装フォルダをアバターにドラッグし、中身を装着します。
+ 
+[服装を作成]では、新しいフォルダを作成し、
+現在装着しているアイテムのコピーを保存します。
+	</text>
+	<text type="string" length="1" name="Folder name:">
+		フォルダ名：
+	</text>
+	<text type="string" length="1" name="Items to include in outfit:">
+		服装に含めるアイテム：
+	</text>
+	<text type="string" length="1" name="Body Parts:">
+		身体部位：
+	</text>
+	<text type="string" length="1" name="Clothes:">
+		服：
+	</text>
+	<text type="string" length="1" name="Attachments:" left="212">
+		装着物：
+	</text>
+	<text type="string" length="1" name="Options:">
+		オプション：
+	</text>
+</floater>

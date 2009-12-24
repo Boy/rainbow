@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater name="avatar_texture_debug" title="아바타 텍스처">
+	<text name="">
+		저장된 텍스처
+	</text>
+	<text name="">
+		복합 텍스처
+	</text>
+	<text name="baked_label">
+		저장된 텍스처
+	</text>
+	<text name="composite_label">
+		복합 텍스처
+	</text>
+	<texture_picker label="머리" name="baked_head" />
+	<texture_picker label="메이크업" name="head_bodypaint" />
+	<texture_picker label="헤어" name="hair" />
+	<button label="덤프" label_selected="덤프" name="Dump" />
+	<texture_picker label="눈" name="baked_eyes" />
+	<texture_picker label="눈" name="eye_texture" />
+	<texture_picker label="상체" name="baked_upper_body" />
+	<texture_picker label="상체 문신" name="upper_bodypaint" />
+	<texture_picker label="내의(상)" name="undershirt" />
+	<texture_picker label="장갑" name="gloves" />
+	<texture_picker label="셔츠" name="shirt" />
+	<texture_picker label="상의 재킷" name="upper_jacket" />
+	<texture_picker label="하반신" name="baked_lower_body" />
+	<texture_picker label="하반신 문신" name="lower_bodypaint" />
+	<texture_picker label="내의(하)" name="underpants" />
+	<texture_picker label="양말" name="socks" />
+	<texture_picker label="신발" name="shoes" />
+	<texture_picker label="바지" name="pants" />
+	<texture_picker label="재킷" name="jacket" />
+	<texture_picker label="치마" name="baked_skirt" />
+	<texture_picker label="치마" name="skirt_texture" />
+</floater>

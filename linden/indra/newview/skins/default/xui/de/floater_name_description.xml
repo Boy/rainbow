@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater name="Name/Description" title="">
+	<text name="name_label">
+		Name:
+	</text>
+	<text name="description_label">
+		Beschreibung:
+	</text>
+	<button label="Abbrechen" name="cancel_btn" width="80" />
+	<button label="Hochladen (10 L$)" name="ok_btn" width="120" />
+</floater>

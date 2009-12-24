@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater can_close="true"
+	can_drag_on_left="false"
+	can_minimize="false"
+    can_resize="false"
+	can_tear_off="true" 
+	follows="top"
+	min_height="64"
+	min_width="200"
+    mouse_opaque="true"
+	name="camera floater"
+	rect_control="FloaterCameraRect3a"
+    title=""
+	>
+	<!-- Icons are custom buttons in the code -->
+	<string name="rotate_tooltip">Rotate Camera Around Focus</string>
+	<string name="zoom_tooltip">Zoom Camera Towards Focus</string>
+	<string name="move_tooltip">Move Camera Up and Down, Left and Right</string>
+	<string name="draw_distance_tooltip">Draw distance</string>
+	<spinner bottom="-40" control_name="RenderFarClip" decimal_digits="0" enabled="true" hidden="false"
+		follows="bottom|right" height="16" width="45" right="-4"
+		label="" label_width="1" max_val="512" min_val="64" initial_val="160" increment="32"
+		mouse_opaque="true" name="draw_distance" />
+</floater>

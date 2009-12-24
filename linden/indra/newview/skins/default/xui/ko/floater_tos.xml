@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater name="modal container" title=" ">
+	<button label="계속" label_selected="계속" name="Continue" />
+	<button label="취소" label_selected="취소" name="Cancel" />
+	<radio_group name="tos_agreement">
+		<radio_item name="radio_disagree">
+			이용 약관에 동의 안합니다.
+		</radio_item>
+		<radio_item name="radio_agree">
+			이용 약관에 동의합니다.
+		</radio_item>
+	</radio_group>
+	<text name="tos_title">
+		서비스 약관
+	</text>
+	<check_box label="서비스 약관에 동의합니다." name="agree_chk" />
+	<text name="tos_heading">
+		다음 서비스 약관을 잘 읽으세요. 세컨드라이프에서 계속하여 로그인을 하려면,
+사용 조건 동의를 수락해야 합니다.
+	</text>
+	<text_editor name="tos_text">
+		TOS_TEXT
+	</text_editor>
+	<text name="real_url">
+		http://secondlife.com/app/tos/
+	</text>
+</floater>

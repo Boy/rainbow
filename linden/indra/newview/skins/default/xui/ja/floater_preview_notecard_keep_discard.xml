@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater name="preview_notecard">
+	<text_editor type="string" length="1" name="Notecard Editor">
+		ロード中．．．
+	</text_editor>
+	<text type="string" length="1" name="desc txt">
+		説明：
+	</text>
+	<button label="維持" label_selected="維持" name="Keep" />
+	<button label="破棄" label_selected="破棄" name="Discard" />
+	<text name="no_object">
+		このノートを含んだオブジェクトが見つかりません:
+	</text>
+	<string name="not_allowed">
+		あなたはこのノートを見ることができません。
+	</string>
+</floater>

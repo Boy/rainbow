@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<panel label="회원 및 역할" name="roles_tab">
+	<text name="default_needs_apply_text">
+		현재 하위 탭에 적용되지 않은 변경 사항이 있습니다.
+	</text>
+	<text name="want_apply_text">
+		변경 사항을 적용하시겠습니까?
+	</text>
+	<text name="cant_delete_role">
+		&apos;모든 사람&apos; 및 &apos;소유주&apos; 역할은 특별하며 삭제할 수 없습니다.
+	</text>
+	<button label="?" name="help_button" />
+	<panel name="members_header">
+		<text name="static">
+			회원 및 역할
+		</text>
+		<text name="static2">
+			그룹 회원에게 권한과 역할이 할당되었습니다. 이 설정은
+더 나은 구성과 융통성을 위해 사용자 지정이 가능합니다.
+		</text>
+	</panel>
+	<panel name="roles_header">
+		<text name="static">
+			역할
+		</text>
+		<text name="role_properties_modifiable">
+			다음 역할을 선택하십시오.  이름, 설명 및 회원 타이틀을 수정할 수 있습니다.
+		</text>
+		<text name="role_properties_not_modifiable">
+			다음 역할을 선택하여 특성, 회원 및 허용된 권한을 확인하십시오.
+		</text>
+		<text name="role_actions_modifiable">
+			역할에 권한을 할당할 수 있습니다.
+		</text>
+		<text name="role_actions_not_modifiable">
+			할당된 권한을 볼 수 있지만 수정할 수는 없습니다.
+		</text>
+	</panel>
+	<panel name="actions_header">
+		<text name="static">
+			권한
+		</text>
+		<text name="static2">
+			권한에 대한 설명을 보고 권한을 실행할 수 있는 역할 및 회원을 
+볼 수 있습니다.
+		</text>
+	</panel>
+	<tab_container name="roles_tab_container">
+		<panel label="회원" name="members_sub_tab" tool_tip="Members">
+			<button label="검색" name="search_button" />
+			<button label="모두 표시" name="show_all_button" />
+			<name_list name="member_list">
+				<column label="회원 이름" name="name" />
+				<column label="기부된 토지층 " name="donated" />
+				<column label="마지막 로그인" name="online" />
+			</name_list>
+			<button label="새로운 사람 초대…" name="member_invite" />
+			<button label="그룹에서 강퇴" name="member_eject" />
+			<text name="help_text">
+				회원에게 할당된 역할을 추가 또는 제거할 수 있습니다.
+Ctrl 키를 누른 상태로 해당하는 회원 이름을 클릭하면
+여러 회원을 선택할 수 있습니다.
+			</text>
+		</panel>
+		<panel label="역할" name="roles_sub_tab">
+			<button label="검색" name="search_button" />
+			<button label="모두 표시" name="show_all_button" />
+			<scroll_list name="role_list">
+				<column label="역할 이름" name="name" />
+				<column label="타이틀" name="title" />
+				<column label="회원" name="members" />
+			</scroll_list>
+			<button label="새 역할 생성 …" name="role_create" />
+			<button label="역할 삭제" name="role_delete" />
+			<text name="help_text">
+				역할에는 회원이 수행할 수 있는 권한의 타이틀과 허가 목록이 있습니다.회원들은 한 가지 이상의 역할에 
+ 속할 수 있습니다.한 그룹은 모든 사람 및 소유주 역할을 포함하여 
+ 최고 10가지의 역할까지 가질 수 있습니다.
+			</text>
+			<string name="cant_delete_role">
+				&apos;모든 사람&apos; 및 &apos;소유자&apos; 역할은 특별하며 삭제할 수 없습니다.
+			</string>
+		</panel>
+		<panel label="권한" name="actions_sub_tab">
+			<button label="검색" name="search_button" />
+			<button label="모두 표시" name="show_all_button" />
+			<scroll_list name="action_list"
+			     tool_tip="자세한 사항을 보려면 권한 탭을 선택하십시오.">
+				<column label="" name="icon" />
+				<column label="" name="action" />
+			</scroll_list>
+			<text name="help_text">
+				권한은 역할 회원이 이 그룹 내 특정 작업을 수행할
+수 있도록 허용합니다. 권한의 종류는 다양합니다.
+			</text>
+		</panel>
+	</tab_container>
+	<panel name="members_footer">
+		<text name="static">
+			할당된 역할
+		</text>
+		<text name="static2">
+			허용된 권한
+		</text>
+		<scroll_list name="member_assigned_roles">
+			<column label="" name="checkbox" />
+			<column label="" name="role" />
+		</scroll_list>
+		<scroll_list name="member_allowed_actions"
+		     tool_tip="개개의 허용된 권한 세부사항은 권한 탭을 참고하십시오.">
+			<column label="" name="icon" />
+			<column label="" name="action" />
+		</scroll_list>
+	</panel>
+	<panel name="roles_footer">
+		<text name="static">
+			이름
+		</text>
+		<text name="static2">
+			설명
+		</text>
+		<line_editor name="role_name">
+			직원
+		</line_editor>
+		<text name="static3">
+			타이틀
+		</text>
+		<line_editor name="role_title">
+			(대기 중)
+		</line_editor>
+		<text_editor name="role_description">
+			(대기 중)
+		</text_editor>
+		<text name="static4">
+			할당된 회원
+		</text>
+		<text name="static5"
+		     tool_tip="현재 선택된 역할이 수행할 수 있는 권한 목록입니다.">
+			허용된 권한
+		</text>
+		<check_box label="회원이 표시되었습니다." name="role_visible_in_list"
+		     tool_tip="역할의 회원이 일반 탭에서 그룹 밖의 사람들에게 보이는지 여부를 설정합니다." />
+		<scroll_list name="role_allowed_actions"
+		     tool_tip="개개의 허용된 권한 세부사항은 권한 탭을 참고하십시오.">
+			<column label="" name="icon" />
+			<column label="" name="checkbox" />
+			<column label="" name="action" />
+		</scroll_list>
+	</panel>
+	<panel name="actions_footer">
+		<text name="static">
+			설명
+		</text>
+		<text_editor name="action_description">
+			이 기능은 &apos;이 그룹에서 회원 축출&apos;입니다. 소유주만 다른 소유주를 탈퇴 시킬 수 있습니다.
+		</text_editor>
+		<text name="static2">
+			권한을 포함한 역할
+		</text>
+		<text name="static3">
+			권한을 가진 회원
+		</text>
+	</panel>
+</panel>

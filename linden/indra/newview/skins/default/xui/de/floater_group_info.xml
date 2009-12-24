@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater name="groupinfo" title="Die Lindens - Gruppeninfo">
+	<tab_container name="tab">
+		<panel label="Allgemein" name="gen">
+			<text name="title_box">
+				Gruppeninfo
+			</text>
+			<text name="txt">
+				Gruppen sind eine tolle Möglichkeit, mit Freunden zusammenzuarbeiten.
+			</text>
+			<text name="txt2">
+				In einer Gruppe erhalten Sie einen Titel und Insignien und können über Anfragen abstimmen.
+			</text>
+			<text name="txt3">
+				Jede Person kann eine Gruppe erstellen. Eine Person kann maximal zu 15 Gruppen gehören.
+			</text>
+			<text name="txt4">
+				Gruppen müssen aus mindestens 3 Mitgliedern bestehen.
+			</text>
+			<text name="group_create_text">
+				Die Gründung einer Gruppe kostet 100 L$.
+			</text>
+			<text name="lbl">
+				Name:
+			</text>
+			<text name="founder_label">
+				Gründer:
+			</text>
+			<text name="lbl2">
+				Charta:
+			</text>
+			<check_box label="In Gruppenliste anzeigen" name="sho" />
+			<check_box label="Mitglieder in Gruppenliste anzeigen" name="sho_mem" />
+			<check_box label="Im Web veröffentlichen." name="allow_publish"
+			     tool_tip="Veröffentlicht Ihre Profilinformationen im Web." />
+			<button label="?" label_selected="?" name="publish_help_btn" />
+			<check_box label="Ab 18" name="mature"
+			     tool_tip="Ihre Profilinformationen sind nicht jugendfrei." />
+		</panel>
+		<panel label="Titel" name="tit">
+			<text name="txt">
+				Gruppentitel
+			</text>
+			<text name="txt2">
+				Gruppen können Officer und Mitglieder haben, jeweils mit besonderen Titeln.
+			</text>
+			<text name="txt3">
+				Die Titel werden in der Welt, beim Chat und in IM vor dem Namen angezeigt.
+			</text>
+			<text name="lbl">
+				Officer-Titel:
+			</text>
+			<text name="lbl2">
+				Mitgliedstitel:
+			</text>
+			<text name="lbl3">
+				Ziehen Sie für die Gruppeninsignien eine Textur aus Ihrem Inventar.
+			</text>
+			<texture_picker name="insig" tool_tip="Klicken Sie hier, um ein Bild auszuwählen" />
+		</panel>
+		<panel label="Mitglieder" name="mem">
+			<text name="txt">
+				Gruppenmitglieder
+			</text>
+			<text name="txt2">
+				Aktuelle Officers und Gruppenmitglieder.
+			</text>
+			<text name="txt3">
+				Klicken Sie auf einen Namen, um das Mitgliedsprofil anzuzeigen.
+			</text>
+			<text name="lbl">
+				Officers:
+			</text>
+			<text name="members_label">
+				Mitglieder:
+			</text>
+			<button label="Mitglied ausschließen" label_selected="Mitglied ausschließen"
+			     name="eject_member_btn" />
+		</panel>
+		<panel label="Abstimmung" name="voting">
+			<tab_container name="tab">
+				<panel label="Wahl" name="recall">
+					<text name="txt">
+						Gruppenwahl
+					</text>
+					<text name="instructions">
+						Klicken Sie auf „Wahl starten“, um eine neue Wahl zu starten. 
+Zu den Kandidaten gehören alle Mitglieder, die keine Officer sind.
+					</text>
+					<text name="lbl">
+						Kandidaten:
+					</text>
+					<button label="Abstimmen" label_selected="Abstimmen" name="btn_vote" />
+					<button label="Enthalten" label_selected="Enthalten" name="btn_abstain" />
+					<button label="Wahl starten" label_selected="Wahl starten" name="btn_start_election" />
+					<text name="lbl2">
+						Quorum:
+					</text>
+					<spinner name="quorum"
+					     tool_tip="# abstimmende Mitglieder für einen bindenden Wahlbeschluss." />
+					<text name="quorum_text">
+						von insgesamt 111 Gruppenmitgliedern.
+					</text>
+					<text name="lbl3">
+						Mehrheit:
+					</text>
+					<radio_group name="majority" tool_tip="Majority of total votes needed to win.">
+						<radio_item name="radio">
+							Einfache Mehrheit
+						</radio_item>
+						<radio_item name="radio2">
+							2/3-Mehrheit
+						</radio_item>
+						<radio_item name="radio3">
+							Einstimmig
+						</radio_item>
+					</radio_group>
+					<text name="duration_lbl">
+						Dauer:
+					</text>
+					<spinner name="duration" tool_tip="# Tage bis zum Ende der Wahl." />
+					<text name="duration_days">
+						Tage
+					</text>
+					<text name="start_lbl">
+						Beginn der Wahl:
+					</text>
+					<text name="end_lbl">
+						Ende der Wahl:
+					</text>
+				</panel>
+				<panel label="Angebot" name="panel_group_proposals">
+					<text name="txt">
+						Gruppenanfragen
+					</text>
+					<text name="instructions">
+						Keine aktiven Anfragen.  Klicken Sie auf „Neue Anfrage“,
+um eine neue Anfrage zu erstellen.
+					</text>
+					<text name="proposal_lbl">
+						Angebote:
+					</text>
+					<button label="Ja" label_selected="Ja" name="btn_yes" />
+					<button label="Nein" label_selected="Nein" name="btn_no" />
+					<button label="Enthalten" label_selected="Enthalten" name="btn_abstain" />
+					<button label="Liste anzeigen" label_selected="Liste anzeigen" name="btn_view_list" />
+					<button label="Objekt anzeigen" label_selected="Objekt anzeigen" name="btn_view_item" />
+					<button label="Neue Anfrage" label_selected="Neue Anfrage" name="btn_proposal" />
+					<button label="Senden" label_selected="Senden" name="btn_submit" />
+					<text name="quorum_lbl">
+						Quorum:
+					</text>
+					<spinner name="quorum"
+					     tool_tip="# abstimmende Mitglieder für einen bindenden Wahlbeschluss." />
+					<text name="quorum_text">
+						von insgesamt 111 Gruppenmitgliedern.
+					</text>
+					<text name="majority_lbl">
+						Mehrheit:
+					</text>
+					<radio_group name="majority" tool_tip="Majority of total votes needed to win.">
+						<radio_item name="radio">
+							Einfache Mehrheit
+						</radio_item>
+						<radio_item name="radio2">
+							2/3-Mehrheit
+						</radio_item>
+						<radio_item name="radio3">
+							Einstimmig
+						</radio_item>
+					</radio_group>
+					<text name="duration_lbl">
+						Dauer:
+					</text>
+					<spinner name="duration" tool_tip="# Tage bis zum Ende der Wahl." />
+					<text name="duration_text">
+						Tage
+					</text>
+					<text name="start_lbl">
+						Beginn der Abstimmung:
+					</text>
+					<text name="end_lbl">
+						Ende der Abstimmung:
+					</text>
+				</panel>
+				<panel label="Verlauf" name="History">
+					<text name="txt">
+						Alte Gruppenabstimmungen
+					</text>
+					<text name="instructions">
+						Sie können die Abstimmergebisse anzeigen, indem Sie die Abstimmung auswählen und auf
+					</text>
+					<text name="instructions2">
+						„Objekt anzeigen“ klicken.
+					</text>
+					<text name="history_list_lbl">
+						Alte Abstimmungen:
+					</text>
+					<text name="vote_text_lbl">
+						Ergebnis:
+					</text>
+					<button label="Liste anzeigen" label_selected="Liste anzeigen" name="btn_view_list" />
+					<button label="Objekt anzeigen" label_selected="Objekt anzeigen" name="btn_view_item" />
+				</panel>
+			</tab_container>
+		</panel>
+		<panel label="Einladen" name="inv">
+			<text name="txt">
+				Gruppeneinladungen
+			</text>
+			<text name="txt2">
+				Einladungen werden als Instant Message gesendet.
+			</text>
+			<text name="txt3">
+				Klicken Sie auf „Hinzufügen“, um Benutzer zur Liste hinzuzufügen.
+			</text>
+			<text name="lbl">
+				Officers:
+			</text>
+			<button label="Officer hinzufügen..." label_selected="Officer hinzufügen..."
+			     name="add_officer_btn" />
+			<button label="Auswahl entfernen" label_selected="Auswahl entfernen"
+			     name="remove_officer_btn" />
+			<text name="lbl2">
+				Mitglieder:
+			</text>
+			<button label="Mitglied hinzufügen..." label_selected="Mitglied hinzufügen..."
+			     name="add_member_btn" />
+			<button label="Auswahl entfernen" label_selected="Auswahl entfernen"
+			     name="remove_member_btn" />
+			<text name="lbl3">
+				Beitrittsgebühr:
+			</text>
+			<check_box label="Freier Beitritt (kein Einladung nötig)" name="open" />
+		</panel>
+		<panel label="Land" name="land">
+			<text name="txt">
+				Land in Gruppenbesitz
+			</text>
+			<text name="lbl">
+				Insgesamt beigetragenes Land:
+			</text>
+			<button label="Karte..." label_selected="Karte..." name="map_btn" />
+			<text name="lbl2">
+				Insgesamt verwendetes Land:
+			</text>
+			<text name="lbl3">
+				Land verfügbar:
+			</text>
+			<button label="Beitrag festlegen" label_selected="Beitrag festlegen"
+			     name="set_contrib_btn" />
+			<text name="warning_label">
+				ACHTUNG: Die Gruppe verwaltet zu viel Land. Die Gruppenmitglieder müssen ihren Beitrag erhöhen.
+			</text>
+		</panel>
+		<panel label="Geld" name="mon">
+			<tab_container name="group money history tab">
+				<panel label="Planung" name="money panel" />
+				<panel label="Details" name="money panel2">
+					<button label="&lt; Früher" label_selected="&lt; Früher" name="&lt; Earlier"
+					     tool_tip="Zurück in der Zeit" />
+					<button label="Später &gt;" label_selected="Später &gt;" name="Later &gt;"
+					     tool_tip="Weiter in der Zeit" />
+				</panel>
+				<panel label="Verkäufe" name="money panel3">
+					<button label="&lt; Früher" label_selected="&lt; Früher" name="&lt; Earlier"
+					     tool_tip="Zurück in der Zeit" />
+					<button label="Später &gt;" label_selected="Später &gt;" name="Later &gt;"
+					     tool_tip="Weiter in der Zeit" />
+				</panel>
+			</tab_container>
+		</panel>
+	</tab_container>
+	<button label="OK" label_selected="OK" name="OK" />
+	<button label="Abbrechen" label_selected="Abbrechen" name="Cancel" />
+</floater>

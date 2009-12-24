@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater name="bug_reporter" title="Fehler melden">
+	<text name="reporter_title">
+		Melder:
+	</text>
+	<text name="sim_title">
+		Region:
+	</text>
+	<text name="pos_title">
+		Position:
+	</text>
+	<text bottom_delta="-38" height="32" name="select_object_label">
+		Klicken Sie auf die Schaltfläche, 
+dann auf das Objekt:
+	</text>
+	<button label="" label_selected="" name="pick_btn"
+	     tool_tip="Objektauswahl – Wählen Sie ein Objekt als Thema dieses Berichts aus" />
+	<text name="object_name_label">
+		Name:
+	</text>
+	<text name="object_name">
+		Consetetur Sadipscing
+	</text>
+	<text name="owner_name_label">
+		Eigentümer:
+	</text>
+	<check_box label="Screenshot einschließen" name="screen_check" />
+	<texture_picker label="Arbeitet..." name="screenshot" />
+	<text name="owner_name">
+		Hendrerit Vulputate
+	</text>
+	<combo_box name="category_combo"
+	     tool_tip="Category -- select the category that best describes this report">
+		<combo_item name="Selectcategory">
+			Kategorie auswählen
+		</combo_item>
+		<combo_item name="Building">
+			Gebäude
+		</combo_item>
+		<combo_item name="Character">
+			Charakter
+		</combo_item>
+		<combo_item name="Chat/IM">
+			Chat/IM
+		</combo_item>
+		<combo_item name="Documentation">
+			Dokumentation
+		</combo_item>
+		<combo_item name="Exploit">
+			Exploit
+		</combo_item>
+		<combo_item name="Graphics">
+			Grafik
+		</combo_item>
+		<combo_item name="Inventory">
+			Inventar
+		</combo_item>
+		<combo_item name="Lag">
+			Lag
+		</combo_item>
+		<combo_item name="MissingContent">
+			Fehlender Inhalt
+		</combo_item>
+		<combo_item name="LindenDollars(L$)">
+			Linden Dollar (L$)
+		</combo_item>
+		<combo_item name="Permissions">
+			Berechtigungen
+		</combo_item>
+		<combo_item name="Physics">
+			Physik
+		</combo_item>
+		<combo_item name="Script">
+			Skript
+		</combo_item>
+		<combo_item name="Sound">
+			Sound
+		</combo_item>
+		<combo_item name="Stipends">
+			Stipendium
+		</combo_item>
+		<combo_item name="Userinterface">
+			Benutzeroberfläche
+		</combo_item>
+		<combo_item name="Miscellaneous">
+			Sonstiges
+		</combo_item>
+	</combo_box>
+	<text name="sum_title">
+		Zusammenfassung:
+	</text>
+	<text name="dscr_title">
+		Details: (Bitte machen Sie so viele Angaben wie möglich.)
+	</text>
+	<text_editor name="details_edit">
+		Schritte zur Fehler-Reproduktion:
+
+Beobachtete Ergebnisse:
+
+Erwartete Ergebnisse:
+	</text_editor>
+	<text name="bug_aviso">
+		Hinweis: Unvollständige Meldungen werden nicht bearbeitet.
+Sollte Ihnen dieser Fehler unerlaubte Aktionen ermöglichen, 
+die sich eventuell nachteilig auf Leistung oder Sicherheit auswirken, 
+wählen Sie die Kategorie „Exploit“. Vielen Dank!
+	</text>
+	<button label="Fehler melden" label_selected="Fehler melden" name="send_btn" />
+	<button label="Abbrechen" label_selected="Abbrechen" name="cancel_btn" />
+</floater>

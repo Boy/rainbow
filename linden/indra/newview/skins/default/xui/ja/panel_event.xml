@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<panel name="Event" title="イベント">
+	<text name="event_name_label">
+		名前：
+	</text>
+	<text name="event_name" left="150">
+		（なし）
+	</text>
+	<text name="event_category_label">
+		タイプ:
+	</text>
+	<text name="event_category" left="150">
+		（なし）
+	</text>
+	<text name="event_mature_label">
+		成人向けコンテンツ：
+	</text>
+	<text name="event_mature" left="150">
+		（不明）
+	</text>
+	<text name="event_mature_yes" left="150">
+		はい
+	</text>
+	<text name="event_mature_no" left="150">
+		いいえ
+	</text>
+	<text name="event_date_label">
+		日付：
+	</text>
+	<text name="event_date" left="150">
+		（なし）
+	</text>
+	<text name="event_duration_label">
+		イベント期間：
+	</text>
+	<text name="event_duration" left="150">
+		（なし）
+	</text>
+	<text name="event_runby_label">
+		実行者/物：
+	</text>
+	<text name="event_runby" left="150">
+		（なし）
+	</text>
+	<text name="event_location_label">
+		ロケーション：
+	</text>
+	<text name="event_location" left="150">
+		（なし）
+	</text>
+	<text name="event_cover_label">
+		カバー・チャージ：
+	</text>
+	<text name="event_cover" left="150">
+		（なし）
+	</text>
+	<text name="event_desc_label">
+		説明：
+	</text>
+	<button label="テレポート" name="teleport_btn" />
+	<button label="地図上に表示" name="map_btn" />
+	<button label="通知" name="notify_btn" />
+	<button label="イベント作成..." name="create_event_btn" />
+	<text name="none">
+		なし
+	</text>
+	<text name="notify">
+		通知
+	</text>
+	<text name="dont_notify">
+		通知しない
+	</text>
+</panel>

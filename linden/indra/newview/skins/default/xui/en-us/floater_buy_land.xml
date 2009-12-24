@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater can_close="true" can_drag_on_left="false" can_minimize="false"
+     can_resize="false" height="484" min_height="484" min_width="440"
+     name="buy land" title="Buy Land" width="740">
+	<text bottom_delta="-35" follows="left|top"
+	     font="SansSerifSmall" height="14" left="440" name="region_name_label"
+	     right="725" width="60" word_wrap="true">
+		Region:
+	</text>
+	<text bottom_delta="0" follows="left|top"
+	     font="SansSerifSmall" height="14" left="550" name="region_name_text"
+	     width="130">
+		(unknown)
+	</text>
+	<text follows="left|top" font="SansSerifSmall" height="14"
+	     left="440" name="estate_name_label" right="725" 
+	     width="60" word_wrap="true">
+		Estate:
+	</text>
+	<text bottom_delta="0" follows="left|top"
+	     font="SansSerifSmall" height="14" left="550" name="estate_name_text"
+	     width="130">
+		(unknown)
+	</text>
+	<text follows="left|top" font="SansSerifSmall" height="20"
+	     left="440" name="estate_owner_label" right="550"
+	     width="100" word_wrap="true">
+		Estate Owner:
+	</text>
+	<text bottom_delta="0" follows="left|top"
+	     font="SansSerifSmall" height="20" left="550" name="estate_owner_text"
+	     width="130">
+		(unknown)
+	</text>
+	<text follows="left|top" font="SansSerif" height="16"
+	     left="440" name="resellable_changeable_label" right="725"
+	     width="260" word_wrap="true">
+		Purchased land in this region:
+	</text>
+	<text follows="left|top" font="SansSerifSmall" height="16"
+	     left="470" name="resellable_clause" right="725" 
+	     width="260" word_wrap="true">
+		Purchased land in this region may or may not be resold.
+	</text>
+	<text follows="left|top" font="SansSerifSmall" height="16"
+	     left="470" name="changeable_clause" right="725" 
+	     width="260" word_wrap="true">
+		may or may not be joined or subdivided.
+	</text>
+	<text follows="" height="16" left="440" name="covenant_text" right="725"
+	     width="260">
+		You must agree to the Estate Covenant:
+	</text>
+	<text bottom_delta="-12" follows="left|top"
+	     font="SansSerifSmall" height="12" left="515" name="covenant_timestamp_text"
+	     right="725" width="260" word_wrap="true" />
+	<text_editor bottom_delta="-260" enabled="false"
+	     follows="top|right" font="SansSerifSmall" height="255" left="440"
+	     max_length="65535" name="covenant_editor" right="725"
+	     width="275" word_wrap="true">
+		Loading...
+	</text_editor>
+	<check_box follows="left|top" height="20" label="I Agree to the Covenant Defined Above."
+	     left="440" name="agree_covenant" right="725" width="275" />
+	<texture_picker bottom_delta="290" enabled="false" follows="top|left" height="135" left="16"
+	     name="info_image" width="180" />
+	<text bottom_delta="119" follows="top|left" font="SansSerifSmall" left="204"
+	     name="info_parcel_label" width="48">
+		Parcel:
+	</text>
+	<text bottom_delta="-5" follows="top|left" font="SansSerif" height="16" left_delta="50"
+	     name="info_parcel" right="400" >
+		Scotopteryx 138,204
+	</text>
+	<text follows="top|left" font="SansSerifSmall" left="204" name="info_size_label"
+	     width="48">
+		Size:
+	</text>
+	<text bottom_delta="-21" follows="top|left" font="SansSerif" height="32" left_delta="50"
+	     name="info_size" right="400" >
+		1024 sq. m.
+	</text>
+	<text follows="top|left" font="SansSerifSmall" left="204" name="info_price_label"
+	     width="48">
+		Price:
+	</text>
+	<text bottom_delta="-5" follows="top|left" font="SansSerif" height="16" left_delta="50"
+	     name="info_price" right="400" >
+		L$ 1500, objects included
+	</text>
+	<text bottom="-180" follows="top|left" font="SansSerifHuge" height="24" left="16"
+	     name="info_action" width="200">
+		Buying this land will:
+	</text>
+	<pad height="10" />
+	<icon follows="top|left" height="64" image_name="badge_note.j2c" left="0"
+	     name="step_error" width="64" />
+	<text bottom_delta="-110" follows="top|left" height="160" left="72"
+	     name="error_message" right="400" width="180">
+		Something ain&apos;t right.
+	</text>
+	<button bottom_delta="-4" follows="bottom|left" height="20" label="Go to website"
+	     left="72" name="error_web" width="120" />
+	<pad height="-200" />
+	<icon follows="top|left" height="64" image_name="badge_ok.j2c" left="0" name="step_1"
+	     width="64" />
+	<text bottom_delta="38" follows="top|left" height="16" left="72"
+	     name="account_action" right="400" width="180" font="SansSerifBig" >
+		Upgrade you to premium membership.
+	</text>
+	<text follows="top|left" height="16" left="72" name="account_reason" right="400"
+	     width="180">
+		Only premimum members may own land.
+	</text>
+	<combo_box follows="top|left" height="16" left="80" name="account_level" width="336">
+		<combo_item name="US$9.95/month,billedmonthly">
+			US$9.95/month, billed monthly
+		</combo_item>
+		<combo_item name="US$7.50/month,billedquarterly">
+			US$7.50/month, billed quarterly
+		</combo_item>
+		<combo_item name="US$6.00/month,billedannually">
+			US$6.00/month, billed annually
+		</combo_item>
+	</combo_box>
+	<pad height="10" />
+	<icon follows="top|left" height="64" image_name="badge_note.j2c" left="0"
+	     name="step_2" width="64" />
+	<text bottom_delta="38" follows="top|left" height="16" left="72"
+	     name="land_use_action" right="400" width="180" font="SansSerifBig" >
+		Increase your monthly land use fees to US$ 40/month.
+	</text>
+	<text follows="top|left" height="32" left="72" name="land_use_reason" right="400"
+	     width="180">
+		You hold 1,309 square meters of land. 
+This parcel is 512 square meters of land.
+	</text>
+	<pad height="10" />
+	<icon follows="top|left" height="64" image_name="badge_note.j2c" left="0"
+	     name="step_3" width="64" />
+	<text bottom_delta="38" follows="top|left" height="16" left="72"
+	     name="purchase_action" right="400" font="SansSerifBig" >
+		Pay Joe Resident L$4000 for the land
+	</text>
+	<text follows="top|left" height="16" left="72" name="currency_reason" right="400">
+		You have L$2,100.
+	</text>
+	<text bottom_delta="-25" follows="top|left" height="16" left="74"
+	     name="currency_action" width="90">
+		Buy additional L$
+	</text>
+	<pad height="0" width="8" />
+	<line_editor bottom_delta="5" follows="top|right" height="16" left="170" name="currency_amt"
+	     width="80">
+		1000
+	</line_editor>
+	<pad height="0" width="8" />
+	<text bottom_delta="3" follows="top|right" height="16" left="260" name="currency_est"
+	     width="180">
+		for approx. US$ [AMOUNT2]
+	</text>
+	<text follows="top|left" height="16" left="72" name="currency_balance" right="400">
+		You have L$2,100.
+	</text>
+	<check_box bottom_delta="-18" follows="bottom|left" height="20"
+	     label="Remove [AMOUNT] square meters of contribution from group." left="75"
+	     name="remove_contribution" visible="false" width="275" />
+	<button bottom_delta="-15" follows="bottom|left" height="20" label="Purchase" left="70"
+	     name="buy_btn" width="100" />
+	<button bottom="10" follows="bottom|right" height="20" label="Cancel" left="-90"
+	     name="cancel_btn" width="80" />
+	<string name="can_resell">
+		May be resold.
+	</string>
+	<string name="can_not_resell">
+		May not be resold.
+	</string>
+	<string name="can_change">
+		May be joined or subdivided.
+	</string>
+	<string name="can_not_change">
+		May not be joined or subdivided.
+	</string>
+	<string name="cant_buy_for_group">
+		You do not have permission to buy land for your active group.
+	</string>
+	<string name="no_land_selected">
+		No land selected.
+	</string>
+	<string name="multiple_parcels_selected">
+		Multiple different parcels selected. 
+Try selecting a smaller area.
+	</string>
+	<string name="no_permission">
+		You do not have permission to buy land for your active group.
+	</string>
+	<string name="parcel_not_for_sale">
+		The selected parcel is not for sale.
+	</string>
+	<string name="group_already_owns">
+		The group already owns the parcel.
+	</string>
+	<string name="you_already_own">
+		You already own the parcel.
+	</string>
+	<string name="set_to_sell_to_other">
+		The selected parcel is set to sell to another party.
+	</string>
+	<string name="no_public_land">
+		The selected area has no public land.
+	</string>
+	<string name="not_owned_by_you">
+		Land owned by another user is selected. 
+Try selecting a smaller area.
+	</string>
+	<string name="processing">
+		Processing your purchase...
+ 
+(This may take a minute or two.)
+	</string>
+	<string name="fetching_error">
+		There has been an error while fetching land buying information.
+	</string>
+	<string name="buying_will">
+		Buying this land will:
+	</string>
+	<string name="buying_for_group">
+		Buying land for group:
+	</string>
+	<string name="cannot_buy_now">
+		Cannot buy now:
+	</string>
+	<string name="not_for_sale">
+		Not for sale:
+	</string>
+	<string name="none_needed">
+		none needed
+	</string>
+	<string name="must_upgrade">
+		Your account must be upgraded to own land.
+	</string>
+	<string name="cant_own_land">
+		Your account can own land.
+	</string>
+	<string name="land_holdings">
+		You hold [BUYER] square meters of land.
+	</string>
+	<string name="pay_to_for_land">
+		Pay L$ [AMOUNT] to [SELLER] for this land
+	</string>
+	<string name="buy_for_US">
+		Buy L$ [AMOUNT] for approx. US$ [AMOUNT2] ,
+	</string>
+	<string name="parcel_meters">
+		This parcel is [AMOUNT] square meters.
+	</string>
+	<string name="premium_land">
+		This land is premium, and will charge as [AMOUNT] square meters.
+	</string>
+	<string name="discounted_land">
+		This land is discounted, and will charge as [AMOUNT] square meters.
+	</string>
+	<string name="meters_supports_object">
+		[AMOUNT] sq. meters
+supports [AMOUNT2] objects
+	</string>
+	<string name="sold_with_objects">
+		sold with objects
+	</string>
+	<string name="insufficient_land_credits">
+		The group [GROUP] will need sufficient contributed land use 
+credits to cover this parcel before the purchase will 
+complete.
+	</string>
+	<string name="have_enough_lindens">
+		You have L$ [AMOUNT], which is enough to buy this land.
+	</string>
+	<string name="not_enough_lindens">
+		You have only L$ [AMOUNT], and need L$ [AMOUNT2] more.
+	</string>
+	<string name="balance_left">
+		After the purchase, you will have L$ [AMOUNT] left.
+	</string>
+	<string name="balance_needed">
+		You need to buy at least L$ [AMOUNT] to afford this land.
+	</string>
+	<string name="no_parcel_selected">
+		(no parcel selected)
+	</string>
+	<string name="buy_currency">
+		Buy L$ [LINDENS] for approx. US$ [USD]
+	</string>
+</floater>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<panel label="네트워크" name="network">
+	<text type="string" length="1" name="text_box">
+		최대 대역폭:
+	</text>
+	<text type="string" length="1" name="text_box2">
+		kbps (kilobits per second)
+	</text>
+	<text type="string" length="1" name="cache_size_label_l">
+		디스크 캐시 크기:
+	</text>
+	<button label="캐시 비우기" name="clear_cache" />
+	<text type="string" length="1" name="cache_location_label">
+		디스크 캐시 위치:
+	</text>
+	<button label="설정" label_selected="설정" name="set_cache" />
+	<button label="초기화" label_selected="초기화" name="reset_cache" />
+	<check_box label="사용자 지정 포트" name="connection_port_enabled" />
+	<spinner label="포트 번호:" name="connection_port" />
+</panel>

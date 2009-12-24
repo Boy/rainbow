@@ -1,0 +1,7 @@
+RAINBOW MASTER  1.22.12.0 
+
+25 Dec 2009
+First public release of new 1.22.12.0 viewer baseline.
+Full functionality included (or so I hope). No RLV.
+
+*details to be added here*

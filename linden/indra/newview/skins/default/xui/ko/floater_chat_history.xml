@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater name="chat floater" title="로컬 채팅">
+	<string name="ringing">
+		음성 채팅에 연결하는 중...
+	</string>
+	<string name="connected">
+		연결됨
+	</string>
+	<string name="unavailable">
+		현재 위치에서 음성을 사용할 수 없습니다.
+	</string>
+	<string name="hang_up">
+		음성 채팅 연결 끊김
+	</string>
+	<string name="voice_icon">
+		icn_voice-localchat.tga
+	</string>
+	<string name="IM_logging_string">
+		-- 메신저 로깅 사용 --
+	</string>
+	<string name="IM_end_log_string">
+		-- 로그 끝 --
+	</string>
+	<layout_stack name="panels">
+		<layout_panel name="im_contents_panel">
+			<combo_box label="제스처" name="Gesture">
+				<combo_item name="Gestures">
+					제스처
+				</combo_item>
+			</combo_box>
+			<check_box label="차단된 텍스트 표시하기" name="show mutes"/>
+			<button label="&lt; &lt;" label_selected="&gt; &gt;" name="toggle_active_speakers_btn" tool_tip="채팅 참가자 목록 보기"/>
+			<panel name="chat_panel">
+				<string name="gesture_label">
+					제스처
+				</string>
+				<line_editor label="채팅하려면 여기를 클릭하십시오." name="Chat Editor"/>
+				<flyout_button label="말하기" name="Say" tool_tip="(입력)">
+					<flyout_button_item name="shout_item">
+						외치기
+					</flyout_button_item>
+					<flyout_button_item name="say_item">
+						말하기
+					</flyout_button_item>
+				</flyout_button>
+			</panel>
+		</layout_panel>
+	</layout_stack>
+</floater>

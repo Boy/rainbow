@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater border="true" bottom="-298" can_close="true" can_drag_on_left="false"
+     can_minimize="true" can_resize="true" default_tab_group="1"
+     follows="left|top|right|bottom" height="297" label="(unknown)" left="1"
+     min_height="155" min_width="345" mouse_opaque="true" name="im_floater"
+     rect_control="" title="(unknown)" width="501">
+	<string name="ringing">
+		Calling...
+	</string>
+	<string name="answering">
+		Connecting...
+	</string>
+	<string name="connected">
+		Connected, click End Call to hang up
+	</string>
+	<string name="hang_up">
+		Call ended
+	</string>
+	<string name="inventory_item_offered">
+		Inventory item offered
+	</string>
+	<string name="voice_icon">
+		icn_voice-pvtfocus.tga
+	</string>
+	<string name="title_string">
+		Instant Message with [NAME]
+	</string>
+	<string name="typing_start_string">
+		[NAME] is typing...
+	</string>
+	<string name="session_start_string">
+		Starting session with [NAME] please wait.
+	</string>
+	<string name="default_text_label">
+		Click here to instant message.
+	</string>
+	<button bottom="-40" follows="left|top" height="20" label="Profile..." left="5"
+	     name="profile_callee_btn" width="80" />
+	<button bottom="-40" follows="left|top" halign="center" height="20"
+	     image_overlay="icn_voice-call-start.tga" image_overlay_alignment="left"
+	     label="Call" left_delta="85" name="start_call_btn" width="100" />
+	<button bottom="-40" follows="left|top" halign="center" height="20"
+	     image_overlay="icn_voice-call-end.tga" image_overlay_alignment="left"
+	     label="End Call" left_delta="0" name="end_call_btn" pad_right="10"
+	     visible="false" width="100" />
+	<panel border="false" bottom="-37" follows="left|top|right" height="20"
+	     left_delta="96" name="speaker_controls" width="100">
+		<volume_slider bottom="0" follows="left|bottom" height="15" increment="0.05" initial_val="0.5"
+		     left_delta="0" max_val="1.0" min_val="0.0" name="speaker_volume" width="56" />
+		<button bottom_delta="0" height="20" image_selected="icn_speaker-muted_dark.tga"
+		     image_unselected="icn_speaker_dark.tga" label="" left_delta="56"
+		     name="mute_btn" tool_tip="Mute voice" width="25" />
+	</panel>
+	<text_editor type="string" length="1" bg_readonly_color="ChatHistoryBgColor" bg_writeable_color="ChatHistoryBgColor"
+	     bottom="30" embedded_items="false" enabled="false"
+	     follows="left|top|right|bottom" font="SansSerif" height="221" left="5"
+	     max_length="2147483647" mouse_opaque="true" name="im_history"
+	     text_color="ChatHistoryTextColor"
+       track_bottom="true" 
+	     text_readonly_color="ChatHistoryTextColor" width="487" word_wrap="true" />
+	<line_editor bevel_style="in" border_style="line" border_thickness="1" bottom="7"
+	     follows="left|right|bottom" font="SansSerif" height="20"
+	     label="Click here to instant message" left="5" max_length="1022"
+	     mouse_opaque="true" name="chat_editor" select_all_on_focus_received="false"
+	     select_on_focus="false" tab_group="1" width="423" />
+	<button bottom="7" follows="right|bottom" font="SansSerif" halign="center" height="20"
+	     label="Send" left="433" mouse_opaque="true" name="send_btn"
+	     scale_image="true" width="60" />
+	<string name="live_help_dialog">
+		*** Welcome to Help Request *** 
+Please first check our SL Help Pages by pressing F1, or by accessing the Knowledge Base http://secondlife.com/knowledgebase/ 
+If your answer is not there, please enter your question to begin, then allow a few moments for available helpers to respond.
+-=-=- Response times will vary, especially during peak times -=-=-
+	</string>
+</floater>

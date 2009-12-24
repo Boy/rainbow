@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<panel label="토지 &amp; L$" name="land_money_tab">
+	<text name="help_text">
+		그룹이 소유한 구획이 기여 세부사항과 함께 열거됩니다. 총 사용 토지가 총 기여보다 
+ 작거나 같으면 경고가 
+ 표시됩니다.기획, 세부 사항 및 매매 탭은 
+ 그룹의 재정에 대한 정보를 제공합니다.
+	</text>
+	<button label="?" name="help_button" />
+	<text name="cant_view_group_land_text">
+		그룹이 소유한 토지를 볼 권한이 없습니다.
+	</text>
+	<text name="cant_view_group_accounting_text">
+		그룹의 계정 정보를 볼 권한이 없습니다.
+	</text>
+	<string name="loading_txt">
+		로딩 중...
+	</string>
+	<text name="group_land_heading">
+		그룹 소유 토지
+	</text>
+	<scroll_list name="group_parcel_list">
+		<column label="토지 이름" name="name" />
+		<column label="지역" name="location" />
+		<column label="면적" name="area" />
+		<column label="" name="hidden" />
+	</scroll_list>
+	<button label="지도에 표시" label_selected="지도에 표시" name="map_button" />
+	<text name="total_contributed_land_label">
+		총 기여:
+	</text>
+	<text name="total_contributed_land_value">
+		[AREA]제곱미터
+	</text>
+	<text name="total_land_in_use_label">
+		사용 중인 토지:
+	</text>
+	<text name="total_land_in_use_value">
+		[AREA]제곱미터
+	</text>
+	<text name="land_available_label">
+		미사용중인 토지:
+	</text>
+	<text name="land_available_value">
+		[AREA]제곱미터
+	</text>
+	<text name="your_contribution_label">
+		기여:
+	</text>
+	<text name="your_contribution_max_value_append">
+		평방 미터
+	</text>
+	<string name="land_contrib_error">
+		귀하의 토지 기부를 설정할 수 없습니다.
+	</string>
+	<text name="your_contribution_max_value">
+		제곱미터(최대 [AMOUNT])
+	</text>
+	<text name="group_over_limit_text">
+		그룹 회원은 사용 중인 토지를 지원하기 위해 더 많은 토지 신용을 기여해야 합니다.
+	</text>
+	<text name="group_money_heading">
+		그룹 린든달러(L$)
+	</text>
+	<tab_container name="group_money_tab_container">
+		<panel label="보고서" name="group_money_planning_tab">
+			<text_editor name="group_money_planning_text">
+				컴퓨팅...
+			</text_editor>
+		</panel>
+		<panel label="세부사항" name="group_money_details_tab">
+			<text_editor name="group_money_details_text">
+				컴퓨팅...
+			</text_editor>
+			<button label="&lt; 이전" label_selected="&lt; 이전" name="earlier_details_button"
+			     tool_tip="시간을 거슬러 갑니다" />
+			<button label="나중에&gt;" label_selected="나중에&gt;"
+			     name="later_details_button" tool_tip="시간을 앞서 갑니다" />
+		</panel>
+		<panel label="판매내역" name="group_money_sales_tab">
+			<text_editor name="group_money_sales_text">
+				컴퓨팅...
+			</text_editor>
+			<button label="&lt; 이전" label_selected="&lt; 이전" name="earlier_sales_button"
+			     tool_tip="시간을 거슬러 갑니다" />
+			<button label="나중에&gt;" label_selected="나중에&gt;" name="later_sales_button"
+			     tool_tip="시간을 앞서 갑니다" />
+		</panel>
+	</tab_container>
+</panel>

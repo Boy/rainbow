@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater name="directory" title="검색">
+	<tab_container name="Directory Tabs">
+		<panel label="모두" name="all_panel">
+			<button label="&lt; 이전" label_selected="&lt; 이전" name="&lt; Prev" />
+			<button label="다음 &gt;" label_selected="다음 &gt;" name="Next &gt;" />
+			<text name="find">
+				찾기:
+			</text>
+			<button label="검색" label_selected="검색" name="Search" />
+			<check_box label="성인용 컨텐츠 포함" name="incmature" />
+			<scroll_list name="results">
+				<column label="" name="icon" />
+				<column label="이름" name="name" />
+				<column label="가격" name="price" />
+				<column label="시간(PT)" name="date" />
+				<column label="시간" name="time" />
+				<column label="통행량" name="dwell" />
+				<column label="면적" name="area" />
+				<column label="L$/sq. m." name="per_meter" />
+				<column label="온라인" name="online" />
+				<column label="회원" name="members" />
+			</scroll_list>
+		</panel>
+		<panel label="전체" name="find_all_panel">
+			<string name="searching_text">
+				검색...
+			</string>
+			<string name="not_found_text">
+				발견되지 않음.
+			</string>
+			<button label="뒤로" name="back_btn" />
+			<button label="앞으로" name="forward_btn" />
+			<line_editor label="검색" name="search_editor" tool_tip="검색" />
+			<button label="검색" name="search_btn" />
+			<combo_box name="Category">
+				<combo_item name="AnyCategory">
+					모든 카테고리
+				</combo_item>
+				<combo_item name="Classifieds">
+					광고
+				</combo_item>
+				<combo_item name="Events">
+					이벤트
+				</combo_item>
+				<combo_item name="Groups">
+					그룹
+				</combo_item>
+				<combo_item name="People">
+					사람
+				</combo_item>
+				<combo_item name="Places">
+					장소
+				</combo_item>
+				<combo_item name="Wiki">
+					위키
+				</combo_item>
+			</combo_box>
+			<check_box label="성인용 컨텐츠 포함" name="mature_check" />
+			<text name="loading_text">
+				로딩 중
+			</text>
+			<text name="done_text">
+				완료
+			</text>
+			<text name="redirect_404_url">
+				http://secondlife.com/app/search/notfound.html
+			</text>
+		</panel>
+		<panel label="광고" name="classified_panel">
+			<string name="searching_text">
+				검색
+			</string>
+			<string name="not_found_text">
+				발견되지 않음
+			</string>
+			<button label="&lt; 이전" label_selected="&lt; 이전" name="&lt; Prev" />
+			<button label="다음 &gt;" label_selected="다음 &gt;" name="Next &gt;" />
+			<text name="find">
+				찾기:
+			</text>
+			<check_box label="성인용 컨텐츠 포함" name="incmature" />
+			<combo_box name="Category">
+				<combo_item name="AnyCategory">
+					모든 카테고리
+				</combo_item>
+				<combo_item name="Shopping">
+					쇼핑
+				</combo_item>
+				<combo_item name="LandRental">
+					토지 임대
+				</combo_item>
+				<combo_item name="PropertyRental">
+					소유물 임대
+				</combo_item>
+				<combo_item name="SpecialAttraction">
+					명물
+				</combo_item>
+				<combo_item name="NewProducts">
+					신제품
+				</combo_item>
+				<combo_item name="Employment">
+					구직
+				</combo_item>
+				<combo_item name="Wanted">
+					고용
+				</combo_item>
+				<combo_item name="Service">
+					서비스
+				</combo_item>
+				<combo_item name="Personal">
+					개인
+				</combo_item>
+			</combo_box>
+			<button label="탐색" label_selected="탐색" name="Browse" />
+			<button label="검색" label_selected="검색" name="Search" />
+			<button label="광고 내기…" label_selected="광고 내기…"
+			     name="Place an Ad..." />
+			<button label="삭제" label_selected="삭제" name="Delete" />
+			<scroll_list name="results">
+				<column label="" name="icon" />
+				<column label="" name="type" />
+				<column label="이름" name="name" />
+				<column label="가격" name="price" />
+			</scroll_list>
+		</panel>
+		<panel label="이벤트" name="events_panel">
+			<string name="searching_text">
+				검색
+			</string>
+			<string name="not_found_text">
+				발견되지 않음
+			</string>
+			<radio_group name="date_mode">
+				<radio_item name="current">
+					작업진행과 다음과정
+				</radio_item>
+				<radio_item name="date">
+					날짜
+				</radio_item>
+			</radio_group>
+			<button label="&lt;&lt; " label_selected="&lt;&lt; " name="&lt;&lt;"
+			     tool_tip="하루를 거슬러 갑니다" />
+			<text name="date_text">
+				6/6
+			</text>
+			<button label="&gt;&gt; " label_selected="&gt;&gt; " name="&gt;&gt;"
+			     tool_tip="하루를 앞서 갑니다" />
+			<button label="오늘" label_selected="오늘" name="Today"
+			     tool_tip="오늘의 이벤트 표시" />
+			<text name="text">
+				카테고리:
+			</text>
+			<text name="text2">
+				이름/설명:
+			</text>
+			<combo_box name="category combo">
+				<combo_item name="All">
+					모두
+				</combo_item>
+				<combo_item name="Discussion">
+					토의
+				</combo_item>
+				<combo_item name="Sports">
+					스포츠
+				</combo_item>
+				<combo_item name="LiveMusic">
+					라이브 음악
+				</combo_item>
+				<combo_item name="Commercial">
+					상업
+				</combo_item>
+				<combo_item name="Nightlife/Entertainment">
+					유흥/엔터테인먼트
+				</combo_item>
+				<combo_item name="Games/Contests">
+					게임/경연대회
+				</combo_item>
+				<combo_item name="Pageants">
+					전시회
+				</combo_item>
+				<combo_item name="Education">
+					교육
+				</combo_item>
+				<combo_item name="ArtsandCulture">
+					예술/ 문화
+				</combo_item>
+				<combo_item name="Charity/SupportGroups">
+					자선/지원단체
+				</combo_item>
+				<combo_item name="Miscellaneous">
+					다목적
+				</combo_item>
+			</combo_box>
+			<check_box label="성인용 포함" name="incmature" />
+			<button label="검색" label_selected="검색" name="Search" tool_tip="검색" />
+			<button label="삭제" label_selected="삭제" name="Delete" />
+			<scroll_list name="results">
+				<column label="" name="icon" />
+				<column label="" name="type" />
+				<column label="이름" name="name" />
+				<column label="시간 (PT)" name="date" />
+				<column label="" name="event_id" />
+				<column label="시간" name="time" />
+			</scroll_list>
+			<button label="&lt; 이전" label_selected="&lt; 이전" name="&lt; Prev" />
+			<button label="다음 &gt;" label_selected="다음 &gt;" name="Next &gt;" />
+		</panel>
+		<panel label="인기 장소" name="popular_panel">
+			<string name="searching_text">
+				검색
+			</string>
+			<string name="not_found_text">
+				발견되지 않음
+			</string>
+			<button label="&lt; 이전" label_selected="&lt; 이전" name="&lt; Prev" />
+			<button label="다음 &gt;" label_selected="다음 &gt;" name="Next &gt;" />
+			<check_box label="사진이 있는 장소만 보기" name="incpictures" />
+			<check_box label="성인 컨텐츠가 있는 구획 포함" name="incmature" />
+			<text
+			     name="These are the most popular places in the world, as measured by traffic,         the amount of time people spend there.">
+				본 장소들은 통행량에 따른 가장 인기 있는 장소들입니다
+(해당장소에서 머무는 시간 기준).
+			</text>
+			<scroll_list name="results">
+				<column label="" name="icon" />
+				<column label="" name="type" />
+				<column label="시간" name="name" />
+				<column label="교통" name="dwell" />
+			</scroll_list>
+		</panel>
+		<panel label="쇼케이스" name="showcase_panel">
+			<string name="searching_text">
+				검색
+			</string>
+			<string name="not_found_text">
+				발견되지 않음.
+			</string>
+			<button label="뒤로" name="back_btn" />
+			<button label="앞으로" name="forward_btn" />
+			<string name="loading_text">
+				로딩 중
+			</string>
+			<string name="done_text">
+				완료
+			</string>
+		</panel>
+		<panel label="토지 매물" name="land_sales_panel">
+			<string name="searching_text">
+				검색
+			</string>
+			<string name="not_found_text">
+				발견되지 않음
+			</string>
+			<button label="&lt; 이전" label_selected="&lt; 이전" name="&lt; Prev" />
+			<button label="다음 &gt;" label_selected="다음 &gt;" name="Next &gt;" />
+			<combo_box name="type">
+				<combo_item name="AllTypes">
+					전체 유형
+				</combo_item>
+				<combo_item name="Auction">
+					경매
+				</combo_item>
+				<combo_item name="MainlandSales">
+					메인랜드 매물
+				</combo_item>
+				<combo_item name="EstateSales">
+					사유지 매물
+				</combo_item>
+			</combo_box>
+			<combo_box name="rating">
+				<combo_item name="PG&amp;Mature">
+					미성인 &amp; 성인
+				</combo_item>
+				<combo_item name="PGonly">
+					미성인 전용
+				</combo_item>
+				<combo_item name="Matureonly">
+					성인 전용
+				</combo_item>
+			</combo_box>
+			<check_box label="가격&lt;=L$" name="pricecheck" />
+			<check_box label="면적&gt;=sq.m." name="areacheck" />
+			<button label="검색" label_selected="검색" name="Search" />
+			<text name="land">
+				토지는 L$로 직접 구매하거나, L$ 혹은 US$로 경매하여 구매할 수 있습니다.
+직접 구매하려면, 토지를 방문하여 타이틀 바에 있는 장소 이름을 클릭하십시오!
+			</text>
+			<scroll_list name="results">
+				<column label="" name="icon" />
+				<column label="" name="type" />
+				<column label="이름" name="name" />
+				<column label="L$ 가격" name="price" />
+				<column label="면적" name="area" />
+				<column label="L$/sq.m." name="per_meter" />
+			</scroll_list>
+		</panel>
+		<panel label="장소" name="places_panel">
+			<string name="searching_text">
+				검색
+			</string>
+			<string name="not_found_text">
+				검색 결과가 없습니다.
+			</string>
+			<button label="&lt; 이전" label_selected="&lt; 이전" name="&lt; Prev" />
+			<button label="다음 &gt;" label_selected="다음 &gt;" name="Next &gt;" />
+			<text name="find">
+				찾기:
+			</text>
+			<check_box label="성인용 컨텐츠 구획 포함" name="incmature" />
+			<combo_box name="Category">
+				<combo_item name="AnyCategory">
+					모든 카테고리
+				</combo_item>
+				<combo_item name="LindenLocation">
+					린든랩 관련
+				</combo_item>
+				<combo_item name="Adult">
+					성인 전용
+				</combo_item>
+				<combo_item name="Arts&amp;Culture">
+					예술 &amp; 문화
+				</combo_item>
+				<combo_item name="Business">
+					비즈니스
+				</combo_item>
+				<combo_item name="Educational">
+					교육용
+				</combo_item>
+				<combo_item name="Gaming">
+					게임
+				</combo_item>
+				<combo_item name="Hangout">
+					집합소
+				</combo_item>
+				<combo_item name="NewcomerFriendly">
+					초보자용
+				</combo_item>
+				<combo_item name="Parks&amp;Nature">
+					공원 및 자연
+				</combo_item>
+				<combo_item name="Residential">
+					거주지
+				</combo_item>
+				<combo_item name="Shopping">
+					쇼핑
+				</combo_item>
+				<combo_item name="Other">
+					기타
+				</combo_item>
+			</combo_box>
+			<button label="검색" label_selected="검색" name="Search" />
+			<scroll_list name="results">
+				<column label="" name="icon" />
+				<column label="" name="type" />
+				<column label="이름" name="name" />
+				<column label="교통" name="dwell" />
+			</scroll_list>
+		</panel>
+		<panel label="사람" name="people_panel">
+			<string name="searching_text">
+				검색
+			</string>
+			<string name="not_found_text">
+				발견되지 않음
+			</string>
+			<button label="&lt; 이전" label_selected="&lt; 이전" name="&lt; Prev" />
+			<button label="다음 &gt;" label_selected="다음 &gt;" name="Next &gt;" />
+			<text name="find">
+				찾기:
+			</text>
+			<button label="검색" label_selected="검색" name="Search" />
+			<scroll_list name="results">
+				<column label="" name="icon" />
+				<column label="" name="type" />
+				<column label="이름" name="name" />
+			</scroll_list>
+		</panel>
+		<panel label="그룹" name="groups_panel">
+			<string name="searching_text">
+				검색
+			</string>
+			<string name="not_found_text">
+				검색 결과가 없습니다.
+			</string>
+			<button label="&lt; 이전" label_selected="&lt; 이전" name="&lt; Prev" />
+			<button label="다음 &gt;" label_selected="다음 &gt;" name="Next &gt;" />
+			<text name="find">
+				찾기:
+			</text>
+			<button label="검색" label_selected="검색" name="Search" />
+			<check_box label="성인 그룹 포함" name="incmature" />
+			<scroll_list name="results">
+				<column label="" name="icon" />
+				<column label="" name="type" />
+				<column label="이름" name="name" />
+				<column label="회원" name="members" />
+				<column label="" name="score" />
+			</scroll_list>
+			<button label="뒤로" name="back_btn" />
+			<button label="앞으로" name="forward_btn" />
+			<line_editor label="검색" name="search_editor" tool_tip="세컨드라이프 검색" />
+			<button label="검색" name="search_btn" />
+			<check_box label="성인용 컨텐츠 포함" name="mature_check" />
+			<string name="loading_text">
+				로딩 중
+			</string>
+			<string name="done_text">
+				완료
+			</string>
+		</panel>
+		<panel label="전체(구)" name="find_all_old_panel">
+			<string name="searching_text">
+				검색
+			</string>
+			<string name="not_found_text">
+				발견되지 않음
+			</string>
+			<button label="&lt; 이전" label_selected="&lt; 이전" name="&lt; Prev" />
+			<button label="다음 &gt;" label_selected="다음 &gt;" name="Next &gt;" />
+			<text name="find">
+				찾기:
+			</text>
+			<button label="검색" label_selected="검색" name="Search" />
+			<check_box label="성인용 컨텐츠 포함" name="incmature" />
+			<scroll_list name="results">
+				<column label="이름" name="name" />
+				<column label="가격" name="price" />
+				<column label="시간(태평양시)" name="date" />
+				<column label="시간" name="time" />
+				<column label="통행량" name="dwell" />
+				<column label="면적" name="area" />
+				<column label="L$/sq.m" name="per_meter" />
+				<column label="온라인" name="online" />
+				<column label="회원" name="members" />
+			</scroll_list>
+		</panel>
+	</tab_container>
+</floater>

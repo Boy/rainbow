@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<panel label="일반" name="general_panel">
+	<combo_box name="location_combobox">
+		<combo_item name="MyHome">
+			홈
+		</combo_item>
+		<combo_item name="MyLastLocation">
+			최종 방문지
+		</combo_item>
+	</combo_box>
+	<check_box label="로그인 화면에 시작위치 표시" name="show_location_checkbox" />
+	<radio_group name="fade_out_radio">
+		<radio_item type="string" length="1" name="Never">
+			안함
+		</radio_item>
+		<radio_item type="string" length="1" name="Temporarily">
+			임시로 표시
+		</radio_item>
+		<radio_item type="string" length="1" name="Always">
+			항상
+		</radio_item>
+	</radio_group>
+	<combo_box name="fade_out_combobox">
+		<combo_item name="Never">
+			안함
+		</combo_item>
+		<combo_item name="Show Temporarily">
+			임시로 표시
+		</combo_item>
+		<combo_item name="Always">
+			항상
+		</combo_item>
+	</combo_box>
+	<check_box label="내 화면에서 내 이름 숨기기" name="show_my_name_checkbox" />
+	<text name="group_titles_textbox">
+		그룹 타이틀:
+	</text>
+	<check_box label="모든 그룹 타이틀 숨기기" name="show_all_title_checkbox" />
+	<check_box label="내 그룹명 숨기기" name="show_my_title_checkbox" />
+	<check_box label="작은 아바타 이름" name="small_avatar_names_checkbox" />
+	<color_swatch label="" name="effect_color_swatch"
+	     tool_tip="색 관리기를 열려면 클릭 하십시오." />
+	<text name="UI Size:">
+		UI 크기:
+	</text>
+	<check_box label="해상도 독립 스케일 사용" name="ui_auto_scale" />
+	<spinner label="자리비움 시간초과:" name="afk_timeout_spinner" />
+	<check_box label="온라인 친구 보여주기" name="friends_online_notify_checkbox" />
+	<check_box label="미니 지도 회전" name="rotate_mini_map_checkbox" />
+	<check_box label="L$ 지출과 기부 알려주기" name="notify_money_change_checkbox" />
+	<check_box label="다음 시작할 때 그래픽 하드웨어 자동 감지"
+	     name="probe_hardware_checkbox"
+	     tool_tip="세컨드라이프는 사용자의 하드웨어에 따라 일부 그래픽 설정을 자동으로 구성합니다.  새로운 하드웨어를 설치하려는 경우, 세컨드라이프가 이를 다시 감지하도록 해야 합니다." />
+	<check_box label="시스템 기본색 관리 사용"
+	     name="use_system_color_picker_checkbox"
+	     tool_tip="세컨드라이프에서 제공하는 것 대신 기본 시스템 색관리를 사용합니다." />
+	<check_box label="오버레이 표시줄에 검색 창 표시" name="show_search_panel"
+	     tool_tip="포함된 검색 창을 표시합니다." />
+	<text type="string" length="1" name="start_location_textbox">
+		시작 위치:
+	</text>
+	<text type="string" length="1" name="show_names_textbox">
+		이름 표시:
+	</text>
+	<text type="string" length="1" name="effects_color_textbox">
+		색상 효과:
+	</text>
+	<text type="string" length="1" name="seconds_textbox">
+		초
+	</text>
+	<text type="string" length="1" name="crash_report_textbox">
+		오류 보고:
+	</text>
+	<text type="string" length="1" name="language_textbox">
+		언어:
+	</text>
+	<text type="string" length="1" name="language_textbox2">
+		(재시동 필요)
+	</text>
+	<text name="region_name_prompt">
+		&lt;지역명 입력&gt;
+	</text>
+	<combo_box name="crash_behavior_combobox">
+		<combo_item type="string" length="1" name="Askbeforesending">
+			보내기 전에 확인
+		</combo_item>
+		<combo_item type="string" length="1" name="Alwayssend">
+			항상 보내기
+		</combo_item>
+		<combo_item type="string" length="1" name="Neversend">
+			보내지 않음
+		</combo_item>
+	</combo_box>
+	<combo_box name="language_combobox">
+		<combo_item type="string" length="1" name="System Default Language">
+			시스템 기본값
+		</combo_item>
+		<combo_item type="string" length="1" name="English">
+			English (영어)
+		</combo_item>
+		<combo_item type="string" length="1" name="Chinese">
+			中文 (简体) (중국어) - 베타
+		</combo_item>
+		<combo_item type="string" length="1" name="Deutsch(German)">
+			Deutsch (독일어) - 베타
+		</combo_item>
+		<combo_item type="string" length="1" name="French">
+			Français (불어) - 베타
+		</combo_item>
+		<combo_item type="string" length="1" name="(Japanese)">
+			日本語 (일본어) - 베타
+		</combo_item>
+		<combo_item type="string" length="1" name="(Korean)">
+			한국어 - 베타
+		</combo_item>
+		<combo_item type="string" length="1" name="Portugese">
+			Português(포르투갈어) - 베타
+		</combo_item>
+		<combo_item type="string" length="1" name="Spanish">
+			Español (스페인어) - 베타
+		</combo_item>
+	</combo_box>
+	<check_box label="오브젝트와 언어 공유" name="language_is_public"
+	     tool_tip="인월드 오브젝트에 사용자의 기본 언어를 설정할 수 있습니다." />
+</panel>

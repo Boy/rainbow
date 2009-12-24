@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater name="price_for_listing" title="クラシファイド広告掲載">
+	<text name="explanation_text">
+		クラシファイド広告は1週間に
+わたり、掲載されます。 
+ 
+広告の掲載順は、支払う広告料に 
+よります。広告料が最も高い広告が
+最初に掲載され、検索結果でも
+上位に表示されます。
+	</text>
+	<text name="price_text">
+		広告料金（L$）：
+	</text>
+	<button label="価格を設定" name="set_price_btn" />
+	<button label="取り消し" name="cancel_btn" />
+</floater>

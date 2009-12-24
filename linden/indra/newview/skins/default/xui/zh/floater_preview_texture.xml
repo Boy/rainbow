@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater name="preview_texture" title="材质: 灰色金属涂抹">
+	<text type="string" length="1" name="desc txt">
+		描述:
+	</text>
+	<text type="string" length="1" name="dimensions">
+		尺寸: [WIDTH] x [HEIGHT]
+	</text>
+</floater>

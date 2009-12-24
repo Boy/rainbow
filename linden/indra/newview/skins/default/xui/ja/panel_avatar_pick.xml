@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<panel name="Pick" title="選択">
+	<button label="ロケーションを設定" name="set_location_btn" left="165" width="135"/>
+	<button label="ﾃﾚﾎﾟｰﾄ" name="pick_teleport_btn" width="55"/>
+	<button label="地図上に表示" name="pick_map_btn" left="65"/>
+	<text name="sort_order_text">
+		振り分け：
+	</text>
+	<check_box label="有効化" name="enabled_check" />
+</panel>

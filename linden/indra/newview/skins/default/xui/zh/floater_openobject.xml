@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater name="objectcontents" title="物体内容">
+	<text type="string" length="1" name="object_name">
+		[DESC]:
+	</text>
+	<button label="复制至库存" label_selected="复制至库存"
+	     name="copy_to_inventory_button" />
+	<button label="复制并穿着" label_selected="复制并穿着"
+	     name="copy_and_wear_button" />
+</floater>

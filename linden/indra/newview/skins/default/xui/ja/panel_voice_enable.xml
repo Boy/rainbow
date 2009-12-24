@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<panel name="content_panel">
+	<text_editor name="voice_intro_text1">
+		Second Lifeのボイスチャットへようこそ！ ボイスチャットで、他の住人と会話を楽しむことができます。 このウィザードは、ボイスチャットの設定に必要な手順を案内します。 ボイス・チャットを使用するには、オーディオ・スピーカーが必要です。また、他の人と話をするには、マイクロフォンまたはマイクロフォン付きのステレオ・ヘッドセットが必要です。
+	</text_editor>
+	<text_editor name="voice_intro_text2">
+		ボイスチャットはデフォルトで有効になっています。 ボイスチャットをこのまま使用しますか?
+	</text_editor>
+	<radio_group name="voice_enable">
+		<radio_item name="1">
+			はい、ボイスチャットをこのまま使います。
+		</radio_item>
+		<radio_item name="0">
+			いいえ、ボイスチャットを無効にします。
+		</radio_item>
+	</radio_group>
+	<text_editor name="voice_intro_text3">
+		環境設定のボイスチャットタブで、いつでもボイスチャットを有効にできます。
+	</text_editor>
+	<text_editor name="voice_intro_text4">
+		ボイスチャットの環境設定を行うには、次へをクリックしてください。Second Lifeを引き続き使用する場合は、終了をクリックしてください。
+	</text_editor>
+</panel>

@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel name="Panel Avatar">
+	<tab_container name="tab">
+		<panel label="セカンドライフ" name="2nd Life">
+			<string name="CaptionTextAcctInfo">
+				[ACCTTYPE]
+[PAYMENTINFO]
+[AGEVERIFICATION]
+			</string>
+			<string name="AcctTypeResident">
+				住人
+			</string>
+			<string name="AcctTypeTrial">
+				トライアル
+			</string>
+			<string name="AcctTypeCharterMember">
+				特権メンバー
+			</string>
+			<string name="AcctTypeEmployee">
+				Linden Lab従業員
+			</string>
+			<string name="PaymentInfoUsed">
+				支払い情報登録済
+			</string>
+			<string name="PaymentInfoOnFile">
+				支払い情報登録済み
+			</string>
+			<string name="NoPaymentInfoOnFile">
+				支払い情報未登録
+			</string>
+			<string name="AgeVerified">
+				年齢確認済み
+			</string>
+			<string name="NotAgeVerified">
+				年齢未確認
+			</string>
+			<text name="Name:">
+				名前：
+			</text>
+			<text name="online_yes">
+				現在オンライン中
+			</text>
+			<text name="label">
+				生年月日：
+			</text>
+			<text name="label2">
+				アカウント：
+			</text>
+			<text name="partner_label" tool_tip="Second Lifeパートナーです。 設定方法の詳細については、www.secondlife.com/partnerを参照してください。">
+				ﾊﾟｰﾄﾅｰ：
+			</text>
+			<button label="i" label_selected="i" name="partner_info" tool_tip="クリックして、パートナーのプロフィールを開けてください。"/>
+			<button label="?" label_selected="?" name="partner_help"/>
+			<line_editor name="partner_edit" tool_tip="Second Lifeパートナーです。 設定方法の詳細については、www.secondlife.com/partnerを参照してください。">
+				[FIRST] [LAST]
+			</line_editor>
+			<text name="Photo:">
+				写真：
+			</text>
+			<texture_picker label="" name="img" tool_tip="写真をクリックして選択"/>
+			<text name="Groups:">
+				グループ：
+			</text>
+			<text name="About:">
+				情報：
+			</text>
+			<text name="(500 chars)">
+				(500字)
+			</text>
+			<text name="Give item:">
+				品目を贈る：
+			</text>
+			<text name="Give inventory" tool_tip="ここに物品目をドロップしてこの人に贈ります">
+				持ち物アイテムをここにドロップします
+			</text>
+			<check_box label="検索に表示" name="allow_publish" tool_tip="検索で、詳細やイメージなどさらなるプロフィール情報を公開する。"/>
+			<button label="?" label_selected="?" name="?"/>
+			<button label="地図上で検索" label_selected="地図上で検索" name="Find on Map"/>
+			<button label="テレポートを贈る" label_selected="テレポートを贈る" name="Offer Teleport..."/>
+			<button label="フレンドを追加" label_selected="フレンドを追加" name="Add Friend..."/>
+			<button label="支払う" label_selected="支払う" name="Pay..."/>
+			<button label="ｲﾝｽﾀﾝﾄ･ﾒｯｾｰｼﾞ" label_selected="ｲﾝｽﾀﾝﾄ･ﾒｯｾｰｼﾞ" name="Instant Message..." tool_tip="インスタント・メッセージ (IM)"/>
+			<button label="無視する" label_selected="無視する" name="Mute"/>
+		</panel>
+		<panel label="ウェブ" name="WebProfile">
+			<flyout_button label="ロード" label_selected="ロード" name="load" tool_tip="プロファイル・ページを内蔵ブラウザーでロードします。">
+				<flyout_button_item name="open_item">
+					内蔵ブラウザ
+				</flyout_button_item>
+				<flyout_button_item name="home_item">
+					ホームURL
+				</flyout_button_item>
+			</flyout_button>
+			<button label="?" label_selected="?" name="web_profile_help"/>
+			<check_box label="ウェブ・プロフィール自動ロード" name="auto_load" tool_tip="プロフィールにあるすべてのウェブ・ページを確認なしで自動的にロードする"/>
+		</panel>
+		<panel label="興味" name="Interests">
+			<text name="I Want To:" width="74">
+				したいこと：
+			</text>
+			<check_box label="作成" name="chk0"/>
+			<check_box label="探検" name="chk1"/>
+			<check_box label="出会い" name="chk2"/>
+			<check_box label="就職" name="chk6"/>
+			<check_box label="グループ" name="chk3"/>
+			<check_box label="購入" name="chk4"/>
+			<check_box label="販売" name="chk5"/>
+			<check_box label="雇用" name="chk7"/>
+			<text name="Skills:">
+				スキル：
+			</text>
+			<check_box label="テクスチャー" name="schk0"/>
+			<check_box label="アーキテクチャ" name="schk1"/>
+			<check_box label="イベント計画" name="schk2"/>
+			<check_box label="モデル" name="schk3"/>
+			<check_box label="スクリプト" name="schk4"/>
+			<check_box label="キャラクターのカスタム" name="schk5"/>
+			<text name="Languages:">
+				言語：
+			</text>
+		</panel>
+		<panel label="ピック" name="Picks">
+			<text name="Tell everyone about your favorite places in Second Life.">
+				Second Lifeのお気入りの場所を皆に教えてください
+			</text>
+			<button label="新規..." label_selected="新規..." name="New..."/>
+			<button label="削除..." label_selected="削除..." name="Delete..."/>
+			<text name="loading_text">
+				ロード中．．．
+			</text>
+		</panel>
+		<panel label="クラシファイド広告" name="Classified">
+			<text name="Place an ad in Second Life&apos;s classified listings.">
+				SecondLifeのクラシファイドリストに広告を載せます。
+			</text>
+			<button label="新規..." label_selected="新規..." name="New..."/>
+			<button label="削除..." label_selected="削除..." name="Delete..."/>
+			<text name="loading_text">
+				ロード中．．．
+			</text>
+		</panel>
+		<panel label="リアルライフ" name="1st Life">
+			<text name="Photo:">
+				写真：
+			</text>
+			<texture_picker label="" name="img" tool_tip="写真をクリックして選択"/>
+			<text name="Info:">
+				情報：
+			</text>
+			<text name="(250 chars)">
+				(250字)
+			</text>
+		</panel>
+		<panel label="私の記録" name="My Notes">
+			<string name="Loading">
+				ロード中．．．
+			</string>
+			<text name="label">
+				このスペースには、進行中の取引、共同プロジェクトなどこの人物に関
+わるメモを記録してください。 本人を含めた他人には見ることのできな
+い、あなただけのメモ帳です。</text>
+		</panel>
+	</tab_container>
+	<button label="OK" label_selected="OK" name="OK"/>
+	<button label="取り消し" label_selected="取り消し" name="Cancel"/>
+	<button label="キック" label_selected="キック" name="Kick"/>
+	<button label="フリーズ" label_selected="フリーズ" name="Freeze" tool_tip="この住人の動きと会話を停止します。"/>
+	<button label="解凍" label_selected="解凍" name="Unfreeze" tool_tip="住人のフリーズを解除"/>
+	<button label="CSR" label_selected="CSR" name="csr_btn" tool_tip="この住人のカスタマー・サービス・ツールを開きます。"/>
+	<string name="ShowOnMapNonFriend">
+		地図上でロケーションを表示します。
+相手とフレンドシップを交わしていないため、表示できません。
+	</string>
+	<string name="ShowOnMapFriendOffline">
+		地図上でロケーションを表示します。
+    相手がオンラインではないため、表示できません。
+	</string>
+	<string name="ShowOnMapFriendOnline">
+		地図上でロケーションを表示します。
+	</string>
+	<string name="TeleportGod">
+		あなたのロケーションに強制テレポート
+	</string>
+	<string name="TeleportPrelude">
+		あなたのロケーションへのテレポートを贈ります。
+あなたがオリエンテーション・アイランドを去るまで無効です。
+	</string>
+	<string name="TeleportNormal">
+		あなたのロケーションへのテレポートを贈ります。
+	</string>
+	<string name="Loading">
+		ローディング．．．
+	</string>
+</panel>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<panel label="音声とビデオ" name="Media panel">
+	<text type="string" length="1" name="muting_text">
+		ボリューム：
+	</text>
+	<check_box label="オーディオをミュート" name="disable audio" />
+	<text name="streaming_prefs_text">
+		ストリーム環境設定：
+	</text>
+	<text name="audio_prefs_text">
+		オーディオ環境設定：
+	</text>
+	<panel label="ボリューム" name="Volume Panel" />
+	<check_box label="メディアを自動再生" name="auto_streaming_video" />
+	<check_box
+	     label="ウィンドウが最小化されたときにオーディオをミュート"
+	     name="mute_when_minimized" />
+	<text type="string" length="1" name="streaming_text">
+		ストリーミング：
+	</text>
+	<check_box label="音楽がある場合再生する（通信が重くなる）"
+	     name="streaming_music" />
+	<check_box
+	     label="ストリーミング・メディア使用可時に再生（帯域幅の消費増）"
+	     name="streaming_video" />
+	<text type="string" length="1" name="system_volume_text">
+		サウンド効果：
+	</text>
+	<text type="string" length="1" name="wind_volume_text">
+		風の音量：
+	</text>
+	<text type="string" length="1" name="footsteps_volume_text">
+		足音：
+	</text>
+	<text type="string" length="1" name="ui_volume_text">
+		UI音量：
+	</text>
+	<slider label="ドップラー効果" name="Doppler Effect" />
+	<slider label="遠隔要因" name="Distance Factor" />
+	<slider label="ロールオフ係数" name="Rolloff Factor" />
+	<spinner label="L$変更基準点" name="L$ Change Threshold" />
+	<spinner label="ヘルス変化基準点" name="Health Change Threshold" />
+	<text type="string" length="1" name="doppler_effect_text">
+		オーディオ環境設定：
+	</text>
+	<text type="string" length="1" name="distance_factor_text">
+		距離係数：
+	</text>
+	<text type="string" length="1" name="rolloff_factor_text">
+		ロールオフ：
+	</text>
+	<text type="string" length="1" name="default_upload_bitrate_text">
+		デフォルトUL速度：
+	</text>
+	<radio_group name="bitrate">
+		<radio_item type="string" length="1" name="32kbps">
+			32kbps
+		</radio_item>
+		<radio_item type="string" length="1" name="64kbps">
+			64kbps
+		</radio_item>
+		<radio_item type="string" length="1" name="96kbps">
+			96kbps
+		</radio_item>
+		<radio_item type="string" length="1" name="128kbps">
+			128kbps
+		</radio_item>
+	</radio_group>
+</panel>

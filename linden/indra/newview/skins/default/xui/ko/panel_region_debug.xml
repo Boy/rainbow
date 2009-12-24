@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<panel label="디버그" name="Debug">
+	<text name="region_text_lbl">
+		지역:
+	</text>
+	<text name="region_text">
+		알 수 없음
+	</text>
+	<check_box label="스크립트 끄기" name="disable_scripts_check"
+	     tool_tip="이 지역 내 모든 스크립트 끄기" />
+	<button label="?" name="disable_scripts_help" />
+	<check_box label="충돌 끄기" name="disable_collisions_check"
+	     tool_tip="이 지역 내 비아바타 충돌 끄기" />
+	<button label="?" name="disable_collisions_help" />
+	<check_box label="물리엔진 끄기" name="disable_physics_check"
+	     tool_tip="이 지역 내 모든 물리엔진 끄기" />
+	<button label="?" name="disable_physics_help" />
+	<button label="적용" name="apply_btn" />
+	<line_editor name="target_avatar_name">
+		(없음)
+	</line_editor>
+	<button label="선택" name="choose_avatar_btn" />
+	<button label="타인 토지상에 있는 스크립트 오브젝트 반환"
+	     name="return_scripted_other_land_btn" />
+	<button label="모든 스크립트 오브젝트 반환" name="return_scripted_all_btn" />
+	<check_box label="스크립트가 있는 오브젝트만 반환" name="return_scripts"
+	     tool_tip="스크립트가 있는 오브젝트만 반환합니다." />
+	<check_box label="다른 주민의 토지에 속한 오브젝트만 반환"
+	     name="return_other_land"
+	     tool_tip="다른 주민이 소유하고 있는 토지에 있는 오브젝트만 반환합니다." />
+	<check_box label="이 사유지의 모든 지역에 속한 오브젝트 반환"
+	     name="return_estate_wide"
+	     tool_tip="이 사유지를 구성하는 모든 지역에 포함되는 오브젝트를 반환합니다." />
+	<button label="반환" name="return_btn" />
+	<button label="대용량 콜라이더 보기…" name="top_colliders_btn"
+	     tool_tip="충돌 가능한 최상위 오브젝트 목록" />
+	<button label="?" name="top_colliders_help" />
+	<button label="대용량 스크립트 보기…" name="top_scripts_btn"
+	     tool_tip="스크립트 실행에 가장 많은 시간을 소모하는 오브젝트 목록" />
+	<button label="?" name="top_scripts_help" />
+	<button label="지역 재시작" name="restart_btn"
+	     tool_tip="2분간 카운트다운한 후 지역을 재시작합니다" />
+	<button label="?" name="restart_help" />
+	<button label="지연 재시작" name="cancel_restart_btn"
+	     tool_tip="한 시간 단위로 지연 지역 재시작" />
+</panel>

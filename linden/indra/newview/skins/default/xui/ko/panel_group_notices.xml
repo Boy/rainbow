@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<panel label="공지" name="notices_tab">
+	<text name="help_text">
+		공지는 메시지를 방송하거나 첨부한 아이템을 전송하여 
+ 그룹 사이에서 의사소통을 빨리 
+ 할 수 있는 방법입니다.공지는 
+ 공지를 받을 수 있는 역할을 가진 그룹 회원에게만 
+ 전송됩니다.일반 탭에서 
+ 공지를 끌 수 있습니다.
+	</text>
+	<text name="no_notices_text">
+		과거 공지가 없습니다.
+	</text>
+	<button label="?" label_selected="?" name="help_button" />
+	<text name="lbl">
+		그룹 공지
+	</text>
+	<text name="lbl2">
+		공지는 14일 동안 보관됩니다. 보려는 공지를 다음에서 클릭하십시오.
+새로운 공지를 수령한 경우 &apos;새로고침&apos; 버튼을 클릭하십시오.
+공지 목록은 매일 그룹당 200개로 제한됩니다.
+	</text>
+	<scroll_list name="notice_list">
+		<column label="" name="icon" />
+		<column label="제목" name="subject" />
+		<column label="부터" name="from" />
+		<column label="날짜" name="date" />
+	</scroll_list>
+	<text name="notice_list_none_found">
+		발견되지 않음.
+	</text>
+	<button label="새 공지 만들기" label_selected="새 공지 만들기"
+	     name="create_new_notice" />
+	<button label="새로 고침" label_selected="목록 새로 고침"
+	     name="refresh_notices" />
+	<panel label="새 공지 만들기" name="panel_create_new_notice">
+		<text name="lbl">
+			공지 만들기
+		</text>
+		<text name="lbl2">
+			공지를 전송하려면 제목을 입력해야 합니다. 인벤토리에서
+이 창으로 아이템을 드래그하여 공지 작성창에 단일 아이템을
+첨부할 수 있습니다. 첨부한 아이템은 복사 및 전송할
+수 있지만 전체 폴더를 전송할 수는 없습니다.
+		</text>
+		<text name="lbl3">
+			제목:
+		</text>
+		<text name="lbl4">
+			메시지:
+		</text>
+		<text name="lbl5">
+			착용:
+		</text>
+		<button label="착용물 삭제" label_selected="착용물 삭제"
+		     name="remove_attachment" />
+		<button label="공지 전송" label_selected="공지 전송" name="send_notice" />
+		<panel name="drop_target"
+		     tool_tip="인벤토리 아이템을 공지와 함께 보내려면 메시지 박스로 드래그하십시오. 공지와 함께 보내려면 복사와 전송할 권리를 허가받아야 합니다." />
+	</panel>
+	<panel label="과거 공지 보기" name="panel_view_past_notice">
+		<text name="lbl">
+			공지 보관함
+		</text>
+		<text name="lbl2">
+			새로운 공지를 전송하려면 위의 &apos;새 공지 만들기&apos; 버튼을 클릭하십시오.
+		</text>
+		<text name="lbl3">
+			제목:
+		</text>
+		<text name="lbl4">
+			메시지:
+		</text>
+		<button label="첨부 열기" label_selected="첨부 열기" name="open_attachment" />
+	</panel>
+</panel>

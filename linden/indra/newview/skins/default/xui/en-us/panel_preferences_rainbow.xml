@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<panel border="true" top="20" enabled="true" follows="left|top|right|bottom"
+     height="400" label="Rainbow Features" left="10" mouse_opaque="true" name="rainbow"
+     width="517">
+	<check_box bottom_delta="-20" control_name="ForceShowGrid" enabled="true"
+	     follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
+	     label="Show the grid selection combo on the login screen" left="10"
+	     mouse_opaque="true" name="force_show_grid_check" radio_style="false"
+	     width="400" />
+	<check_box bottom_delta="-20" control_name="SaveScriptsAsMono" enabled="true"
+	     follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
+	     label="Save scripts in inventory as Mono scripts instead of LSL2" left="10"
+	     mouse_opaque="true" name="save_scripts_as_mono_check" radio_style="false"
+	     width="400" />
+	<check_box bottom_delta="-20" control_name="DoubleClickTeleport" enabled="true"
+	     follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
+	     label="Enable teleporting via double-click in-world" left="10"
+	     mouse_opaque="true" name="double_click_teleport_check" radio_style="false"
+	     width="400" />
+	<check_box bottom_delta="-20" control_name="HideNotificationsInChat" enabled="true"
+	     follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
+	     label="Do not echo/log notifications in chat" left="10"
+	     mouse_opaque="true" name="hide_notifications_in_chat_check" radio_style="false"
+	     width="400" />
+	<check_box bottom_delta="-20" control_name="AllowMUpose" enabled="true"
+	     follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
+	     label="Allow MU* pose style in chat and IM (with ':' as a synonymous to '/me ')" left="10"
+	     mouse_opaque="true" name="allow_mu_pose_check" radio_style="false"
+	     width="400" />
+	<check_box bottom_delta="-20" control_name="AutoCloseOOC" enabled="true"
+	     follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
+	     label="Auto-close OOC chat (i.e. add '))' if not found and '((' was used)" left="10"
+	     mouse_opaque="true" name="auto_close_ooc_check" radio_style="false"
+	     width="400" />
+	<check_box bottom_delta="-20" control_name="UseOldTrackingDots" enabled="true"
+	     follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
+	     label="Use the old T-like tracking dots in the mini-map" left="10"
+	     mouse_opaque="true" name="use_old_tracking_dots_check" radio_style="false"
+	     width="400" />
+	<check_box bottom_delta="-20" control_name="PrivateLookAt" enabled="true"
+	     follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
+	     label="Do not look at or point to objects beyond 20m (defeats ShowLookAt)" left="10"
+	     mouse_opaque="true" name="private_look_at_check" radio_style="false"
+	     width="400" />
+	<check_box bottom_delta="-20" control_name="FetchInventoryOnLogin" enabled="true"
+	     follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
+	     label="Automatically fetch the inventory in the background after login" left="10"
+	     mouse_opaque="true" name="fetch_inventory_on_login_check" radio_style="false"
+	     width="400" />
+	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+	     bottom_delta="-30" drop_shadow_visible="true" enabled="true" follows="left|top"
+	     font="SansSerifSmall" h_pad="0" halign="left" height="10" hidden="false"
+	     left="10" mouse_opaque="true" name="time_format_text_box" v_pad="0"
+	     width="80">
+		Time format:
+	</text>
+	<combo_box allow_text_entry="false" bottom_delta="-5" enabled="true" follows="left|top"
+	     height="18" hidden="false" left="90" max_chars="20" mouse_opaque="true"
+	     name="time_format_combobox" width="130">
+		<combo_item type="string" length="1" enabled="true" name="24hours" value="default">
+			24 hours clock
+		</combo_item>
+		<combo_item type="string" length="1" enabled="true" name="12hours" value="default">
+			12 hours clock
+		</combo_item>
+	</combo_box>
+	<check_box bottom_delta="0" control_name="SecondsInChatAndIMs" enabled="true"
+	     follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
+	     label="Seconds in chat/IMs timestamps" left="240"
+	     mouse_opaque="true" name="seconds_in_chat_and_ims_check" radio_style="false"
+	     width="260" />
+	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+	     bottom_delta="-25" drop_shadow_visible="true" enabled="true" follows="left|top"
+	     font="SansSerifSmall" h_pad="0" halign="left" height="10" hidden="false"
+	     left="10" mouse_opaque="true" name="date_format_text_box" v_pad="0"
+	     width="80">
+		Date format:
+	</text>
+	<combo_box allow_text_entry="false" bottom_delta="-5" enabled="true" follows="left|top"
+	     height="18" hidden="false" left="90" max_chars="20" mouse_opaque="true"
+	     name="date_format_combobox" width="130">
+		<combo_item type="string" length="1" enabled="true" name="year_first" value="default">
+			YYYY-MM-DD
+		</combo_item>
+		<combo_item type="string" length="1" enabled="true" name="day_first" value="default">
+			DD/MM/YYYY
+		</combo_item>
+		<combo_item type="string" length="1" enabled="true" name="month_first" value="default">
+			MM/DD/YYYY
+		</combo_item>
+	</combo_box>
+</panel>

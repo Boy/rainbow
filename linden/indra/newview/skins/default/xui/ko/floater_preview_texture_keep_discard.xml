@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater name="preview_texture">
+	<text type="string" length="1" name="desc txt">
+		설명:
+	</text>
+	<button label="유지" label_selected="유지" name="Keep" />
+	<button label="취소" label_selected="취소" name="Discard" />
+	<text type="string" length="1" name="dimensions">
+		크기: [WIDTH]x[HEIGHT]
+	</text>
+</floater>

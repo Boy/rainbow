@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<panel label="提案" name="voting_tab">
+	<text name="help_text">
+		グループの問題提起は、
+グループが何をしたいのか、
+特定のことがらに関してどう思うかなどの意識調査のために使用することができます。 あなたに適切な権限があれば、
+問題提起を作成したり、
+公開中の問題提起に対し投票したり、古い問題提起を閲覧したりすることができます。
+	</text>
+	<button label="?" name="help_button" />
+	<text name="proposal_header">
+		公開中のグループ問題提起
+	</text>
+	<text name="proposal_voting_lbl">
+		提案                                                         投票終了                    投票済ですか？
+	</text>
+	<text name="proposals_header_view_txt">
+		公開中のグループ問題提起
+	</text>
+	<text name="proposals_header_view_inst">
+		投票したい提案をダブルクリックします。
+新しい提案を作成する場合は、[ 提案を作成 ] をクリックします。
+	</text>
+	<text name="proposals_header_create_txt">
+		提案を作成
+	</text>
+	<text name="proposals_header_create_inst">
+		新しい提案の説明をタイプしてください。提案の可決に必要な
+選抜者、継続期間、大多数は、変更できます。
+	</text>
+	<text name="proposals_header_vote_txt">
+		提案投票
+	</text>
+	<text name="proposals_header_vote_inst">
+		提案に対して、はい、または、いいえのボタンを押して投票してください。
+または、この提案に対して投票棄権を選択することもできます。
+	</text>
+	<text name="proposals_header_voted_inst">
+		次のように投票しました: [VOTE]
+	</text>
+	<text name="empty_proposal_txt">
+		あなたが作成しようとしている問題提起は白紙です。  作成する前に、提起する問題を記入してください。
+	</text>
+	<text name="proposal_instructions">
+		投票したい提案をダブルクリックします。新しい提案を作成する場合は、[提案を作成]をクリックします。
+	</text>
+	<text name="proposal_lbl">
+		提案の説明
+	</text>
+	<button label="提案を作成" label_selected="提案を作成" name="btn_proposal" />
+	<button label="提案を表示" label_selected="提案を表示"
+	     name="btn_view_proposal_item" />
+	<button label="リストを表示" label_selected="リストを表示"
+	     name="btn_view_proposal_list" />
+	<text name="quorum_lbl">
+		定足数：
+	</text>
+	<spinner name="quorum"
+	     tool_tip="選挙結果取りまとめに必要な全投票者メンバー数#" />
+	<text name="quorum_text">
+		その内[MEMBERS]メンバーが投票する必要あり。
+	</text>
+	<text name="duration_lbl">
+		継続期間：
+	</text>
+	<spinner name="duration" tool_tip="残りの選挙日数#" />
+	<text name="duration_text">
+		日数
+	</text>
+	<radio_group name="majority" tool_tip="Majority of total votes needed to win.">
+		単純過半数
+		2/3以上の多数
+		満場一致
+	</radio_group>
+	<text name="start_lbl">
+		投票開始：
+	</text>
+	<text name="end_lbl">
+		投票終了：
+	</text>
+	<button label="提案の提出" label_selected="提案の提出" name="btn_submit" />
+	<button label="取り消し" label_selected="取り消し" name="btn_cancel" />
+	<button label="はい" label_selected="はい" name="btn_yes" />
+	<button label="いいえ" label_selected="いいえ" name="btn_no" />
+	<button label="やめる" label_selected="やめる" name="btn_abstain" />
+	<text name="txt">
+		グループ投票履歴
+	</text>
+	<text name="instructions">
+		結果を確認するには、[過去の投票]をダブルクリックするか、いずれかの
+投票を選択した後、[アイテムを表示]をクリックします。
+	</text>
+	<text name="history_list_lbl">
+		過去の投票                                                         投票終了
+	</text>
+	<button label="アイテムを表示" label_selected="アイテムを表示"
+	     name="btn_view_history_item" />
+	<text name="vote_text_lbl">
+		投票結果：
+	</text>
+	<button label="リストを表示" label_selected="リストを表示"
+	     name="btn_view_history_list" />
+	<text name="proposals_submit_yes_txt">
+		提案に、はい、を送信中...
+	</text>
+	<text name="proposals_submit_no_txt">
+		提案に、いいえ、を送信中...
+	</text>
+	<text name="proposals_submit_abstain_txt">
+		提案に、棄権、を送信中...
+	</text>
+	<text name="proposals_submit_new_txt">
+		新しい提案を送信中...
+	</text>
+	<text name="vote_recorded">
+		あなたの投票は受理されました。
+	</text>
+	<text name="vote_previously_recorded">
+		あなたは既に投票を済ませています。選挙中、投票できるのは一度だけです。
+	</text>
+</panel>

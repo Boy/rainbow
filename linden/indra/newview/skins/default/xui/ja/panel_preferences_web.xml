@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<panel label="ウェブ" name="web">
+	<radio_group name="use_external_browser">
+		<radio_item name="external"
+		     tool_tip="ヘルプ、Webリンクなどのために、外部Webブラウザを使用します。フル画面で実行している場合には推奨できません。">
+			外部のウェブ・ブラウザ (Firefox, Safari, Internet Explorer) を使用
+		</radio_item>
+		<radio_item name="internal"
+		     tool_tip="ヘルプやWebリンクに埋め込みWebブラウザを使用します。ブラウザはSecond Lifeの新しいウィンドウとして開きます。">
+			内蔵のウェブ・ブラウザを使用
+		</radio_item>
+	</radio_group>
+	<text name="cache_size_label_l">
+		キャッシュ：
+	</text>
+	<button label="今すぐクリア" name="clear_cache" width="105" />
+	<text name="cookie_label">
+		クッキー：
+	</text>
+	<check_box label="サイトからのクッキーを承認" name="cookies_enabled" />
+	<button label="今すぐクリア" name="clear_cookies" />
+	<text name="proxy_label">
+		プロキシ：
+	</text>
+	<check_box label="ウェブ・プロキシを有効にします。"
+	     name="web_proxy_enabled" />
+	<text name="proxy_text_label">
+		アドレス：
+	</text>
+	<line_editor name="web_proxy_editor"
+	     tool_tip="使用したいプロキシの名前、あるいはIPアドレス" />
+	<spinner label="ポート番号：" name="web_proxy_port" />
+</panel>

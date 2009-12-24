@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater name="buy currency" title="린든달러(L$) 구매">
+	<text name="info_buying">
+		린든달러(L$) 구매
+	</text>
+	<text name="info_cannot_buy">
+		린든달러(L$) 구매 불가
+	</text>
+	<text name="info_need_more">
+		린든달러(L$) 부족
+	</text>
+	<text name="error_message">
+		문제가 발생했습니다.
+	</text>
+	<button label="웹 사이트로 가기" name="error_web" />
+	<text name="contacting">
+		린덱스(LindeX)에 연결 중...
+	</text>
+	<text name="buy_action_unknown">
+		LindeX 환율로 린든달러(L$) 구매
+	</text>
+	<text name="buy_action">
+		[NAME] L$ [PRICE]
+	</text>
+	<text name="currency_action">
+		구매 액
+	</text>
+	<line_editor name="currency_amt">
+		1234
+	</line_editor>
+	<text name="currency_est">
+		약 US$ [USD]
+	</text>
+	<text name="getting_data">
+		데이터를 가져오는 중...
+	</text>
+	<text name="balance_label">
+		현재 보유 린든달러(L$)
+	</text>
+	<text name="balance_amount">
+		L$ [AMT]
+	</text>
+	<text name="buying_label">
+		구매 중인 린든달러(L$)
+	</text>
+	<text name="buying_amount">
+		L$ [AMT]
+	</text>
+	<text name="total_label">
+		구매후 잔고
+	</text>
+	<text name="total_amount">
+		L$ [AMT]
+	</text>
+	<text name="purchase_warning_repurchase">
+		구매는 린든달러(L$) 구매만 수행됩니다.
+작업을 다시 시도해야 합니다.
+	</text>
+	<text name="purchase_warning_notenough">
+		충분한 린든달러를 구매하지 않았습니다.
+구매하려는 금액을 늘리십시오.
+	</text>
+	<button label="구매" name="buy_btn" />
+	<button label="취소" name="cancel_btn" />
+	<text name="buy_currency">
+		약 US$ [USD]에 L$ [LINDENS] 구매
+	</text>
+</floater>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<panel label="会员和角色" name="roles_tab">
+	<text name="default_needs_apply_text">
+		在目前的标签页上有尚未应用的更改。
+	</text>
+	<text name="want_apply_text">
+		您是否愿意现在就应用这些更改?
+	</text>
+	<text name="cant_delete_role">
+		‘普通人’ 和 ‘团长’ 角色属于特殊角色，不能被删除。
+	</text>
+	<button label="?" name="help_button" />
+	<panel name="members_header">
+		<text name="static">
+			成员和角色
+		</text>
+		<text name="static2">
+			社团成员被分配以不同的角色和能力。
+角色和能力的分配可以简单地修改，以便灵活地组织社团。
+		</text>
+	</panel>
+	<panel name="roles_header">
+		<text name="static">
+			角色
+		</text>
+		<text name="role_properties_modifiable">
+			选择下面的一个角色。你可以修改角色的名称、描述和会员头衔。
+		</text>
+		<text name="role_properties_not_modifiable">
+			选择下面的角色，察看它的属性、具有这个角色的成员和其所允许的能力。
+		</text>
+		<text name="role_actions_modifiable">
+			你也可以对角色分配能力。
+		</text>
+		<text name="role_actions_not_modifiable">
+			你可以查看，但不能修改，或者分配这些能力。
+		</text>
+	</panel>
+	<panel name="actions_header">
+		<text name="static">
+			能力
+		</text>
+		<text name="static2">
+			你可以查看每项能力的具体描述，以及哪些角色和会员可以执行此项能力。
+		</text>
+	</panel>
+	<tab_container name="roles_tab_container">
+		<panel label="会员" name="members_sub_tab" tool_tip="Members">
+			<button label="搜索" name="search_button" />
+			<button label="显示全部" name="show_all_button" />
+			<name_list name="member_list">
+				<column label="会员名字" name="name" />
+				<column label="捐献的土地额度" name="donated" />
+				<column label="最后登入" name="online" />
+			</name_list>
+			<button label="邀请一个新人 ..." name="member_invite" />
+			<button label="从社团中驱逐" name="member_eject" />
+			<text name="help_text">
+				你可以添加或移除分配给会员的角色。按住控制键并点击会员的名字，选择多个会员。
+			</text>
+		</panel>
+		<panel label="角色" name="roles_sub_tab">
+			<button label="搜索" name="search_button" />
+			<button label="显示全部" name="show_all_button" />
+			<scroll_list name="role_list">
+				<column label="角色名字" name="name" />
+				<column label="头衔" name="title" />
+				<column label="会员数" name="members" />
+			</scroll_list>
+			<button label="创建新的角色 ..." name="role_create" />
+			<button label="删除角色" name="role_delete" />
+			<text name="help_text">
+				角色都有一个头衔，以及一组这个角色可以执行的能力。团员们可以属于一个或多个角色。一个社团最多有 10 个角色，包括‘普通人’和‘团长’这两个角色。
+			</text>
+		</panel>
+		<panel label="能力" name="actions_sub_tab">
+			<button label="搜索" name="search_button" />
+			<button label="显示全部" name="show_all_button" />
+			<scroll_list name="action_list" tool_tip="选择一个角色查看详细内容。">
+				<column label="" name="icon" />
+				<column label="" name="action" />
+			</scroll_list>
+			<text name="help_text">
+				能力允许持有角色的团员在社团中做特定的事项。能力有很多种。
+			</text>
+		</panel>
+	</tab_container>
+	<panel name="members_footer">
+		<text name="static">
+			分配的角色
+		</text>
+		<text name="static2">
+			允许的能力
+		</text>
+		<scroll_list name="member_assigned_roles">
+			<column label="" name="checkbox" />
+			<column label="" name="role" />
+		</scroll_list>
+		<scroll_list name="member_allowed_actions"
+		     tool_tip="每个能力的详细资料请参见能力标签。">
+			<column label="" name="icon" />
+			<column label="" name="action" />
+		</scroll_list>
+	</panel>
+	<panel name="roles_footer">
+		<text name="static">
+			名称
+		</text>
+		<text name="static2">
+			描述
+		</text>
+		<line_editor name="role_name"><!--placeholder-->
+			雇员
+		</line_editor>
+		<text name="static3">
+			头衔
+		</text>
+		<line_editor name="role_title">
+			(等待中)
+		</line_editor>
+		<text_editor name="role_description">
+			(等待中)
+		</text_editor>
+		<text name="static4">
+			分配的成员
+		</text>
+		<text name="static5"
+		     tool_tip="目前所选择的角色能使用的能力列表如下。">
+			允许能力
+		</text>
+		<check_box label="组员可见" name="role_visible_in_list"
+		     tool_tip="设定该角色的成员对社团外的人是否在一般标签页中可见。" /><!--So long...-->
+		<scroll_list name="role_allowed_actions"
+		     tool_tip="每个能力的详细资料请参见能力标签。">
+			<column label="" name="icon" />
+			<column label="" name="checkbox" />
+			<column label="" name="action" />
+		</scroll_list>
+	</panel>
+	<panel name="actions_footer">
+		<text name="static">
+			描述
+		</text>
+		<text_editor name="action_description"><!--Placeholder again-->
+			这项能力是 ‘从社团中驱逐会员’。只有团长能够驱逐另一个团长。
+		</text_editor>
+		<text name="static2">
+			有该能力的角色
+		</text>
+		<text name="static3">
+			有该能力的会员
+		</text>
+	</panel>
+</panel>

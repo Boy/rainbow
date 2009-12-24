@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater name="groupinfo" title="Linden家 – [グループ情報]">
+	<tab_container name="tab">
+		<panel label="一般" name="gen">
+			<text name="title_box">
+				グループ情報
+			</text>
+			<text name="txt">
+				グループを活用すれば、フレンドたちとのコラボレーションを楽しく進めることができます。
+			</text>
+			<text name="txt2">
+				グループには、タイトル、記章、投票システムがあります。
+			</text>
+			<text name="txt3">
+				グループは誰にでも作成できます。 各人が所属できるグループの最大数は15です。
+			</text>
+			<text name="txt4">
+				グループをアクティブに保つには、3人以上のメンバーが必要です。
+			</text>
+			<text name="group_create_text">
+				グループ作成にはL$100かかります。
+			</text>
+			<text name="lbl">
+				名前：
+			</text>
+			<text name="founder_label">
+				創設者：
+			</text>
+			<text name="lbl2">
+				理念：
+			</text>
+			<check_box label="グループ・リストに表示" name="sho" />
+			<check_box label="グループ・リストに会員を表示" name="sho_mem" />
+			<check_box label="ウェブ上で公開" name="allow_publish"
+			     tool_tip="自分のプロファイル情報をウェブ上で公開します。" />
+			<button label="?" label_selected="?" name="publish_help_btn" />
+			<check_box label="成人" name="mature"
+			     tool_tip="あなたのプロファイル情報は成人向けと見なされています。" />
+		</panel>
+		<panel label="肩書き" name="tit">
+			<text name="txt">
+				グループ・タイトル
+			</text>
+			<text name="txt2">
+				グループには、オフィサーとメンバーを含めることができ、その両方に特別なタイトルを持たせることができます。
+			</text>
+			<text name="txt3">
+				これらの肩書きは、世界やチャットやIMで、名前の前に表示されます。
+			</text>
+			<text name="lbl">
+				オフィサーの肩書き：
+			</text>
+			<text name="lbl2">
+				メンバー・タイトル：
+			</text>
+			<text name="lbl3">
+				テクスチャーを持ち物の外にドラッグし、グループの記章を設定します。
+			</text>
+			<texture_picker name="insig" tool_tip="写真をクリックして選択" />
+		</panel>
+		<panel label="メンバー" name="mem">
+			<text name="txt">
+				グループ・メンバー
+			</text>
+			<text name="txt2">
+				現在のグループのオフィサーとメンバー
+			</text>
+			<text name="txt3">
+				メンバーのプロフィールを表示するには、名前をクリックします。
+			</text>
+			<text name="lbl">
+				オフィサー：
+			</text>
+			<text name="members_label">
+				メンバー：
+			</text>
+			<button label="メンバーを追放" label_selected="メンバーを追放"
+			     name="eject_member_btn" />
+		</panel>
+		<panel label="投票" name="voting">
+			<tab_container name="tab">
+				<panel label="選挙" name="recall">
+					<text name="txt">
+						グループ選挙
+					</text>
+					<text name="instructions">
+						[選挙開始]ボタンを押すと、新しい選挙が開始されます。
+候補者には、オフィサー以外の全メンバーが含まれます。
+					</text>
+					<text name="lbl">
+						候補者：
+					</text>
+					<button label="投票" label_selected="投票" name="btn_vote" />
+					<button label="やめる" label_selected="やめる" name="btn_abstain" />
+					<button label="選挙開始" label_selected="選挙開始" name="btn_start_election" />
+					<text name="lbl2">
+						定足数：
+					</text>
+					<spinner name="quorum"
+					     tool_tip="選挙結果取りまとめに必要な全投票者メンバー数#" />
+					<text name="quorum_text">
+						グループ・メンバー総数111のうち。
+					</text>
+					<text name="lbl3">
+						多数派：
+					</text>
+					<radio_group name="majority" tool_tip="Majority of total votes needed to win.">
+						<radio_item name="radio">
+							単純過半数
+						</radio_item>
+						<radio_item name="radio2">
+							2/3以上の多数
+						</radio_item>
+						<radio_item name="radio3">
+							全員一致
+						</radio_item>
+					</radio_group>
+					<text name="duration_lbl">
+						継続期間：
+					</text>
+					<spinner name="duration" tool_tip="残りの選挙日数#" />
+					<text name="duration_days">
+						日数
+					</text>
+					<text name="start_lbl">
+						選挙開始：
+					</text>
+					<text name="end_lbl">
+						選挙終了：
+					</text>
+				</panel>
+				<panel label="提案" name="panel_group_proposals">
+					<text name="txt">
+						グループの問題提起
+					</text>
+					<text name="instructions">
+						現在、有効な問題提起はありません。  [問題提起を作成]ボタンをクリックして、新しい
+問題を提起してください。
+					</text>
+					<text name="proposal_lbl">
+						提案：
+					</text>
+					<button label="はい" label_selected="はい" name="btn_yes" />
+					<button label="いいえ" label_selected="いいえ" name="btn_no" />
+					<button label="やめる" label_selected="やめる" name="btn_abstain" />
+					<button label="リストを表示" label_selected="リストを表示"
+					     name="btn_view_list" />
+					<button label="アイテムを表示" label_selected="アイテムを表示"
+					     name="btn_view_item" />
+					<button label="提案を作成" label_selected="提案を作成" name="btn_proposal" />
+					<button label="提出" label_selected="提出" name="btn_submit" />
+					<text name="quorum_lbl">
+						定足数：
+					</text>
+					<spinner name="quorum"
+					     tool_tip="選挙結果取りまとめに必要な全投票者メンバー数#" />
+					<text name="quorum_text">
+						グループ・メンバー総数111のうち。
+					</text>
+					<text name="majority_lbl">
+						多数派：
+					</text>
+					<radio_group name="majority" tool_tip="Majority of total votes needed to win.">
+						<radio_item name="radio">
+							単純過半数
+						</radio_item>
+						<radio_item name="radio2">
+							2/3以上の多数
+						</radio_item>
+						<radio_item name="radio3">
+							全員一致
+						</radio_item>
+					</radio_group>
+					<text name="duration_lbl">
+						継続期間：
+					</text>
+					<spinner name="duration" tool_tip="残りの選挙日数#" />
+					<text name="duration_text">
+						日数
+					</text>
+					<text name="start_lbl">
+						投票開始：
+					</text>
+					<text name="end_lbl">
+						投票終了：
+					</text>
+				</panel>
+				<panel label="履歴" name="History">
+					<text name="txt">
+						グループ投票履歴
+					</text>
+					<text name="instructions">
+						投票終了を選択すると、グループの過去の投票結果を表示できます。
+					</text>
+					<text name="instructions2">
+						[アイテムを表示]を押します。
+					</text>
+					<text name="history_list_lbl">
+						過去の投票：
+					</text>
+					<text name="vote_text_lbl">
+						投票結果：
+					</text>
+					<button label="リストを表示" label_selected="リストを表示"
+					     name="btn_view_list" />
+					<button label="アイテムを表示" label_selected="アイテムを表示"
+					     name="btn_view_item" />
+				</panel>
+			</tab_container>
+		</panel>
+		<panel label="招待" name="inv">
+			<text name="txt">
+				グループ招待
+			</text>
+			<text name="txt2">
+				招待状がインスタント・メッセージで送られます。
+			</text>
+			<text name="txt3">
+				ユーザーをリストに加えるには、追加ボタンを押します。
+			</text>
+			<text name="lbl">
+				オフィサー：
+			</text>
+			<button label="オフィサーを追加..."
+			     label_selected="オフィサーを追加..." name="add_officer_btn" />
+			<button label="選択したものを削除"
+			     label_selected="選択したものを削除" name="remove_officer_btn" />
+			<text name="lbl2">
+				メンバー：
+			</text>
+			<button label="メンバーを追加..." label_selected="メンバーを追加..."
+			     name="add_member_btn" />
+			<button label="選択したものを削除"
+			     label_selected="選択したものを削除" name="remove_member_btn" />
+			<text name="lbl3">
+				参加費用：
+			</text>
+			<check_box label="会員募集（招待不要）" name="open" />
+		</panel>
+		<panel label="土地" name="land">
+			<text name="txt">
+				グループの保有地
+			</text>
+			<text name="lbl">
+				寄付された土地の合計
+			</text>
+			<button label="地図..." label_selected="地図..." name="map_btn" />
+			<text name="lbl2">
+				土地利用の合計:
+			</text>
+			<text name="lbl3">
+				利用可の土地：
+			</text>
+			<button label="貢献を設定" label_selected="貢献を設定" name="set_contrib_btn" />
+			<text name="warning_label">
+				警告： グループは土地を持ちすぎています。 グループのメンバーは、寄付を増やしてください。
+			</text>
+		</panel>
+		<panel label="お金" name="mon">
+			<tab_container name="group money history tab">
+				<panel label="計画" name="money panel" />
+				<panel label="詳細" name="money panel2">
+					<button label="＜前" label_selected="＜前" name="&lt; Earlier"
+					     tool_tip="時間を戻す" />
+					<button label="あとで＞" label_selected="あとで＞" name="Later &gt;"
+					     tool_tip="時間を進める" />
+				</panel>
+				<panel label="販売" name="money panel3">
+					<button label="＜前" label_selected="＜前" name="&lt; Earlier"
+					     tool_tip="時間を戻す" />
+					<button label="あとで＞" label_selected="あとで＞" name="Later &gt;"
+					     tool_tip="時間を進める" />
+				</panel>
+			</tab_container>
+		</panel>
+	</tab_container>
+	<button label="OK" label_selected="OK" name="OK" />
+	<button label="取り消し" label_selected="取り消し" name="Cancel" />
+</floater>

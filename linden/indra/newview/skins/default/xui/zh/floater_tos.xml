@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater name="modal container" title=" ">
+	<button label="继续" label_selected="继续" name="Continue" />
+	<button label="取消" label_selected="取消" name="Cancel" />
+	<check_box
+		 label="我接受服务条款。"
+		 name="agree_chk" />
+	<text name="tos_title">
+		服务条款协议
+	</text>
+	<text name="tos_heading">
+		登陆第二人生前请仔细阅读下列服务条款。要继续登录到第二人生，
+您必须接受该协议。
+	</text>
+	<web_browser name="tos_html"/>
+
+</floater>

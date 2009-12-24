@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<panel name="GroupInfoFinder" title="Gruppeninfo-Suche">
+	<text name="default_needs_apply_text">
+		Das Register enthält nicht übernommene Änderungen.
+	</text>
+	<text name="want_apply_text">
+		Diese Änderungen übernehmen?
+	</text>
+</panel>

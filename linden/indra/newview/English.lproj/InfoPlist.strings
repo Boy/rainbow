@@ -1,0 +1,6 @@
+/* Localized versions of Info.plist keys */
+
+CFBundleName = "Rainbow Viewer";
+CFBundleShortVersionString = "Rainbow Viewer version 1.22.12.0 R4";
+CFBundleGetInfoString = "Rainbow Viewer version 1.22.12.0 R4, GPL, Boy Lane";
+

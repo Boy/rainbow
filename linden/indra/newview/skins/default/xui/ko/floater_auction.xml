@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater name="floater_auction" title="린든 토지 판매 시작">
+	<check_box label="황색 선택 울타리 포함" name="fence_check" />
+	<button label="스냅샷" label_selected="스냅샷" name="snapshot_btn" />
+	<button label="확인" label_selected="확인" name="ok_btn" />
+	<text name="already for sale">
+		매매용인 구획을 경매할 수 없습니다.
+	</text>
+</floater>
