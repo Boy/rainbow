@@ -1,6 +1,11 @@
 2009-12-25 Boy Lane <boy.lane@yahoo.com>
 
-    * OpenGL fixes applied for better ATI and other newer graphic cards
+    * Release notes added
+
+    new file: ReleaseNotes.txt
+
+
+    * OpenGL fixes applied for better ATI and other newer graphic cards support
     
     modified: linden/indra/llrender/llgl.cpp
     modified: linden/indra/llwindow/GL/glh_genext.h
