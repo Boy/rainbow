@@ -50,9 +50,8 @@ public:
 	void apply();
 	void cancel();
 
-private:
+protected:
 	static void onCommitCheckBox(LLUICtrl* ctrl, void* user_data);
-	void refreshValues();
 	BOOL mShowGrids;
 	BOOL mSaveScriptsAsMono;
 	BOOL mDoubleClickTeleport;
@@ -60,6 +59,7 @@ private:
 	BOOL mUseOldTrackingDots;
 	BOOL mAllowMUpose;
 	BOOL mAutoCloseOOC;
+	BOOL mPlayTypingSound;
 	BOOL mPrivateLookAt;
 	BOOL mFetchInventoryOnLogin;
 	BOOL mRestrainedLife;
@@ -93,15 +93,16 @@ void LLPrefsRainbowImpl::onCommitCheckBox(LLUICtrl* ctrl, void* user_data)
 	}
 }
 
-void LLPrefsRainbowImpl::refreshValues()
+void LLPrefsRainbowImpl::refresh()
 {
-	mShowGrids					= gSavedSettings.getBOOL("ForceShowGrid");
-	mSaveScriptsAsMono			= gSavedSettings.getBOOL("SaveScriptsAsMono");
+	mShowGrids						= gSavedSettings.getBOOL("ForceShowGrid");
+	mSaveScriptsAsMono				= gSavedSettings.getBOOL("SaveScriptsAsMono");
 	mDoubleClickTeleport			= gSavedSettings.getBOOL("DoubleClickTeleport");
 	mHideNotificationsInChat		= gSavedSettings.getBOOL("HideNotificationsInChat");
 	mUseOldTrackingDots			= gSavedSettings.getBOOL("UseOldTrackingDots");
 	mAllowMUpose				= gSavedSettings.getBOOL("AllowMUpose");
 	mAutoCloseOOC				= gSavedSettings.getBOOL("AutoCloseOOC");
+	mPlayTypingSound			= gSavedSettings.getBOOL("PlayTypingSound");
 	mPrivateLookAt				= gSavedSettings.getBOOL("PrivateLookAt");
 	mSecondsInChatAndIMs		= gSavedSettings.getBOOL("SecondsInChatAndIMs");
 	mRestrainedLife				= gSavedSettings.getBOOL("RestrainedLife");
@@ -114,11 +115,6 @@ void LLPrefsRainbowImpl::refreshValues()
 	{
 		mFetchInventoryOnLogin	= gSavedSettings.getBOOL("FetchInventoryOnLogin");
 	}
-}
-
-void LLPrefsRainbowImpl::refresh()
-{
-	refreshValues();
 
 	if (LLStartUp::getStartupState() != STATE_STARTED)
 	{
@@ -176,14 +172,15 @@ void LLPrefsRainbowImpl::refresh()
 
 void LLPrefsRainbowImpl::cancel()
 {
-	gSavedSettings.setBOOL("ForceShowGrid",			mShowGrids);
-	gSavedSettings.setBOOL("SaveScriptsAsMono",		mSaveScriptsAsMono);
+	gSavedSettings.setBOOL("ForceShowGrid",				mShowGrids);
+	gSavedSettings.setBOOL("SaveScriptsAsMono",			mSaveScriptsAsMono);
 	gSavedSettings.setBOOL("DoubleClickTeleport",		mDoubleClickTeleport);
 	gSavedSettings.setBOOL("HideNotificationsInChat",	mHideNotificationsInChat);
 	gSavedSettings.setBOOL("UseOldTrackingDots",		mUseOldTrackingDots);
-	gSavedSettings.setBOOL("AllowMUpose",			mAllowMUpose);
-	gSavedSettings.setBOOL("AutoCloseOOC",			mAutoCloseOOC);
-	gSavedSettings.setBOOL("PrivateLookAt",			mPrivateLookAt);
+	gSavedSettings.setBOOL("AllowMUpose",				mAllowMUpose);
+	gSavedSettings.setBOOL("AutoCloseOOC",				mAutoCloseOOC);
+	gSavedSettings.setBOOL("PlayTypingSound",			mPlayTypingSound);
+	gSavedSettings.setBOOL("PrivateLookAt",				mPrivateLookAt);
 	gSavedSettings.setBOOL("FetchInventoryOnLogin",		mFetchInventoryOnLogin);
 	gSavedSettings.setBOOL("RestrainedLife",			mRestrainedLife);
 	gSavedSettings.setBOOL("SecondsInChatAndIMs",		mSecondsInChatAndIMs);
@@ -241,8 +238,6 @@ void LLPrefsRainbowImpl::apply()
 	gSavedSettings.setString("ShortTimeFormat",	short_time);
 	gSavedSettings.setString("LongTimeFormat",	long_time);
 	gSavedSettings.setString("TimestampFormat",	timestamp);
-
-	refreshValues();
 }
 
 //---------------------------------------------------------------------------

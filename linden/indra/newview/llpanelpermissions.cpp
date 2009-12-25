@@ -908,6 +908,12 @@ void LLPanelPermissions::onClickLastOwner(void *data)
 
 	if ( self->mLastOwnerID.notNull() )
 	{
+//MK
+		if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+		{
+			return;
+		}
+//mk
 		LLFloaterAvatarInfo::showFromObject(self->mLastOwnerID);
 	}
 }
