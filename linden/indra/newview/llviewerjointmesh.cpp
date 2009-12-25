@@ -838,9 +838,20 @@ void (*LLViewerJointMesh::sUpdateGeometryFunc)(LLFace* face, LLPolyMesh* mesh);
 void LLViewerJointMesh::updateVectorize()
 {
 	sVectorizePerfTest = gSavedSettings.getBOOL("VectorizePerfTest");
-	sVectorizeProcessor = gSavedSettings.getU32("VectorizeProcessor");
 	BOOL vectorizeEnable = gSavedSettings.getBOOL("VectorizeEnable");
 	BOOL vectorizeSkin = gSavedSettings.getBOOL("VectorizeSkin");
+	if (sVectorizePerfTest) {
+		// get CPUInfos to ask hasSSE | hasSSE2 if cpu supports sse|sse2
+		LLCPUInfo CPUInfo;
+		llinfos << "CPU supports SSE " << ( CPUInfo.hasSSE() ? "TRUE" : "FALSE" ) << llendl;
+		llinfos << "CPU supports SSE2 " << ( CPUInfo.hasSSE2() ? "TRUE" : "FALSE" ) << llendl;
+		if (CPUInfo.hasSSE() && CPUInfo.hasSSE2()) { sVectorizeProcessor = 2; }
+		if (CPUInfo.hasSSE() && !sVectorizeProcessor) { sVectorizeProcessor = 1; }
+		if (sVectorizeProcessor != 0) { 
+			vectorizeEnable = 1;
+			vectorizeSkin = 1;
+		}
+	}
 
 	std::string vp;
 	switch(sVectorizeProcessor)

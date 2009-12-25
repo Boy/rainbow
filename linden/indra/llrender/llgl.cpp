@@ -109,10 +109,6 @@ PFNGLGETQUERYIVARBPROC glGetQueryivARB = NULL;
 PFNGLGETQUERYOBJECTIVARBPROC glGetQueryObjectivARB = NULL;
 PFNGLGETQUERYOBJECTUIVARBPROC glGetQueryObjectuivARB = NULL;
 
-// GL_ARB_point_parameters
-PFNGLPOINTPARAMETERFARBPROC glPointParameterfARB = NULL;
-PFNGLPOINTPARAMETERFVARBPROC glPointParameterfvARB = NULL;
-
 // GL_EXT_framebuffer_object
 PFNGLISRENDERBUFFEREXTPROC glIsRenderbufferEXT = NULL;
 PFNGLBINDRENDERBUFFEREXTPROC glBindRenderbufferEXT = NULL;
@@ -243,10 +239,6 @@ PFNGLISPROGRAMARBPROC glIsProgramARB = NULL;
 PFNGLBINDATTRIBLOCATIONARBPROC glBindAttribLocationARB = NULL;
 PFNGLGETACTIVEATTRIBARBPROC glGetActiveAttribARB = NULL;
 PFNGLGETATTRIBLOCATIONARBPROC glGetAttribLocationARB = NULL;
-
-#if LL_WINDOWS
-PFNWGLSWAPINTERVALEXTPROC			wglSwapIntervalEXT = NULL;
-#endif
 
 #if LL_LINUX
 PFNGLCOLORTABLEEXTPROC glColorTableEXT = NULL;
@@ -588,7 +580,7 @@ void LLGLManager::initExtensions()
 	mHasFramebufferObject = ExtensionExists("GL_EXT_framebuffer_object", gGLHExts.mSysExts)
 		&& ExtensionExists("GL_EXT_packed_depth_stencil", gGLHExts.mSysExts);
 #if !LL_DARWIN
-	mHasPointParameters = !mIsATI && ExtensionExists("GL_ARB_point_parameters", gGLHExts.mSysExts);
+	mHasPointParameters = ExtensionExists("GL_ARB_point_parameters", gGLHExts.mSysExts);
 #endif
 	mHasShaderObjects = ExtensionExists("GL_ARB_shader_objects", gGLHExts.mSysExts) && ExtensionExists("GL_ARB_shading_language_100", gGLHExts.mSysExts);
 	mHasVertexShader = ExtensionExists("GL_ARB_vertex_program", gGLHExts.mSysExts) && ExtensionExists("GL_ARB_vertex_shader", gGLHExts.mSysExts)
@@ -711,8 +703,8 @@ void LLGLManager::initExtensions()
 	}
 	if (mIsATI && mHasMipMapGeneration)
 	{
-		LL_INFOS("RenderInit") << "Disabling mip-map generation for ATI GPUs (performance opt)" << LL_ENDL;
-		mHasMipMapGeneration = FALSE;
+		LL_INFOS("RenderInit") << "__NOT__ Disabling mip-map generation for ATI GPUs (performance opt)" << LL_ENDL;
+		//mHasMipMapGeneration = FALSE;
 	}
 	
 	// Misc

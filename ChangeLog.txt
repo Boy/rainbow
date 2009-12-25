@@ -1,27 +1,36 @@
 2009-12-25 Boy Lane <boy.lane@yahoo.com>
 
+    * OpenGL fixes applied for better ATI and other newer graphic cards
+    
+    modified: linden/indra/llrender/llgl.cpp
+    modified: linden/indra/llwindow/GL/glh_genext.h
+    modified: linden/indra/newview/llappviewerwin32.cpp
+    modified: linden/indra/newview/llviewerjointmesh.cpp
+    modified: linden/doc/contributions.txt
+    
+
     * fixed problem with saving of settings, some were not stored
     
-    modified: linden/intra/newview/prefsrainbow.cpp
-    modified: linden/intra/newvie/llfloaterpreference.cpp
+    modified: linden/indra/newview/prefsrainbow.cpp
+    modified: linden/indra/newvie/llfloaterpreference.cpp
     
 
     * added missing PlayTypingSound toggle
     
-    modified: linden/intra/newview/skins/default/xui/en-us/panel_preferences_rainbow.xml    
-    modified: linden/intra/newview/prefsrainbow.cpp
+    modified: linden/indra/newview/skins/default/xui/en-us/panel_preferences_rainbow.xml    
+    modified: linden/indra/newview/prefsrainbow.cpp
 
 
     * added missing RLV restriction for the last owner profile in Edit/General floater
 
-    modified: linden/intra/newview/llpanelpermissions.cpp
+    modified: linden/indra/newview/llpanelpermissions.cpp
 
 
     * added small AutoIt installer for non-redistributable components
 
-    new file: linden/intra/newview/nrc_install.exe
-    new file: linden/intra/newview/installer/autoit/nrc_install.au3
-    new file: linden/intra/newview/installer/autoit/nrc_install.ico
+    new file: linden/indra/newview/nrc_install.exe
+    new file: linden/indra/newview/installer/autoit/nrc_install.au3
+    new file: linden/indra/newview/installer/autoit/nrc_install.ico
 
 
     * added ChangeLog.txt
