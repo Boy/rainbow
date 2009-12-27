@@ -65,11 +65,17 @@
 #include "lltoolmgr.h"
 #include "lltoolcomp.h"
 #include "llpanelinventory.h"
+//MK
+#include "llvoavatar.h"
+//mk
+
 
 //
 // Imported globals
 //
-
+//MK
+extern BOOL RRenabled;
+//mk
 
 //
 // Globals
@@ -160,6 +166,25 @@ void LLPanelContents::onClickNewScript(void *userdata)
 	LLViewerObject* object = LLSelectMgr::getInstance()->getSelection()->getFirstRootObject(children_ok);
 	if(object)
 	{
+//MK
+		if (RRenabled)
+		{
+			// can't edit objects that someone is sitting on,
+			// when prevented from sit-tping
+			if (gAgent.mRRInterface.contains ("sittp") || gAgent.mRRInterface.mContainsUnsit)
+			{
+				if (object->isSeat())
+				{
+					return;
+				}
+			}
+
+			if (!gAgent.mRRInterface.canDetach(object))
+			{
+				return;
+			}
+		}
+//mk
 		LLPermissions perm;
 		perm.init(gAgent.getID(), gAgent.getID(), LLUUID::null, LLUUID::null);
 		perm.initMasks(

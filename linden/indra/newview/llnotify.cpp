@@ -54,6 +54,12 @@
 #include "lloverlaybar.h" // for gOverlayBar
 #include "lluictrlfactory.h"
 
+//MK
+#include "llviewerregion.h"
+#include "llagent.h"
+extern BOOL RRenabled;
+//mk
+
 // Globals
 LLNotifyBoxView* gNotifyBoxView = NULL;
 
@@ -209,6 +215,21 @@ LLNotifyBox::LLNotifyBox(LLPointer<LLNotifyBoxTemplate> xml_template, const LLSt
 
 	option_list_t options = xml_template->mOptions;
 	options.insert(options.end(), extra_options.begin(), extra_options.end());
+
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	{
+		// hide every occurrence of the Parcel name if the location restriction is active
+		mMessage = gAgent.mRRInterface.stringReplace (mMessage, gAgent.mRRInterface.getParcelName(), "(Parcel hidden)");
+		// hide every occurrence of the Region name if the location restriction is active
+		mMessage = gAgent.mRRInterface.stringReplace (mMessage, gAgent.getRegion()->getName(), "(Region hidden)");
+	}
+	
+	if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+	{
+		mMessage = gAgent.mRRInterface.getCensoredMessage(mMessage);
+	}
+//mk
 
 	// initialize
 
@@ -736,7 +757,7 @@ LLRect LLNotifyBox::getNotifyTipRect(const std::string &utf8message)
 	S32 notify_height = llceil((F32) (line_count+1) * sFont->getLineHeight());
 	if(gOverlayBar)
 	{
-		notify_height += gOverlayBar->getBoundingRect().mTop;
+		notify_height += gOverlayBar->getRect().getHeight();
 	}
 	else
 	{

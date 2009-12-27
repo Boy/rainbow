@@ -49,11 +49,16 @@ class LLChatBar
 {
 public:
 	// constructor for inline chat-bars (e.g. hosted in chat history window)
-	LLChatBar();
+	LLChatBar(const std::string& name);
+	LLChatBar(const std::string& name, const LLRect& rect);
 	~LLChatBar();
 	virtual BOOL postBuild();
 
+	virtual void reshape(S32 width, S32 height, BOOL called_from_parent);
 	virtual BOOL handleKeyHere(KEY key, MASK mask);
+
+	// Adjust buttons and input field for width
+	void		layout();
 
 	void		refresh();
 	void		refreshGestures();
@@ -81,7 +86,8 @@ public:
 	LLWString stripChannelNumber(const LLWString &mesg, S32* channel);
 
 	// callbacks
-	static void	onClickSay( LLUICtrl*, void* userdata );
+	static void	onClickSay( void* userdata );
+	static void	onClickShout( void* userdata );
 
 	static void	onTabClick( void* userdata );
 	static void	onInputEditorKeystroke(LLLineEditor* caller, void* userdata);
@@ -93,11 +99,15 @@ public:
 	static void startChat(const char* line);
 	static void stopChat();
 
+	/*virtual*/ void setVisible(BOOL visible);
+
 protected:
 	void sendChat(EChatType type);
 	void updateChat();
 
 protected:
+	BOOL mSecondary;
+
 	LLLineEditor*	mInputEditor;
 
 	LLFrameTimer	mGestureLabelTimer;

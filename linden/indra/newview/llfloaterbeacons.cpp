@@ -37,6 +37,11 @@
 #include "llcheckboxctrl.h"
 #include "pipeline.h"
 
+//MK
+#include "llagent.h"
+
+extern BOOL RRenabled;
+//mk
 
 LLFloaterBeacons::LLFloaterBeacons(const LLSD& seed)
 {
@@ -72,6 +77,12 @@ BOOL LLFloaterBeacons::postBuild()
 // Too bad we can't just add control_name="BeaconAlwaysOn" to the XML.
 void LLFloaterBeacons::open()
 {
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsEdit)
+	{
+		return;
+	}
+//mk
 	LLFloater::open();
 	gSavedSettings.setBOOL( "BeaconAlwaysOn", TRUE);
 }
@@ -92,6 +103,23 @@ void LLFloaterBeacons::onClickUICheck(LLUICtrl *ctrl, void* data)
 	LLCheckBoxCtrl *check = (LLCheckBoxCtrl *)ctrl;
 	std::string name = check->getName();
 	LLFloaterBeacons* view = (LLFloaterBeacons*)data;
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsEdit)
+	{
+		LLPipeline::setRenderScriptedBeacons(FALSE);
+		LLPipeline::setRenderScriptedTouchBeacons(FALSE);
+		view->getChild<LLCheckBoxCtrl>("scripted")->setControlValue(LLSD(FALSE));
+		view->getChild<LLCheckBoxCtrl>("touch_only")->setControlValue(LLSD(FALSE));
+		LLPipeline::setRenderPhysicalBeacons(FALSE);
+		LLPipeline::setRenderSoundBeacons(FALSE);
+		LLPipeline::setRenderParticleBeacons(FALSE);
+		LLPipeline::setRenderBeacons(FALSE);
+		LLPipeline::setRenderHighlights(FALSE);
+		view->getChild<LLCheckBoxCtrl>("beacons")->setControlValue(LLSD(FALSE));
+		view->getChild<LLCheckBoxCtrl>("highlights")->setControlValue(LLSD(FALSE));
+		return;
+	}
+//mk
 	if(     name == "touch_only")
 	{
 		LLPipeline::toggleRenderScriptedTouchBeacons(NULL);

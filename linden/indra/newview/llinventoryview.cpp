@@ -86,6 +86,10 @@
 
 static LLRegisterWidget<LLInventoryPanel> r("inventory_panel");
 
+//MK
+extern BOOL RRenabled;
+//mk
+
 LLDynamicArray<LLInventoryView*> LLInventoryView::sActiveViews;
 
 //BOOL LLInventoryView::sOpenNextNewItem = FALSE;
@@ -801,6 +805,12 @@ LLInventoryView* LLInventoryView::showAgentInventory(BOOL take_keyboard_focus)
 		return NULL;
 	}
 
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsShowinv) {
+		return NULL;
+	}
+//mk
+
 	LLInventoryView* iv = LLInventoryView::getActiveInventory();
 #if 0 && !LL_RELEASE_FOR_DOWNLOAD
 	if (sActiveViews.count() == 1)
@@ -863,6 +873,11 @@ LLInventoryView* LLInventoryView::getActiveInventory()
 // static
 void LLInventoryView::toggleVisibility()
 {
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsShowinv) {
+		return;
+	}
+//mk
 	S32 count = sActiveViews.count();
 	if (0 == count)
 	{

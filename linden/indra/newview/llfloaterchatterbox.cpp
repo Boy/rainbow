@@ -44,48 +44,6 @@
 #include "llimpanel.h"
 
 //
-// LLFloaterMyFriends
-//
-
-LLFloaterMyFriends::LLFloaterMyFriends(const LLSD& seed)
-{
-	mFactoryMap["friends_panel"] = LLCallbackMap(LLFloaterMyFriends::createFriendsPanel, NULL);
-	mFactoryMap["groups_panel"] = LLCallbackMap(LLFloaterMyFriends::createGroupsPanel, NULL);
-	// do not automatically open singleton floaters (as result of getInstance())
-	BOOL no_open = FALSE;
-	LLUICtrlFactory::getInstance()->buildFloater(this, "floater_my_friends.xml", &getFactoryMap(), no_open);
-}
-
-LLFloaterMyFriends::~LLFloaterMyFriends()
-{
-}
-
-BOOL LLFloaterMyFriends::postBuild()
-{
-	mTabs = getChild<LLTabContainer>("friends_and_groups");
-
-	return TRUE;
-}
-
-
-void LLFloaterMyFriends::onClose(bool app_quitting)
-{
-	setVisible(FALSE);
-}
-
-//static
-void* LLFloaterMyFriends::createFriendsPanel(void* data)
-{
-	return new LLPanelFriends();
-}
-
-//static
-void* LLFloaterMyFriends::createGroupsPanel(void* data)
-{
-	return new LLPanelGroups();
-}
-
-//
 // LLFloaterChatterBox
 //
 LLFloaterChatterBox::LLFloaterChatterBox(const LLSD& seed) :
@@ -94,19 +52,12 @@ LLFloaterChatterBox::LLFloaterChatterBox(const LLSD& seed) :
 	mAutoResize = FALSE;
 
 	LLUICtrlFactory::getInstance()->buildFloater(this, "floater_chatterbox.xml", NULL, FALSE);
-	if (gSavedSettings.getBOOL("ContactsTornOff"))
-	{
-		LLFloaterMyFriends* floater_contacts = LLFloaterMyFriends::getInstance(0);
-		// add then remove to set up relationship for re-attach
-		addFloater(floater_contacts, FALSE);
-		removeFloater(floater_contacts);
-		// reparent to floater view
-		gFloaterView->addChild(floater_contacts);
-	}
-	else
-	{
-		addFloater(LLFloaterMyFriends::getInstance(0), TRUE);
-	}
+	addFloater(mFloaterNewIM = new LLFloaterNewIM(), FALSE);
+
+	// reposition floater from saved settings
+	LLRect rect = gSavedSettings.getRect( "ChatterboxRect" );
+	reshape( rect.getWidth(), rect.getHeight(), FALSE );
+	setRect( rect );
 
 	if (gSavedSettings.getBOOL("ChatHistoryTornOff"))
 	{
@@ -219,20 +170,10 @@ void LLFloaterChatterBox::setMinimized(BOOL minimized)
 
 void LLFloaterChatterBox::removeFloater(LLFloater* floaterp)
 {
-	if (floaterp->getName() == "chat floater")
-	{
-		// only my friends floater now locked
-		mTabContainer->lockTabs(mTabContainer->getNumLockedTabs() - 1);
-		gSavedSettings.setBOOL("ChatHistoryTornOff", TRUE);
-		floaterp->setCanClose(TRUE);
-	}
-	else if (floaterp->getName() == "floater_my_friends")
-	{
-		// only chat floater now locked
-		mTabContainer->lockTabs(mTabContainer->getNumLockedTabs() - 1);
-		gSavedSettings.setBOOL("ContactsTornOff", TRUE);
-		floaterp->setCanClose(TRUE);
-	}
+    // only my friends floater now locked
+	mTabContainer->lockTabs(mTabContainer->getNumLockedTabs() - 1);
+	gSavedSettings.setBOOL("ChatHistoryTornOff", TRUE);
+	floaterp->setCanClose(TRUE);
 	LLMultiFloater::removeFloater(floaterp);
 }
 
@@ -250,31 +191,11 @@ void LLFloaterChatterBox::addFloater(LLFloater* floaterp,
 	{
 		mTabContainer->unlockTabs();
 		// add chat history as second tab if contact window is present, first tab otherwise
-		if (getChildView("floater_my_friends"))
-		{
-			// assuming contacts window is first tab, select it
-			mTabContainer->selectFirstTab();
-			// and add ourselves after
-			LLMultiFloater::addFloater(floaterp, select_added_floater, LLTabContainer::RIGHT_OF_CURRENT);
-		}
-		else
-		{
-			LLMultiFloater::addFloater(floaterp, select_added_floater, LLTabContainer::START);
-		}
+		LLMultiFloater::addFloater(floaterp, select_added_floater, LLTabContainer::START);
 		
 		// make sure first two tabs are now locked
 		mTabContainer->lockTabs(num_locked_tabs + 1);
 		gSavedSettings.setBOOL("ChatHistoryTornOff", FALSE);
-		floaterp->setCanClose(FALSE);
-	}
-	else if (floaterp->getName() == "floater_my_friends")
-	{
-		mTabContainer->unlockTabs();
-		// add contacts window as first tab
-		LLMultiFloater::addFloater(floaterp, select_added_floater, LLTabContainer::START);
-		// make sure first two tabs are now locked
-		mTabContainer->lockTabs(num_locked_tabs + 1);
-		gSavedSettings.setBOOL("ContactsTornOff", FALSE);
 		floaterp->setCanClose(FALSE);
 	}
 	else

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater bottom="27" can_close="true" can_drag_on_left="false" can_minimize="false"
+     can_resize="true" can_tear_off="true" enabled="true" height="270"
+     hidden="false" left="15" min_height="150" min_width="425"
+     mouse_opaque="true" name="chat floater" rect_control="FloaterChatRect"
+     title="Chat History" short_title="Near Me" width="435">
+	<string name="ringing">
+		Connecting to in-world Voice Chat...
+	</string>
+	<string name="connected">
+		Connected
+	</string>
+	<string name="unavailable">
+		Voice not available at your current location
+	</string>
+	<string name="hang_up">
+		Disconnected from in-world Voice Chat
+	</string>
+	<string name="voice_icon">
+		icn_voice-localchat.tga
+	</string>
+	<string name="IM_logging_string">
+		-- Instant message logging enabled --
+	</string>
+	<string name="IM_end_log_string">
+		-- End of Log --
+	</string>
+
+	<string name="hang_up">Disconnected from in-world Voice Chat</string>
+     
+    <layout_stack border="false" left="2" bottom="2" width="430" height="250" follows="left|top|right|bottom" orientation="horizontal">
+    	<layout_panel border="false" name="im_contents_panel" min_width="275" left="0" bottom="0" width="305" height="130" default_tab_group="1">
+    		 
+		<check_box left="4" enabled="true" follows="left|top" font="SansSerifSmall"
+				height="20" initial_value="false" label="Show Muted Text"
+				left_delta="10" name="show mutes" radio_style="false"
+				width="116" />
+
+    		<button left="270" right="303" bottom_delta="0" height="20" width="70" label="&lt; &lt;" label_selected="&gt; &gt;" follows="right|top" name="toggle_active_speakers_btn" visible="true" tool_tip="Click here to show list of active partipants in this IM session."/>
+
+			<text_editor type="string" length="1" bottom="5" embedded_items="false" enabled="false"
+				follows="left|top|right|bottom" font="SansSerif" height="90"
+				hidden="false" left="6" max_length="2147483647" mouse_opaque="true" track_bottom="true"
+				name="Chat History Editor" text_color="ChatHistoryTextColor"
+				text_readonly_color="ChatHistoryTextColor" width="300" word_wrap="true" />
+			<text_editor type="string" length="1" bottom="5" embedded_items="false" enabled="false"
+				follows="left|top|right|bottom" font="SansSerif" height="90"
+				hidden="false" left="6" max_length="2147483647" mouse_opaque="true" track_bottom="true"
+				name="Chat History Editor with mute" text_color="ChatHistoryTextColor"
+				text_readonly_color="ChatHistoryTextColor" width="300" word_wrap="true" />
+    		   		
+    	</layout_panel>
+
+		<layout_panel name="active_speakers_panel" auto_resize="false" left="0" bottom="0" right="140" height="120" min_width="140" visible="false">
+			<scroll_list name="speakers_list" left="0" right="140" top="120" bottom="78" column_padding="0" follows="left|top|bottom|right" draw_heading="true" draw_stripes="false" multi_select="false" search_column="1">
+	   			<column name="icon_speaking_status" width="20" sort="speaking_status"/>	
+				<column name="speaker_name" label="Name" dynamicwidth="true"/>
+				<column name="speaking_status" label="" width="0"/>
+			</scroll_list>
+			<panel name="volume_container" left="0" right="140" bottom="0" border="true" mouse_opaque="true" bevel_style="in" can_resize="false" height="77" follows="left|bottom|right">
+				<button left="0" right="30" bottom="-28" height="24" name="profile_btn" follows="left|top" label="" image_overlay="icon_avatar_offline.tga" enabled="false"/>
+				<text left_delta="34" bottom_delta="9" name="resident_name" valign="center" follows="left|top|bottom|right" width="100" font="SansSerif">Rumplstiltskin Califragilistic</text>
+				<volume_slider
+					name="speaker_volume"
+					left="5"
+					width="85"
+					bottom_delta="-29"
+					height="15"
+					follows="left|top"
+					min_val="0.0"
+					max_val="1.0"
+					increment="0.05"
+					initial_val="0.5"
+				/>
+				<text type="string" width="45" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+					drop_shadow_visible="true" enabled="true" follows="left|top"
+					font="SansSerifSmall" height="16" hidden="false"
+					left="4" mouse_opaque="true" bottom_delta="-25" name="Mute:" v_pad="0">
+					Mute:
+				</text>
+				<check_box
+					name="mute_text_btn"
+					width="50"
+					bottom_delta="0"
+					left_delta="32"
+					follows="left|top"
+					height="25"
+					enabled="false"
+					label="Text"
+				/>
+				<check_box
+					name="mute_btn"
+					follows="left|top"
+					width="50"
+					bottom_delta="0"
+					left_delta="45"
+					height="25"
+					enabled="false"
+					label="Voice"
+				/>
+			</panel>
+		</layout_panel>
+	</layout_stack>
+
+</floater>

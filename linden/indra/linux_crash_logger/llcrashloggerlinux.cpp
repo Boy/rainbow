@@ -53,13 +53,13 @@
 
 // These need to be localized.
 static const char dialog_text[] =
-"Rainbow Viewer appears to have crashed or frozen last time it ran.\n"
-"This crash reporter collects information about your computer's hardware, operating system, and some Rainbow Viewer logs, all of which are used for debugging purposes only.\n"
+"Cool Viewer appears to have crashed or frozen last time it ran.\n"
+"This crash reporter collects information about your computer's hardware, operating system, and some Cool Viewer logs, all of which are used for debugging purposes only.\n"
 "\n"
 "Send crash report?";
 
 static const char dialog_title[] =
-"Rainbow Viewer Crash Logger";
+"Cool Viewer Crash Logger";
 
 #if LL_GTK
 static void response_callback (GtkDialog *dialog,

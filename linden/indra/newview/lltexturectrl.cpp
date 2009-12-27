@@ -99,6 +99,10 @@ static const F32 CONTEXT_FADE_TIME = 0.08f;
 //static const char WHITE_IMAGE_NAME[] = "Blank Texture";
 //static const char NO_IMAGE_NAME[] = "None";
 
+//MK
+extern BOOL RRenabled;
+//mk
+
 //////////////////////////////////////////////////////////////////////////////////////////
 // LLFloaterTexturePicker
 
@@ -370,6 +374,13 @@ BOOL LLFloaterTexturePicker::handleDragAndDrop(
 		EAcceptance *accept,
 		std::string& tooltip_msg)
 {
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsShowinv)
+	{
+		*accept = ACCEPT_NO;
+		return TRUE; 
+	}
+//mk
 	BOOL handled = FALSE;
 
 	if (cargo_type == DAD_TEXTURE)

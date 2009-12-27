@@ -49,6 +49,7 @@
 #include "llfloaterchat.h"
 #include "llfloaterchatterbox.h"
 #include "llfloaternewim.h"
+#include "llfocusmgr.h"
 #include "llhttpnode.h"
 #include "llimpanel.h"
 #include "llresizebar.h"
@@ -69,6 +70,10 @@
 
 #include "llfirstuse.h"
 
+//MK
+extern BOOL RRenabled;
+//mk
+
 //
 // Globals
 //
@@ -86,6 +91,9 @@ static LLUIString sInviteMessage;
 std::map<std::string,std::string> LLFloaterIM::sEventStringsMap;
 std::map<std::string,std::string> LLFloaterIM::sErrorStringsMap;
 std::map<std::string,std::string> LLFloaterIM::sForceCloseSessionMap;
+
+const EInstantMessage GROUP_DIALOG = IM_SESSION_GROUP_START;
+const EInstantMessage DEFAULT_DIALOG = IM_NOTHING_SPECIAL;
 
 //
 // Helper Functions
@@ -337,6 +345,34 @@ void LLIMMgr::toggle(void*)
 	}
 
 	BOOL new_state = !old_state;
+
+	LLFloaterChatterBox* floater_chatterbox = gIMMgr->getFloater();
+	LLFloater* floater_current = floater_chatterbox->getActiveFloater();
+	LLFloater* floater_new_im = floater_chatterbox->getFloaterNewIM();
+	BOOL active_is_im = (floater_current && floater_current->getName() == "im_floater" || floater_current==floater_new_im);
+
+	if (floater_chatterbox) {	// "2" for toggle
+
+		if (LLFloaterChatterBox::instanceVisible(LLSD())) 
+		{
+			BOOL has_focus = gFocusMgr.childHasKeyboardFocus(floater_chatterbox);
+
+			if (active_is_im && has_focus)
+			{
+				// toggling away from an im-panel (or with no available im panel) => close
+				new_state = FALSE;
+			}
+			else
+			{
+				// stay open, but switch to an IM panel or just activate
+				new_state = TRUE;
+			}
+		}
+		else 
+		{
+			new_state = TRUE;
+		}
+	}	
 
 	if (new_state)
 	{
@@ -1004,8 +1040,61 @@ void LLIMMgr::inviteUserResponse(S32 option, void* user_data)
 	delete invitep;
 }
 
+//returns true if a should appear before b
+static BOOL group_dictionary_sort( LLGroupData* a, LLGroupData* b )
+{
+	return (LLStringUtil::compareDict( a->mName, b->mName ) < 0);
+}
+
 void LLIMMgr::refresh()
 {
+	LLFloaterNewIM* floaterimp = LLFloaterChatterBox::getInstance(LLSD())->getFloaterNewIM();
+
+	if (!floaterimp) return;
+
+	S32 old_scroll_pos = floaterimp->getScrollPos();
+	floaterimp->clearAllTargets();
+
+	// build a list of groups.
+	LLLinkedList<LLGroupData> group_list( group_dictionary_sort );
+
+	LLGroupData* group;
+	S32 count = gAgent.mGroups.count();
+	S32 i;
+	// read/sort groups on the first pass.
+	for(i = 0; i < count; ++i)
+	{
+		group = &(gAgent.mGroups.get(i));
+		group_list.addDataSorted( group );
+	}
+
+	// add groups to the floater on the second pass.
+	for(group = group_list.getFirstData();
+		group;
+		group = group_list.getNextData())
+	{
+		floaterimp->addGroup(group->mID, (void*)(&GROUP_DIALOG), TRUE, FALSE);
+	}
+
+	// build a set of buddies in the current buddy list.
+	LLCollectAllBuddies collector;
+	LLAvatarTracker::instance().applyFunctor(collector);
+	LLCollectAllBuddies::buddy_map_t::iterator it;
+	LLCollectAllBuddies::buddy_map_t::iterator end;
+	it = collector.mOnline.begin();
+	end = collector.mOnline.end();
+	for( ; it != end; ++it)
+	{
+		floaterimp->addAgent((*it).second, (void*)(&DEFAULT_DIALOG), TRUE);
+	}
+	it = collector.mOffline.begin();
+	end = collector.mOffline.end();
+	for( ; it != end; ++it)
+	{
+		floaterimp->addAgent((*it).second, (void*)(&DEFAULT_DIALOG), FALSE);
+	}
+
+	floaterimp->setScrollPos( old_scroll_pos );
 }
 
 void LLIMMgr::setFloaterOpen(BOOL set_open)
@@ -1013,6 +1102,40 @@ void LLIMMgr::setFloaterOpen(BOOL set_open)
 	if (set_open)
 	{
 		LLFloaterChatterBox::showInstance();
+
+		LLFloaterChatterBox* floater_chatterbox = getFloater();
+		LLFloater* floater_current = floater_chatterbox->getActiveFloater();
+		LLFloater* floater_new_im = floater_chatterbox->getFloaterNewIM();
+		BOOL active_is_im = (floater_current && floater_current->getName() == "im_floater" || floater_current==floater_new_im);
+		LLFloater* floater_to_show = active_is_im ? floater_current : NULL;
+		LLTabContainer*  tabs = floater_chatterbox->getChild<LLTabContainer>("chatterbox_tabs");
+
+		for (S32 i = 0; i < floater_chatterbox->getFloaterCount(); i++)
+		{
+			LLPanel* panelp = tabs->getPanelByIndex(i);
+			if (panelp->getName() == "im_floater")
+			{
+				// only LLFloaterIMPanels are called "im_floater"
+				LLFloaterIMPanel* im_floaterp = (LLFloaterIMPanel*)panelp;
+				if(im_floaterp)
+				{
+					if (!floater_to_show || floater_chatterbox->isFloaterFlashing(im_floaterp))
+					{
+						floater_to_show = im_floaterp; // the first im_floater or the flashing im_floater
+					}
+				}
+			}
+		}
+
+		if (floater_to_show) 
+		{
+			floater_to_show->open();
+		}
+		else 
+		if (floater_chatterbox && floater_chatterbox->getFloaterNewIM())
+		{
+			floater_chatterbox->getFloaterNewIM()->open();
+		}
 	}
 	else
 	{
@@ -1542,7 +1665,12 @@ public:
 			{
 				return;
 			}
-
+//MK            
+			if (RRenabled && gAgent.mRRInterface.containsWithoutException ("recvim"))
+			{
+				return;
+			}
+//mk
 			// standard message, not from system
 			std::string saved;
 			if(offline == IM_OFFLINE)

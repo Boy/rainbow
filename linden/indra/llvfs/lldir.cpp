@@ -229,7 +229,7 @@ const std::string  LLDir::getCacheDir(bool get_default) const
 		}
 		else
 		{
-			res = getOSCacheDir() + mDirDelimiter + "RainbowViewer";
+			res = getOSCacheDir() + mDirDelimiter + "CoolViewer";
 		}
 		return res;
 	}
@@ -589,7 +589,7 @@ void LLDir::setSkinFolder(const std::string &skin_folder)
 	mSkinDir += skin_folder;
 
 	// user modifications to current skin
-	// e.g. c:\documents and settings\users\username\application data\rainbowviewer\skins\dazzle
+	// e.g. c:\documents and settings\users\username\application data\coolviewer\skins\dazzle
 	mUserSkinDir = getOSUserAppDir();
 	mUserSkinDir += mDirDelimiter;
 	mUserSkinDir += "skins";
@@ -597,7 +597,7 @@ void LLDir::setSkinFolder(const std::string &skin_folder)
 	mUserSkinDir += skin_folder;
 
 	// base skin which is used as fallback for all skinned files
-	// e.g. c:\program files\rainbowviewer\skins\default
+	// e.g. c:\program files\coolviewer\skins\default
 	mDefaultSkinDir = getAppRODataDir();
 	mDefaultSkinDir += mDirDelimiter;
 	mDefaultSkinDir += "skins";

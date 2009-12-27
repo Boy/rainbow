@@ -1,5 +1,5 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; RainbowViewer setup.nsi
+;; CoolViewer setup.nsi
 ;; Copyright 2004-2008, Linden Research, Inc.
 ;;
 ;; NSIS Unicode 2.38.1 or higher required
@@ -56,9 +56,9 @@ LangString LanguageCode ${LANG_ENGLISH}  "en-us"
 ;; Tweak for different servers/builds (this placeholder is replaced by viewer_manifest.py)
 ;; For example:
 ;; !define INSTFLAGS "%(flags)s"
-;; !define INSTNAME   "RainbowViewer%(grid_caps)s"
-;; !define SHORTCUT   "Rainbow Viewer (%(grid_caps)s)"
-;; !define URLNAME   "rainbowviewer%(grid)s"
+;; !define INSTNAME   "CoolViewer%(grid_caps)s"
+;; !define SHORTCUT   "Cool Viewer (%(grid_caps)s)"
+;; !define URLNAME   "coolviewer%(grid)s"
 ;; !define UNINSTALL_SETTINGS 1
 
 %%GRID_VARS%%
@@ -67,7 +67,7 @@ Name ${INSTNAME}
 
 SubCaption 0 $(LicenseSubTitleSetup)	; override "license agreement" text
 
-BrandingText "Rainbow Viewer 1.22.12.0 R4"		; bottom of window text
+BrandingText "Cool Viewer 1.22.12.0 R11"			; bottom of window text
 Icon %%SOURCE%%\res\install_icon.ico			; our custom icon
 UninstallIcon %%SOURCE%%\res\uninstall_icon.ico    	; our custom icon
 WindowIcon on						; show our icon in left corner
@@ -79,7 +79,7 @@ SetOverwrite on						; stomp files by default
 AutoCloseWindow true					; after all files install, close window
 
 InstallDir "$PROGRAMFILES\${INSTNAME}"
-InstallDirRegKey HKEY_LOCAL_MACHINE "SOFTWARE\RainbowViewer\${INSTNAME}" ""
+InstallDirRegKey HKEY_LOCAL_MACHINE "SOFTWARE\CoolViewer\${INSTNAME}" ""
 DirText $(DirectoryChooseTitle) $(DirectoryChooseSetup)
 
 
@@ -184,7 +184,7 @@ FunctionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Function CheckIfAlreadyCurrent
   Push $0
-	ReadRegStr $0 HKEY_LOCAL_MACHINE "SOFTWARE\RainbowViewer\$INSTPROG" "Version"
+	ReadRegStr $0 HKEY_LOCAL_MACHINE "SOFTWARE\CoolViewer\$INSTPROG" "Version"
     StrCmp $0 ${VERSION_LONG} 0 DONE
 	MessageBox MB_OKCANCEL $(CheckIfCurrentMB) /SD IDOK IDOK DONE
     Quit
@@ -198,17 +198,17 @@ FunctionEnd
 ; Close the program, if running. Modifies no variables.
 ; Allows user to bail out of install process.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Function CloseRainbowViewer
+Function CloseCoolViewer
   Push $0
   FindWindow $0 "Second Life" ""
   IntCmp $0 0 DONE
-  MessageBox MB_OKCANCEL $(CloseRainbowViewerInstMB) IDOK CLOSE IDCANCEL CANCEL_INSTALL
+  MessageBox MB_OKCANCEL $(CloseCoolViewerInstMB) IDOK CLOSE IDCANCEL CANCEL_INSTALL
 
   CANCEL_INSTALL:
     Quit
 
   CLOSE:
-    DetailPrint $(CloseRainbowViewerInstDP)
+    DetailPrint $(CloseCoolViewerInstDP)
     SendMessage $0 16 0 0
 
   LOOP:
@@ -270,12 +270,12 @@ FunctionEnd
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Delete files in Documents and Settings\<user>\RainbowViewer
-; Delete files in Documents and Settings\All Users\RainbowViewer
+; Delete files in Documents and Settings\<user>\CoolViewer
+; Delete files in Documents and Settings\All Users\CoolViewer
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Function un.DocumentsAndSettingsFolder
 
-; Delete files in Documents and Settings\<user>\RainbowViewer
+; Delete files in Documents and Settings\<user>\CoolViewer
 Push $0
 Push $1
 Push $2
@@ -298,11 +298,11 @@ Push $2
 	; Otherwise (preview/dmz etc) just remove cache
     StrCmp $INSTFLAGS "" RM_ALL RM_CACHE
       RM_ALL:
-        RMDir /r "$2\Application Data\RainbowViewer"
+        RMDir /r "$2\Application Data\CoolViewer"
         GoTo CONTINUE
       RM_CACHE:
-        RMDir /r "$2\Application Data\RainbowViewer\Cache"
-        Delete "$2\Application Data\RainbowViewer\user_settings\settings_windlight.xml"
+        RMDir /r "$2\Application Data\CoolViewer\Cache"
+        Delete "$2\Application Data\CoolViewer\user_settings\settings_windlight.xml"
 
   CONTINUE:
     IntOp $0 $0 + 1
@@ -313,17 +313,17 @@ Pop $2
 Pop $1
 Pop $0
 
-; Delete files in Documents and Settings\All Users\RainbowViewer
+; Delete files in Documents and Settings\All Users\CoolViewer
 Push $0
   ReadRegStr $0 HKEY_LOCAL_MACHINE "SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders" "Common AppData"
   StrCmp $0 "" +2
-  RMDir /r "$0\RainbowViewer"
+  RMDir /r "$0\CoolViewer"
 Pop $0
 
-; Delete filse in C:\Windows\Application Data\RainbowViewer
+; Delete filse in C:\Windows\Application Data\CoolViewer
 ; If the user is running on a pre-NT system, Application Data lives here instead of
 ; in Documents and Settings.
-RMDir /r "$WINDIR\Application Data\RainbowViewer"
+RMDir /r "$WINDIR\Application Data\CoolViewer"
 
 FunctionEnd
 
@@ -331,17 +331,17 @@ FunctionEnd
 ; Close the program, if running. Modifies no variables.
 ; Allows user to bail out of uninstall process.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-Function un.CloseRainbowViewer
+Function un.CloseCoolViewer
   Push $0
   FindWindow $0 "Second Life" ""
   IntCmp $0 0 DONE
-  MessageBox MB_OKCANCEL $(CloseRainbowViewerUnInstMB) IDOK CLOSE IDCANCEL CANCEL_UNINSTALL
+  MessageBox MB_OKCANCEL $(CloseCoolViewerUnInstMB) IDOK CLOSE IDCANCEL CANCEL_UNINSTALL
 
   CANCEL_UNINSTALL:
     Quit
 
   CLOSE:
-    DetailPrint $(CloseRainbowViewerUnInstDP)
+    DetailPrint $(CloseCoolViewerUnInstDP)
     SendMessage $0 16 0 0
 
   LOOP:
@@ -363,10 +363,10 @@ FunctionEnd
 ;
 Function un.RemovePassword
 
-DetailPrint "Removing Rainbow Viewer password"
+DetailPrint "Removing Cool Viewer password"
 
 SetShellVarContext current
-Delete "$APPDATA\RainbowViewer\user_settings\password.dat"
+Delete "$APPDATA\CoolViewer\user_settings\password.dat"
 SetShellVarContext all
 
 FunctionEnd
@@ -393,8 +393,8 @@ Delete "$INSTDIR\dronesettings.ini"
 Delete "$INSTDIR\message_template.msg"
 Delete "$INSTDIR\newview.pdb"
 Delete "$INSTDIR\newview.map"
-Delete "$INSTDIR\RainbowViewer.pdb"
-Delete "$INSTDIR\RainbowViewer.map"
+Delete "$INSTDIR\CoolViewer.pdb"
+Delete "$INSTDIR\CoolViewer.map"
 Delete "$INSTDIR\comm.dat"
 Delete "$INSTDIR\*.glsl"
 Delete "$INSTDIR\motions\*.lla"
@@ -447,10 +447,10 @@ Call un.CheckIfAdministrator		; Make sure the user can install/uninstall
 SetShellVarContext all			
 
 ; Make sure we're not running
-Call un.CloseRainbowViewer
+Call un.CloseCoolViewer
 
 ; Clean up registry keys and subkeys (these should all be !defines somewhere)
-DeleteRegKey HKEY_LOCAL_MACHINE "SOFTWARE\RainbowViewer\$INSTPROG"
+DeleteRegKey HKEY_LOCAL_MACHINE "SOFTWARE\CoolViewer\$INSTPROG"
 DeleteRegKey HKEY_LOCAL_MACHINE "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$INSTPROG"
 
 ; Clean up shortcuts
@@ -587,7 +587,7 @@ lbl_check_silent:
     
 	; If we currently have a version of SL installed, default to the language of that install
     ; Otherwise don't change $LANGUAGE and it will default to the OS UI language.
-	ReadRegStr $0 HKEY_LOCAL_MACHINE "SOFTWARE\RainbowViewer\${INSTNAME}" "InstallerLanguage"
+	ReadRegStr $0 HKEY_LOCAL_MACHINE "SOFTWARE\CoolViewer\${INSTNAME}" "InstallerLanguage"
     IfErrors lbl_build_menu
 	StrCpy $LANGUAGE $0
 
@@ -605,7 +605,7 @@ lbl_build_menu:
     StrCpy $LANGUAGE $0
 
 	; save language in registry		
-	WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\RainbowViewer\${INSTNAME}" "InstallerLanguage" $LANGUAGE
+	WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\CoolViewer\${INSTNAME}" "InstallerLanguage" $LANGUAGE
 lbl_return:
     Pop $0
     Return
@@ -615,7 +615,7 @@ FunctionEnd
 Function un.onInit
 	; read language from registry and set for uninstaller
     ; Key will be removed on successful uninstall
-	ReadRegStr $0 HKEY_LOCAL_MACHINE "SOFTWARE\RainbowViewer\${INSTNAME}" "InstallerLanguage"
+	ReadRegStr $0 HKEY_LOCAL_MACHINE "SOFTWARE\CoolViewer\${INSTNAME}" "InstallerLanguage"
     IfErrors lbl_end
 	StrCpy $LANGUAGE $0
 lbl_end:
@@ -639,7 +639,7 @@ StrCpy $INSTSHORTCUT "${SHORTCUT}"
 Call CheckWindowsVersion		; warn if on Windows 98/ME
 Call CheckIfAdministrator		; Make sure the user can install/uninstall
 Call CheckIfAlreadyCurrent		; Make sure that we haven't already installed this version
-Call CloseRainbowViewer			; Make sure we're not running
+Call CloseCoolViewer			; Make sure we're not running
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Don't remove cache files during a regular install, removing the inventory cache on upgrades results in lots of damage to the servers.
@@ -673,7 +673,7 @@ CreateDirectory	"$SMPROGRAMS\$INSTSHORTCUT"
 SetOutPath "$INSTDIR"
 CreateShortCut	"$SMPROGRAMS\$INSTSHORTCUT\$INSTSHORTCUT.lnk" \
 				"$INSTDIR\$INSTEXE" "$INSTFLAGS $SHORTCUT_LANG_PARAM"
-WriteINIStr		"$SMPROGRAMS\$INSTSHORTCUT\Rainbow Viewer Homepage.url" \
+WriteINIStr		"$SMPROGRAMS\$INSTSHORTCUT\Cool Viewer Homepage.url" \
 				"InternetShortcut" "URL" \
 				"http://my.opera.com/boylane/"
 WriteINIStr		"$SMPROGRAMS\$INSTSHORTCUT\SL Scripting Language Help.url" \
@@ -695,11 +695,11 @@ CreateShortCut "$INSTDIR\Uninstall $INSTSHORTCUT.lnk" \
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Write registry
-WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\RainbowViewer\$INSTPROG" "" "$INSTDIR"
-WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\RainbowViewer\$INSTPROG" "Version" "${VERSION_LONG}"
-WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\RainbowViewer\$INSTPROG" "Flags" "$INSTFLAGS"
-WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\RainbowViewer\$INSTPROG" "Shortcut" "$INSTSHORTCUT"
-WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\RainbowViewer\$INSTPROG" "Exe" "$INSTEXE"
+WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\CoolViewer\$INSTPROG" "" "$INSTDIR"
+WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\CoolViewer\$INSTPROG" "Version" "${VERSION_LONG}"
+WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\CoolViewer\$INSTPROG" "Flags" "$INSTFLAGS"
+WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\CoolViewer\$INSTPROG" "Shortcut" "$INSTSHORTCUT"
+WriteRegStr HKEY_LOCAL_MACHINE "SOFTWARE\CoolViewer\$INSTPROG" "Exe" "$INSTEXE"
 WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\$INSTPROG" "DisplayName" "$INSTPROG (remove only)"
 WriteRegStr HKEY_LOCAL_MACHINE "Software\Microsoft\Windows\CurrentVersion\Uninstall\$INSTPROG" "UninstallString" '"$INSTDIR\uninst.exe"'
 

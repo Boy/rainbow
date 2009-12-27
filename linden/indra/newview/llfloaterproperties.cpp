@@ -58,6 +58,9 @@
 
 #include "lluictrlfactory.h"
 
+//MK
+extern BOOL RRenabled;
+//mk
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Class LLPropertiesObserver
@@ -354,6 +357,12 @@ void LLFloaterProperties::refreshFromItem(LLInventoryItem* item)
 		else
 		{
 			gCacheName->getFullName(perm.getOwner(), name);
+//MK
+			if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+			{
+				name = gAgent.mRRInterface.getDummyName (name);
+			}
+//mk
 		}
 		childSetEnabled("BtnOwner",TRUE);
 		childSetEnabled("LabelOwnerTitle",TRUE);
@@ -594,6 +603,12 @@ void LLFloaterProperties::onClickCreator(void* data)
 // static
 void LLFloaterProperties::onClickOwner(void* data)
 {
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+	{
+		return;
+	}
+//mk
 	LLFloaterProperties* self = (LLFloaterProperties*)data;
 	if(!self) return;
 	LLInventoryItem* item = self->findItem();

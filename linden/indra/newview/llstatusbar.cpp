@@ -89,6 +89,9 @@
 LLStatusBar *gStatusBar = NULL;
 S32 STATUS_BAR_HEIGHT = 0;
 extern S32 MENU_BAR_HEIGHT;
+//MK
+extern BOOL RRenabled;
+//mk
 
 
 // TODO: these values ought to be in the XML too
@@ -137,7 +140,14 @@ mSquareMetersCommitted(0)
 	mBalanceTimer = new LLFrameTimer();
 	mHealthTimer = new LLFrameTimer();
 
-	LLUICtrlFactory::getInstance()->buildPanel(this,"panel_status_bar.xml");
+	if (gSavedSettings.getBOOL("UseOldStatusBarIcons"))
+	{
+		LLUICtrlFactory::getInstance()->buildPanel(this,"panel_status_bar2.xml");
+	}
+	else
+	{
+		LLUICtrlFactory::getInstance()->buildPanel(this,"panel_status_bar.xml");
+	}
 
 	// status bar can never get a tab
 	setFocusRoot(FALSE);
@@ -184,7 +194,7 @@ mSquareMetersCommitted(0)
 	mSGBandwidth->setLabel(bandwidth_tooltip.getString());
 	mSGBandwidth->setUnits("Kbps");
 	mSGBandwidth->setPrecision(0);
-	mSGBandwidth->setMouseOpaque(FALSE);
+//	mSGBandwidth->setMouseOpaque(FALSE);
 	addChild(mSGBandwidth);
 	x -= SIM_STAT_WIDTH + 2;
 
@@ -202,7 +212,7 @@ mSquareMetersCommitted(0)
 	mSGPacketLoss->setThreshold(1, 1.f);
 	mSGPacketLoss->setThreshold(2, 3.f);
 	mSGPacketLoss->setPrecision(1);
-	mSGPacketLoss->setMouseOpaque(FALSE);
+//	mSGPacketLoss->setMouseOpaque(FALSE);
 	mSGPacketLoss->mPerSec = FALSE;
 	addChild(mSGPacketLoss);
 
@@ -552,6 +562,13 @@ void LLStatusBar::refresh()
 		mRegionDetails.mOwner = "Unknown";
 		mRegionDetails.mTraffic = 0.0f;
 	}
+//MK
+	gAgent.mRRInterface.setParcelName (mRegionDetails.mParcelName);
+	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	{
+		location_name = "(Hidden) (" + region->getSimAccessString() + ")";
+	}
+//mk
 
 	mTextParcelName->setText(location_name);
 
@@ -563,23 +580,26 @@ void LLStatusBar::refresh()
 	// finally adjust parcel name rect
 
 	S32 new_right = getRect().getWidth();
+
+	childGetRect("stat_btn", r);
+	r.translate( new_right - r.mRight, 0);
+	childSetRect("stat_btn", r);
+	new_right -= r.getWidth() + 12;
+
 	if (search_visible)
 	{
+		childGetRect("menubar_search_bevel_bg", r);
+		r.translate( new_right - r.mRight, 0);
+		childSetRect("menubar_search_bevel_bg", r);
+
 		childGetRect("search_btn", r);
-		//r.translate( new_right - r.mRight, 0);
-		//childSetRect("search_btn", r);
+		r.translate( new_right - r.mRight, 0);
+		childSetRect("search_btn", r);
 		new_right -= r.getWidth();
 
 		childGetRect("search_editor", r);
-		//r.translate( new_right - r.mRight, 0);
-		//childSetRect("search_editor", r);
-		new_right -= r.getWidth() + 6;
-	}
-	else
-	{
-		childGetRect("stat_btn", r);
 		r.translate( new_right - r.mRight, 0);
-		childSetRect("stat_btn", r);
+		childSetRect("search_editor", r);
 		new_right -= r.getWidth() + 6;
 	}
 
@@ -612,9 +632,9 @@ void LLStatusBar::refresh()
 	childSetVisible("search_editor", search_visible);
 	childSetVisible("search_btn", search_visible);
 	childSetVisible("menubar_search_bevel_bg", search_visible);
-	mSGBandwidth->setVisible(! search_visible);
-	mSGPacketLoss->setVisible(! search_visible);
-	childSetEnabled("stat_btn", ! search_visible);
+	mSGBandwidth->setVisible(TRUE);
+	mSGPacketLoss->setVisible(TRUE);
+	childSetEnabled("stat_btn", TRUE);
 }
 
 void LLStatusBar::setVisibleForMouselook(bool visible)
@@ -737,6 +757,12 @@ static void onClickParcelInfo(void* data)
 {
 	LLViewerParcelMgr::getInstance()->selectParcelAt(gAgent.getPositionGlobal());
 
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	{
+		return;
+	}
+//mk
 	LLFloaterLand::showInstance();
 }
 
@@ -799,6 +825,12 @@ static void onClickScripts(void*)
 
 static void onClickBuyLand(void*)
 {
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	{
+		return;
+	}
+//mk
 	LLViewerParcelMgr::getInstance()->selectParcelAt(gAgent.getPositionGlobal());
 	LLViewerParcelMgr::getInstance()->startBuyLand();
 }

@@ -54,16 +54,17 @@ class LLOverlayBar
 :	public LLPanel
 {
 public:
-	LLOverlayBar();
+	LLOverlayBar(const std::string& name, const LLRect& rect );
 	~LLOverlayBar();
 
 	/*virtual*/ void refresh();
+	/*virtual*/ void draw();
 	/*virtual*/ void reshape(S32 width, S32 height, BOOL called_from_parent = TRUE);
-	/*virtual*/ BOOL postBuild();
 
 	void layoutButtons();
 
 	// helpers for returning desired state
+	BOOL mediaPlaying() { return mMediaState == PLAYING; }
 	BOOL musicPlaying() { return mMusicState == PLAYING; }
 	
 	static void onClickIMReceived(void* data);
@@ -73,27 +74,37 @@ public:
 	static void onClickResetView(void* data);
 
 	//static media helper functions
-	static void toggleMediaPlay(void*);
-	static void toggleMusicPlay(void*);
+	static void mediaPlay(void*);
+	static void mediaPause(void*);
+	static void mediaStop(void*);
+	
+	static void musicPlay(void*);
 	static void musicPause(void*);
 	static void musicStop(void*);
-	static void mediaStop(void*);
 
 	static void toggleAudioVolumeFloater(void*);
-
+	
 protected:	
+	static void* createMasterRemote(void* userdata);
+	static void* createMusicRemote(void* userdata);
 	static void* createMediaRemote(void* userdata);
 	static void* createVoiceRemote(void* userdata);
-	static void* createChatBar(void* userdata);
-
-	void enableMediaButtons();
 
 protected:
+	LLMediaRemoteCtrl*	mMasterRemote;
+	LLMediaRemoteCtrl*	mMusicRemote;
 	LLMediaRemoteCtrl*	mMediaRemote;
 	LLVoiceRemoteCtrl*	mVoiceRemote;
 	bool mBuilt;	// dialog constructed yet?
 	enum { STOPPED=0, PLAYING=1, PAUSED=2 };
-	S32 mMusicState;
+	BOOL mMediaState;
+	BOOL mMusicState;
+
+private:
+	S32 media_remote_width;
+	S32 music_remote_width;
+	S32 voice_remote_width;
+	S32 master_remote_width;
 };
 
 extern LLOverlayBar* gOverlayBar;

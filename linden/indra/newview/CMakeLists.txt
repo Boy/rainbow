@@ -437,9 +437,10 @@ set(viewer_SOURCE_FILES
     llxmlrpctransaction.cpp
     noise.cpp
     pipeline.cpp
+    RRInterface.cpp
     )
 
-set(VIEWER_BINARY_NAME "rainbowviewer-bin" CACHE STRING
+set(VIEWER_BINARY_NAME "coolviewer-bin" CACHE STRING
     "The name of the viewer executable to create.")
 
 if (LINUX)
@@ -846,6 +847,7 @@ set(viewer_HEADER_FILES
     randgauss.h
     VertexCache.h
     VorbisFramework.h
+    RRInterface.h
     )
 
 source_group("CMake Rules" FILES ViewerInstall.cmake)
@@ -869,8 +871,8 @@ if (DARWIN)
     secondlife.icns
     macview.r
     gpu_table.txt
-    Info-RainbowViewer.plist
-    RainbowViewer.nib/
+    Info-CoolViewer.plist
+    CoolViewer.nib/
     # CMake doesn't seem to support Xcode language variants well just yet
     English.lproj/InfoPlist.strings
     English.lproj/language.txt
@@ -1443,13 +1445,13 @@ set(ARTWORK_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE PATH
 
 if (LINUX)
   add_custom_command(
-      OUTPUT rainbowviewer-stripped
+      OUTPUT coolviewer-stripped
       COMMAND strip
-      ARGS --strip-debug -o rainbowviewer-stripped ${VIEWER_BINARY_NAME}
+      ARGS --strip-debug -o coolviewer-stripped ${VIEWER_BINARY_NAME}
       DEPENDS ${VIEWER_BINARY_NAME}
       )
 
-  set(product RainbowViewer-${ARCH}-${viewer_VERSION})
+  set(product CoolViewer-${ARCH}-${viewer_VERSION})
 
   add_custom_command(
       OUTPUT ${product}.tar.bz2
@@ -1466,7 +1468,7 @@ if (LINUX)
         --build=${CMAKE_CURRENT_BINARY_DIR}
         --dest=${CMAKE_CURRENT_BINARY_DIR}/packaged
         --touch=${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/.${product}.touched
-      DEPENDS rainbowviewer-stripped ${CMAKE_CURRENT_SOURCE_DIR}/viewer_manifest.py
+      DEPENDS coolviewer-stripped ${CMAKE_CURRENT_SOURCE_DIR}/viewer_manifest.py
       )
 
   if (NOT INSTALL)
@@ -1476,16 +1478,16 @@ if (LINUX)
 endif (LINUX)
 
 if (DARWIN)
-  set(product "Rainbow Viewer")
+  set(product "Cool Viewer")
   set_target_properties(
     ${VIEWER_BINARY_NAME}
     PROPERTIES
     OUTPUT_NAME "${product}"
     MACOSX_BUNDLE_INFO_STRING "info string - localize me"
     MACOSX_BUNDLE_ICON_FILE "secondlife.icns"
-    MACOSX_BUNDLE_GUI_IDENTIFIER "Rainbow Viewer"
+    MACOSX_BUNDLE_GUI_IDENTIFIER "Cool Viewer"
     MACOSX_BUNDLE_LONG_VERSION_STRING "ververver"
-    MACOSX_BUNDLE_BUNDLE_NAME "Rainbow Viewer"
+    MACOSX_BUNDLE_BUNDLE_NAME "Cool Viewer"
     MACOSX_BUNDLE_SHORT_VERSION_STRING "asdf"
     MACOSX_BUNDLE_BUNDLE_VERSION "asdf"
     MACOSX_BUNDLE_COPYRIGHT "copyright linden lab 2007 - localize me and run me through a legal wringer"

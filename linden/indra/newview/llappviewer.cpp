@@ -200,6 +200,10 @@ extern BOOL gRandomizeFramerate;
 extern BOOL gPeriodicSlowFrame;
 extern BOOL gDebugGL;
 
+//MK
+extern BOOL RRenabled;
+//mk
+
 ////////////////////////////////////////////////////////////
 // All from the last globals push...
 const F32 DEFAULT_AFK_TIMEOUT = 5.f * 60.f; // time with no input before user flagged as Away From Keyboard
@@ -280,10 +284,10 @@ BOOL gLogoutInProgress = FALSE;
 // Internal globals... that should be removed.
 static std::string gArgs;
 
-const std::string MARKER_FILE_NAME("RainbowViewer.exec_marker");
-const std::string ERROR_MARKER_FILE_NAME("RainbowViewer.error_marker");
-const std::string LLERROR_MARKER_FILE_NAME("RainbowViewer.llerror_marker");
-const std::string LOGOUT_MARKER_FILE_NAME("RainbowViewer.logout_marker");
+const std::string MARKER_FILE_NAME("CoolViewer.exec_marker");
+const std::string ERROR_MARKER_FILE_NAME("CoolViewer.error_marker");
+const std::string LLERROR_MARKER_FILE_NAME("CoolViewer.llerror_marker");
+const std::string LOGOUT_MARKER_FILE_NAME("CoolViewer.logout_marker");
 static BOOL gDoDisconnect = FALSE;
 static std::string gLaunchFileOnQuit;
 
@@ -551,7 +555,7 @@ bool LLAppViewer::init()
 	
 	// Need to do this initialization before we do anything else, since anything
 	// that touches files should really go through the lldir API
-	gDirUtilp->initAppDirs("RainbowViewer");
+	gDirUtilp->initAppDirs("CoolViewer");
 	// set skin search path to default, will be overridden later
 	// this allows simple skinned file lookups to work
 	gDirUtilp->setSkinFolder("default");
@@ -857,6 +861,9 @@ bool LLAppViewer::mainLoop()
 	LLTimer debugTime;
 	LLViewerJoystick* joystick(LLViewerJoystick::getInstance());
 	joystick->setNeedsReset(true);
+//MK
+	int garbage_collector_cnt=-3000; // give the garbage collector a few minutes before even kicking in the first time, in case we are logging in a very laggy place, taking time to rez
+//mk
  	
 	// Handle messages
 	while (!LLApp::isExiting())
@@ -916,6 +923,52 @@ bool LLAppViewer::mainLoop()
 					joystick->scanJoystick();
 					gKeyboard->scanKeyboard();
 				}
+
+//MK
+				// Do some RLV maintenance (garbage collector etc)
+				if (RRenabled && LLStartUp::getStartupState() == STATE_STARTED
+					&& !gViewerWindow->getShowProgress()
+					&& !gFocusMgr.focusLocked())
+				{
+					// if RLV share inventory has not been fetched yet, fetch it now
+					gAgent.mRRInterface.fetchInventory ();
+					
+					// perform some maintenance only if no object is waiting to be reattached
+					if (gAgent.mRRInterface.sAssetsToReattach.empty())
+					{
+						// fire all the stored commands that we received while initializing
+						gAgent.mRRInterface.fireCommands ();
+						
+						// fire the garbage collector for orphaned restrictions
+						if (++garbage_collector_cnt >= 600) {
+							gAgent.mRRInterface.garbageCollector (FALSE);
+							garbage_collector_cnt = 0;
+						}
+						
+					}
+					
+					// Decrease the automatic reattach timer, and reattach the object when it expires
+					if (gAgent.mRRInterface.sTimeBeforeReattaching > 0)
+					{
+						if (--gAgent.mRRInterface.sTimeBeforeReattaching <= 0)
+						{
+							// We must check whether there is an object waiting to be reattached after having been kicked off while locked.
+							// If there is one, let's reattach it here, to its default attach point.
+							if (!gAgent.mRRInterface.sAssetsToReattach.empty())
+							{
+								AssetAndTarget& at = gAgent.mRRInterface.sAssetsToReattach.front();
+								LLUUID tmp_uuid = at.uuid;
+								std::string tmp_attachpt = at.attachpt;
+								int tmp_attachpt_nb = 0;
+								LLViewerJointAttachment* attachpt = gAgent.mRRInterface.findAttachmentPointFromName(tmp_attachpt, true);
+								if (attachpt) tmp_attachpt_nb = gAgent.mRRInterface.findAttachmentPointNumber(attachpt);
+								llinfos << "Reattaching asset : " << tmp_uuid << " to point " << tmp_attachpt_nb << llendl;
+								gAgent.mRRInterface.attachObjectByUUID (tmp_uuid, tmp_attachpt_nb);
+							}
+						}
+					}
+				}
+//mk
 
 				// Update state based on messages, user input, object idle.
 				{
@@ -1478,15 +1531,15 @@ bool LLAppViewer::initLogging()
 	
 	// Remove the last ".old" log file.
 	std::string old_log_file = gDirUtilp->getExpandedFilename(LL_PATH_LOGS,
-							     "RainbowViewer.old");
+							     "CoolViewer.old");
 	LLFile::remove(old_log_file);
 
 	// Rename current log file to ".old"
 	std::string log_file = gDirUtilp->getExpandedFilename(LL_PATH_LOGS,
-							     "RainbowViewer.log");
+							     "CoolViewer.log");
 	LLFile::rename(log_file, old_log_file);
 
-	// Set the log file to RainbowViewer.log
+	// Set the log file to CoolViewer.log
 
 	LLError::logToFile(log_file);
 
@@ -1591,7 +1644,7 @@ bool LLAppViewer::initConfiguration()
 	if(!loadSettingsFromDirectory(LL_PATH_APP_SETTINGS, set_defaults))
 	{
 		std::ostringstream msg;
-		msg << "Rainbow Viewer could not load its default settings file. \n" 
+		msg << "Cool Viewer could not load its default settings file. \n" 
 			<< "The installation may be corrupted. \n";
 
 		OSMessageBox(
@@ -1691,7 +1744,7 @@ bool LLAppViewer::initConfiguration()
 		llinfos	<< "Command	line usage:\n" << clp << llendl;
 
 		std::ostringstream msg;
-		msg << "Rainbow Viewer found an error parsing the command line. \n" 
+		msg << "Cool Viewer found an error parsing the command line. \n" 
 			<< "Please see: http://wiki.secondlife.com/wiki/Client_parameters \n"
 			<< "Error: " << clp.getErrorMessage();
 
@@ -1838,28 +1891,38 @@ bool LLAppViewer::initConfiguration()
     // injection and steal passwords. Phoenix. SL-55321
     if(clp.hasOption("url"))
     {
-        std::string slurl = clp.getOption("url")[0];
-        if (LLURLDispatcher::isSLURLCommand(slurl))
+//MK
+        if (!gSavedSettings.getBOOL("RestrainedLife"))
         {
-	        LLStartUp::sSLURLCommand = slurl;
-        }
-        else
-        {
-	        LLURLSimString::setString(slurl);
+//mk
+            std::string slurl = clp.getOption("url")[0];
+            if (LLURLDispatcher::isSLURLCommand(slurl))
+            {
+                LLStartUp::sSLURLCommand = slurl;
+            }
+            else
+            {
+                LLURLSimString::setString(slurl);
+            }
         }
     }
     else if(clp.hasOption("slurl"))
     {
-        std::string slurl = clp.getOption("slurl")[0];
-        if(LLURLDispatcher::isSLURL(slurl))
+//MK
+        if (!gSavedSettings.getBOOL("RestrainedLife"))
         {
-            if (LLURLDispatcher::isSLURLCommand(slurl))
+//mk
+            std::string slurl = clp.getOption("slurl")[0];
+            if(LLURLDispatcher::isSLURL(slurl))
             {
-	            LLStartUp::sSLURLCommand = slurl;
-            }
-            else
-            {
-	            LLURLSimString::setString(slurl);
+                if (LLURLDispatcher::isSLURLCommand(slurl))
+                {
+                    LLStartUp::sSLURLCommand = slurl;
+                }
+                else
+                {
+                    LLURLSimString::setString(slurl);
+                }
             }
         }
     }
@@ -1873,7 +1936,7 @@ bool LLAppViewer::initConfiguration()
     mYieldTime = gSavedSettings.getS32("YieldTime");
              
 	// XUI:translate
-	gSecondLife = "Rainbow Viewer";
+	gSecondLife = "Cool Viewer";
 
 	// Read skin/branding settings if specified.
 	//if (! gDirUtilp->getSkinDir().empty() )
@@ -2440,10 +2503,10 @@ void LLAppViewer::initMarkerFile()
 	LL_DEBUGS("MarkerFile") << "Checking marker file for lock..." << LL_ENDL;
 
 	//We've got 4 things to test for here
-	// - Other Process Running (RainbowViewer.exec_marker present, locked)
-	// - Freeze (RainbowViewer.exec_marker present, not locked)
-	// - LLError Crash (RainbowViewer.llerror_marker present)
-	// - Other Crash (RainbowViewer.error_marker present)
+	// - Other Process Running (CoolViewer.exec_marker present, locked)
+	// - Freeze (CoolViewer.exec_marker present, not locked)
+	// - LLError Crash (CoolViewer.llerror_marker present)
+	// - Other Crash (CoolViewer.error_marker present)
 	// These checks should also remove these files for the last 2 cases if they currently exist
 
 	//LLError/Error checks. Only one of these should ever happen at a time.
@@ -2636,11 +2699,11 @@ bool LLAppViewer::initCache()
 		if (gLastRunVersion != gCurrentVersion)
 		{
 			// NOTE: (Nyx) as of 1.21, cache for mac is moving to /library/caches/SecondLife from
-			// /library/application support/RainbowViewer/cache This should clear/delete the old dir.
+			// /library/application support/CoolViewer/cache This should clear/delete the old dir.
 			std::string cache_dir = gDirUtilp->getOSUserAppDir();
 			std::string new_cache_dir = gDirUtilp->getOSCacheDir();
 			cache_dir = cache_dir + "/cache";
-			new_cache_dir = new_cache_dir + "/RainbowViewer";
+			new_cache_dir = new_cache_dir + "/CoolViewer";
 			if (gDirUtilp->fileExists(cache_dir))
 			{
 				gDirUtilp->setCacheDir(cache_dir);

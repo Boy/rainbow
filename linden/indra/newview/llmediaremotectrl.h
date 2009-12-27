@@ -39,23 +39,16 @@
 class LLMediaRemoteCtrl : public LLPanel
 {
 public:
-	LLMediaRemoteCtrl ();
+	LLMediaRemoteCtrl(const std::string& name,
+					  const std::string& label,
+					  const LLRect& rect,
+					  const std::string& xml_file);
 	
-	/*virtual*/ ~LLMediaRemoteCtrl ();
+	/*virtual*/ ~LLMediaRemoteCtrl();
 	/*virtual*/ BOOL postBuild();
 	/*virtual*/ void draw();
 
-	void enableMediaButtons();
-
-	LLPanel* mControls;
-	
-	static void onClickExpandBtn(void* user_data);
-	static void* createVolumePanel(void* data);
-	
-	virtual void setToolTip(const std::string& msg);
-
-protected:
-	void build();
+	static void enableMediaButtons(LLPanel* panel);
 };
 
 #endif

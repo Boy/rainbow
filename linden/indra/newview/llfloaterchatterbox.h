@@ -38,6 +38,7 @@
 #include "llstring.h"
 #include "llimview.h"
 #include "llimpanel.h"
+#include "llfloaternewim.h"
 
 class LLTabContainer;
 
@@ -57,6 +58,8 @@ public:
 	/*virtual*/ void addFloater(LLFloater* floaterp, 
 								BOOL select_added_floater, 
 								LLTabContainer::eInsertionPoint insertion_point = LLTabContainer::END);
+
+	LLFloaterNewIM* getFloaterNewIM()		{ return mFloaterNewIM; };
 
 	static LLFloater* getCurrentVoiceFloater();
 	
@@ -113,46 +116,7 @@ private:
 
 protected:
 	LLFloater* mActiveVoiceFloater;
-};
-
-
-class LLFloaterMyFriends : public LLFloater, public LLUISingleton<LLFloaterMyFriends, LLFloaterMyFriends>
-{
-public:
-	LLFloaterMyFriends(const LLSD& seed);
-	virtual ~LLFloaterMyFriends();
-
-	virtual BOOL postBuild();
-
-	void onClose(bool app_quitting);
-
-	static void* createFriendsPanel(void* data);
-	static void* createGroupsPanel(void* data);
-
-	// visibility policy for LLUISingleton
-	static bool visible(LLFloater* instance, const LLSD& key)
-	{
-		LLFloaterMyFriends* floaterp = (LLFloaterMyFriends*)instance;
-		return floaterp->isInVisibleChain() && floaterp->mTabs->getCurrentPanelIndex() == key.asInteger();
-	}
-
-	static void show(LLFloater* instance, const LLSD& key)
-	{
-		VisibilityPolicy<LLFloater>::show(instance, key);
-		// garbage values in id will be interpreted as 0, or the friends tab
-		((LLFloaterMyFriends*)instance)->mTabs->selectTab(key);
-	}
-
-	static void hide(LLFloater* instance, const LLSD& key)
-	{
-		if (visible(instance, key))
-		{
-			LLFloaterChatterBox::hideInstance();
-		}
-	}
-
-protected:
-	LLTabContainer* mTabs;
+	LLFloaterNewIM* mFloaterNewIM;
 };
 
 #endif // LL_LLFLOATERCHATTERBOX_H

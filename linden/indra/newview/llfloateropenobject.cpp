@@ -53,6 +53,9 @@
 #include "lluictrlfactory.h"
 #include "llviewerwindow.h"
 
+//MK
+extern BOOL RRenabled;
+//mk
 
 LLFloaterOpenObject* LLFloaterOpenObject::sInstance = NULL;
 
@@ -207,7 +210,13 @@ void LLFloaterOpenObject::onClickMoveToInventory(void* data)
 void LLFloaterOpenObject::onClickMoveAndWear(void* data)
 {
 	LLFloaterOpenObject* self = (LLFloaterOpenObject*)data;
-	self->moveToInventory(true);
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsDetach) {
+		self->moveToInventory(false);
+	} else {
+		self->moveToInventory(true);
+	}
+//mk
 	self->close();
 }
 

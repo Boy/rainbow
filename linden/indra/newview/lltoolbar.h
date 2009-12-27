@@ -47,7 +47,7 @@ class LLToolBar
 :	public LLPanel
 {
 public:
-	LLToolBar();
+	LLToolBar(const std::string& name, const LLRect& rect );
 	~LLToolBar();
 
 	/*virtual*/ BOOL postBuild();
@@ -70,8 +70,10 @@ public:
 	void refresh();
 
 	// callbacks
-	static void onClickCommunicate(LLUICtrl*, void*);
+	static void onClickCommunicate(void*);
 	static void onClickChat(void* data);
+	static void onClickFriends(void* data);
+	static void onClickGroups(void* data);
 	static void onClickAppearance(void* data);
 	static void onClickClothing(void* data);
 	static void onClickFly(void*);
@@ -84,10 +86,6 @@ public:
 	static void onClickInventory(void* data);
 
 	static F32 sInventoryAutoOpenTime;
-
-private:
-	void updateCommunicateList();
-
 
 private:
 	BOOL		mInventoryAutoOpen;

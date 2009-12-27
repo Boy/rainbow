@@ -6,17 +6,17 @@
   </object>
   <array count="31" name="allObjects">
     <object class="IBCarbonMenu" id="29">
-      <string name="title">RainbowViewer</string>
+      <string name="title">CoolViewer</string>
       <array count="4" name="items">
         <object class="IBCarbonMenuItem" id="182">
-          <string name="title">Rainbow Viewer</string>
+          <string name="title">Cool Viewer</string>
           <object name="submenu" class="IBCarbonMenu" id="181">
-            <string name="title">Rainbow Viewer</string>
+            <string name="title">Cool Viewer</string>
             <array count="1" name="items">
               <object class="IBCarbonMenuItem" id="183">
                 <boolean name="disabled">TRUE</boolean>
                 <boolean name="updateSingleItem">TRUE</boolean>
-                <string name="title">About Rainbow Viewer</string>
+                <string name="title">About Cool Viewer</string>
                 <int name="keyEquivalentModifier">0</int>
                 <ostype name="command">abou</ostype>
               </object>
@@ -24,7 +24,7 @@
             <string name="name">_NSAppleMenu</string>
           </object>
         </object>
-        <object class="IBCarbonMenuItem" id="127">
+        <object class="IBCarbonMenuItem" id="12OC7">
           <string name="title">File</string>
           <object name="submenu" class="IBCarbonMenu" id="131">
             <string name="title">File</string>

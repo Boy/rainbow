@@ -208,6 +208,8 @@ Kage Pixel
 Kunnis Basiat
 	VWR-82
 	VWR-102
+Luricos Alderton
+	VWR-12540	
 maciek marksman
 	CT-86
 march Korda
@@ -344,6 +346,7 @@ Ryozu Kojima
 	VWR-287
 Sammy Frederix
 	VWR-6186
+	VWR-12155
 Scrippy Scofield
 	VWR-3748
 Seg Baphomet

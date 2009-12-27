@@ -32,16 +32,16 @@
 #ifndef LL_LLHUDVIEW_H
 #define LL_LLHUDVIEW_H
 
-#include "llpanel.h"
+#include "llview.h"
 #include "v4color.h"
 
 class LLVector3d;
 
 class LLHUDView
-: public LLPanel
+: public LLView
 {
 public:
-	LLHUDView();
+	LLHUDView(const std::string& name, const LLRect& rect);
 	virtual ~LLHUDView();
 
 	virtual void draw();

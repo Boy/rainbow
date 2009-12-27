@@ -374,8 +374,9 @@ public:
 	static bool isEverythingFetched();
 	static void backgroundFetch(void*); // background fetch idle function
 	static void incrBulkFetch(S16 fetching) {  sBulkFetchCount+=fetching; if (sBulkFetchCount<0) sBulkFetchCount=0; }
-protected:
-
+//MK
+////protected:
+//mk
 	// Internal methods which add inventory and make sure that all of
 	// the internal data structures are consistent. These methods
 	// should be passed pointers of newly created objects, and the
@@ -425,8 +426,11 @@ protected:
 	cat_array_t* getUnlockedCatArray(const LLUUID& id);
 	item_array_t* getUnlockedItemArray(const LLUUID& id);
 	
-protected:
-	// Varaibles used to track what has changed since the last notify.
+//MK
+////protected:
+public:
+//mk
+	// Variables used to track what has changed since the last notify.
 	U32 mModifyMask;
 	typedef std::set<LLUUID> changed_items_t;
 	changed_items_t mChangedItemIDs;

@@ -94,6 +94,9 @@ LLFloaterMove::LLFloaterMove(const LLSD& key)
 	childSetAction("move down btn",moveDown,NULL);	
 	mMoveDownButton->setHeldDownDelay(MOVE_BUTTON_DELAY);
 	mMoveDownButton->setHeldDownCallback( moveDown );
+
+	mFlyButton = getChild<LLButton>("fly btn"); 
+	childSetAction("fly btn",onFlyButtonClicked,NULL);
 }
 
 // virtual
@@ -115,6 +118,12 @@ void LLFloaterMove::onOpen()
 {
 	LLFloater::onOpen();
 	gSavedSettings.setBOOL("ShowMovementControls", TRUE);
+}
+
+// protected static 
+void LLFloaterMove::onFlyButtonClicked(void *)
+{
+	gAgent.toggleFlying();
 }
 
 // protected static 

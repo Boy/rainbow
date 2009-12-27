@@ -107,13 +107,13 @@ class ViewerManifest(LLManifest):
     def grid(self):
         return self.args['grid']
     def channel(self):
-        return "Rainbow Viewer"
+        return "Cool Viewer"
     def channel_unique(self):
-        return "Rainbow Viewer"
+        return "Cool Viewer"
     def channel_oneword(self):
-        return "RainbowViewer"
+        return "CoolViewer"
     def channel_lowerword(self):
-        return "rainbowviewer"
+        return "coolviewer"
 
     def flags_list(self):
         """ Convenience function that returns the command-line flags
@@ -149,9 +149,9 @@ class WindowsManifest(ViewerManifest):
     def final_exe(self):
         if self.default_channel():
             if self.default_grid():
-                return "RainbowViewer.exe"
+                return "CoolViewer.exe"
             else:
-                return "RainbowViewerPreview.exe"
+                return "CoolViewerPreview.exe"
         else:
             return ''.join(self.channel().split()) + '.exe'
 
@@ -160,7 +160,7 @@ class WindowsManifest(ViewerManifest):
         super(WindowsManifest, self).construct()
         # the final exe is complicated because we're not sure where it's coming from,
         # nor do we have a fixed name for the executable
-        self.path(self.find_existing_file('debug/rainbowviewer-bin.exe', 'release/rainbowviewer-bin.exe', 'relwithdebinfo/rainbowviewer-bin.exe'), dst=self.final_exe())
+        self.path(self.find_existing_file('debug/coolviewer-bin.exe', 'release/coolviewer-bin.exe', 'relwithdebinfo/coolviewer-bin.exe'), dst=self.final_exe())
         # need to get the kdu dll from any of the build directories as well
 #        self.path(self.find_existing_file(
 #                '../llkdu/%s/llkdu.dll' % self.args['configuration'],
@@ -169,7 +169,7 @@ class WindowsManifest(ViewerManifest):
         self.path(src="licenses-win32.txt", dst="licenses.txt")
 
         self.path("featuretable.txt")
-        self.path("releasenotes.txt")
+        self.path("RELEASE_NOTES.txt")
         self.path("RestrainedLifeReadme.txt")
 #        self.path("RL_Viewer_API.txt") //outdated API description 
         self.path("README_IMPORTANT!!!.txt")
@@ -230,7 +230,7 @@ class WindowsManifest(ViewerManifest):
         # Mozilla hack to get it to accept newer versions of msvc*80.dll than are listed in manifest
         # necessary as llmozlib2-vc80.lib refers to an old version of msvc*80.dll - can be removed when new version of llmozlib is built - Nyx
         # The config file name needs to match the exe's name.
-#        self.path("RainbowViewer.exe.config", dst=self.final_exe() + ".config")
+#        self.path("CoolViewer.exe.config", dst=self.final_exe() + ".config")
 
         # Vivox runtimes
         if self.prefix(src="vivox-runtime/i686-win32", dst=""):
@@ -321,35 +321,35 @@ class WindowsManifest(ViewerManifest):
         if self.default_channel():
             if self.default_grid():
                 # release viewer
-                installer_file = "Rainbow_Viewer_%(version_dashes)s_Setup.exe"
+                installer_file = "Cool_Viewer_%(version_dashes)s_Setup.exe"
                 grid_vars_template = """
                 OutFile "%(installer_file)s"
                 !define INSTFLAGS "%(flags)s"
-                !define INSTNAME   "RainbowViewer"
-                !define SHORTCUT   "Rainbow Viewer"
+                !define INSTNAME   "CoolViewer"
+                !define SHORTCUT   "Cool Viewer"
                 !define URLNAME   "secondlife"
-                Caption "Rainbow Viewer ${VERSION}"
+                Caption "Cool Viewer ${VERSION}"
                 """
             else:
                 # beta grid viewer
-                installer_file = "Rainbow_Viewer_%(version_dashes)s_(%(grid_caps)s)_Setup.exe"
+                installer_file = "Cool_Viewer_%(version_dashes)s_(%(grid_caps)s)_Setup.exe"
                 grid_vars_template = """
                 OutFile "%(installer_file)s"
                 !define INSTFLAGS "%(flags)s"
-                !define INSTNAME   "RainbowViewer%(grid_caps)s"
-                !define SHORTCUT   "Rainbow Viewer (%(grid_caps)s)"
-                !define URLNAME   "secondlife%(grid)s"
+                !define INSTNAME   "CoolViewer%(grid_caps)s"
+                !define SHORTCUT   "Cool Viewer (%(grid_caps)s)"
+                !define URLNAME   "coolviewer%(grid)s"
                 !define UNINSTALL_SETTINGS 1
-                Caption "Rainbow Viewer %(grid)s ${VERSION}"
+                Caption "Cool Viewer %(grid)s ${VERSION}"
                 """
         else:
             # some other channel on some grid
-            installer_file = "Rainbow_Viewer_%(version_dashes)s_Setup.exe"
+            installer_file = "Cool_Viewer_%(version_dashes)s_Setup.exe"
             grid_vars_template = """
             OutFile "%(installer_file)s"
             !define INSTFLAGS "%(flags)s"
-            !define INSTNAME   "RainbowViewer"
-            !define SHORTCUT   "Rainbow Viewer"
+            !define INSTNAME   "CoolViewer"
+            !define SHORTCUT   "Cool Viewer"
             !define URLNAME   "secondlife"
             !define UNINSTALL_SETTINGS 1
             Caption "%(channel)s ${VERSION}"
@@ -360,7 +360,7 @@ class WindowsManifest(ViewerManifest):
             installer_file = installer_file % substitution_strings
         substitution_strings['installer_file'] = installer_file
 
-        tempfile = "rainbowviewer_setup_tmp.nsi"
+        tempfile = "coolviewer_setup_tmp.nsi"
         # the following replaces strings in the nsi template
         # it also does python-style % substitution
         self.replace_in("installers/windows/installer_template.nsi", tempfile, {
@@ -380,14 +380,14 @@ class WindowsManifest(ViewerManifest):
 class DarwinManifest(ViewerManifest):
     def construct(self):
         # copy over the build result (this is a no-op if run within the xcode script)
-        self.path(self.args['configuration'] + "/Rainbow Viewer.app", dst="")
+        self.path(self.args['configuration'] + "/Cool Viewer.app", dst="")
 
         if self.prefix(src="", dst="Contents"):  # everything goes in Contents
             # Expand the tar file containing the assorted mozilla bits into
             #  <bundle>/Contents/MacOS/
             self.contents_of_tar(self.args['source']+'/mozilla-universal-darwin.tgz', 'MacOS')
 
-            self.path("Info-RainbowViewer.plist", dst="Info.plist")
+            self.path("Info-CoolViewer.plist", dst="Info.plist")
 
             # copy additional libs in <bundle>/Contents/MacOS/
             self.path("../../libraries/universal-darwin/lib_release/libndofdev.dylib", dst="MacOS/libndofdev.dylib")
@@ -408,7 +408,7 @@ class DarwinManifest(ViewerManifest):
 
                 self.path("licenses-mac.txt", dst="licenses.txt")
                 self.path("featuretable_mac.txt")
-                self.path("RainbowViewer.nib")
+                self.path("CoolViewer.nib")
 
                 # If we are not using the default channel, use the 'Firstlook
                 # icon' to show that it isn't a stable release.
@@ -416,7 +416,7 @@ class DarwinManifest(ViewerManifest):
                     self.path("secondlife.icns")
                 else:
                     self.path("secondlife_firstlook.icns", "secondlife.icns")
-                self.path("RainbowViewer.nib")
+                self.path("CoolViewer.nib")
                 
                 # Translations
                 self.path("English.lproj")
@@ -455,20 +455,20 @@ class DarwinManifest(ViewerManifest):
         if ("package" in self.args['actions'] or 
             "unpacked" in self.args['actions']):
             self.run_command('strip -S "%(viewer_binary)s"' %
-                             { 'viewer_binary' : self.dst_path_of('Contents/MacOS/Rainbow Viewer')})
+                             { 'viewer_binary' : self.dst_path_of('Contents/MacOS/Cool Viewer')})
 
 
     def package_finish(self):
-        channel_standin = 'Rainbow Viewer'  # hah, our default channel is not usable on its own
+        channel_standin = 'Cool Viewer'  # hah, our default channel is not usable on its own
         if not self.default_channel():
             channel_standin = self.channel()
 
-        imagename="RainbowViewer_" + '_'.join(self.args['version'])
+        imagename="CoolViewer_" + '_'.join(self.args['version'])
 
         # MBW -- If the mounted volume name changes, it breaks the .DS_Store's background image and icon positioning.
         #  If we really need differently named volumes, we'll need to create multiple DS_Store file images, or use some other trick.
 
-        volname="Rainbow Viewer Installer"  # DO NOT CHANGE without understanding comment above
+        volname="Cool Viewer Installer"  # DO NOT CHANGE without understanding comment above
 
         if self.default_channel():
             if not self.default_grid():
@@ -495,7 +495,7 @@ class DarwinManifest(ViewerManifest):
         # Copy everything in to the mounted .dmg
 
         if self.default_channel() and not self.default_grid():
-            app_name = "Rainbow Viewer " + self.args['grid']
+            app_name = "Cool Viewer " + self.args['grid']
         else:
             app_name = channel_standin.strip()
 
@@ -552,7 +552,7 @@ class LinuxManifest(ViewerManifest):
         if self.prefix("linux_tools", dst=""):
             self.path("client-readme.txt","README-linux.txt")
             self.path("client-readme-voice.txt","README-linux-voice.txt")
-            self.path("wrapper.sh","rainbowviewer")
+            self.path("wrapper.sh","coolviewer")
             self.path("handle_secondlifeprotocol.sh")
             self.path("register_secondlifeprotocol.sh")
             self.end_prefix("linux_tools")
@@ -565,7 +565,7 @@ class LinuxManifest(ViewerManifest):
         if 'installer_name' in self.args:
             installer_name = self.args['installer_name']
         else:
-            installer_name_components = ['RainbowViewer_', self.args.get('arch')]
+            installer_name_components = ['CoolViewer_', self.args.get('arch')]
             installer_name_components.extend(self.args['version'])
             installer_name = "_".join(installer_name_components)
             if self.default_channel():
@@ -605,7 +605,7 @@ class LinuxManifest(ViewerManifest):
 class Linux_i686Manifest(LinuxManifest):
     def construct(self):
         super(Linux_i686Manifest, self).construct()
-        self.path("rainbowviewer-stripped","bin/do-not-directly-run-rainbowviewer-bin")
+        self.path("coolviewer-stripped","bin/do-not-directly-run-coolviewer-bin")
 #        self.path("../linux_crash_logger/linux-crash-logger-stripped","linux-crash-logger.bin")
         self.path("linux_tools/launch_url.sh","launch_url.sh")
         if self.prefix("res-sdl"):
@@ -614,7 +614,7 @@ class Linux_i686Manifest(LinuxManifest):
             self.end_prefix("res-sdl")
 
         self.path("featuretable_linux.txt")
-        #self.path("rainbowviewer-i686.supp")
+        #self.path("coolviewer-i686.supp")
 
         self.path("app_settings/mozilla-runtime-linux-i686")
 
@@ -649,7 +649,7 @@ class Linux_i686Manifest(LinuxManifest):
 class Linux_x86_64Manifest(LinuxManifest):
     def construct(self):
         super(Linux_x86_64Manifest, self).construct()
-        self.path("rainbowviewer-stripped","bin/do-not-directly-run-rainbowviewer-bin")
+        self.path("coolviewer-stripped","bin/do-not-directly-run-coolviewer-bin")
 #        self.path("../linux_crash_logger/linux-crash-logger-stripped","linux-crash-logger.bin")
         self.path("linux_tools/launch_url.sh","launch_url.sh")
         if self.prefix("res-sdl"):
@@ -658,7 +658,7 @@ class Linux_x86_64Manifest(LinuxManifest):
             self.end_prefix("res-sdl")
 
         self.path("featuretable_linux.txt")
-        self.path("rainbowviewer-i686.supp")
+        self.path("coolviewer-i686.supp")
 
 if __name__ == "__main__":
     main()

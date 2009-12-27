@@ -125,6 +125,10 @@
 #include "llvoicevisualizer.h" 
 #include "llvoiceclient.h"
 
+//MK
+extern BOOL RRenabled;
+//mk
+
 LLXmlTree LLVOAvatar::sXMLTree;
 LLXmlTree LLVOAvatar::sSkeletonXMLTree;
 LLVOAvatarSkeletonInfo* LLVOAvatar::sSkeletonInfo = NULL;
@@ -3103,7 +3107,13 @@ void LLVOAvatar::idleUpdateNameTag(const LLVector3& root_pos_last)
 						&& !gAgent.cameraMouselook()
 						&& (visible_chat || !gSavedSettings.getBOOL("RenderNameHideSelf"));
 	}
-
+//MK
+	// hide the names above the heads
+	if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+	{
+		render_name = FALSE;
+	}
+//mk
 	if ( render_name )
 	{
 		BOOL new_name = FALSE;
@@ -6325,6 +6335,63 @@ BOOL LLVOAvatar::attachObject(LLViewerObject *viewer_object)
 		return FALSE;
 	}
 
+//MK
+	if (RRenabled)
+	{
+		// if this inventory item is shared and does not contain any attachment info in its name, rename it for later (truncate the name first if needed)
+		LLViewerInventoryItem* item = gInventory.getItem (attachment->getItemID());
+		if (item && gAgent.mRRInterface.isUnderRlvShare (item))
+		{
+			if (gAgent.mRRInterface.findAttachmentPointFromName (item->getName()) == NULL)
+			{
+				if (item->isComplete())
+				{
+					std::string attach_name = getAttachedPointName (item->getUUID());
+					LLStringUtil::toLower (attach_name);
+					std::string item_name = item->getName();
+					if (item_name.length() >= DB_INV_ITEM_NAME_STR_LEN - 16)
+					{
+						// truncate if the original name is too long
+						item_name = item_name.substr (0, DB_INV_ITEM_NAME_STR_LEN - 16);
+					}
+					
+					if (item->getPermissions().allowModifyBy(gAgent.getID()))
+					{
+						// add the name of the attach point at the end of the name of the item
+						item->rename(item_name + " (" + attach_name + ")");
+						item->updateServer (FALSE);
+					}
+					else
+					{
+						// this item is no-mod, so we have to rename its parent directory instead,
+						// provided it is at least 2 levels below the shared root (we already know
+						// that the item is shared)
+						LLViewerInventoryCategory* cat_parent;
+						LLViewerInventoryCategory* cat_grandparent;
+						LLInventoryCategory* rlv_share = gAgent.mRRInterface.getRlvShare();
+						const LLUUID& parent_id = item->getParentUUID();
+						cat_parent = gInventory.getCategory (parent_id);
+						const LLUUID& grandparent_id = cat_parent->getParentUUID();
+						cat_grandparent = gInventory.getCategory (grandparent_id);
+						if (cat_parent && cat_grandparent
+							&& (LLInventoryCategory*)cat_parent != rlv_share
+							&& (LLInventoryCategory*)cat_grandparent != rlv_share)
+						{
+							if (gAgent.mRRInterface.findAttachmentPointFromName (cat_parent->getName())
+								 == NULL)
+							{
+								cat_parent->rename(".(" + attach_name + ")"); // don't write the whole name, it could contain commas (",") and fool @getinv
+								cat_parent->updateServer (FALSE);
+								gInventory.updateCategory (cat_parent);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+//mk
+
 	if (viewer_object->isSelected())
 	{
 		LLSelectMgr::getInstance()->updateSelectionCenter();
@@ -6447,6 +6514,12 @@ void LLVOAvatar::sitOnObject(LLViewerObject *sit_object)
 	mDrawable->mXform.setRotation(mDrawable->getWorldRotation() * inv_obj_rot);
 
 	gPipeline.markMoved(mDrawable, TRUE);
+//MK
+	if (RRenabled)
+	{
+		gAgent.mRRInterface.setSitTargetId (sit_object->getID());
+	}
+//mk
 	mIsSitting = TRUE;
 	mRoot.getXform()->setParent(&sit_object->mDrawable->mXform); // LLVOAvatar::sitOnObject
 	mRoot.setPosition(getPosition());
@@ -6484,6 +6557,12 @@ void LLVOAvatar::getOffObject()
 
 	if (sit_object) 
 	{
+//MK
+		if (RRenabled)
+		{
+			gAgent.mRRInterface.setSitTargetId (LLUUID::null);
+		}
+//mk
 		stopMotionFromSource(sit_object->getID());
 		LLFollowCamMgr::setCameraActive(sit_object->getID(), FALSE);
 

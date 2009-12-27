@@ -65,6 +65,10 @@
 #include <boost/tokenizer.hpp>
 #include <boost/lexical_cast.hpp>
 
+//MK
+extern BOOL RRenabled;
+//mk
+
 //---------------------------------------------------------------------------
 // LLPanelDirFindAll - Google search appliance based search
 //---------------------------------------------------------------------------
@@ -252,8 +256,14 @@ void LLPanelDirFind::navigateToDefaultPage()
  	}
  	
  	start_url += getSearchURLSuffix(inc_pg, inc_mature, inc_adult);
+//MK
+	if (!RRenabled || !gAgent.mRRInterface.mContainsShowloc)
+	{
+//mk
 	llinfos << "default url: "  << start_url << llendl;
-
+//MK
+	}
+//mk
 	if (mWebBrowser)
 	{
 		mWebBrowser->navigateTo( start_url );
@@ -306,7 +316,14 @@ std::string LLPanelDirFind::buildSearchURL(const std::string& search_text, const
 
 	}
 	url += getSearchURLSuffix(inc_pg, inc_mature, inc_adult);
+//MK
+		if (!RRenabled || !gAgent.mRRInterface.mContainsShowloc)
+		{
+//mk
 	llinfos << "search url " << url << llendl;
+//MK
+		}
+//mk
 	return url;
 }
 // static
@@ -428,7 +445,10 @@ void LLPanelDirFind::onNavigateComplete( const EventType& eventIn )
 
 void LLPanelDirFind::onLocationChange( const EventType& eventIn )
 {
-	llinfos << eventIn.getStringValue() << llendl;
+	if (!RRenabled || !gAgent.mRRInterface.mContainsShowloc)
+	{
+		llinfos << eventIn.getStringValue() << llendl;
+	}
 }
 
 //---------------------------------------------------------------------------

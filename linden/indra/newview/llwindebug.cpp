@@ -853,7 +853,7 @@ void LLWinDebug::generateCrashStacks(struct _EXCEPTION_POINTERS *exception_infop
 	//
 	LLSD info;
 	std::string dump_path = gDirUtilp->getExpandedFilename(LL_PATH_LOGS,
-												"RainbowViewerException");
+												"CoolViewerException");
 	std::string log_path = dump_path + ".log";
 
 	if (exception_infop)
@@ -869,8 +869,8 @@ void LLWinDebug::generateCrashStacks(struct _EXCEPTION_POINTERS *exception_infop
 			ExInfo.ExceptionPointers = exception_infop;
 			ExInfo.ClientPointers = NULL;
 
-			writeDumpToFile(MiniDumpNormal, &ExInfo, "RainbowViewer.dmp");
-			writeDumpToFile((MINIDUMP_TYPE)(MiniDumpWithDataSegs | MiniDumpWithIndirectlyReferencedMemory), &ExInfo, "RainbowViewerPlus.dmp");
+			writeDumpToFile(MiniDumpNormal, &ExInfo, "CoolViewer.dmp");
+			writeDumpToFile((MINIDUMP_TYPE)(MiniDumpWithDataSegs | MiniDumpWithIndirectlyReferencedMemory), &ExInfo, "CoolViewerPlus.dmp");
 		}
 
 		info = Get_Exception_Info(exception_infop);
@@ -906,6 +906,6 @@ void LLWinDebug::generateCrashStacks(struct _EXCEPTION_POINTERS *exception_infop
 void LLWinDebug::clearCrashStacks()
 {
 	LLSD info;
-	std::string dump_path = gDirUtilp->getExpandedFilename(LL_PATH_LOGS, "RainbowViewerException.log");
+	std::string dump_path = gDirUtilp->getExpandedFilename(LL_PATH_LOGS, "CoolViewerException.log");
 	LLFile::remove(dump_path);
 }

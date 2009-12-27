@@ -40,7 +40,6 @@
 #include "llrender.h"
 #include "llagent.h"
 #include "llbutton.h"
-#include "llchatbar.h"
 #include "llfocusmgr.h"
 #include "llimview.h"
 #include "llmediaremotectrl.h"
@@ -52,7 +51,6 @@
 #include "llviewerimagelist.h"
 #include "llviewermedia.h"
 #include "llviewermenu.h"	// handle_reset_view()
-#include "llviewermedia.h"
 #include "llviewerparcelmedia.h"
 #include "llviewerparcelmgr.h"
 #include "lluictrlfactory.h"
@@ -70,18 +68,44 @@
 LLOverlayBar *gOverlayBar = NULL;
 
 extern S32 MENU_BAR_HEIGHT;
+//MK
+extern BOOL RRenabled;
+//mk
 
 //
 // Functions
 //
 
 
+//static
+void* LLOverlayBar::createMasterRemote(void* userdata)
+{
+	LLOverlayBar *self = (LLOverlayBar*)userdata;	
+	self->mMasterRemote =  new LLMediaRemoteCtrl ( "master_volume",
+												   "volume",
+												   LLRect(),
+												   "panel_master_volume.xml");
+	return self->mMasterRemote;
+}
 
 void* LLOverlayBar::createMediaRemote(void* userdata)
 {
 	LLOverlayBar *self = (LLOverlayBar*)userdata;	
-	self->mMediaRemote =  new LLMediaRemoteCtrl ();
+	self->mMediaRemote =  new LLMediaRemoteCtrl ( "media_remote",
+												  "media",
+												  LLRect(),
+												  "panel_media_remote.xml");
 	return self->mMediaRemote;
+}
+
+void* LLOverlayBar::createMusicRemote(void* userdata)
+{
+	LLOverlayBar *self = (LLOverlayBar*)userdata;
+	self->mMusicRemote =  new LLMediaRemoteCtrl ( "music_remote",
+												  "music",
+												  LLRect(),
+												  "panel_music_remote.xml" );		
+	return self->mMusicRemote;
 }
 
 void* LLOverlayBar::createVoiceRemote(void* userdata)
@@ -91,16 +115,16 @@ void* LLOverlayBar::createVoiceRemote(void* userdata)
 	return self->mVoiceRemote;
 }
 
-void* LLOverlayBar::createChatBar(void* userdata)
-{
-	gChatBar = new LLChatBar();
-	return gChatBar;
-}
 
-LLOverlayBar::LLOverlayBar()
-	:	LLPanel(),
+
+
+LLOverlayBar::LLOverlayBar(const std::string& name, const LLRect& rect)
+	:	LLPanel(name, rect, FALSE),		// not bordered
+		mMasterRemote(NULL),
+		mMusicRemote(NULL),
 		mMediaRemote(NULL),
 		mVoiceRemote(NULL),
+		mMediaState(STOPPED),
 		mMusicState(STOPPED)
 {
 	setMouseOpaque(FALSE);
@@ -109,26 +133,24 @@ LLOverlayBar::LLOverlayBar()
 	mBuilt = false;
 
 	LLCallbackMap::map_t factory_map;
+	factory_map["master_volume"] = LLCallbackMap(LLOverlayBar::createMasterRemote, this);
 	factory_map["media_remote"] = LLCallbackMap(LLOverlayBar::createMediaRemote, this);
+	factory_map["music_remote"] = LLCallbackMap(LLOverlayBar::createMusicRemote, this);
 	factory_map["voice_remote"] = LLCallbackMap(LLOverlayBar::createVoiceRemote, this);
-	factory_map["chat_bar"] = LLCallbackMap(LLOverlayBar::createChatBar, this);
 	
 	LLUICtrlFactory::getInstance()->buildPanel(this, "panel_overlaybar.xml", &factory_map);
-}
-
-BOOL LLOverlayBar::postBuild()
-{
+	
 	childSetAction("IM Received",onClickIMReceived,this);
 	childSetAction("Set Not Busy",onClickSetNotBusy,this);
 	childSetAction("Mouselook",onClickMouselook,this);
 	childSetAction("Stand Up",onClickStandUp,this);
-	childSetVisible("chat_bar", gSavedSettings.getBOOL("ChatVisible"));
 
 	setFocusRoot(TRUE);
 	mBuilt = true;
 
+	// make overlay bar conform to window size
+	setRect(rect);
 	layoutButtons();
-	return TRUE;
 }
 
 LLOverlayBar::~LLOverlayBar()
@@ -149,120 +171,265 @@ void LLOverlayBar::reshape(S32 width, S32 height, BOOL called_from_parent)
 
 void LLOverlayBar::layoutButtons()
 {
-	LLView* state_buttons_panel = getChildView("state_buttons");
+	S32 width = getRect().getWidth();
+	if (width > 1024) width = 1024;
 
-	if (state_buttons_panel->getVisible())
+	S32 count = getChildCount();
+	const S32 PAD = gSavedSettings.getS32("StatusBarPad");
+
+	const S32 num_media_controls = 3;
+	media_remote_width = mMediaRemote ? mMediaRemote->getRect().getWidth() : 0;
+	music_remote_width = mMusicRemote ? mMusicRemote->getRect().getWidth() : 0;
+	voice_remote_width = mVoiceRemote ? mVoiceRemote->getRect().getWidth() : 0;
+	master_remote_width = mMasterRemote ? mMasterRemote->getRect().getWidth() : 0;
+
+	// total reserved width for all media remotes
+	const S32 ENDPAD = 8;
+	S32 remote_total_width = media_remote_width + PAD + music_remote_width + PAD + voice_remote_width + PAD + master_remote_width + ENDPAD;
+
+	// calculate button widths
+	F32 segment_width = (F32)(width - remote_total_width) / (F32)(count - num_media_controls);
+
+	S32 btn_width = lltrunc(segment_width - PAD);
+
+	// Evenly space all views
+	LLRect r;
+	S32 i = 0;
+	for (child_list_const_iter_t child_iter = getChildList()->begin();
+		 child_iter != getChildList()->end(); ++child_iter)
 	{
-		LLViewQuery query;
-		LLWidgetTypeFilter<LLButton> widget_filter;
-		query.addPreFilter(LLEnabledFilter::getInstance());
-		query.addPreFilter(&widget_filter);
+		LLView *view = *child_iter;
+		r = view->getRect();
+		r.mLeft = (width) - llround(remote_total_width + (i-num_media_controls+1)*segment_width);
+		r.mRight = r.mLeft + btn_width;
+		view->setRect(r);
+		i++;
+	}
 
-		child_list_t button_list = query(state_buttons_panel);
+	// Fix up remotes to have constant width because they can't shrink
+	S32 right = getRect().getWidth() - ENDPAD;
+	if (mMasterRemote)
+	{
+		r = mMasterRemote->getRect();
+		r.mRight = right;
+		r.mLeft = right - master_remote_width;
+		right = r.mLeft - PAD;
+		mMasterRemote->setRect(r);
+	}
+	if (mMusicRemote)
+	{
+		r = mMusicRemote->getRect();
+		r.mRight = right;
+		r.mLeft = right - music_remote_width;
+		right = r.mLeft - PAD;
+		mMusicRemote->setRect(r);
+	}
+	if (mMediaRemote)
+	{
+		r = mMediaRemote->getRect();
+		r.mRight = right;
+		r.mLeft = right - media_remote_width;
+		right = r.mLeft - PAD;
+		mMediaRemote->setRect(r);
+	}
+	if (mVoiceRemote)
+	{
+		r = mVoiceRemote->getRect();
+		r.mRight = right;
+		r.mLeft = right - voice_remote_width;
+		mVoiceRemote->setRect(r);
+	}
 
-		const S32 MAX_BAR_WIDTH = 600;
-		S32 bar_width = llclamp(state_buttons_panel->getRect().getWidth(), 0, MAX_BAR_WIDTH);
+	updateBoundingRect();
+}
 
-		// calculate button widths
-		const S32 MAX_BUTTON_WIDTH = 150;
-		S32 segment_width = llclamp(lltrunc((F32)(bar_width) / (F32)button_list.size()), 0, MAX_BUTTON_WIDTH);
-		S32 btn_width = segment_width - gSavedSettings.getS32("StatusBarPad");
+void LLOverlayBar::draw()
+{
+	// retrieve rounded rect image
+	LLUIImagePtr imagep = LLUI::getUIImage("rounded_square.tga");
 
-		// Evenly space all buttons, starting from left
-		S32 left = 0;
-		S32 bottom = 1;
+	if (imagep)
+	{
+		const S32 PAD = gSavedSettings.getS32("StatusBarPad");
 
-		for (child_list_reverse_iter_t child_iter = button_list.rbegin();
-			child_iter != button_list.rend(); ++child_iter)
+		gGL.getTexUnit(0)->bind(imagep->getImage());
+
+		// draw rounded rect tabs behind all children
+		LLRect r;
+		// focus highlights
+		LLColor4 color = gColors.getColor("FloaterFocusBorderColor");
+		gGL.color4fv(color.mV);
+		if(gFocusMgr.childHasKeyboardFocus(gBottomPanel))
+		{
+			for (child_list_const_iter_t child_iter = getChildList()->begin();
+				child_iter != getChildList()->end(); ++child_iter)
+			{
+				LLView *view = *child_iter;
+				if(view->getEnabled() && view->getVisible())
+				{
+					r = view->getRect();
+					gl_segmented_rect_2d_tex(r.mLeft - PAD/3 - 1, 
+											r.mTop + 3, 
+											r.mRight + PAD/3 + 1,
+											r.mBottom, 
+											imagep->getTextureWidth(), 
+											imagep->getTextureHeight(), 
+											16, 
+											ROUNDED_RECT_TOP);
+				}
+			}
+		}
+
+		// main tabs
+		for (child_list_const_iter_t child_iter = getChildList()->begin();
+			child_iter != getChildList()->end(); ++child_iter)
 		{
 			LLView *view = *child_iter;
-			LLRect r = view->getRect();
-			r.setOriginAndSize(left, bottom, btn_width, r.getHeight());
-			view->setRect(r);
-			left += segment_width;
+			if(view->getEnabled() && view->getVisible())
+			{
+				r = view->getRect();
+				// draw a nice little pseudo-3D outline
+				color = gColors.getColor("DefaultShadowDark");
+				gGL.color4fv(color.mV);
+				gl_segmented_rect_2d_tex(r.mLeft - PAD/3 + 1, r.mTop + 2, r.mRight + PAD/3, r.mBottom, 
+										 imagep->getTextureWidth(), imagep->getTextureHeight(), 16, ROUNDED_RECT_TOP);
+				color = gColors.getColor("DefaultHighlightLight");
+				gGL.color4fv(color.mV);
+				gl_segmented_rect_2d_tex(r.mLeft - PAD/3, r.mTop + 2, r.mRight + PAD/3 - 3, r.mBottom, 
+										 imagep->getTextureWidth(), imagep->getTextureHeight(), 16, ROUNDED_RECT_TOP);
+				// here's the main background.  Note that it overhangs on the bottom so as to hide the
+				// focus highlight on the bottom panel, thus producing the illusion that the focus highlight
+				// continues around the tabs
+				color = gColors.getColor("FocusBackgroundColor");
+				gGL.color4fv(color.mV);
+				gl_segmented_rect_2d_tex(r.mLeft - PAD/3 + 1, r.mTop + 1, r.mRight + PAD/3 - 1, r.mBottom - 1, 
+										 imagep->getTextureWidth(), imagep->getTextureHeight(), 16, ROUNDED_RECT_TOP);
+			}
 		}
 	}
+
+	// draw children on top
+	LLPanel::draw();
 }
 
 // Per-frame updates of visibility
 void LLOverlayBar::refresh()
 {
-	BOOL buttons_changed = FALSE;
-
 	BOOL im_received = gIMMgr->getIMReceived();
-	LLButton* button = getChild<LLButton>("IM Received");
-	if (button && button->getVisible() != im_received)
-	{
-		button->setVisible(im_received);
-		sendChildToFront(button);
-		moveChildToBackOfTabGroup(button);
-		buttons_changed = TRUE;
-	}
+	childSetVisible("IM Received", im_received);
+	childSetEnabled("IM Received", im_received);
 
 	BOOL busy = gAgent.getBusy();
-	button = getChild<LLButton>("Set Not Busy");
-	if (button && button->getVisible() != busy)
-	{
-		button->setVisible(busy);
-		sendChildToFront(button);
-		moveChildToBackOfTabGroup(button);
-		buttons_changed = TRUE;
-	}
+	childSetVisible("Set Not Busy", busy);
+	childSetEnabled("Set Not Busy", busy);
+
 
 	BOOL mouselook_grabbed;
 	mouselook_grabbed = gAgent.isControlGrabbed(CONTROL_ML_LBUTTON_DOWN_INDEX)
-		|| gAgent.isControlGrabbed(CONTROL_ML_LBUTTON_UP_INDEX);
-	button = getChild<LLButton>("Mouselook");
+						|| gAgent.isControlGrabbed(CONTROL_ML_LBUTTON_UP_INDEX);
 
-	if (button && button->getVisible() != mouselook_grabbed)
-	{
-		button->setVisible(mouselook_grabbed);
-		sendChildToFront(button);
-		moveChildToBackOfTabGroup(button);
-		buttons_changed = TRUE;
-	}
+	
+	childSetVisible("Mouselook", mouselook_grabbed);
+	childSetEnabled("Mouselook", mouselook_grabbed);
 
 	BOOL sitting = FALSE;
 	if (gAgent.getAvatarObject())
 	{
+//MK
+		if (RRenabled && gAgent.mRRInterface.mContainsUnsit)
+		{
+			sitting=FALSE;
+		} else // sitting = true if agent is sitting
+//mk	
 		sitting = gAgent.getAvatarObject()->mIsSitting;
+		childSetVisible("Stand Up", sitting);
+		childSetEnabled("Stand Up", sitting);
+		
 	}
-	button = getChild<LLButton>("Stand Up");
 
-	if (button && button->getVisible() != sitting)
+	const S32 PAD = gSavedSettings.getS32("StatusBarPad");
+	const S32 ENDPAD = 8;
+	S32 right = getRect().getWidth() - master_remote_width - PAD - ENDPAD;
+	LLRect r;
+
+	BOOL master_remote = !gSavedSettings.getBOOL("HideMasterRemote");
+
+	LLParcel* parcel = LLViewerParcelMgr::getInstance()->getAgentParcel();
+
+	if (mMusicRemote && gAudiop)
 	{
-		button->setVisible(sitting);
-		sendChildToFront(button);
-		moveChildToBackOfTabGroup(button);
-		buttons_changed = TRUE;
+		if (!parcel 
+			|| parcel->getMusicURL().empty()
+			|| !gSavedSettings.getBOOL("AudioStreamingMusic"))
+		{
+			mMusicRemote->setVisible(FALSE);
+			mMusicRemote->setEnabled(FALSE);
+		}
+		else
+		{
+			mMusicRemote->setEnabled(TRUE);
+			r = mMusicRemote->getRect();
+			r.mRight = right;
+			r.mLeft = right - music_remote_width;
+			right = r.mLeft - PAD;
+			mMusicRemote->setRect(r);
+			mMusicRemote->setVisible(TRUE);
+			master_remote = TRUE;
+		}
 	}
 
+	if (mMediaRemote)
+	{
+		if (parcel && parcel->getMediaURL()[0] &&
+			gSavedSettings.getBOOL("AudioStreamingVideo"))
+		{
+			// display remote control 
+			mMediaRemote->setEnabled(TRUE);
+			r = mMediaRemote->getRect();
+			r.mRight = right;
+			r.mLeft = right - media_remote_width;
+			right = r.mLeft - PAD;
+			mMediaRemote->setRect(r);
+			mMediaRemote->setVisible(TRUE);
+			master_remote = TRUE;
+		}
+		else
+		{
+			mMediaRemote->setVisible(FALSE);
+			mMediaRemote->setEnabled(FALSE);
+		}
+	}
+	if (mVoiceRemote)
+	{
+		if (LLVoiceClient::voiceEnabled())
+		{
+			r = mVoiceRemote->getRect();
+			r.mRight = right;
+			r.mLeft = right - voice_remote_width;
+			mVoiceRemote->setRect(r);
+			mVoiceRemote->setVisible(TRUE);
+			master_remote = TRUE;
+		}
+		else
+		{
+			mVoiceRemote->setVisible(FALSE);
+		}
+	}
 
-	moveChildToBackOfTabGroup(mMediaRemote);
-	moveChildToBackOfTabGroup(mVoiceRemote);
+	mMasterRemote->setVisible(master_remote);
+	mMasterRemote->setEnabled(master_remote);
 
 	// turn off the whole bar in mouselook
 	if (gAgent.cameraMouselook())
 	{
-		childSetVisible("media_remote_container", FALSE);
-		childSetVisible("voice_remote_container", FALSE);
-		childSetVisible("state_buttons", FALSE);
+		setVisible(FALSE);
 	}
 	else
 	{
-		// update "remotes"
-		childSetVisible("media_remote_container", TRUE);
-		childSetVisible("voice_remote_container", LLVoiceClient::voiceEnabled());
-		childSetVisible("state_buttons", TRUE);
+		setVisible(TRUE);
 	}
 
-	// always let user toggle into and out of chatbar
-	childSetVisible("chat_bar", gSavedSettings.getBOOL("ChatVisible"));
-
-	if (buttons_changed)
-	{
-		layoutButtons();
-	}
+	updateBoundingRect();
 }
 
 //-----------------------------------------------------------------------
@@ -298,13 +465,47 @@ void LLOverlayBar::onClickMouselook(void*)
 //static
 void LLOverlayBar::onClickStandUp(void*)
 {
-	LLSelectMgr::getInstance()->deselectAllForStandingUp();
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsUnsit) {
+		if (gAgent.getAvatarObject() &&
+			gAgent.getAvatarObject()->mIsSitting) {
+			return;
+		}
+	}
+//mk
+  	LLSelectMgr::getInstance()->deselectAllForStandingUp();
 	gAgent.setControlFlags(AGENT_CONTROL_STAND_UP);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // static media helpers
 // *TODO: Move this into an audio manager abstraction
+
+//static
+void LLOverlayBar::mediaPlay(void*)
+{
+	if (!gOverlayBar)
+	{
+		return;
+	}
+	gOverlayBar->mMediaState = PLAYING; // desired state
+	LLParcel* parcel = LLViewerParcelMgr::getInstance()->getAgentParcel();
+	if (parcel)
+	{
+		std::string path("");
+		LLViewerParcelMedia::play(parcel);
+	}
+}
+//static
+void LLOverlayBar::mediaPause(void*)
+{
+	if (!gOverlayBar)
+	{
+		return;
+	}
+	gOverlayBar->mMediaState = PAUSED; // desired state
+	LLViewerParcelMedia::pause();
+}
 //static
 void LLOverlayBar::mediaStop(void*)
 {
@@ -312,75 +513,60 @@ void LLOverlayBar::mediaStop(void*)
 	{
 		return;
 	}
+	gOverlayBar->mMediaState = STOPPED; // desired state
 	LLViewerParcelMedia::stop();
 }
+
 //static
-void LLOverlayBar::toggleMediaPlay(void*)
+void LLOverlayBar::musicPlay(void*)
 {
 	if (!gOverlayBar)
 	{
 		return;
 	}
-
-	
-	if (LLViewerMedia::isMediaPaused())
-	{
-		LLViewerParcelMedia::start();
-	}
-	else if(LLViewerMedia::isMediaPlaying())
-	{
-		LLViewerParcelMedia::pause();
-	}
-	else
+	gOverlayBar->mMusicState = PLAYING; // desired state
+	if (gAudiop)
 	{
 		LLParcel* parcel = LLViewerParcelMgr::getInstance()->getAgentParcel();
-		if (parcel)
+		if ( parcel )
 		{
-			LLViewerParcelMedia::play(parcel);
-		}
-	}
-}
-
-//static
-void LLOverlayBar::toggleMusicPlay(void*)
-{
-	if (!gOverlayBar)
-	{
-		return;
-	}
-	
-	if (gOverlayBar->mMusicState != PLAYING)
-	{
-		gOverlayBar->mMusicState = PLAYING; // desired state
-		if (gAudiop)
-		{
-			LLParcel* parcel = LLViewerParcelMgr::getInstance()->getAgentParcel();
-			if ( parcel )
+			// this doesn't work properly when crossing parcel boundaries - even when the 
+			// stream is stopped, it doesn't return the right thing - commenting out for now.
+// 			if ( gAudiop->isInternetStreamPlaying() == 0 )
 			{
-				// this doesn't work properly when crossing parcel boundaries - even when the 
-				// stream is stopped, it doesn't return the right thing - commenting out for now.
-	// 			if ( gAudiop->isInternetStreamPlaying() == 0 )
-				{
-					gAudiop->startInternetStream(parcel->getMusicURL());
-				}
+				gAudiop->startInternetStream(parcel->getMusicURL().c_str());
 			}
 		}
 	}
-	//else
-	//{
-	//	gOverlayBar->mMusicState = PAUSED; // desired state
-	//	if (gAudiop)
-	//	{
-	//		gAudiop->pauseInternetStream(1);
-	//	}
-	//}
-	else
+}
+//static
+void LLOverlayBar::musicPause(void*)
+{
+	if (!gOverlayBar)
 	{
-		gOverlayBar->mMusicState = STOPPED; // desired state
-		if (gAudiop)
-		{
-			gAudiop->stopInternetStream();
-		}
+		return;
+	}
+	gOverlayBar->mMusicState = PAUSED; // desired state
+	if (gAudiop)
+	{
+		gAudiop->pauseInternetStream(1);
+	}
+}
+//static
+void LLOverlayBar::musicStop(void*)
+{
+	if (!gOverlayBar)
+	{
+		return;
+	}
+	gOverlayBar->mMusicState = STOPPED; // desired state
+	if (gAudiop)
+	{
+		gAudiop->stopInternetStream();
 	}
 }
 
+void LLOverlayBar::toggleAudioVolumeFloater(void* user_data)
+{
+	LLFloaterAudioVolume::toggleInstance(LLSD());
+}

@@ -81,6 +81,12 @@
 #include "llviewerwindow.h"
 #include "llwearable.h"
 
+//MK
+#include "llvoavatar.h"
+
+extern BOOL RRenabled;
+//mk
+
 ///----------------------------------------------------------------------------
 /// Local function declarations, constants, enums, and typedefs
 ///----------------------------------------------------------------------------
@@ -367,6 +373,12 @@ BOOL LLTaskInvFVBridge::isItemRenameable() const
 	LLViewerObject* object = gObjectList.findObject(mPanel->getTaskUUID());
 	if(object)
 	{
+//MK
+		if (RRenabled && !gAgent.mRRInterface.canDetach(object))
+		{
+			return FALSE;
+		}
+//mk
 		LLInventoryItem* item;
 		item = (LLInventoryItem*)(object->getInventoryObject(mUUID));
 		if(item && gAgent.allowOperation(PERM_MODIFY, item->getPermissions(),
@@ -413,6 +425,25 @@ BOOL LLTaskInvFVBridge::isItemMovable()
 BOOL LLTaskInvFVBridge::isItemRemovable()
 {
 	LLViewerObject* object = gObjectList.findObject(mPanel->getTaskUUID());
+//MK
+	if (RRenabled)
+	{
+		// can't edit objects that someone is sitting on,
+		// when prevented from sit-tping
+		if (gAgent.mRRInterface.contains ("sittp") || gAgent.mRRInterface.mContainsUnsit)
+		{
+			if (object->isSeat())
+			{
+				return FALSE;
+			}
+		}
+
+		if (!gAgent.mRRInterface.canDetach(object))
+		{
+			return FALSE;
+		}
+	}	
+//mk
 	if(object
 	   && (object->permModify() || object->permYouOwner()))
 	{
@@ -902,6 +933,12 @@ LLUIImagePtr LLTaskTextureBridge::getIcon() const
 
 void LLTaskTextureBridge::openItem()
 {
+//MK
+	if (RRenabled && gAgent.mRRInterface.contains ("viewtexture"))
+	{
+		return;
+	}
+//mk
 	llinfos << "LLTaskTextureBridge::openItem()" << llendl;
 	if(!LLPreview::show(mUUID))
 	{
@@ -1187,6 +1224,12 @@ LLTaskLSLBridge::LLTaskLSLBridge(
 
 void LLTaskLSLBridge::openItem()
 {
+//MK
+	if (RRenabled && gAgent.mRRInterface.contains ("viewscript"))
+	{
+		return;
+	}
+//mk
 	llinfos << "LLTaskLSLBridge::openItem() " << mUUID << llendl;
 	if(LLLiveLSLEditor::show(mUUID, mPanel->getTaskUUID()))
 	{
@@ -1303,6 +1346,20 @@ void LLTaskNotecardBridge::openItem()
 		return;
 	}
 	LLViewerObject* object = gObjectList.findObject(mPanel->getTaskUUID());
+//MK
+	if (RRenabled)
+	{
+		if (!gAgent.mRRInterface.canDetach(object))
+		{
+			return;
+		}
+
+		if (gAgent.mRRInterface.contains ("viewnote"))
+		{
+			return;
+		}
+	}
+//mk
 	if(!object || object->isInventoryPending())
 	{
 		return;

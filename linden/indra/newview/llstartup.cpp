@@ -191,6 +191,11 @@
 #include "lldxhardware.h"
 #endif
 
+//MK
+BOOL RRenabled = TRUE;
+BOOL RRNoSetEnv = FALSE;
+//mk
+
 //
 // exported globals
 //
@@ -357,6 +362,10 @@ bool idle_startup()
 
 	static bool samename = false;
 
+//MK
+	RRenabled = gSavedSettings.getBOOL("RestrainedLife");
+	RRNoSetEnv = gSavedSettings.getBOOL("RestrainedLifeNoSetEnv");
+//mk
 	// HACK: These are things from the main loop that usually aren't done
 	// until initialization is complete, but need to be done here for things
 	// to work.
@@ -945,6 +954,14 @@ bool idle_startup()
 			location_which = START_LOCATION_ID_HOME;
 		}
 
+//MK
+		if (RRenabled)
+		{
+			gSavedSettings.setBOOL("LoginLastLocation", TRUE);
+			agent_location_id = START_LOCATION_ID_LAST;	// always last location (actually ignore list)
+			location_which = START_LOCATION_ID_LAST;
+		}
+//mk
 		gViewerWindow->getWindow()->setCursor(UI_CURSOR_WAIT);
 
 		if (!gNoRender)
@@ -1043,7 +1060,9 @@ bool idle_startup()
 		display_startup();
 		
 		std::stringstream start;
-		if (LLURLSimString::parse())
+//MK
+		if (!RRenabled && LLURLSimString::parse())
+//mk
 		{
 			// a startup URL was specified
 			std::stringstream unescaped_start;
@@ -2264,7 +2283,7 @@ bool idle_startup()
 		gRenderStartTime.reset();
 		gForegroundTime.reset();
 
-		if (gSavedSettings.getBOOL("FetchInventoryOnLogin"))
+		if (RRenabled || gSavedSettings.getBOOL("FetchInventoryOnLogin"))
 		{
 			// Fetch inventory in the background
 			gInventory.startBackgroundFetch();
@@ -2492,7 +2511,12 @@ bool idle_startup()
 		}
 
 		// If we've got a startup URL, dispatch it
-		LLStartUp::dispatchURL();
+//MK
+		if (!RRenabled)
+		{
+			LLStartUp::dispatchURL();
+		}
+//mk
 
 		// Clean up the userauth stuff.
 		LLUserAuth::getInstance()->reset();
@@ -2913,7 +2937,9 @@ void update_dialog_callback(S32 option, void *userdata)
 	}
 
 	// if a sim name was passed in via command line parameter (typically through a SLURL)
-	if ( LLURLSimString::sInstance.mSimString.length() )
+//MK
+	if (!RRenabled && LLURLSimString::sInstance.mSimString.length())
+//mk
 	{
 		// record the location to start at next time
 		gSavedSettings.setString( "NextLoginLocation", LLURLSimString::sInstance.mSimString ); 
@@ -2928,7 +2954,9 @@ void update_dialog_callback(S32 option, void *userdata)
 	
 #elif LL_DARWIN
 	// if a sim name was passed in via command line parameter (typically through a SLURL)
-	if ( LLURLSimString::sInstance.mSimString.length() )
+//MK
+	if (!RRenabled && LLURLSimString::sInstance.mSimString.length())
+//mk
 	{
 		// record the location to start at next time
 		gSavedSettings.setString( "NextLoginLocation", LLURLSimString::sInstance.mSimString ); 

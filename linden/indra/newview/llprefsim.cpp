@@ -46,6 +46,10 @@
 
 #include "lldirpicker.h"
 
+//MK
+extern BOOL RRenabled;
+//mk
+
 class LLPrefsIMImpl : public LLPanel
 {
 public:
@@ -249,6 +253,12 @@ void LLPrefsIMImpl::setPersonalInfo(const std::string& visibility, bool im_via_e
 	childEnable("log_instant_messages");
 	childEnable("log_chat");
 	childEnable("busy_response");
+//MK
+	if (RRenabled && gAgent.mRRInterface.containsWithoutException ("sendim"))
+	{
+		childDisable("busy_response");
+	}
+//mk
 	childEnable("log_instant_messages_timestamp");
 	childEnable("log_chat_timestamp");
 	childEnable("log_chat_IM");

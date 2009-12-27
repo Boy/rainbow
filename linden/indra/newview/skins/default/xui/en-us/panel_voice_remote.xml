@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<panel bg_visible="false" border="false" border_visible="false" bottom="0"
-     enabled="true" follows="right|bottom" height="20" left="0"
-     mouse_opaque="true" name="voice_remote" use_bounding_rect="true"
-     width="130">
-	<panel bottom="1" filename="panel_bg_tab.xml" name="panel_bg_tab" height="22" left="0" width="130" />
-	<panel bottom="3" filename="panel_voice_controls.xml" name="panel_voice_controls" height="20" left="1" width="130" />
+<panel bg_visible="false" border="false" border_visible="false" bottom="-34"
+     enabled="true" follows="left|top" hidden="false"
+     mouse_opaque="true" name="voice_remote" >
+	<button bottom="-22" height="22" label="" image_overlay="active_speakers.tga" left="2" name="speakers_btn"
+	     tool_tip="Show list of residents using voice chat around you" width="38" />
+	<button bottom="-22" height="22" label="Talk" left_delta="40" name="push_to_talk"
+	     tab_stop="false" tool_tip="Hold the button to talk" width="64" />
+	<button bottom="-19" height="16" image_selected="ptt_lock_on.tga"
+	     image_unselected="ptt_lock_off.tga" label="" left_delta="4" name="ptt_lock"
+	     scale_image="true" toggle="true" tool_tip="Click lock to switch to talk mode" width="16" />
+	<icon name="voice_volume" left_delta="40" bottom="-19" width="16" height="16" image_name="icn_voice_ptt-off.tga"/>
 </panel>

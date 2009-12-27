@@ -522,10 +522,10 @@ class WindowsSetup(PlatformSetup):
             if self.gens[self.generator]['ver'] in [ r'8.0', r'9.0' ]:
                 config = '\"%s|Win32\"' % config
 
-            return "buildconsole RainbowViewer.sln /build %s" % config
+            return "buildconsole CoolViewer.sln /build %s" % config
 
         # devenv.com is CLI friendly, devenv.exe... not so much.
-        return ('"%sdevenv.com" RainbowViewer.sln /build %s' % 
+        return ('"%sdevenv.com" CoolViewer.sln /build %s' % 
                 (self.find_visual_studio(), self.build_type))
 
     # this override of run exists because the PlatformSetup version
@@ -557,9 +557,9 @@ class WindowsSetup(PlatformSetup):
                 continue
             vstool_cmd = (os.path.join('tools','vstool','VSTool.exe') +
                           ' --solution ' +
-                          os.path.join(build_dir,'RainbowViewer.sln') +
+                          os.path.join(build_dir,'CoolViewer.sln') +
                           ' --config ' + self.build_type +
-                          ' --startup rainbowviewer-bin')
+                          ' --startup coolviewer-bin')
             print 'Running %r in %r' % (vstool_cmd, getcwd())
             self.run(vstool_cmd)        
             print >> open(stamp, 'w'), self.build_type

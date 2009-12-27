@@ -52,98 +52,46 @@
 
 static LLRegisterWidget<LLMediaRemoteCtrl> r("media_remote");
 
-LLMediaRemoteCtrl::LLMediaRemoteCtrl()
+LLMediaRemoteCtrl::LLMediaRemoteCtrl(const std::string& name,
+									 const std::string& label,
+									 const LLRect& rect,
+									 const std::string& xml_file) :
+	LLPanel(name, rect, FALSE)
 {
 	setIsChrome(TRUE);
 	setFocusRoot(TRUE);
 
-	mFactoryMap["Volume Panel"]	= LLCallbackMap(createVolumePanel, NULL);
-	build();
-}
-
-void LLMediaRemoteCtrl::build()
-{
-	//HACK: only works because we don't have any implicit children (i.e. titlebars, close button, etc)
-	deleteAllChildren();
-	if (gSavedSettings.getBOOL("ShowVolumeSettingsPopup"))
-	{
-		LLUICtrlFactory::getInstance()->buildPanel(this, "panel_media_remote_expanded.xml", &getFactoryMap());
-	}
-	else
-	{
-		LLUICtrlFactory::getInstance()->buildPanel(this, "panel_media_remote.xml", &getFactoryMap());
-	}
+	LLUICtrlFactory::getInstance()->buildPanel(this, xml_file);
 }
 
 BOOL LLMediaRemoteCtrl::postBuild()
 {
-	mControls = getChild<LLPanel>("media_controls");
-	llassert_always(mControls);
-	
-	childSetAction("media_play",LLOverlayBar::toggleMediaPlay,this);
-	childSetAction("music_play",LLOverlayBar::toggleMusicPlay,this);
-	childSetAction("media_stop",LLOverlayBar::mediaStop,this);
-	childSetAction("music_stop",LLOverlayBar::toggleMusicPlay,this);
-	childSetAction("media_pause",LLOverlayBar::toggleMediaPlay,this);
-	childSetAction("music_pause",LLOverlayBar::toggleMusicPlay,this);
+	childSetAction("media_play", LLOverlayBar::mediaPlay, this);
+	childSetAction("media_stop", LLOverlayBar::mediaStop, this);
+	childSetAction("media_pause", LLOverlayBar::mediaPause, this);
 
-	childSetAction("expand", onClickExpandBtn, this);	
+	childSetAction("music_play", LLOverlayBar::musicPlay, this);
+	childSetAction("music_stop", LLOverlayBar::musicStop, this);
+	childSetAction("music_pause", LLOverlayBar::musicPause, this);
+
+	childSetAction("volume", LLOverlayBar::toggleAudioVolumeFloater, this);
+	childSetControlName("volume", "ShowAudioVolume");
+
 	return TRUE;
 }
 
 void LLMediaRemoteCtrl::draw()
 {
-	enableMediaButtons();
-	
-	LLButton* expand_button = getChild<LLButton>("expand");
-	if (expand_button)
-	{
-		if (expand_button->getToggleState())
-		{
-			expand_button->setImageOverlay("arrow_down.tga");
-		}
-		else
-		{
-			expand_button->setImageOverlay("arrow_up.tga");
-		}
-	}
-
+	enableMediaButtons(this);
 	LLPanel::draw();
 }
 
-LLMediaRemoteCtrl::~LLMediaRemoteCtrl ()
+LLMediaRemoteCtrl::~LLMediaRemoteCtrl()
 {
 }
 
-//static 
-void LLMediaRemoteCtrl::onClickExpandBtn(void* user_data)
-{
-	LLMediaRemoteCtrl* remotep = (LLMediaRemoteCtrl*)user_data;
-
-	remotep->build();
-	gOverlayBar->layoutButtons();
-
-}
-
-//static
-void* LLMediaRemoteCtrl::createVolumePanel(void* data)
-{
-	LLPanelAudioVolume* panel = new LLPanelAudioVolume();
-	return panel;
-}
-
-// Virtual
-void LLMediaRemoteCtrl::setToolTip(const std::string& msg)
-{
-	std::string mime_type = LLMIMETypes::translate(LLViewerMedia::getMimeType());
-	std::string tool_tip = LLMIMETypes::findToolTip(LLViewerMedia::getMimeType());
-	std::string play_tip = LLMIMETypes::findPlayTip(LLViewerMedia::getMimeType());
-	// childSetToolTip("media_stop", mControls->getString("stop_label") + "\n" + tool_tip);
-	childSetToolTip("media_icon", tool_tip);
-	childSetToolTip("media_play", play_tip);
-}
-
-void LLMediaRemoteCtrl::enableMediaButtons()
+// Static
+void LLMediaRemoteCtrl::enableMediaButtons(LLPanel* panel)
 {
 	// Media
 	bool play_media_enabled = false;
@@ -155,25 +103,19 @@ void LLMediaRemoteCtrl::enableMediaButtons()
 	LLColor4 music_icon_color = LLUI::sColorsGroup->getColor( "IconDisabledColor" );
 	LLColor4 media_icon_color = LLUI::sColorsGroup->getColor( "IconDisabledColor" );
 	std::string media_type = "none/none";
-
-	// Put this in xui file
-	std::string media_url = mControls->getString("default_tooltip_label");
 	LLParcel* parcel = LLViewerParcelMgr::getInstance()->getAgentParcel();
 
-	if (gSavedSettings.getBOOL("AudioStreamingVideo"))
+	if (gSavedSettings.getBOOL("AudioStreamingVideo") && gOverlayBar)
 	{
-		if ( parcel && parcel->getMediaURL()[0])
+		if (parcel && parcel->getMediaURL()[0])
 		{
-			// Set the tooltip
-			// Put this text into xui file
-			media_url = parcel->getObscureMedia() ? mControls->getString("media_hidden_label") : parcel->getMediaURL();
 			media_type = parcel->getMediaType();
 
 			play_media_enabled = true;
 			media_icon_color = LLUI::sColorsGroup->getColor( "IconEnabledColor" );
 
 			LLMediaBase::EStatus status = LLViewerParcelMedia::getStatus();
-			switch(status)
+			switch (status)
 			{
 			case LLMediaBase::STATUS_STOPPED:
 			case LLMediaBase::STATUS_UNKNOWN:
@@ -198,13 +140,12 @@ void LLMediaRemoteCtrl::enableMediaButtons()
 			}
 		}
 	}
-	if (gSavedSettings.getBOOL("AudioStreamingMusic") && gAudiop)
+	if (gSavedSettings.getBOOL("AudioStreamingMusic") && gAudiop && gOverlayBar)
 	{
-	
-		if ( parcel && parcel->getMusicURL()[0])
+		if (parcel && parcel->getMusicURL()[0])
 		{
 			play_music_enabled = true;
-			music_icon_color = LLUI::sColorsGroup->getColor( "IconEnabledColor" );
+			music_icon_color = LLUI::sColorsGroup->getColor("IconEnabledColor");
 
 			if (gOverlayBar->musicPlaying())
 			{
@@ -218,41 +159,35 @@ void LLMediaRemoteCtrl::enableMediaButtons()
 			}
 		}
 		// if no mime type has been set disable play
-		if( LLViewerMedia::getMimeType().empty() 
-			|| LLViewerMedia::getMimeType() == "none/none")
+		if (LLViewerMedia::getMimeType().empty() ||
+			LLViewerMedia::getMimeType() == "none/none")
 		{
 			play_media_enabled = false;
 			stop_media_enabled = false;
 		}
 	}
-	const std::string media_icon_name = LLMIMETypes::findIcon(media_type);
-	LLButton* music_play_btn = getChild<LLButton>("music_play");
-	LLButton* music_stop_btn = getChild<LLButton>("music_stop");
-	LLButton* music_pause_btn = getChild<LLButton>("music_pause");
-	LLButton* media_play_btn = getChild<LLButton>("media_play");
-	LLButton* media_stop_btn = getChild<LLButton>("media_stop");
-	LLButton* media_pause_btn = getChild<LLButton>("media_pause");
-	LLIconCtrl* media_icon = getChild<LLIconCtrl>("media_icon");
 
-	music_play_btn->setEnabled(play_music_enabled);
-	music_stop_btn->setEnabled(stop_music_enabled);
-	music_pause_btn->setEnabled(music_show_pause);
-	music_pause_btn->setVisible(music_show_pause);
-	music_play_btn->setVisible(! music_show_pause);
-	childSetColor("music_icon", music_icon_color);
-	if(!media_icon_name.empty())
+	const std::string media_icon_name = LLMIMETypes::findIcon(media_type);
+	LLIconCtrl* media_icon = panel->getChild<LLIconCtrl>("media_icon");
+
+	panel->childSetEnabled("music_play", play_music_enabled);
+	panel->childSetEnabled("music_stop", stop_music_enabled);
+	panel->childSetEnabled("music_pause", music_show_pause);
+	panel->childSetVisible("music_pause", music_show_pause);
+	panel->childSetVisible("music_play", !music_show_pause);
+
+	panel->childSetColor("music_icon", music_icon_color);
+
+	if (!media_icon_name.empty() && media_icon)
 	{
 		media_icon->setImage(media_icon_name);
 	}
 
-	media_play_btn->setEnabled(play_media_enabled);
-	media_stop_btn->setEnabled(stop_media_enabled);
-	media_pause_btn->setEnabled(media_show_pause);
-	media_pause_btn->setVisible(media_show_pause);
-	media_play_btn->setVisible(! media_show_pause);
-	childSetColor("media_icon", media_icon_color);
+	panel->childSetEnabled("media_play", play_media_enabled);
+	panel->childSetEnabled("media_stop", stop_media_enabled);
+	panel->childSetEnabled("media_pause", media_show_pause);
+	panel->childSetVisible("media_pause", media_show_pause);
+	panel->childSetVisible("media_play", !media_show_pause);
 
-	setToolTip(media_url);
+	panel->childSetColor("media_icon", media_icon_color);
 }
-
-

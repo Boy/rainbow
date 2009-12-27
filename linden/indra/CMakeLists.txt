@@ -13,7 +13,7 @@ if(COMMAND cmake_policy)
   cmake_policy(SET CMP0003 OLD)
 endif(COMMAND cmake_policy)
 
-project(RainbowViewer)
+project(CoolViewer)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
@@ -81,7 +81,7 @@ if (VIEWER)
   endif (LINUX)
 
   add_subdirectory(${VIEWER_PREFIX}newview)
-  add_dependencies(viewer rainbowviewer-bin)
+  add_dependencies(viewer coolviewer-bin)
 endif (VIEWER)
 
 # Linux builds the viewer and server in 2 separate projects

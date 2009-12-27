@@ -442,14 +442,10 @@ protected:
 class LLBottomPanel : public LLPanel
 {
 public:
-	LLBottomPanel(const LLRect& rect);
+	LLBottomPanel(const std::string& name, const LLRect& rect);
 	void setFocusIndicator(LLView * indicator);
 	LLView * getFocusIndicator() { return mIndicator; }
 	/*virtual*/ void draw();
-
-	static void* createHUD(void* data);
-	static void* createOverlayBar(void* data);
-	static void* createToolBar(void* data);
 
 protected:
 	LLView * mIndicator;

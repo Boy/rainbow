@@ -53,6 +53,10 @@
 
 #include "llsdutil.h"
 
+//MK
+extern BOOL RRenabled;
+//mk
+
 /**
  * @brief How long to keep people who are gone in the list and in memory.
  */
@@ -238,6 +242,15 @@ LLFloaterAvatarList::~LLFloaterAvatarList()
 //static
 void LLFloaterAvatarList::toggle(void*)
 {
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+	{
+		if (sInstance && sInstance->getVisible())
+		{	
+			sInstance->close(false);
+		}
+	}
+//mk
 	if (sInstance)
 	{
 		if (sInstance->getVisible())
@@ -258,6 +271,12 @@ void LLFloaterAvatarList::toggle(void*)
 //static
 void LLFloaterAvatarList::showInstance()
 {
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+	{
+		return;
+	}
+//mk
 	if (sInstance)
 	{
 		if (!sInstance->getVisible())
@@ -434,6 +453,12 @@ void LLFloaterAvatarList::updateAvatarList()
 						continue;
 					}
 				}
+//MK
+				if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+				{
+					name = gAgent.mRRInterface.getDummyName(name);
+				}
+//mk
 
 				if (avid.isNull())
 				{
@@ -474,6 +499,12 @@ void LLFloaterAvatarList::updateAvatarList()
 					//name = gCacheName->getDefaultName();
 					continue; //prevent (Loading...)
 				}
+//MK
+				if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+				{
+					name = gAgent.mRRInterface.getDummyName(name);
+				}
+//mk
 
 				if (mAvatars.count(avid) > 0)
 				{

@@ -1,6 +1,6 @@
 /** 
  * @file llfloatergroups.cpp
- * @brief LLPanelGroups class implementation
+ * @brief LLFloaterGroups class implementation
  *
  * $LicenseInfo:firstyear=2002&license=viewergpl$
  * 
@@ -53,6 +53,7 @@
 #include "llscrolllistctrl.h"
 #include "lltextbox.h"
 #include "lluictrlfactory.h"
+#include "llviewercontrol.h"
 #include "llviewerwindow.h"
 #include "llimview.h"
 
@@ -161,12 +162,14 @@ void LLFloaterGroupPicker::ok()
 }
 
 ///----------------------------------------------------------------------------
-/// Class LLPanelGroups
+/// Class LLFloaterGroups
 ///----------------------------------------------------------------------------
+
+LLFloaterGroups* LLFloaterGroups::sInstance = NULL;
 
 //LLEventListener
 //virtual
-bool LLPanelGroups::handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
+bool LLFloaterGroups::handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 {
 	if (event->desc() == "new group")
 	{
@@ -177,20 +180,55 @@ bool LLPanelGroups::handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 }
 
 // Default constructor
-LLPanelGroups::LLPanelGroups() :
-	LLPanel()
+LLFloaterGroups::LLFloaterGroups() :
+	LLFloater()
 {
+	sInstance = this;
+	LLUICtrlFactory::getInstance()->buildFloater(this, "floater_groups.xml");
 	gAgent.addListener(this, "new group");
+	gSavedSettings.setBOOL("ShowGroups", TRUE);
 }
 
-LLPanelGroups::~LLPanelGroups()
+LLFloaterGroups::~LLFloaterGroups()
 {
 	gAgent.removeListener(this);
+	gFocusMgr.releaseFocusIfNeeded(this);
+	sInstance = NULL;
+	gSavedSettings.setBOOL("ShowGroups", FALSE);
+}
+
+LLFloaterGroups* LLFloaterGroups::show(void*)
+{
+	if(sInstance)
+	{
+		sInstance->open();	/*Flawfinder: ignore*/
+	}
+	else
+	{
+		LLFloaterGroups* self = new LLFloaterGroups;
+		self->open(); /*Flawfinder: ignore*/
+	}
+
+	return sInstance;
+}
+
+// static
+void LLFloaterGroups::toggle(void*)
+{
+	if (sInstance)
+	{
+		sInstance->close();
+	}
+	else
+	{
+		show();
+	}
 }
 
 // clear the group list, and get a fresh set of info.
-void LLPanelGroups::reset()
+void LLFloaterGroups::reset()
 {
+	if (!sInstance) return;
 	LLCtrlListInterface *group_list = childGetListInterface("group list");
 	if (group_list)
 	{
@@ -203,7 +241,7 @@ void LLPanelGroups::reset()
 	enableButtons();
 }
 
-BOOL LLPanelGroups::postBuild()
+BOOL LLFloaterGroups::postBuild()
 {
 	childSetCommitCallback("group list", onGroupList, this);
 
@@ -234,7 +272,7 @@ BOOL LLPanelGroups::postBuild()
 	return TRUE;
 }
 
-void LLPanelGroups::enableButtons()
+void LLFloaterGroups::enableButtons()
 {
 	LLCtrlListInterface *group_list = childGetListInterface("group list");
 	LLUUID group_id;
@@ -273,52 +311,51 @@ void LLPanelGroups::enableButtons()
 	}
 }
 
-
-void LLPanelGroups::onBtnCreate(void* userdata)
+void LLFloaterGroups::onBtnCreate(void* userdata)
 {
-	LLPanelGroups* self = (LLPanelGroups*)userdata;
+	LLFloaterGroups* self = (LLFloaterGroups*)userdata;
 	if(self) self->create();
 }
 
-void LLPanelGroups::onBtnActivate(void* userdata)
+void LLFloaterGroups::onBtnActivate(void* userdata)
 {
-	LLPanelGroups* self = (LLPanelGroups*)userdata;
+	LLFloaterGroups* self = (LLFloaterGroups*)userdata;
 	if(self) self->activate();
 }
 
-void LLPanelGroups::onBtnInfo(void* userdata)
+void LLFloaterGroups::onBtnInfo(void* userdata)
 {
-	LLPanelGroups* self = (LLPanelGroups*)userdata;
+	LLFloaterGroups* self = (LLFloaterGroups*)userdata;
 	if(self) self->info();
 }
 
-void LLPanelGroups::onBtnIM(void* userdata)
+void LLFloaterGroups::onBtnIM(void* userdata)
 {
-	LLPanelGroups* self = (LLPanelGroups*)userdata;
+	LLFloaterGroups* self = (LLFloaterGroups*)userdata;
 	if(self) self->startIM();
 }
 
-void LLPanelGroups::onBtnLeave(void* userdata)
+void LLFloaterGroups::onBtnLeave(void* userdata)
 {
-	LLPanelGroups* self = (LLPanelGroups*)userdata;
+	LLFloaterGroups* self = (LLFloaterGroups*)userdata;
 	if(self) self->leave();
 }
 
-void LLPanelGroups::onBtnSearch(void* userdata)
+void LLFloaterGroups::onBtnSearch(void* userdata)
 {
-	LLPanelGroups* self = (LLPanelGroups*)userdata;
+	LLFloaterGroups* self = (LLFloaterGroups*)userdata;
 	if(self) self->search();
 }
 
-void LLPanelGroups::create()
+void LLFloaterGroups::create()
 {
-	llinfos << "LLPanelGroups::create" << llendl;
+	llinfos << "LLFloaterGroups::create" << llendl;
 	LLFloaterGroupInfo::showCreateGroup(NULL);
 }
 
-void LLPanelGroups::activate()
+void LLFloaterGroups::activate()
 {
-	llinfos << "LLPanelGroups::activate" << llendl;
+	llinfos << "LLFloaterGroups::activate" << llendl;
 	LLCtrlListInterface *group_list = childGetListInterface("group list");
 	LLUUID group_id;
 	if (group_list)
@@ -334,9 +371,9 @@ void LLPanelGroups::activate()
 	gAgent.sendReliableMessage();
 }
 
-void LLPanelGroups::info()
+void LLFloaterGroups::info()
 {
-	llinfos << "LLPanelGroups::info" << llendl;
+	llinfos << "LLFloaterGroups::info" << llendl;
 	LLCtrlListInterface *group_list = childGetListInterface("group list");
 	LLUUID group_id;
 	if (group_list && (group_id = group_list->getCurrentID()).notNull())
@@ -345,9 +382,8 @@ void LLPanelGroups::info()
 	}
 }
 
-void LLPanelGroups::startIM()
+void LLFloaterGroups::startIM()
 {
-	//llinfos << "LLPanelFriends::onClickIM()" << llendl;
 	LLCtrlListInterface *group_list = childGetListInterface("group list");
 	LLUUID group_id;
 
@@ -372,9 +408,9 @@ void LLPanelGroups::startIM()
 	}
 }
 
-void LLPanelGroups::leave()
+void LLFloaterGroups::leave()
 {
-	llinfos << "LLPanelGroups::leave" << llendl;
+	llinfos << "LLFloaterGroups::leave" << llendl;
 	LLCtrlListInterface *group_list = childGetListInterface("group list");
 	LLUUID group_id;
 	if (group_list && (group_id = group_list->getCurrentID()).notNull())
@@ -396,13 +432,13 @@ void LLPanelGroups::leave()
 	}
 }
 
-void LLPanelGroups::search()
+void LLFloaterGroups::search()
 {
 	LLFloaterDirectory::showGroups();
 }
 
 // static
-void LLPanelGroups::callbackLeaveGroup(S32 option, void* userdata)
+void LLFloaterGroups::callbackLeaveGroup(S32 option, void* userdata)
 {
 	LLUUID* group_id = (LLUUID*)userdata;
 	if(option == 0 && group_id)
@@ -419,9 +455,9 @@ void LLPanelGroups::callbackLeaveGroup(S32 option, void* userdata)
 	delete group_id;
 }
 
-void LLPanelGroups::onGroupList(LLUICtrl* ctrl, void* userdata)
+void LLFloaterGroups::onGroupList(LLUICtrl* ctrl, void* userdata)
 {
-	LLPanelGroups* self = (LLPanelGroups*)userdata;
+	LLFloaterGroups* self = (LLFloaterGroups*)userdata;
 	if(self) self->enableButtons();
 }
 
@@ -476,4 +512,3 @@ void init_group_list(LLScrollListCtrl* ctrl, const LLUUID& highlight_id, U64 pow
 
 	group_list->selectByValue(highlight_id);
 }
-

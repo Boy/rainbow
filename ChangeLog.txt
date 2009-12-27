@@ -1,0 +1,48 @@
+2009-12-27 Boy Lane <boy.lane@yahoo.com>
+
+    * Created new branch CV_1.22.12.0
+
+
+2009-12-25 Boy Lane <boy.lane@yahoo.com>
+
+    * Release notes added
+
+    modified: RELEASE_NOTES.txt
+
+
+    * OpenGL fixes applied for better ATI and other newer graphic cards support
+    
+    modified: linden/indra/llrender/llgl.cpp
+    modified: linden/indra/llwindow/GL/glh_genext.h
+    modified: linden/indra/newview/llappviewerwin32.cpp
+    modified: linden/indra/newview/llviewerjointmesh.cpp
+    modified: linden/doc/contributions.txt
+    
+
+    * fixed problem with saving of settings, some were not stored
+    
+    modified: linden/indra/newview/prefsrainbow.cpp
+    modified: linden/indra/newvie/llfloaterpreference.cpp
+    
+
+    * added missing PlayTypingSound toggle
+    
+    modified: linden/indra/newview/skins/default/xui/en-us/panel_preferences_rainbow.xml    
+    modified: linden/indra/newview/prefsrainbow.cpp
+
+
+    * added missing RLV restriction for the last owner profile in Edit/General floater
+
+    modified: linden/indra/newview/llpanelpermissions.cpp
+
+
+    * added small AutoIt installer for non-redistributable components
+
+    new file: linden/indra/newview/nrc_install.exe
+    new file: linden/indra/newview/installer/autoit/nrc_install.au3
+    new file: linden/indra/newview/installer/autoit/nrc_install.ico
+
+
+    * added ChangeLog.txt
+    
+    new file: ChangeLog.txt

@@ -39,6 +39,7 @@
 #include "llcommandhandler.h"
 #include "llfloaterchatterbox.h"
 #include "llpanelgroup.h"
+#include "llfloatergroups.h"
 #include "llviewermessage.h" // for inventory_offer_callback
 //#include "llviewerwindow.h"
 
@@ -79,9 +80,7 @@ public:
 		{
 			if (tokens[1].asString() == "show")
 			{
-				// CP_TODO: get the value we pass in via the XUI name 
-				// of the tab instead of using a literal like this
-				LLFloaterMyFriends::showInstance( 1 );
+				LLFloaterGroups::show();
 
 				return true;
 			}

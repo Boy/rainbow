@@ -490,7 +490,6 @@ void LLFloaterPreference::onBtnApply( void* userdata )
 void LLFloaterPreference::onClose(bool app_quitting)
 {
 	LLPanelLogin::setAlwaysRefresh(false);
-	cancel(); // will be a no-op if OK or apply was performed just prior.
 	LLFloater::onClose(app_quitting);
 }
 
@@ -507,7 +506,8 @@ void LLFloaterPreference::onBtnCancel( void* userdata )
 			cur_focus->onCommit();
 		}
 	}
-	fp->close(); // side effect will also cancel any unsaved changes.
+	fp->cancel();
+	fp->close();
 }
 
 

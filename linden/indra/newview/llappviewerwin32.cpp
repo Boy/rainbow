@@ -400,61 +400,58 @@ bool LLAppViewerWin32::initHardwareTest()
 	// Do driver verification and initialization based on DirectX
 	// hardware polling and driver versions
 	//
-	if (FALSE == gSavedSettings.getBOOL("NoHardwareProbe"))
+	BOOL vram_only = !gSavedSettings.getBOOL("ProbeHardwareOnStartup");
+
+	// per DEV-11631 - disable hardware probing for everything
+	// but vram.
+	vram_only = TRUE;
+
+	LLSplashScreen::update("Detecting hardware...");
+
+	LL_DEBUGS("AppInit") << "Attempting to poll DirectX for hardware info" << LL_ENDL;
+	gDXHardware.setWriteDebugFunc(write_debug_dx);
+	BOOL probe_ok = gDXHardware.getInfo(vram_only);
+
+	if (!probe_ok
+		&& gSavedSettings.getWarning("AboutDirectX9"))
 	{
-		BOOL vram_only = !gSavedSettings.getBOOL("ProbeHardwareOnStartup");
+		LL_WARNS("AppInit") << "DirectX probe failed, alerting user." << LL_ENDL;
 
-		// per DEV-11631 - disable hardware probing for everything
-		// but vram.
-		vram_only = TRUE;
-
-		LLSplashScreen::update("Detecting hardware...");
-
-		LL_DEBUGS("AppInit") << "Attempting to poll DirectX for hardware info" << LL_ENDL;
-		gDXHardware.setWriteDebugFunc(write_debug_dx);
-		BOOL probe_ok = gDXHardware.getInfo(vram_only);
-
-		if (!probe_ok
-			&& gSavedSettings.getWarning("AboutDirectX9"))
+		// Warn them that runnin without DirectX 9 will
+		// not allow us to tell them about driver issues
+		std::ostringstream msg;
+		msg << 
+			LLAppViewer::instance()->getSecondLifeTitle() << " is unable to detect DirectX 9.0b or greater.\n"
+			"\n" <<
+			LLAppViewer::instance()->getSecondLifeTitle() << " uses DirectX to detect hardware and/or\n"
+			"outdated drivers that can cause stability problems,\n"
+			"poor performance and crashes.  While you can run\n" <<
+			LLAppViewer::instance()->getSecondLifeTitle() << " without it, we highly recommend running\n"
+			"with DirectX 9.0b\n"
+			"\n"
+			"Do you wish to continue?\n";
+		S32 button = OSMessageBox(
+			msg.str(),
+			"Warning",
+			OSMB_YESNO);
+		if (OSBTN_NO== button)
 		{
-			LL_WARNS("AppInit") << "DirectX probe failed, alerting user." << LL_ENDL;
-
-			// Warn them that runnin without DirectX 9 will
-			// not allow us to tell them about driver issues
-			std::ostringstream msg;
-			msg << 
-				LLAppViewer::instance()->getSecondLifeTitle() << " is unable to detect DirectX 9.0b or greater.\n"
-				"\n" <<
-				LLAppViewer::instance()->getSecondLifeTitle() << " uses DirectX to detect hardware and/or\n"
-				"outdated drivers that can cause stability problems,\n"
-				"poor performance and crashes.  While you can run\n" <<
-				LLAppViewer::instance()->getSecondLifeTitle() << " without it, we highly recommend running\n"
-				"with DirectX 9.0b\n"
-				"\n"
-				"Do you wish to continue?\n";
-			S32 button = OSMessageBox(
-				msg.str(),
-				"Warning",
-				OSMB_YESNO);
-			if (OSBTN_NO== button)
-			{
-				LL_INFOS("AppInit") << "User quitting after failed DirectX 9 detection" << LL_ENDL;
-				LLWeb::loadURLExternal(DIRECTX_9_URL);
-				return false;
-			}
-			gSavedSettings.setWarning("AboutDirectX9", FALSE);
+			LL_INFOS("AppInit") << "User quitting after failed DirectX 9 detection" << LL_ENDL;
+			LLWeb::loadURLExternal(DIRECTX_9_URL);
+			return false;
 		}
-		LL_DEBUGS("AppInit") << "Done polling DirectX for hardware info" << LL_ENDL;
-
-		// Only probe once after installation
-		gSavedSettings.setBOOL("ProbeHardwareOnStartup", FALSE);
-
-		// Disable so debugger can work
-		std::ostringstream splash_msg;
-		splash_msg << "Loading " << LLAppViewer::instance()->getSecondLifeTitle() << "...";
-
-		LLSplashScreen::update(splash_msg.str());
+		gSavedSettings.setWarning("AboutDirectX9", FALSE);
 	}
+	LL_DEBUGS("AppInit") << "Done polling DirectX for hardware info" << LL_ENDL;
+
+	// Only probe once after installation
+	gSavedSettings.setBOOL("ProbeHardwareOnStartup", FALSE);
+
+	// Disable so debugger can work
+	std::ostringstream splash_msg;
+	splash_msg << "Loading " << LLAppViewer::instance()->getSecondLifeTitle() << "...";
+
+	LLSplashScreen::update(splash_msg.str());
 
 	if (!restoreErrorTrap())
 	{

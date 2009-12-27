@@ -38,6 +38,55 @@
 #include "lluictrlfactory.h"
 
 ////////////////////////////////////////////////////////////////////////////////
+// Floater version of audio panel
+//
+
+//static
+void* LLFloaterAudioVolume::createVolumePanel(void* data)
+{
+	LLPanelAudioVolume* panel = new LLPanelAudioVolume();
+	return panel;
+}
+
+LLFloaterAudioVolume::LLFloaterAudioVolume(const LLSD& seed)
+{
+	mFactoryMap["Volume Panel"]	= LLCallbackMap(createVolumePanel, NULL);
+	LLUICtrlFactory::getInstance()->buildFloater(this, "floater_audio_volume.xml", &getFactoryMap());
+
+	S32 pos_x = getRect().mLeft;
+	S32 pos_y = getRect().mBottom;
+	LLView* volume_panel_view = gOverlayBar->getChild<LLView>("master_volume");
+	if (volume_panel_view)
+	{
+		pos_x = volume_panel_view->getRect().mLeft;
+		pos_y = volume_panel_view->getRect().mTop;
+	}
+
+	setOrigin(pos_x, pos_y);
+	gFloaterView->adjustToFitScreen(this, FALSE);
+}
+
+//static 
+bool LLFloaterAudioVolume::visible(LLFloater* instance, const LLSD& key)
+{
+	return VisibilityPolicy<LLFloater>::visible(instance, key);
+}
+
+//static 
+void LLFloaterAudioVolume::show(LLFloater* instance, const LLSD& key)
+{
+	VisibilityPolicy<LLFloater>::show(instance, key);
+	gSavedSettings.setBOOL("ShowAudioVolume", TRUE);
+}
+
+//static 
+void LLFloaterAudioVolume::hide(LLFloater* instance, const LLSD& key)
+{
+	VisibilityPolicy<LLFloater>::hide(instance, key);
+	gSavedSettings.setBOOL("ShowAudioVolume", FALSE);
+}
+
+////////////////////////////////////////////////////////////////////////////////
 //
 //
 LLPanelAudioVolume::LLPanelAudioVolume()
@@ -46,18 +95,12 @@ LLPanelAudioVolume::LLPanelAudioVolume()
 
 BOOL LLPanelAudioVolume::postBuild()
 {
-	childSetCommitCallback("System Volume", onCommitVolumeChange);
-	childSetCommitCallback("Music Volume", onCommitVolumeChange);
-	childSetCommitCallback("Media Volume", onCommitVolumeChange);
-	childSetCommitCallback("Voice Volume", onCommitVolumeChange);
-	childSetCommitCallback("SFX Volume", onCommitVolumeChange);
-	childSetCommitCallback("UI Volume", onCommitVolumeChange);
-	childSetCommitCallback("Wind Volume", onCommitVolumeChange);
 	return TRUE;
 }
 
 LLPanelAudioVolume::~LLPanelAudioVolume ()
 {
+	gSavedSettings.setBOOL("ShowAudioVolume", FALSE);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -65,58 +108,16 @@ LLPanelAudioVolume::~LLPanelAudioVolume ()
 //
 void LLPanelAudioVolume::draw()
 {
+// 	LLOverlayBar::enableMusicButtons(this);
+// 	LLOverlayBar::enableMediaButtons(this);
 	BOOL mute = gSavedSettings.getBOOL("MuteAudio");
 	bool enable = mute ? false : true;
+	childSetEnabled("System Volume", enable);
 	childSetEnabled("Music Volume", enable);
 	childSetEnabled("Media Volume", enable);
 	childSetEnabled("Voice Volume", enable);
 	childSetEnabled("SFX Volume", enable);
 	childSetEnabled("UI Volume", enable);
 	childSetEnabled("Wind Volume", enable);
-
-	childSetEnabled("mute_music", enable);
-	childSetEnabled("mute_media", enable);
-	childSetEnabled("mute_voice", enable);
-	childSetEnabled("mute_sfx", enable);
-	childSetEnabled("mute_wind", enable);
-	childSetEnabled("mute_ui", enable);
-
 	LLPanel::draw();
 }
-
-//static
-void LLPanelAudioVolume::onCommitVolumeChange(LLUICtrl* ctrl, void* user_data)
-{
-	// unmute various audio sources when user changes volume
-	std::string control_name = ctrl->getControlName();
-	if (control_name == "AudioLevelMaster")
-	{
-		gSavedSettings.setBOOL("MuteAudio", FALSE);
-	}
-	else if (control_name == "AudioLevelSFX")
-	{
-		gSavedSettings.setBOOL("MuteSounds", FALSE);
-	}
-	else if (control_name == "AudioLevelUI")
-	{
-		gSavedSettings.setBOOL("MuteUI", FALSE);
-	}
-	else if (control_name == "AudioLevelAmbient")
-	{
-		gSavedSettings.setBOOL("MuteAmbient", FALSE);
-	}
-	else if (control_name == "AudioLevelMusic")
-	{
-		gSavedSettings.setBOOL("MuteMusic", FALSE);
-	}
-	else if (control_name == "AudioLevelMedia")
-	{
-		gSavedSettings.setBOOL("MuteMedia", FALSE);
-	}
-	else if (control_name == "AudioLevelVoice")
-	{
-		gSavedSettings.setBOOL("MuteVoice", FALSE);
-	}
-}
-
-

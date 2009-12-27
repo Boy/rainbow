@@ -83,15 +83,22 @@ protected:
 	static instance_map_t sInstances;
 };
 
-class LLPanelGroups : public LLPanel, public LLSimpleListener
+class LLFloaterGroups : public LLFloater, public LLSimpleListener
 {
 public:
-	LLPanelGroups();
-	virtual ~LLPanelGroups();
+	// Do not call these directly
+	LLFloaterGroups();
+	virtual ~LLFloaterGroups();
 
 	//LLEventListener
 	/*virtual*/ bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata);
-	
+
+	// Shows the floater
+	static LLFloaterGroups* show(void* unused = NULL);
+
+	// Toggles visibility of floater
+	static void toggle(void* unused = NULL);
+
 	// clear the group list, and get a fresh set of info.
 	void reset();
 
@@ -99,7 +106,6 @@ protected:
 	// initialize based on the type
 	BOOL postBuild();
 
-	// highlight_id is a group id to highlight
 	void enableButtons();
 
 	static void onGroupList(LLUICtrl* ctrl, void* userdata);
@@ -122,6 +128,9 @@ protected:
 
 	static void callbackLeaveGroup(S32 option, void* userdata);
 
+private:
+	// static data
+	static LLFloaterGroups* sInstance;
 };
 
 

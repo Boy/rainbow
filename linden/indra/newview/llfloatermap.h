@@ -52,6 +52,9 @@ public:
 	/*virtual*/ void	draw();
 	/*virtual*/ void	onClose(bool app_quitting);
 	/*virtual*/ BOOL	canClose();
+//MK
+	/*virtual*/ void	open();
+//mk
 
 protected:
 	LLNetMap*		mMap;

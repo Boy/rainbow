@@ -248,13 +248,13 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "CompanyName", "Boy Lane"
-            VALUE "FileDescription", "Rainbow Viewer"
+            VALUE "FileDescription", "Rainbow Viewer:Cool Edition"
             VALUE "FileVersion", "1.22.12.0"
-            VALUE "InternalName", "Rainbow Viewer"
+            VALUE "InternalName", "Rainbow Viewer::Cool Edition"
             VALUE "LegalCopyright", "GPL"
-            VALUE "OriginalFilename", "RainbowViewer.exe"
-            VALUE "ProductName", "Rainbow Viewer"
-            VALUE "ProductVersion", "1.22.12.0 R4"
+            VALUE "OriginalFilename", "CoolViewer.exe"
+            VALUE "ProductName", "Rainbow Viewer::Cool Edition"
+            VALUE "ProductVersion", "1.22.12.0 R11"
         END
     END
     BLOCK "VarFileInfo"

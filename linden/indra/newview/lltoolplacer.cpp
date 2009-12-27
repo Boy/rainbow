@@ -38,6 +38,9 @@
 #include "llprimitive.h"
 
 // viewer headers
+//MK
+#include "llagent.h"
+//mk
 #include "llbutton.h"
 #include "llviewercontrol.h"
 #include "llfirstuse.h"
@@ -65,6 +68,10 @@
 #include "llviewerstats.h"
 
 const LLVector3 DEFAULT_OBJECT_SCALE(0.5f, 0.5f, 0.5f);
+
+//MK
+extern BOOL RRenabled;
+//mk
 
 //static 
 LLPCode	LLToolPlacer::sObjectType = LL_PCODE_CUBE;
@@ -498,6 +505,13 @@ BOOL LLToolPlacer::addDuplicate(S32 x, S32 y)
 BOOL LLToolPlacer::placeObject(S32 x, S32 y, MASK mask)
 {
 	BOOL added = TRUE;
+
+//MK
+	if (RRenabled && (gAgent.mRRInterface.mContainsEdit || gAgent.mRRInterface.mContainsRez))
+	{
+		return TRUE;
+	}
+//mk
 	
 	if (gSavedSettings.getBOOL("CreateToolCopySelection"))
 	{

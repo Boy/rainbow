@@ -34,7 +34,7 @@
 #ifndef LL_LLFLOATERFRIENDS_H
 #define LL_LLFLOATERFRIENDS_H
 
-#include "llpanel.h"
+#include "llfloater.h"
 #include "llstring.h"
 #include "lluuid.h"
 #include "lltimer.h"
@@ -46,23 +46,31 @@ class LLScrollListItem;
 class LLScrollListCtrl;
 
 /** 
- * @class LLPanelFriends
+ * @class LLFloaterFriends
  * @brief An instance of this class is used for displaying your friends
  * and gives you quick access to all agents which a user relationship.
  *
  * @sa LLFloater
  */
-class LLPanelFriends : public LLPanel, public LLEventTimer
+class LLFloaterFriends : public LLFloater, public LLEventTimer
 {
 public:
-	LLPanelFriends();
-	virtual ~LLPanelFriends();
+	LLFloaterFriends();
+	virtual ~LLFloaterFriends();
 
 	/** 
 	 * @brief This method either creates or brings to the front the
 	 * current instantiation of this floater. There is only once since
 	 * you can currently only look at your local friends.
 	 */
+	static void show(void* ignored = NULL);
+
+	// Toggles visibility of floater
+	static void toggle(void* unused = NULL);
+
+	// Tells if the floater is visible
+	static BOOL visible(void* unused = NULL);
+
 	virtual BOOL tick();
 
 	/** 
@@ -137,7 +145,12 @@ private:
 	static void handleRemove(S32 option, void* user_data);
 	static void modifyRightsConfirmation(S32 option, void* user_data);
 
+	static void onClickClose(void* user_data);
+
 private:
+	// static data
+	static LLFloaterFriends* sInstance;
+
 	// member data
 	LLFriendObserver* mObserver;
 	LLUUID mAddFriendID;

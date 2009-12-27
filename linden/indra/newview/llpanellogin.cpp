@@ -773,7 +773,10 @@ void LLPanelLogin::refreshLocation( bool force_visible )
 
 	if ( ! force_visible )
 		show_start = gSavedSettings.getBOOL("ShowStartLocation");
-
+//MK
+	if (gSavedSettings.getBOOL("RestrainedLife"))
+		show_start = FALSE;
+//mk
 	sInstance->childSetVisible("start_location_combo", show_start);
 	sInstance->childSetVisible("start_location_text", show_start);
 
@@ -949,7 +952,7 @@ void LLPanelLogin::loadLoginPage()
 	{
 		oStr << "&auto_login=TRUE";
 	}
-	if (gSavedSettings.getBOOL("ShowStartLocation"))
+	if (gSavedSettings.getBOOL("ShowStartLocation") && !gSavedSettings.getBOOL( "RestrainedLife"))
 	{
 		oStr << "&show_start_location=TRUE";
 	}	

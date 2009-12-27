@@ -260,7 +260,7 @@ bool LLCrashLoggerWindows::init(void)
 	/*
 	mbstowcs(gProductName, mProductName.c_str(), sizeof(gProductName)/sizeof(gProductName[0]));
 	gProductName[ sizeof(gProductName)/sizeof(gProductName[0]) - 1 ] = 0;
-	swprintf(gProductName, L"Rainbow Viewer");
+	swprintf(gProductName, L"Cool Viewer");
 	*/
 
 	llinfos << "Loading dialogs" << llendl;
@@ -298,7 +298,7 @@ void LLCrashLoggerWindows::gatherPlatformSpecificFiles()
 	// At this point we're responsive enough the user could click the close button
 	SetCursor(gCursorArrow);
 	mDebugLog["DisplayDeviceInfo"] = gDXHardware.getDisplayInfo();
-	mFileMap["CrashLog"] = gDirUtilp->getExpandedFilename(LL_PATH_LOGS,"RainbowViewerException.log");
+	mFileMap["CrashLog"] = gDirUtilp->getExpandedFilename(LL_PATH_LOGS,"CoolViewerException.log");
 }
 
 bool LLCrashLoggerWindows::mainLoop()

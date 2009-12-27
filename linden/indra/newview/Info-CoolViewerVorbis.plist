@@ -5,35 +5,24 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>Rainbow Viewer</string>
+	<string>CoolViewerVorbis</string>
+	<key>CFBundleGetInfoString</key>
+	<string></string>
 	<key>CFBundleIconFile</key>
-	<string>secondlife.icns</string>
+	<string></string>
 	<key>CFBundleIdentifier</key>
-	<string>com.secondlife.indra.viewer</string>
+	<string>com.secondlife.indra.vorbis</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Rainbow Viewer</string>
+	<string>CoolViewerVorbis</string>
 	<key>CFBundlePackageType</key>
-	<string>APPL</string>
+	<string>FMWK</string>
+	<key>CFBundleShortVersionString</key>
+	<string></string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleURLName</key>
-			<string>Second Life URL</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>secondlife</string>
-			</array>
-			<key>LSIsAppleDefaultForScheme</key>
-			<true/>
-		</dict>
-	</array>
 	<key>CFBundleVersion</key>
-	<string>1.22.12.0</string>
-	<key>CSResourcesFileMapped</key>
-	<true/>
+	<string>0.0.1d1</string>
 </dict>
 </plist>

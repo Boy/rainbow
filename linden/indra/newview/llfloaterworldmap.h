@@ -110,6 +110,9 @@ public:
 
 	// teleport to the tracked item, if there is one
 	void			teleport();
+//MK
+    /*virtual*/ void    open();
+//mk
 
 protected:
 	static void		onPanBtn( void* userdata );

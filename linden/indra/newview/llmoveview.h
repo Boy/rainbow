@@ -55,6 +55,7 @@ protected:
 public:
 	/*virtual*/ void onOpen();
 	/*virtual*/ void onClose(bool app_quitting);
+	static void onFlyButtonClicked(void* userdata);
 
 	static F32	getYawRate(F32 time);
 
@@ -77,6 +78,7 @@ public:
 	LLButton*				mTurnRightButton;
 	LLButton*				mMoveUpButton;
 	LLButton*				mMoveDownButton;
+	LLButton*				mFlyButton;
 };
 
 

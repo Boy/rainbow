@@ -85,6 +85,10 @@
 
 #include "llassetuploadresponders.h"
 
+//MK
+extern BOOL RRenabled;
+//mk
+
 const U32 INCLUDE_SCREENSHOT  = 0x01 << 0;
 
 //-----------------------------------------------------------------------------
@@ -132,7 +136,17 @@ LLFloaterReporter::LLFloaterReporter(
 	}
 
 	childSetText("abuse_location_edit", gAgent.getSLURL() );
-
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	{
+		childSetVisible("abuse_location_edit", false);
+	}
+	if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+	{
+		childSetVisible("owner_name", false);
+		childSetVisible("abuser_name_edit", false);
+	}
+//mk
 	LLButton* pick_btn = getChild<LLButton>("pick_btn");
 	if (pick_btn)
 	{
@@ -299,7 +313,16 @@ void LLFloaterReporter::getObjectInfo(const LLUUID& object_id)
 			LLViewerRegion *regionp = objectp->getRegion();
 			if (regionp)
 			{
-				childSetText("sim_field", regionp->getName());
+//MK
+				if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+				{
+					childSetText("sim_field", std::string ("(Region hidden)"));
+				}
+				else
+				{
+//mk
+					childSetText("sim_field", regionp->getName());
+				}
 				LLVector3d global_pos;
 				global_pos.setVec(objectp->getPositionRegion());
 				setPosBox(global_pos);
@@ -994,6 +1017,12 @@ void LLFloaterReporter::setPosBox(const LLVector3d &pos)
 		mPosition.mV[VX],
 		mPosition.mV[VY],
 		mPosition.mV[VZ]);
+//MK
+	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	{
+		pos_string = "";
+	}
+//mk
 	childSetText("pos_field", pos_string);
 }
 

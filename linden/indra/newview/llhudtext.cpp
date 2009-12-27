@@ -57,6 +57,12 @@
 #include <boost/tokenizer.hpp>
 
 
+//MK
+#include "llviewerregion.h"
+
+extern BOOL RRenabled;
+//mk
+
 const F32 SPRING_STRENGTH = 0.7f;
 const F32 RESTORATION_SPRING_TIME_CONSTANT = 0.1f;
 const F32 HORIZONTAL_PADDING = 15.f;
@@ -571,7 +577,41 @@ void LLHUDText::setStringUTF8(const std::string &wtext)
 void LLHUDText::setString(const LLWString &wtext)
 {
 	mTextSegments.clear();
-	addLine(wtext, mColor);
+//MK
+	if (RRenabled)
+	{
+		LLWString local_wtext = wtext;
+		if (gAgent.mRRInterface.mContainsShowhovertextall)
+		{
+			local_wtext = utf8str_to_wstring("", 0);
+		}
+		else if ((mOnHUDAttachment && gAgent.mRRInterface.mContainsShowhovertexthud)
+				|| (!mOnHUDAttachment && gAgent.mRRInterface.mContainsShowhovertextworld)
+				|| (mSourceObject && gAgent.mRRInterface.contains("showhovertext:"+mSourceObject->getID().asString())))
+		{
+			local_wtext = utf8str_to_wstring("", 0);
+		}
+		else
+		{
+			if (gAgent.mRRInterface.mContainsShowloc)
+			{
+				std::string str = wstring_to_utf8str(local_wtext, local_wtext.length());
+				str = gAgent.mRRInterface.stringReplace(str, gAgent.mRRInterface.getParcelName(), "(Parcel hidden)");
+				str = gAgent.mRRInterface.stringReplace(str, gAgent.getRegion()->getName(), "(Region hidden)");
+				local_wtext = utf8str_to_wstring(str, str.length());
+			}
+			if (gAgent.mRRInterface.mContainsShownames)
+			{
+				std::string str = wstring_to_utf8str(local_wtext, local_wtext.length());
+				str = gAgent.mRRInterface.getCensoredMessage(str);
+				local_wtext = utf8str_to_wstring(str, str.length());
+			}
+		}
+		addLine(local_wtext, mColor);
+	}
+	else
+//mk
+		addLine(wtext, mColor);
 }
 
 void LLHUDText::clearString()

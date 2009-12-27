@@ -186,6 +186,10 @@ void LLConsole::draw()
 	
 //080813 Spatters:  This section makes a single huge black box behind all the text.
 	S32 bkg_height=4;
+	if (gSavedSettings.getBOOL("DisableMessagesSpacing")) {
+		message_spacing = 0;
+		bkg_height = 8;
+	}
 	S32 bkg_width=0;
 	for(paragraph_it = mParagraphs.rbegin(); paragraph_it != mParagraphs.rend(); paragraph_it++)
 	{

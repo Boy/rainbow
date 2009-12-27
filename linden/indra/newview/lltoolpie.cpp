@@ -67,6 +67,10 @@
 #include "llui.h"
 #include "llweb.h"
 
+//MK
+extern BOOL RRenabled;
+//mk
+
 extern void handle_buy(void*);
 
 extern BOOL gDebugClicks;
@@ -102,6 +106,16 @@ void LLToolPie::leftMouseCallback(const LLPickInfo& pick_info)
 
 BOOL LLToolPie::handleRightMouseDown(S32 x, S32 y, MASK mask)
 {
+//MK
+	// HACK : if alt-right-clicking and not in mouselook, HUDs are passed through and we risk
+	// right-clicking in-world
+	// => discard this click
+	if (RRenabled && (mask & MASK_ALT) && gAgent.getCameraMode() != CAMERA_MODE_MOUSELOOK)
+	{
+		handleMouseDown (x, y, mask);
+		return TRUE;
+	}
+//mk
 	// don't pick transparent so users can't "pay" transparent objects
 	gViewerWindow->pickAsync(x, y, mask, rightMouseCallback, FALSE, TRUE);
 	mPieMouseButtonDown = TRUE; 
@@ -137,8 +151,13 @@ BOOL LLToolPie::pickAndShowMenu(BOOL always_show)
 			}
 			else
 			{
-				// not selling passes, get info
-				LLFloaterLand::showInstance();
+//MK
+				if (!RRenabled || !gAgent.mRRInterface.mContainsShowloc)
+				{
+//mk
+					// not selling passes, get info
+					LLFloaterLand::showInstance();
+				}
 			}
 		}
 
@@ -165,6 +184,18 @@ BOOL LLToolPie::pickAndShowMenu(BOOL always_show)
 	// If it's a left-click, and we have a special action, do it.
 	if (useClickAction(always_show, mask, object, parent))
 	{
+//MK
+		if (RRenabled && gAgent.mRRInterface.mContainsFartouch)
+		{
+			LLVector3 pos = mPick.mIntersection;
+			pos -= gAgent.getPositionAgent ();
+			if (pos.magVec () >= 1.5)
+			{
+				return true;
+			}
+		}
+//mk
+
 		mClickAction = 0;
 		if (object && object->getClickAction()) 
 		{

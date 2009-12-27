@@ -245,6 +245,10 @@ std::string	LLViewerWindow::sSnapshotDir;
 
 std::string	LLViewerWindow::sMovieBaseName;
 
+//MK
+extern BOOL RRenabled;
+//mk
+
 extern void toggle_debug_menus(void*);
 
 
@@ -1630,7 +1634,7 @@ void LLViewerWindow::initBase()
 	LLRect console_rect = full_window;
 	console_rect.mTop    -= 24;
 
-	console_rect.mBottom += getChatConsoleBottomPad();
+	console_rect.mBottom += getChatConsoleBottomPad() + STATUS_BAR_HEIGHT;
 
 	// TODO: Eliminate magic constants - please used named constants if changing this - don't be a programmer hater
 	console_rect.mLeft   += 24; //gSavedSettings.getS32("StatusBarButtonWidth") + gSavedSettings.getS32("StatusBarPad");
@@ -1660,6 +1664,14 @@ void LLViewerWindow::initBase()
 	gDebugView->setFollowsAll();
 	gDebugView->setVisible(TRUE);
 	mRootView->addChild(gDebugView);
+
+	// HUD elements just below floaters
+	LLRect hud_rect = full_window;
+	hud_rect.mTop -= 24;
+	hud_rect.mBottom += STATUS_BAR_HEIGHT;
+	gHUDView = new LLHUDView("hud_view", hud_rect);
+	gHUDView->setFollowsAll();
+	mRootView->addChild(gHUDView);
 
 	// Add floater view at the end so it will be on top, and give it tab priority over others
 	mRootView->addChild(gFloaterView, -1);
@@ -1837,10 +1849,27 @@ void LLViewerWindow::initWorldUI()
 	S32 width = mRootView->getRect().getWidth();
 	LLRect full_window(0, height, width, 0);
 
-	if ( gBottomPanel == NULL )			// Don't re-enter if objects are alreay created
+	if ( gToolBar == NULL )			// Don't re-enter if objects are alreay created
 	{
+		LLRect bar_rect(-1, STATUS_BAR_HEIGHT, width+1, -1);
+		gToolBar = new LLToolBar("toolbar", bar_rect);
+
+		LLRect chat_bar_rect(-1,CHAT_BAR_HEIGHT, width+1, -1);
+		chat_bar_rect.translate(0, STATUS_BAR_HEIGHT-1);
+		gChatBar = new LLChatBar("chat", chat_bar_rect);
+
+		bar_rect.translate(0, STATUS_BAR_HEIGHT-1);
+		bar_rect.translate(0, CHAT_BAR_HEIGHT-1);
+		gOverlayBar = new LLOverlayBar("overlay", bar_rect);
+
 		// panel containing chatbar, toolbar, and overlay, over floaters
-		gBottomPanel = new LLBottomPanel(mRootView->getRect());
+		LLRect bottom_rect(-1, 2*STATUS_BAR_HEIGHT + CHAT_BAR_HEIGHT, width+1, -1);
+		gBottomPanel = new LLBottomPanel("bottom panel", bottom_rect);
+
+		// the order here is important
+		gBottomPanel->addChild(gChatBar);
+		gBottomPanel->addChild(gToolBar);
+		gBottomPanel->addChild(gOverlayBar);
 		mRootView->addChild(gBottomPanel);
 
 		// View for hover information
@@ -2951,9 +2980,23 @@ BOOL LLViewerWindow::handlePerFrameHover()
 	}
 
 	// Update rectangles for the various toolbars
-	if (gOverlayBar && gNotifyBoxView && gConsole && gToolBar)
+	if (gOverlayBar && gNotifyBoxView && gConsole && gToolBar && gChatBar)
 	{
 		LLRect bar_rect(-1, STATUS_BAR_HEIGHT, getWindowWidth()+1, -1);
+		if (gToolBar->getVisible())
+		{
+			gToolBar->setRect(bar_rect);
+			bar_rect.translate(0, STATUS_BAR_HEIGHT-1);
+		}
+
+		if (gChatBar->getVisible())
+		{
+			// fix up the height
+			LLRect chat_bar_rect = bar_rect;
+			chat_bar_rect.mTop = chat_bar_rect.mBottom + CHAT_BAR_HEIGHT + 1;
+			gChatBar->setRect(chat_bar_rect);
+			bar_rect.translate(0, CHAT_BAR_HEIGHT-1);
+		}
 
 		LLRect notify_box_rect = gNotifyBoxView->getRect();
 		notify_box_rect.mBottom = bar_rect.mBottom;
@@ -2971,40 +3014,44 @@ BOOL LLViewerWindow::handlePerFrameHover()
 			gFloaterView->setRect(floater_rect);
 		}
 
-		// snap floaters to top of chat bar/button strip
-		LLView* chatbar_and_buttons = gOverlayBar->getChild<LLView>("chatbar_and_buttons", TRUE);
-		// find top of chatbar and state buttons, if either are visible
-		if (chatbar_and_buttons && !chatbar_and_buttons->getLocalBoundingRect().isNull())
+		if (gOverlayBar->getVisible())
 		{
-			// convert top/left corner of chatbar/buttons container to gFloaterView-relative coordinates
-			S32 top, left;
-			chatbar_and_buttons->localPointToOtherView(
-												chatbar_and_buttons->getLocalBoundingRect().mLeft, 
-												chatbar_and_buttons->getLocalBoundingRect().mTop,
-												&left,
-												&top,
-												gFloaterView);
-			gFloaterView->setSnapOffsetBottom(top);
-		}
-		else if (gToolBar->getVisible())
-		{
-			S32 top, left;
-			gToolBar->localPointToOtherView(
-											gToolBar->getLocalBoundingRect().mLeft,
-											gToolBar->getLocalBoundingRect().mTop,
-											&left,
-											&top,
-											gFloaterView);
-			gFloaterView->setSnapOffsetBottom(top);
+			LLRect overlay_rect = bar_rect;
+			overlay_rect.mTop = overlay_rect.mBottom + OVERLAY_BAR_HEIGHT;
+
+			// Fitt's Law: Push buttons flush with bottom of screen if
+			// nothing else visible.
+			if (!gToolBar->getVisible()
+				&& !gChatBar->getVisible())
+			{
+				// *NOTE: this is highly depenent on the XML
+				// describing the position of the buttons
+				overlay_rect.translate(0, 0);
+			}
+
+			gOverlayBar->setRect(overlay_rect);
+			gOverlayBar->updateBoundingRect();
+			bar_rect.translate(0, gOverlayBar->getRect().getHeight());
+
+			gFloaterView->setSnapOffsetBottom(OVERLAY_BAR_HEIGHT);
 		}
 		else
 		{
 			gFloaterView->setSnapOffsetBottom(0);
 		}
 
+		// fix rectangle of bottom panel focus indicator
+		if(gBottomPanel && gBottomPanel->getFocusIndicator())
+		{
+			LLRect focus_rect = gBottomPanel->getFocusIndicator()->getRect();
+			focus_rect.mTop = (gToolBar->getVisible() ? STATUS_BAR_HEIGHT : 0) + 
+				(gChatBar->getVisible() ? CHAT_BAR_HEIGHT : 0) - 2;
+			gBottomPanel->getFocusIndicator()->setRect(focus_rect);
+		}
+
 		// Always update console
 		LLRect console_rect = gConsole->getRect();
-		console_rect.mBottom = gHUDView->getRect().mBottom + getChatConsoleBottomPad();
+		console_rect.mBottom = bar_rect.mBottom - 8;
 		gConsole->reshape(console_rect.getWidth(), console_rect.getHeight());
 		gConsole->setRect(console_rect);
 	}
@@ -3286,6 +3333,20 @@ void LLViewerWindow::renderSelections( BOOL for_gl_pick, BOOL pick_parcel_walls,
 						{
 							moveable_object_selected = TRUE;
 							this_object_movable = TRUE;
+//MK
+							// can't edit objects that someone is sitting on,
+							// when prevented from sit-tping
+							LLVOAvatar* avatar = gAgent.getAvatarObject();
+							if (RRenabled && (gAgent.mRRInterface.contains ("sittp")
+									|| (gAgent.mRRInterface.mContainsUnsit && avatar && avatar->mIsSitting)))
+							{
+								if (object->isSeat())
+								{
+									moveable_object_selected = FALSE;
+									this_object_movable = FALSE;
+								}
+							}
+//mk
 						}
 						all_selected_objects_move = all_selected_objects_move && this_object_movable;
 						all_selected_objects_modify = all_selected_objects_modify && object->permModify();
@@ -3640,7 +3701,17 @@ LLViewerObject* LLViewerWindow::cursorIntersect(S32 mouse_x, S32 mouse_y, F32 de
 			{
 		found = gPipeline.lineSegmentIntersectInHUD(mouse_hud_start, mouse_hud_end, pick_transparent,
 													face_hit, intersection, uv, normal, binormal);
-
+//MK
+		// HACK : don't allow focusing on HUDs unless we are in Mouselook mode
+		if (RRenabled && gAgent.getCameraMode() != CAMERA_MODE_MOUSELOOK)
+		{
+			MASK mask = gKeyboard->currentMask(TRUE);
+			if (mask & MASK_ALT)
+			{
+				found = NULL;
+			}
+		}
+//mk
 		if (!found) // if not found in HUD, look in world:
 
 			{
@@ -4032,6 +4103,13 @@ BOOL LLViewerWindow::thumbnailSnapshot(LLImageRaw *raw, S32 preview_width, S32 p
 		LLPipeline::sShowHUDAttachments = FALSE;
 	}
 
+//MK
+	if (RRenabled && gAgent.mRRInterface.mHasLockedHuds)
+	{
+		LLPipeline::sShowHUDAttachments = TRUE;
+	}
+//mk
+
 	S32 render_name = gSavedSettings.getS32("RenderName");
 	gSavedSettings.setS32("RenderName", 0);
 	LLVOAvatar::updateFreezeCounter(1) ; //pause avatar updating for one frame
@@ -4170,6 +4248,13 @@ BOOL LLViewerWindow::rawSnapshot(LLImageRaw *raw, S32 image_width, S32 image_hei
 		LLPipeline::sShowHUDAttachments = FALSE;
 	}
 
+//MK
+	if (RRenabled && gAgent.mRRInterface.mHasLockedHuds)
+	{
+		LLPipeline::sShowHUDAttachments = TRUE;
+	}
+//mk
+	
 	// Copy screen to a buffer
 	// crop sides or top and bottom, if taking a snapshot of different aspect ratio
 	// from window
@@ -5117,22 +5202,17 @@ LLAlertDialog* LLViewerWindow::alertXmlEditText(const std::string& xml_filename,
 
 ////////////////////////////////////////////////////////////////////////////
 
-LLBottomPanel::LLBottomPanel(const LLRect &rect) : 
-	LLPanel(LLStringUtil::null, rect, FALSE),
+LLBottomPanel::LLBottomPanel(const std::string &name, const LLRect &rect) : 
+	LLPanel(name, rect, FALSE),
 	mIndicator(NULL)
 {
 	// bottom panel is focus root, so Tab moves through the toolbar and button bar, and overlay
 	setFocusRoot(TRUE);
+ 	// don't capture mouse clicks that don't hit a child
+ 	setMouseOpaque(FALSE);
+ 	setFollows(FOLLOWS_LEFT | FOLLOWS_RIGHT | FOLLOWS_BOTTOM);
 	// flag this panel as chrome so buttons don't grab keyboard focus
 	setIsChrome(TRUE);
-
-	mFactoryMap["toolbar"] = LLCallbackMap(createToolBar, NULL);
-	mFactoryMap["overlay"] = LLCallbackMap(createOverlayBar, NULL);
-	mFactoryMap["hud"] = LLCallbackMap(createHUD, NULL);
-	LLUICtrlFactory::getInstance()->buildPanel(this, "panel_bars.xml", &getFactoryMap());
-	
-	setOrigin(rect.mLeft, rect.mBottom);
-	reshape(rect.getWidth(), rect.getHeight());
 }
 
 void LLBottomPanel::setFocusIndicator(LLView * indicator)
@@ -5149,28 +5229,6 @@ void LLBottomPanel::draw()
 		mIndicator->setEnabled(hasFocus);
 	}
 	LLPanel::draw();
-}
-
-void* LLBottomPanel::createHUD(void* data)
-{
-	delete gHUDView;
-	gHUDView = new LLHUDView();
-	return gHUDView;
-}
-
-
-void* LLBottomPanel::createOverlayBar(void* data)
-{
-	delete gOverlayBar;
-	gOverlayBar = new LLOverlayBar();
-	return gOverlayBar;
-}
-
-void* LLBottomPanel::createToolBar(void* data)
-{
-	delete gToolBar;
-	gToolBar = new LLToolBar();
-	return gToolBar;
 }
 
 //

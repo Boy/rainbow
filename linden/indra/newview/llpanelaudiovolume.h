@@ -35,17 +35,29 @@
 #include "llpanel.h"
 #include "llfloater.h"
 
+class LLFloaterAudioVolume :
+	public LLUISingleton<LLFloaterAudioVolume, LLFloaterAudioVolume>,
+	public LLFloater
+{
+	friend class LLUISingleton<LLFloaterAudioVolume, VisibilityPolicy<LLFloater> >;
+public:
+	LLFloaterAudioVolume(const LLSD& seed);
+	static void* createVolumePanel(void* data);
+
+	// visibility policy for LLUISingleton
+	static bool visible(LLFloater* instance, const LLSD& key);
+	static void show(LLFloater* instance, const LLSD& key);
+	static void hide(LLFloater* instance, const LLSD& key);
+};
+
 class LLPanelAudioVolume : public LLPanel
 {
 public:
-	LLPanelAudioVolume();					
+	LLPanelAudioVolume();
 	virtual ~LLPanelAudioVolume();
 
 	virtual BOOL postBuild();
 	virtual void draw();
-
-private:
-	static void onCommitVolumeChange(LLUICtrl* ctrl, void* user_data);
 };
 
 #endif

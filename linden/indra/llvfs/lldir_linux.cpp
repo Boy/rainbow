@@ -127,7 +127,7 @@ LLDir_Linux::LLDir_Linux()
 		}
 	}
 
-	// *TODO: don't use /tmp, use $HOME/.rainbowviewer/tmp or something.
+	// *TODO: don't use /tmp, use $HOME/.coolviewer/tmp or something.
 	mTempDir = "/tmp";
 }
 
@@ -148,7 +148,7 @@ void LLDir_Linux::initAppDirs(const std::string &app_name)
 	char* app_home_env = getenv((upper_app_name + "_USER_DIR").c_str());	/* Flawfinder: ignore */ 
 	if (app_home_env)
 	{
-		// user has specified own userappdir i.e. $RAINBOWVIEWER_USER_DIR
+		// user has specified own userappdir i.e. $COOLVIEWER_USER_DIR
 		mOSUserAppDir = app_home_env;
 	}
 	else

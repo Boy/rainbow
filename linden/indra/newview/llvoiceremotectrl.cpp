@@ -48,15 +48,16 @@
 LLVoiceRemoteCtrl::LLVoiceRemoteCtrl (const std::string& name) : LLPanel(name)
 {
 	setIsChrome(TRUE);
-
+/*
 	if (gSavedSettings.getBOOL("ShowVoiceChannelPopup"))
 	{
 		LLUICtrlFactory::getInstance()->buildPanel(this, "panel_voice_remote_expanded.xml");
 	}
 	else
 	{
+*/
 		LLUICtrlFactory::getInstance()->buildPanel(this, "panel_voice_remote.xml");
-	}
+//	}
 
 	setFocusRoot(TRUE);
 }
@@ -81,6 +82,7 @@ BOOL LLVoiceRemoteCtrl::postBuild()
 	mSpeakersBtn->setCallbackUserData(this);
 
 	childSetAction("show_channel", onClickPopupBtn, this);
+/*
 	childSetAction("end_call_btn", onClickEndCall, this);
 
 	LLTextBox* text = getChild<LLTextBox>("channel_label");
@@ -90,7 +92,7 @@ BOOL LLVoiceRemoteCtrl::postBuild()
 	}
 
 	childSetAction("voice_channel_bg", onClickVoiceChannel, this);
-
+*/
 
 	return TRUE;
 }
@@ -161,7 +163,7 @@ void LLVoiceRemoteCtrl::draw()
 	{
 		active_channel_name = voice_floater->getShortTitle();
 	}
-
+/*
 	LLVoiceChannel* current_channel = LLVoiceChannel::getCurrentVoiceChannel();
 	childSetEnabled("end_call_btn", LLVoiceClient::voiceEnabled() 
 								&& current_channel
@@ -198,7 +200,7 @@ void LLVoiceRemoteCtrl::draw()
 			voice_channel_bg->setImageColor(bg_color);
 		}
 	}
-
+*/
 	LLButton* expand_button = getChild<LLButton>("show_channel");
 	if (expand_button)
 	{

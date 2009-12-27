@@ -63,6 +63,9 @@
 extern LLCPUInfo gSysCPU;
 extern LLMemoryInfo gSysMemory;
 extern U32 gPacketsIn;
+//MK
+extern BOOL RRenabled;
+//mk
 
 ///----------------------------------------------------------------------------
 /// Local function declarations, constants, enums, and typedefs
@@ -115,6 +118,12 @@ LLFloaterAbout::LLFloaterAbout()
 				   LL_VERSION_MAJOR, LL_VERSION_MINOR, LL_VERSION_PATCH, LL_VIEWER_BUILD,
 				   __DATE__, __TIME__,
 				   gSavedSettings.getString("VersionChannelName").c_str());
+//MK
+	if (RRenabled)
+	{
+		version += gAgent.mRRInterface.getVersion () + "\n";
+	}
+//mk
 	support_widget->appendColoredText(version, FALSE, FALSE, gColors.getColor("TextFgReadOnlyColor"));
 	support_widget->appendStyledText(LLTrans::getString("ReleaseNotes"), FALSE, FALSE, &viewer_link_style);
 
@@ -135,22 +144,44 @@ LLFloaterAbout::LLFloaterAbout()
 		LLUIString pos_text = getString("you_are_at");
 		pos_text.setArg("[POSITION]",
 						llformat("%.1f, %.1f, %.1f ", pos.mdV[VX], pos.mdV[VY], pos.mdV[VZ]));
+//MK
+		if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+		{
+			pos_text = "(Position hidden)\n";
+		}
+//mk
 		support.append(pos_text);
 
 		std::string region_text = llformat("in %s located at ",
 										gAgent.getRegion()->getName().c_str());
+//MK
+		if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+		{
+			region_text = "(Region hidden)\n";
+		}
+//mk
 		support.append(region_text);
 
-		std::string buffer;
-		buffer = gAgent.getRegion()->getHost().getHostName();
-		support.append(buffer);
-		support.append(" (");
-		buffer = gAgent.getRegion()->getHost().getString();
-		support.append(buffer);
-		support.append(")\n");
-		support.append(gLastVersionChannel);
-		support.append("\n");
-
+//MK
+		if (!RRenabled || !gAgent.mRRInterface.mContainsShowloc)
+		{
+//mk
+			std::string buffer;
+			buffer = gAgent.getRegion()->getHost().getHostName();
+			support.append(buffer);
+			support.append(" (");
+			buffer = gAgent.getRegion()->getHost().getString();
+			support.append(buffer);
+			support.append(")\n");
+			support.append(gLastVersionChannel);
+			support.append("\n");
+//MK
+		}
+		else
+		{
+			support.append ("(Server info hidden)\n\n");
+		}
+//mk
 		support_widget->appendColoredText(support, FALSE, FALSE, gColors.getColor("TextFgReadOnlyColor"));
 		support_widget->appendStyledText(LLTrans::getString("ReleaseNotes"), FALSE, FALSE, &server_link_style);
 
