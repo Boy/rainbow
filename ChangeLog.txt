@@ -2,7 +2,7 @@
 
     * Release notes added
 
-    new file: ReleaseNotes.txt
+    modified: RELEASE_NOTES.txt
 
 
     * OpenGL fixes applied for better ATI and other newer graphic cards support

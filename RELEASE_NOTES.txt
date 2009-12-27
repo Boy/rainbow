@@ -1,5 +1,5 @@
-Release Notes for Rainbow Viewer 1.22.12.0 Release 4 Dec 25th 2009
-==================================================================
+Release Notes for Rainbow Viewer 1.22.12.0 Release 4, Dec 25th 2009
+===================================================================
 http://my.opera.com/boylane (blog)
 http://coolviewer.googlecode.com (installers)
 http://github.com/boy (source code)
@@ -29,6 +29,7 @@ Patches by Boy Lane:
 * RVAdditionalChanges: lots of changes under the hood. 
 * NotecardHandlingChanges: backport of the notecard behaviour from 1.23.5 mandatory update to 1.22.
 * OpenGL-SSE: fixes SSE activation and OpenGL for improved support and speed (!) of ATI and other newer graphic cards.
+* OpenJPEG 1.3: update to the faster OpenJPEG 1.3 libs 
 * Radar: Adaption of Dale Glass' radar with additional modifications by Henru Beauchamp to the 1.22 viewer.
 * RainbowFeatures: based on Henri's Cool SL Viewer, adds a preferences menu to control additional viewer features.
 * SkinPreferences: based on Emerald, this adds some nice skins to the preferences menu.
