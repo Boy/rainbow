@@ -1,4 +1,12 @@
 2009-12-25 Boy Lane <boy.lane@yahoo.com>
+    
+    * added the fixes for saving of preferences to master
+    
+    modified: linden/indra/newviewer/llfloaterpreference.cpp
+    modified: linden/indra/newviewer/prefsrainbow.cpp
+
+
+2009-12-25 Boy Lane <boy.lane@yahoo.com>
 
     * RAINBOW MASTER  1.22.12.0 
     * First public release of new 1.22.12.0 viewer baseline. Full functionality included (or so I hope). No RLV.
