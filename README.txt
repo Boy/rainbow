@@ -1,9 +1,7 @@
-RAINBOW MASTER  1.22.12.0 
+RAINBOW VIEWER  1.22.12.0 HPA_ExportImport 
 
-That's the current baseline for all Rainbow and Cool Viewers.
+That's the current baseline for all Rainbow and Cool Viewers with added HPA Export/Import.
 
 Please have a look at the RELEASE_NOTES.txt and ChangeLog.txt for included changes and patches.
-
-This is the first upload to github and I'm still figuring out how it works :).
 
 Boy

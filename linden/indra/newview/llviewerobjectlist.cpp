@@ -74,10 +74,11 @@
 
 #include "llappviewer.h"
 
-#include "primbackup.h"
-
 extern F32 gMinObjectDistance;
 extern BOOL gAnimateTextures;
+
+#include "importtracker.h"
+extern ImportTracker gImportTracker;
 
 void dialog_refresh_all();
 
@@ -228,10 +229,6 @@ void LLViewerObjectList::processUpdateCore(LLViewerObject* objectp,
 	{
 		gPipeline.addObject(objectp);
 	}
-	else
-	{
-		primbackup::getInstance()->prim_update(objectp);
-	}
 
 	// Also sets the approx. pixel area
 	objectp->setPixelAreaAndAngle(gAgent);
@@ -241,6 +238,20 @@ void LLViewerObjectList::processUpdateCore(LLViewerObject* objectp,
 	// so that the drawable parent is set properly
 	findOrphans(objectp, msg->getSenderIP(), msg->getSenderPort());
 	
+	LLVector3 pScale=objectp->getScale();
+	if(objectp->permYouOwner())
+	{
+		if(objectp->permModify() && objectp->permCopy() && objectp->permTransfer())
+		{
+			if (gImportTracker.getState() != ImportTracker::IDLE && objectp)
+			{
+				if((gImportTracker.getState() == ImportTracker::WAND && just_created && objectp->mCreateSelected) || (pScale.mV[VX] == 0.52345f && pScale.mV[VY] == 0.52346f && pScale.mV[VZ] == 0.52347f
+					&& gImportTracker.getState() == ImportTracker::BUILDING))
+				gImportTracker.get_update(objectp->mLocalID, just_created, objectp->mCreateSelected);
+			}
+		}
+	}
+
 	// If we're just wandering around, don't create new objects selected.
 	if (just_created 
 		&& update_type != OUT_TERSE_IMPROVED 
@@ -257,8 +268,6 @@ void LLViewerObjectList::processUpdateCore(LLViewerObject* objectp,
 		objectp->mCreateSelected = false;
 		gViewerWindow->getWindow()->decBusyCount();
 		gViewerWindow->getWindow()->setCursor( UI_CURSOR_ARROW );
-
-		primbackup::getInstance()->newprim(objectp);
 	}
 }
 

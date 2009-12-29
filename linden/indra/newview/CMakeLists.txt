@@ -61,6 +61,9 @@ include_directories(
     )
 
 set(viewer_SOURCE_FILES
+    importtracker.cpp
+    exporttracker.cpp
+    chatbar_as_cmdline.cpp
     llagent.cpp
     llagentaccess.cpp
     llagentdata.cpp
@@ -369,7 +372,6 @@ set(viewer_SOURCE_FILES
     llviewerimage.cpp
     llviewerimagelist.cpp
     llviewerinventory.cpp
-    primbackup.cpp
     llviewerjointattachment.cpp
     llviewerjoint.cpp
     llviewerjointmesh.cpp
@@ -460,6 +462,9 @@ set(viewer_HEADER_FILES
     CMakeLists.txt
     ViewerInstall.cmake
 
+    importtracker.h
+    exporttracker.h
+    chatbar_as_cmdline.h
     llagent.h
     llagentaccess.h
     llagentdata.h
@@ -774,7 +779,6 @@ set(viewer_HEADER_FILES
     llviewerimage.h
     llviewerimagelist.h
     llviewerinventory.h
-    primbackup.h
     llviewerjoint.h
     llviewerjointattachment.h
     llviewerjointmesh.h
@@ -866,7 +870,7 @@ if (DARWIN)
 
   # Add resource files to the project.
   set(viewer_RESOURCE_FILES
-    secondlife.icns
+    viewer.icns
     macview.r
     gpu_table.txt
     Info-RainbowViewer.plist
@@ -918,13 +922,13 @@ if (WINDOWS)
         PROPERTIES
         COMPILE_FLAGS "/Ycllviewerprecompiledheaders.h"
         )        
-    foreach( src_file ${viewer_SOURCE_FILES} )
-        set_source_files_properties(
-            ${src_file}
-            PROPERTIES
-            COMPILE_FLAGS "/Yullviewerprecompiledheaders.h"
-            )        
-    endforeach( src_file ${viewer_SOURCE_FILES} )
+    # foreach( src_file ${viewer_SOURCE_FILES} )
+    #    set_source_files_properties(
+    #        ${src_file}
+    #        PROPERTIES
+    #        COMPILE_FLAGS "/Yullviewerprecompiledheaders.h"
+    #        )        
+    # endforeach( src_file ${viewer_SOURCE_FILES} )
     list(APPEND viewer_SOURCE_FILES llviewerprecompiledheaders.cpp)
     
     # Add resource files to the project.
@@ -1107,6 +1111,8 @@ set(viewer_XUI_FILES
     skins/default/xui/en-us/floater_preview_texture.xml
     skins/default/xui/en-us/floater_preview_url.xml
     skins/default/xui/en-us/floater_price_for_listing.xml
+    skins/default/xui/en-us/floater_prim_export.xml
+    skins/default/xui/en-us/floater_prim_import.xml
     skins/default/xui/en-us/floater_profile.xml
     skins/default/xui/en-us/floater_radar.xml
     skins/default/xui/en-us/floater_region_info.xml

@@ -169,7 +169,7 @@ class WindowsManifest(ViewerManifest):
         self.path(src="licenses-win32.txt", dst="licenses.txt")
 
         self.path("featuretable.txt")
-        self.path("releasenotes.txt")
+        self.path("RELEASE_NOTES.txt")
         self.path("RestrainedLifeReadme.txt")
 #        self.path("RL_Viewer_API.txt") //outdated API description 
         self.path("README_IMPORTANT!!!.txt")
