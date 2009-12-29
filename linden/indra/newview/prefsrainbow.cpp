@@ -73,30 +73,13 @@ LLPrefsRainbowImpl::LLPrefsRainbowImpl()
  : LLPanel("Rainbow Prefs Panel")
 {
 	LLUICtrlFactory::getInstance()->buildPanel(this, "panel_preferences_rainbow.xml");
-	childSetCommitCallback("restrained_life_check", onCommitCheckBox, this);
 	refresh();
-}
-
-//static
-void LLPrefsRainbowImpl::onCommitCheckBox(LLUICtrl* ctrl, void* user_data)
-{
-	LLPrefsRainbowImpl* self = (LLPrefsRainbowImpl*)user_data;
-	if (self->childGetValue("restrained_life_check").asBoolean())
-	{
-		gSavedSettings.setBOOL("FetchInventoryOnLogin",	TRUE);
-		self->childSetValue("fetch_inventory_on_login_check", TRUE);
-		self->childDisable("fetch_inventory_on_login_check");
-	}
-	else
-	{
-		self->childEnable("fetch_inventory_on_login_check");
-	}
 }
 
 void LLPrefsRainbowImpl::refresh()
 {
-	mShowGrids						= gSavedSettings.getBOOL("ForceShowGrid");
-	mSaveScriptsAsMono				= gSavedSettings.getBOOL("SaveScriptsAsMono");
+	mShowGrids					= gSavedSettings.getBOOL("ForceShowGrid");
+	mSaveScriptsAsMono			= gSavedSettings.getBOOL("SaveScriptsAsMono");
 	mDoubleClickTeleport			= gSavedSettings.getBOOL("DoubleClickTeleport");
 	mHideNotificationsInChat		= gSavedSettings.getBOOL("HideNotificationsInChat");
 	mUseOldTrackingDots			= gSavedSettings.getBOOL("UseOldTrackingDots");
@@ -104,33 +87,11 @@ void LLPrefsRainbowImpl::refresh()
 	mAutoCloseOOC				= gSavedSettings.getBOOL("AutoCloseOOC");
 	mPlayTypingSound			= gSavedSettings.getBOOL("PlayTypingSound");
 	mPrivateLookAt				= gSavedSettings.getBOOL("PrivateLookAt");
-	mSecondsInChatAndIMs		= gSavedSettings.getBOOL("SecondsInChatAndIMs");
-	mRestrainedLife				= gSavedSettings.getBOOL("RestrainedLife");
-	if (mRestrainedLife)
-	{
-		mFetchInventoryOnLogin	= TRUE;
-		gSavedSettings.setBOOL("FetchInventoryOnLogin",	TRUE);
-	}
-	else
-	{
-		mFetchInventoryOnLogin	= gSavedSettings.getBOOL("FetchInventoryOnLogin");
-	}
+	mSecondsInChatAndIMs			= gSavedSettings.getBOOL("SecondsInChatAndIMs");
+	mFetchInventoryOnLogin			= gSavedSettings.getBOOL("FetchInventoryOnLogin");
+}
 
-	if (LLStartUp::getStartupState() != STATE_STARTED)
-	{
-		childDisable("restrained_life_check");
-	}
-
-	if (mRestrainedLife)
-	{
-		childSetValue("fetch_inventory_on_login_check", TRUE);
-		childDisable("fetch_inventory_on_login_check");
-	}
-	else
-	{
-		childEnable("fetch_inventory_on_login_check");
-	}
-
+{
 	std::string format = gSavedSettings.getString("ShortTimeFormat");
 	if (format.find("%p") == -1)
 	{
