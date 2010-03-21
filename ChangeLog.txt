@@ -1,3 +1,43 @@
+2009-03-21 Boy Lane <boy.lane@yahoo.com>
+
+    * Fixed display of floater_tools.xml for Advanced/Debug Permissions 
+
+    modified: linden/indra/newview/skins/default/xui/en-us/floater_tools.xml
+    
+    
+    * Adjusted appearance of Silver skin
+
+    modified: linden/indra/newview/skins/silver/xui/en-us/panel_avatar.xml
+    modified: linden/indra/newview/skins/silver/xui/en-us/panel_toolbar.xml
+    new file: linden/indra/newview/skins/silver/textures/icn_toolbar_radar.tga
+
+
+    * Fixed alignment of buttons in AV profile when using admin options	
+
+    modified: linden/indra/newview/skins/default/xui/en-us/panel_avatar.xml
+
+
+    * Radar Button in Toolbar
+
+    modified: linden/indra/newview/lltoolbar.cpp
+    modified: linden/indra/newview/lltoolbar.h
+    modified: linden/indra/newview/skins/default/xui/en-us/panel_toolbar.xml
+    new file: linden/indra/newview/skins/default/textures/icn_toolbar_radar.tga
+
+
+2009-03-20 Boy Lane <boy.lane@yahoo.com>
+
+    * Fixed invisible avatars (VWR-13996)
+
+    modified: linden/indra/newview/llspatialpartition.cpp
+
+
+    * Fixed incomplete rendering of some oblong sculpties
+
+    modified: linden/indra/llmath/llvolume.cpp
+    modified: linden/indra/llmath/llvolume.h
+
+	
 2009-12-27 Boy Lane <boy.lane@yahoo.com>
 
     * still trying to figure out how git works, renamed branch from RV_1.22.12.0_R4 to RV_1.22.12.0

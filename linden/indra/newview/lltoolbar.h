@@ -82,6 +82,7 @@ public:
 	static void onClickRadar(void* data);
 	static void onClickMap(void* data);
 	static void onClickInventory(void* data);
+	static void onClickAvatarList(void* data);
 
 	static F32 sInventoryAutoOpenTime;
 
