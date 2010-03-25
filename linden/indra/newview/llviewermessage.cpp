@@ -1511,7 +1511,7 @@ void process_improved_im(LLMessageSystem *msg, void **user_data)
 			// return the version message
 			std::string my_name;
 			gAgent.buildFullname(my_name);
-			std::string response = gAgent.mRRInterface.getVersion ();
+			std::string response = gAgent.mRRInterface.getVersion2 ();
 			pack_instant_message(
 				gMessageSystem,
 				gAgent.getID(),
@@ -1608,7 +1608,7 @@ void process_improved_im(LLMessageSystem *msg, void **user_data)
 				// tell the sender the avatar could not read them
 				std::string my_name;
 				gAgent.buildFullname(my_name);
-				my_name = my_name+" using viewer "+gAgent.mRRInterface.getVersion ();
+				my_name = my_name+" using viewer "+gAgent.mRRInterface.getVersion2 ();
 				std::string response = "The Resident you messaged is prevented from reading your instant messages at the moment, please try again later.";
 				pack_instant_message(
 					gMessageSystem,
@@ -1862,7 +1862,7 @@ void process_improved_im(LLMessageSystem *msg, void **user_data)
 			info->mTransactionID = session_id;
 //MK
 			std::string folder_name(message);
-			if (RRenabled && !gSavedSettings.getBOOL("RestrainedLifeForbidGiveToRLV") &&
+			if (RRenabled && !gSavedSettings.getBOOL("RestrainedLoveForbidGiveToRLV") &&
 				info->mType == LLAssetType::AT_CATEGORY &&
 				gAgent.mRRInterface.getRlvShare() &&
 				folder_name.find(RR_RLV_REDIR_FOLDER_PREFIX) == 1)
@@ -2627,7 +2627,7 @@ void process_chat_from_simulator(LLMessageSystem *msg, void **user_data)
 					LLStringUtil::toLower(command);
 					if (gAgent.mRRInterface.handleCommand (from_id, command))
 					{
-						if (!gSavedSettings.getBOOL("RestrainedLifeDebug"))
+						if (!gSavedSettings.getBOOL("RestrainedLoveDebug"))
 						{
 							return;
 						}

@@ -62,7 +62,7 @@ protected:
 	BOOL mPlayTypingSound;
 	BOOL mPrivateLookAt;
 	BOOL mFetchInventoryOnLogin;
-	BOOL mRestrainedLife;
+	BOOL mRestrainedLove;
 	BOOL mSecondsInChatAndIMs;
 	U32 mTimeFormat;
 	U32 mDateFormat;
@@ -73,7 +73,7 @@ LLPrefsRainbowImpl::LLPrefsRainbowImpl()
  : LLPanel("Rainbow Prefs Panel")
 {
 	LLUICtrlFactory::getInstance()->buildPanel(this, "panel_preferences_rainbow.xml");
-	childSetCommitCallback("restrained_life_check", onCommitCheckBox, this);
+	childSetCommitCallback("restrained_love_check", onCommitCheckBox, this);
 	refresh();
 }
 
@@ -81,7 +81,7 @@ LLPrefsRainbowImpl::LLPrefsRainbowImpl()
 void LLPrefsRainbowImpl::onCommitCheckBox(LLUICtrl* ctrl, void* user_data)
 {
 	LLPrefsRainbowImpl* self = (LLPrefsRainbowImpl*)user_data;
-	if (self->childGetValue("restrained_life_check").asBoolean())
+	if (self->childGetValue("restrained_love_check").asBoolean())
 	{
 		gSavedSettings.setBOOL("FetchInventoryOnLogin",	TRUE);
 		self->childSetValue("fetch_inventory_on_login_check", TRUE);
@@ -105,8 +105,8 @@ void LLPrefsRainbowImpl::refresh()
 	mPlayTypingSound			= gSavedSettings.getBOOL("PlayTypingSound");
 	mPrivateLookAt				= gSavedSettings.getBOOL("PrivateLookAt");
 	mSecondsInChatAndIMs		= gSavedSettings.getBOOL("SecondsInChatAndIMs");
-	mRestrainedLife				= gSavedSettings.getBOOL("RestrainedLife");
-	if (mRestrainedLife)
+	mRestrainedLove				= gSavedSettings.getBOOL("RestrainedLove");
+	if (mRestrainedLove)
 	{
 		mFetchInventoryOnLogin	= TRUE;
 		gSavedSettings.setBOOL("FetchInventoryOnLogin",	TRUE);
@@ -118,10 +118,10 @@ void LLPrefsRainbowImpl::refresh()
 
 	if (LLStartUp::getStartupState() != STATE_STARTED)
 	{
-		childDisable("restrained_life_check");
+		childDisable("restrained_love_check");
 	}
 
-	if (mRestrainedLife)
+	if (mRestrainedLove)
 	{
 		childSetValue("fetch_inventory_on_login_check", TRUE);
 		childDisable("fetch_inventory_on_login_check");
@@ -182,7 +182,7 @@ void LLPrefsRainbowImpl::cancel()
 	gSavedSettings.setBOOL("PlayTypingSound",			mPlayTypingSound);
 	gSavedSettings.setBOOL("PrivateLookAt",				mPrivateLookAt);
 	gSavedSettings.setBOOL("FetchInventoryOnLogin",		mFetchInventoryOnLogin);
-	gSavedSettings.setBOOL("RestrainedLife",			mRestrainedLife);
+	gSavedSettings.setBOOL("RestrainedLove",			mRestrainedLove);
 	gSavedSettings.setBOOL("SecondsInChatAndIMs",		mSecondsInChatAndIMs);
 }
 

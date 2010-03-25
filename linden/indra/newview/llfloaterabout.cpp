@@ -121,7 +121,7 @@ LLFloaterAbout::LLFloaterAbout()
 //MK
 	if (RRenabled)
 	{
-		version += gAgent.mRRInterface.getVersion () + "\n";
+		version += gAgent.mRRInterface.getVersion2 () + "\n";
 	}
 //mk
 	support_widget->appendColoredText(version, FALSE, FALSE, gColors.getColor("TextFgReadOnlyColor"));

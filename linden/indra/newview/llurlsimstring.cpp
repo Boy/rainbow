@@ -53,7 +53,7 @@ void LLURLSimString::setString(const std::string& sim_string)
 	sInstance.mSimName.clear();
 	sInstance.mParseState = NOT_PARSED;
 //MK
-	if (gSavedSettings.getBOOL("RestrainedLife"))
+	if (gSavedSettings.getBOOL("RestrainedLove"))
 	{
 		return;
 	}

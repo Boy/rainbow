@@ -1892,7 +1892,7 @@ bool LLAppViewer::initConfiguration()
     if(clp.hasOption("url"))
     {
 //MK
-        if (!gSavedSettings.getBOOL("RestrainedLife"))
+        if (!gSavedSettings.getBOOL("RestrainedLove"))
         {
 //mk
             std::string slurl = clp.getOption("url")[0];
@@ -1909,7 +1909,7 @@ bool LLAppViewer::initConfiguration()
     else if(clp.hasOption("slurl"))
     {
 //MK
-        if (!gSavedSettings.getBOOL("RestrainedLife"))
+        if (!gSavedSettings.getBOOL("RestrainedLove"))
         {
 //mk
             std::string slurl = clp.getOption("slurl")[0];

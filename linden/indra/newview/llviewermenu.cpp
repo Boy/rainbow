@@ -222,7 +222,7 @@ void init_debug_ui_menu(LLMenuGL* menu);
 void init_debug_xui_menu(LLMenuGL* menu);
 void init_debug_avatar_menu(LLMenuGL* menu);
 //MK
-void init_restrained_life_menu(LLMenuGL* menu);
+void init_restrained_love_menu(LLMenuGL* menu);
 //mk
 void init_debug_baked_texture_menu(LLMenuGL* menu);
 
@@ -853,8 +853,8 @@ void init_client_menu(LLMenuGL* menu)
 //MK
 	if (RRenabled)
 	{
-		sub_menu = new LLMenuGL("RestrainedLife");
-		init_restrained_life_menu(sub_menu);
+		sub_menu = new LLMenuGL("RestrainedLove");
+		init_restrained_love_menu(sub_menu);
 		menu->appendMenu(sub_menu);
 	}
 //mk
@@ -1389,12 +1389,12 @@ void init_debug_avatar_menu(LLMenuGL* menu)
 	menu->createJumpKeys();
 }
 //MK
-void init_restrained_life_menu(LLMenuGL* menu)
+void init_restrained_love_menu(LLMenuGL* menu)
 {
-	menu->append(new LLMenuItemCheckGL("Allow Wear", menu_toggle_control, NULL, menu_check_control, (void*) "RestrainedLifeAllowWear"));
-	menu->append(new LLMenuItemCheckGL("Forbid give to #RLV/", menu_toggle_control, NULL, menu_check_control, (void*) "RestrainedLifeForbidGiveToRLV"));
-	menu->append(new LLMenuItemCheckGL("Ignore @setenv (after restart)", menu_toggle_control, NULL, menu_check_control, (void*) "RestrainedLifeNoSetEnv"));
-	menu->append(new LLMenuItemCheckGL("Debug mode", menu_toggle_control, NULL, menu_check_control, (void*) "RestrainedLifeDebug"));
+	menu->append(new LLMenuItemCheckGL("Allow Wear", menu_toggle_control, NULL, menu_check_control, (void*) "RestrainedLoveAllowWear"));
+	menu->append(new LLMenuItemCheckGL("Forbid give to #RLV/", menu_toggle_control, NULL, menu_check_control, (void*) "RestrainedLoveForbidGiveToRLV"));
+	menu->append(new LLMenuItemCheckGL("Ignore @setenv (after restart)", menu_toggle_control, NULL, menu_check_control, (void*) "RestrainedLoveNoSetEnv"));
+	menu->append(new LLMenuItemCheckGL("Debug mode", menu_toggle_control, NULL, menu_check_control, (void*) "RestrainedLoveDebug"));
 }
 //mk
 void init_debug_baked_texture_menu(LLMenuGL* menu)

@@ -2782,7 +2782,7 @@ void LLInventoryModel::processUpdateInventoryFolder(LLMessageSystem* msg,
 		folders.push_back(tfolder);
 //MK
 		if (RRenabled && gAgent.mRRInterface.getRlvShare() &&
-			!gSavedSettings.getBOOL("RestrainedLifeForbidGiveToRLV"))
+			!gSavedSettings.getBOOL("RestrainedLoveForbidGiveToRLV"))
 		{
 			std::string folder_name = tfolder->getName();
 			if(folder_name.find(RR_RLV_REDIR_FOLDER_PREFIX) == 0)
@@ -2940,7 +2940,7 @@ void LLInventoryModel::processBulkUpdateInventory(LLMessageSystem* msg, void**)
 		{
 //MK
 			if (RRenabled && gAgent.mRRInterface.getRlvShare() &&
-				!gSavedSettings.getBOOL("RestrainedLifeForbidGiveToRLV"))
+				!gSavedSettings.getBOOL("RestrainedLoveForbidGiveToRLV"))
 			{
 				std::string folder_name = tfolder->getName();
 				if(folder_name.find(RR_RLV_REDIR_FOLDER_PREFIX) == 0)

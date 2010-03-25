@@ -363,8 +363,8 @@ bool idle_startup()
 	static bool samename = false;
 
 //MK
-	RRenabled = gSavedSettings.getBOOL("RestrainedLife");
-	RRNoSetEnv = gSavedSettings.getBOOL("RestrainedLifeNoSetEnv");
+	RRenabled = gSavedSettings.getBOOL("RestrainedLove");
+	RRNoSetEnv = gSavedSettings.getBOOL("RestrainedLoveNoSetEnv");
 //mk
 	// HACK: These are things from the main loop that usually aren't done
 	// until initialization is complete, but need to be done here for things

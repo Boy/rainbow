@@ -1,3 +1,26 @@
+/** 
+* @file RRInterface.cpp
+* @author Marine Kelley
+* @brief Implementation of the RLV features
+*
+* RLV Source Code
+* The source code in this file ("Source Code") is provided by Marine Kelley
+* to you under the terms of the GNU General Public License, version 2.0
+* ("GPL"), unless you have obtained a separate licensing agreement
+* ("Other License"), formally executed by you and Marine Kelley.  Terms of
+* the GPL can be found in doc/GPL-license.txt in the distribution of the
+* original source of the Second Life Viewer, or online at 
+* http://secondlifegrid.net/programs/open_source/licensing/gplv2
+* 
+* By copying, modifying or distributing this software, you acknowledge
+* that you have read and understood your obligations described above,
+* and agree to abide by those obligations.
+* 
+* ALL SOURCE CODE FROM MARINE KELLEY IS PROVIDED "AS IS." MARINE KELLEY 
+* MAKES NO WARRANTIES, EXPRESS, IMPLIED OR OTHERWISE, REGARDING 
+* ITS ACCURACY, COMPLETENESS OR PERFORMANCE.
+*/
+
 #include "llviewerprecompiledheaders.h"
 
 #include "llagent.h"
@@ -219,9 +242,14 @@ std::string RRInterface::getVersion ()
 	return RR_VIEWER_NAME" viewer v"RR_VERSION" ("RR_SLV_VERSION")"; // there is no '+' between the string and the macro
 }
 
+std::string RRInterface::getVersion2 ()
+{
+	return RR_VIEWER_NAME_NEW" viewer v"RR_VERSION" ("RR_SLV_VERSION")"; // there is no '+' between the string and the macro
+}
+
 BOOL RRInterface::isAllowed (LLUUID object_uuid, std::string action, BOOL log_it)
 {
-	BOOL debug = gSavedSettings.getBOOL("RestrainedLifeDebug") && log_it;
+	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug") && log_it;
 	if (debug) {
 		llinfos << object_uuid.asString() << "      " << action << llendl;
 	}
@@ -318,7 +346,7 @@ BOOL RRInterface::containsWithoutException (std::string action, std::string exce
 
 BOOL RRInterface::add (LLUUID object_uuid, std::string action, std::string option)
 {
-	if (gSavedSettings.getBOOL("RestrainedLifeDebug")) {
+	if (gSavedSettings.getBOOL("RestrainedLoveDebug")) {
 		llinfos << object_uuid.asString() << "       " << action << "      " << option << llendl;
 	}
 	
@@ -400,7 +428,7 @@ BOOL RRInterface::add (LLUUID object_uuid, std::string action, std::string optio
 
 BOOL RRInterface::remove (LLUUID object_uuid, std::string action, std::string option)
 {
-	BOOL debug = gSavedSettings.getBOOL("RestrainedLifeDebug");
+	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug");
 	if (debug) {
 		llinfos << object_uuid.asString() << "       " << action << "      " << option << llendl;
 	}
@@ -447,7 +475,7 @@ BOOL RRInterface::remove (LLUUID object_uuid, std::string action, std::string op
 
 BOOL RRInterface::clear (LLUUID object_uuid, std::string command)
 {
-	BOOL debug = gSavedSettings.getBOOL("RestrainedLifeDebug");
+	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug");
 	if (debug) {
 		llinfos << object_uuid.asString() << "   /   " << command << llendl;
 	}
@@ -497,7 +525,7 @@ void RRInterface::replace (LLUUID what, LLUUID by)
 
 
 BOOL RRInterface::garbageCollector (BOOL all) {
-	BOOL debug = gSavedSettings.getBOOL("RestrainedLifeDebug");
+	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug");
 	RRMAP::iterator it;
 	BOOL res=FALSE;
 	LLUUID uuid;
@@ -600,7 +628,7 @@ BOOL RRInterface::parseCommand (std::string command, std::string& behaviour, std
 
 BOOL RRInterface::handleCommand (LLUUID uuid, std::string command)
 {
-	BOOL debug = gSavedSettings.getBOOL("RestrainedLifeDebug");
+	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug");
 	// 1. check the command is actually a single one or a list of commands separated by ","
 	if (command.find (",")!=-1) {
 		BOOL res=TRUE;
@@ -643,6 +671,7 @@ BOOL RRInterface::handleCommand (LLUUID uuid, std::string command)
 			llinfos << "[" << uuid.asString() << "]  [" << behav << "]  [" << option << "] [" << param << "]" << llendl;
 		}
 		if (behav=="version") return answerOnChat (param, getVersion ());
+		else if (behav=="versionnew") return answerOnChat (param, getVersion2 ());
 		else if (behav=="versionnum") return answerOnChat (param, RR_VERSION_NUM);
 		else if (behav=="getoutfit") return answerOnChat (param, getOutfit (option));
 		else if (behav=="getattach") return answerOnChat (param, getAttachments (option));
@@ -681,7 +710,7 @@ BOOL RRInterface::fireCommands ()
 {
 	BOOL ok=TRUE;
 	if (sRetainedCommands.size ()) {
-		if (gSavedSettings.getBOOL("RestrainedLifeDebug")) {
+		if (gSavedSettings.getBOOL("RestrainedLoveDebug")) {
 			llinfos << "Firing commands : " << sRetainedCommands.size () << llendl;
 		}
 		Command cmd;
@@ -734,7 +763,7 @@ static void force_sit(LLUUID object_uuid)
 
 BOOL RRInterface::force (LLUUID object_uuid, std::string command, std::string option)
 {
-	BOOL debug = gSavedSettings.getBOOL("RestrainedLifeDebug");
+	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug");
 	if (debug) {
 		llinfos << command << "     " << option << llendl;
 	}
@@ -880,11 +909,33 @@ BOOL RRInterface::force (LLUUID object_uuid, std::string command, std::string op
 
 BOOL RRInterface::answerOnChat (std::string channel, std::string msg)
 {
-	if (channel == "0") return FALSE; // protection against abusive "@getstatus=0" commands
-	if (atoi (channel.c_str()) <= 0) return FALSE; // prevent from trying to say something on a negative channel, or on a non-numerical channel
-	gChatBar->sendChatFromViewer("/"+channel+" "+msg, CHAT_TYPE_SHOUT, FALSE);
-	if (gSavedSettings.getBOOL("RestrainedLifeDebug")) {
-		llinfos << "/" << channel << " " << msg << llendl;
+	S32 chan = (S32)atoi(channel.c_str());
+	if (chan == 0) {
+		// protection against abusive "@getstatus=0" commands, or against a non-numerical channel
+		return FALSE;
+	}
+	if (msg.length() > (size_t)(chan > 0 ? 1023 : 255)) {
+		llwarns << "Too large an answer: maximum is " << (chan > 0 ? "1023 characters" : "255 characters for a negative channel") << ". Aborted command." << llendl;
+		return FALSE;
+	}
+	if (chan > 0) {
+		std::ostringstream temp;
+		temp << "/" << chan << " " << msg;
+		gChatBar->sendChatFromViewer(temp.str(), CHAT_TYPE_SHOUT, FALSE);
+	} else {
+		gMessageSystem->newMessage("ScriptDialogReply");
+		gMessageSystem->nextBlock("AgentData");
+		gMessageSystem->addUUID("AgentID", gAgent.getID());
+		gMessageSystem->addUUID("SessionID", gAgent.getSessionID());
+		gMessageSystem->nextBlock("Data");
+		gMessageSystem->addUUID("ObjectID", gAgent.getID());
+		gMessageSystem->addS32("ChatChannel", chan);
+		gMessageSystem->addS32("ButtonIndex", 1);
+		gMessageSystem->addString("ButtonLabel", msg);
+		gAgent.sendReliableMessage();
+	}
+	if (sRestrainedLoveDebug) {
+		llinfos << "/" << chan << " " << msg << llendl;
 	}
 	return TRUE;
 }
@@ -989,7 +1040,7 @@ std::string RRInterface::getOutfit (std::string layer)
 
 std::string RRInterface::getAttachments (std::string attachpt)
 {
-	BOOL debug = gSavedSettings.getBOOL("RestrainedLifeDebug");
+	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug");
 	std::string res="";
 	std::string name;
 	LLVOAvatar* avatar = gAgent.getAvatarObject();
@@ -1045,7 +1096,7 @@ std::string RRInterface::getStatus (LLUUID object_uuid, std::string rule)
 
 BOOL RRInterface::forceDetach (std::string attachpt)
 {
-	BOOL debug = gSavedSettings.getBOOL("RestrainedLifeDebug");
+	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug");
 	std::string name;
 	BOOL res=FALSE;
 	LLVOAvatar* avatar = gAgent.getAvatarObject();
@@ -1116,7 +1167,7 @@ BOOL RRInterface::hasLockedHuds ()
 
 std::deque<LLInventoryItem*> RRInterface::getListOfLockedItems (LLInventoryCategory* root)
 {
-	BOOL debug = gSavedSettings.getBOOL("RestrainedLifeDebug");
+	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug");
 	LLVOAvatar* avatar = gAgent.getAvatarObject();
 	std::deque<LLInventoryItem*> res;
 	std::deque<LLInventoryItem*> tmp;
@@ -1353,7 +1404,7 @@ std::string RRInterface::getWornItems (LLInventoryCategory* cat)
 
 LLInventoryCategory* RRInterface::getRlvShare ()
 {
-//	BOOL debug = gSavedSettings.getBOOL("RestrainedLifeDebug");
+//	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug");
 	LLInventoryModel::cat_array_t* cats;
 	LLInventoryModel::item_array_t* items;
 	gInventory.getDirectDescendentsOf (
@@ -1475,7 +1526,7 @@ LLInventoryCategory* RRInterface::getCategoryUnderRlvShare (std::string catName,
 		}
 	}
 
-	if (gSavedSettings.getBOOL("RestrainedLifeDebug")) {
+	if (gSavedSettings.getBOOL("RestrainedLoveDebug")) {
 		llinfos << "category not found" << llendl;
 	}
 	return NULL;
@@ -1536,7 +1587,7 @@ typedef struct
 
 LLViewerJointAttachment* RRInterface::findAttachmentPointFromName (std::string objectName, BOOL exactName)
 {
-	BOOL debug = gSavedSettings.getBOOL("RestrainedLifeDebug");
+	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug");
 	// for each possible attachment point, check whether its name appears in the name of
 	// the item.
 	// We are going to scan the whole list of attachments, but we won't decide which one to take right away.
@@ -1688,7 +1739,7 @@ void confirm_replace_attachment_rez(S32 option, void* user_data);
 
 BOOL RRInterface::forceAttach (std::string category, BOOL recursive /* = FALSE */)
 {
-	BOOL debug = gSavedSettings.getBOOL("RestrainedLifeDebug");
+	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug");
 	// find the category under RLV shared folder
 	LLInventoryCategory* cat = getCategoryUnderRlvShare (category);
 	BOOL isRoot = (getRlvShare() == cat);
@@ -1791,7 +1842,7 @@ BOOL RRInterface::forceAttach (std::string category, BOOL recursive /* = FALSE *
 
 BOOL RRInterface::forceDetachByName (std::string category, BOOL recursive /* = FALSE */)
 {
-	BOOL debug = gSavedSettings.getBOOL("RestrainedLifeDebug");
+	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug");
 	// find the category under RLV shared folder
 	LLInventoryCategory* cat = getCategoryUnderRlvShare (category);
 	LLVOAvatar* avatar = gAgent.getAvatarObject();
@@ -1891,7 +1942,7 @@ BOOL RRInterface::forceDetachByName (std::string category, BOOL recursive /* = F
 
 BOOL RRInterface::forceTeleport (std::string location)
 {
-	BOOL debug = gSavedSettings.getBOOL("RestrainedLifeDebug");
+	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug");
 	// location must be X/Y/Z where X, Y and Z are ABSOLUTE coordinates => use a script in-world to translate from local to global
 	std::string loc (location);
 	std::string region_name;
