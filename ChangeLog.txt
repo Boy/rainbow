@@ -1,5 +1,18 @@
 2009-03-25 Boy Lane <boy.lane@yahoo.com>
 
+    * Small fix for RLV debug mode
+
+    modified:   linden/indra/newview/RRInterface.cpp
+
+    * Search selection for Content, Description and Creator in Inventory
+
+    modified:   linden/indra/newview/llfolderview.cpp
+    modified:   linden/indra/newview/llfolderview.h
+    modified:   linden/indra/newview/llinventoryactions.cpp
+    modified:   linden/indra/newview/llinventoryview.cpp
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_inventory.xml
+
+
     * Update from RestrainedLife 1.22.1 to RestrainedLove 1.23.0
 
     modified:   linden/indra/newview/RRInterface.cpp

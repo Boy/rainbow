@@ -159,5 +159,21 @@
 				<on_click filter="" function="Inventory.SetSortBy" userdata="systemfolderstotop" />
 			</menu_item_check>
 		</menu>
+		<menu bottom_delta="64" drop_shadow="true" height="49"
+		     label="Search" left="0" mouse_opaque="false" name="Search" opaque="true"
+		     tear_off="true" width="118">
+			<menu_item_check bottom_delta="-18" control_name="Inventory.SearchName" height="18"
+			     label="Item name" left="0" mouse_opaque="true" name="Item name" width="118">
+				<on_click filter="" function="Inventory.SetSearchType" userdata="name" />
+			</menu_item_check>
+			<menu_item_check bottom_delta="-18" control_name="Inventory.SearchDesc" height="18"
+			     label="Item description" left="0" mouse_opaque="true" name="Item description" width="118">
+				<on_click filter="" function="Inventory.SetSearchType" userdata="description" />
+			</menu_item_check>
+			<menu_item_check bottom_delta="-18" control_name="Inventory.SearchCreator" height="18"
+			     label="Item creator" left="0" mouse_opaque="true" name="Item creatorr" width="118">
+				<on_click filter="" function="Inventory.SetSearchType" userdata="creator" />
+			</menu_item_check>
+		</menu>
 	</menu_bar>
 </floater>

@@ -934,7 +934,7 @@ BOOL RRInterface::answerOnChat (std::string channel, std::string msg)
 		gMessageSystem->addString("ButtonLabel", msg);
 		gAgent.sendReliableMessage();
 	}
-	if (sRestrainedLoveDebug) {
+	if (gSavedSettings.getBOOL("RestrainedLoveDebug")) {
 		llinfos << "/" << chan << " " << msg << llendl;
 	}
 	return TRUE;
