@@ -61,6 +61,7 @@ include_directories(
     )
 
 set(viewer_SOURCE_FILES
+    emeraldboobutils.cpp
     llagent.cpp
     llagentaccess.cpp
     llagentdata.cpp
@@ -460,7 +461,7 @@ endif (LINUX)
 set(viewer_HEADER_FILES
     CMakeLists.txt
     ViewerInstall.cmake
-
+    emeraldboobutils.h
     llagent.h
     llagentaccess.h
     llagentdata.h

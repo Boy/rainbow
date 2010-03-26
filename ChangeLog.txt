@@ -1,5 +1,22 @@
 2009-03-26 Boy Lane <boy.lane@yahoo.com>
 
+    * Breast physics aka jiggly bewbz from Emerald (preference settings still to be done)
+
+    modified:   linden/indra/llcharacter/llcharacter.cpp
+    modified:   linden/indra/llcharacter/llcharacter.h
+    modified:   linden/indra/newview/CMakeLists.txt
+    modified:   linden/indra/newview/app_settings/settings.xml
+    modified:   linden/indra/newview/llagent.cpp
+    modified:   linden/indra/newview/llviewercontrol.cpp
+    modified:   linden/indra/newview/llvoavatar.cpp
+    modified:   linden/indra/newview/llvoavatar.h
+    modified:   linden/indra/newview/llwearable.cpp
+    modified:   linden/indra/newview/llwearable.h
+
+    new file:   linden/indra/newview/emeraldboobutils.cpp
+    new file:   linden/indra/newview/emeraldboobutils.h
+ 
+
     * SpeedRez 2.0 from Cool SL (SpeedRezInterval changed)
 
     modified:   linden/indra/newview/app_settings/settings.xml

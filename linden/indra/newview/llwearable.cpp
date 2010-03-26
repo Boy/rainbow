@@ -185,6 +185,50 @@ std::string terse_F32_to_string( F32 f )
 	return r;
 }
 
+// reX: new function
+BOOL LLWearable::FileExportParams( FILE* file )
+{
+	// wearable type 
+	S32 type = (S32)mType;
+	fprintf( file, "type %d\n", type );
+
+	// parameters
+	S32 num_parameters = mVisualParamMap.size();
+	fprintf( file, "parameters %d\n", num_parameters );
+
+	for (param_map_t::iterator iter = mVisualParamMap.begin();
+		 iter != mVisualParamMap.end(); ++iter)
+	{
+		S32 param_id = iter->first;
+		F32 param_weight = iter->second;
+		fprintf( file, "%d %s\n", param_id, terse_F32_to_string(param_weight).c_str() );
+	}
+
+	return TRUE;
+}
+
+// reX: new function
+BOOL LLWearable::FileExportTextures( FILE* file )
+{
+	// wearable type 
+	S32 type = (S32)mType;
+	fprintf( file, "type %d\n", type );
+
+	// texture entries
+	S32 num_textures = mTEMap.size();
+	fprintf( file, "textures %d\n", num_textures );
+	
+	for (te_map_t::iterator iter = mTEMap.begin();
+		 iter != mTEMap.end(); ++iter)
+	{
+		S32 te = iter->first;
+		LLUUID& image_id = iter->second;
+		fprintf( file, "%d %s\n", te, image_id.asString().c_str() );
+    }
+
+	return TRUE;
+}
+
 BOOL LLWearable::exportFile( LLFILE* file )
 {
 	// header and version
@@ -546,9 +590,52 @@ BOOL LLWearable::isDirty()
 			weight = llclamp( weight, param->getMinWeight(), param->getMaxWeight() );
 			
 			U8 a = F32_to_U8( param->getWeight(), param->getMinWeight(), param->getMaxWeight() );
-			U8 b = F32_to_U8( weight,             param->getMinWeight(), param->getMaxWeight() );
+
+			if(avatar->getAppearanceFlag() == true)
+			{
+				//boob
+				if(param->getID() == 507)
+				{
+						weight = get_if_there(mVisualParamMap, param->getID(), avatar->getActualBoobGrav());
+						weight = llclamp( weight, param->getMinWeight(), param->getMaxWeight() );
+				}
+				//butt
+				if(param->getID() == 795)
+				{
+						weight = get_if_there(mVisualParamMap, param->getID(), avatar->getActualButtGrav());
+						weight = llclamp( weight, param->getMinWeight(), param->getMaxWeight() );
+				}
+				//fat
+				if(param->getID() == 157)
+				{
+						weight = get_if_there(mVisualParamMap, param->getID(), avatar->getActualFatGrav());
+						weight = llclamp( weight, param->getMinWeight(), param->getMaxWeight() );
+				}
+			}
+			else
+			{
+				//boob
+				if(param->getID() == 507)
+				{
+						a = F32_to_U8( avatar->getActualBoobGrav(), param->getMinWeight(), param->getMaxWeight() );
+				}
+				//butt
+				if(param->getID() == 795)
+				{
+						a = F32_to_U8( avatar->getActualButtGrav(), param->getMinWeight(), param->getMaxWeight() );
+				}
+				//fat
+				if(param->getID() == 157)
+				{
+						a = F32_to_U8( avatar->getActualFatGrav(), param->getMinWeight(), param->getMaxWeight() );
+				}
+			}
+
+			
+			U8 b = F32_to_U8( weight, param->getMinWeight(), param->getMaxWeight() );
 			if( a != b  )
 			{
+				llwarns << "param ID " << param->getID() << " was changed." << llendl;
 				return TRUE;
 			}
 		}
@@ -634,6 +721,16 @@ void LLWearable::writeToAvatar( BOOL set_by_user )
 		{
 			S32 param_id = param->getID();
 			F32 weight = get_if_there(mVisualParamMap, param_id, param->getDefaultWeight());
+
+			//ZOMG: When switching shapes from inventory
+			if(param_id == 507)
+				avatar->setActualBoobGrav(weight);
+			if(param_id == 795)
+				avatar->setActualButtGrav(weight);
+			if(param_id == 157)
+				avatar->setActualFatGrav(weight);
+				
+
 			// only animate with user-originated changes
 			if (set_by_user)
 			{
@@ -694,7 +791,7 @@ void LLWearable::writeToAvatar( BOOL set_by_user )
 
 //	if( set_by_user )
 //	{
-//		gAgent.sendAgentSetAppearance();
+		gAgent.sendAgentSetAppearance();
 //	}
 }
 
@@ -771,6 +868,22 @@ void LLWearable::readFromAvatar()
 	{
 		if( (((LLViewerVisualParam*)param)->getWearableType() == mType) && (param->getGroup() == VISUAL_PARAM_GROUP_TWEAKABLE ) )
 		{
+			
+			//pretty sure is right
+			if(param->getID() == 507)
+				avatar->setActualBoobGrav(param->getWeight());
+			if(param->getID() == 151)
+				avatar->setActualButtGrav(param->getWeight());
+			if(param->getID() == 157)
+				avatar->setActualFatGrav(param->getWeight());
+			
+			//if(param->getID() == 507)
+			//{
+			//	llwarns << "current = " << avatar->getActualBoobGrav() << llendl;
+			//	llwarns << "param weight = " << param->getWeight() << llendl;
+			//}
+				
+
 			mVisualParamMap[param->getID()] = param->getWeight();
 		}
 	}
@@ -822,6 +935,27 @@ void LLWearable::copyDataFrom( LLWearable* src )
 		{
 			S32 id = param->getID();
 			F32 weight = get_if_there(src->mVisualParamMap, id, param->getDefaultWeight() );
+			//llwarns << "------------------------------" << llendl;
+			//llwarns << "copydatafrom" << llendl;
+			//llwarns << "------------------------------" << llendl;
+			
+			//if(id == 507)
+			//{
+			//	llwarns << "weight = " << weight << llendl;
+			//	llwarns << "actual = " << avatar->getActualBoobGrav() << llendl;
+			//	llwarns << "mVisualParamMap[id] = " << mVisualParamMap[id] << llendl;
+			//}
+
+			//pretty sure right
+			if(id == 507)
+				avatar->setActualBoobGrav(weight);
+			if(id == 795)
+				avatar->setActualButtGrav(weight);
+			if(id == 157)
+				avatar->setActualFatGrav(weight);
+			
+			
+
 			mVisualParamMap[id] = weight;
 		}
 	}

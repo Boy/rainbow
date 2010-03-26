@@ -55,6 +55,8 @@
 #include "llwearable.h"
 #include "llrendertarget.h"
 
+#include "emeraldboobutils.h"
+
 //Ventrella
 //#include "llvoiceclient.h"
 #include "llvoicevisualizer.h"
@@ -290,6 +292,7 @@ public:
 	void idleUpdateLipSync(bool voice_enabled);
 	void idleUpdateLoadingEffect();
 	void idleUpdateWindEffect();
+	void idleUpdateBoobEffect();
 	void idleUpdateNameTag(const LLVector3& root_pos_last);
 	void idleUpdateRenderCost();
 	void idleUpdateTractorBeam();
@@ -850,6 +853,59 @@ public:
 	F32				mLastAppearanceBlendTime;
 	BOOL			mAppearanceAnimating;
 
+	//--------------------------------------------------------------------
+	// boob bounce stuff
+	//--------------------------------------------------------------------
+
+private:
+	bool			mFirstSetActualBoobGravRan;
+	bool			mFirstSetActualButtGravRan;
+	bool			mFirstSetActualFatGravRan;
+	LLFrameTimer	mBoobBounceTimer;
+	EmeraldAvatarLocalBoobConfig mLocalBoobConfig;
+	EmeraldBoobState mBoobState;
+	EmeraldBoobState mButtState;
+	EmeraldBoobState mFatState;
+
+public:
+	//boob
+	F32				getActualBoobGrav() { return mLocalBoobConfig.actualBoobGrav; }
+	void			setActualBoobGrav(F32 grav)
+	{
+		mLocalBoobConfig.actualBoobGrav = grav;
+		if(!mFirstSetActualBoobGravRan)
+		{
+			mBoobState.boobGrav = grav;
+			mFirstSetActualBoobGravRan = true;
+		}
+	}
+
+	//butt
+	F32				getActualButtGrav() { return mLocalBoobConfig.actualButtGrav; }
+	void			setActualButtGrav(F32 grav)
+	{
+		mLocalBoobConfig.actualButtGrav = grav;
+		if(!mFirstSetActualButtGravRan)
+		{
+			mButtState.boobGrav = grav;
+			mFirstSetActualButtGravRan = true;
+		}
+	}
+
+	//fat
+	F32				getActualFatGrav() { return mLocalBoobConfig.actualFatGrav; }
+	void			setActualFatGrav(F32 grav)
+	{
+		mLocalBoobConfig.actualFatGrav = grav;
+		if(!mFirstSetActualFatGravRan)
+		{
+			mFatState.boobGrav = grav;
+			mFirstSetActualFatGravRan = true;
+		}
+	}
+
+	static EmeraldGlobalBoobConfig sBoobConfig;
+	
 	//--------------------------------------------------------------------
 	// we're morphing for lip sync
 	//--------------------------------------------------------------------
