@@ -1,5 +1,23 @@
 2009-03-26 Boy Lane <boy.lane@yahoo.com>
 
+    * SpeedRez 2.0 from Cool SL (SpeedRezInterval changed)
+
+    modified:   linden/indra/newview/app_settings/settings.xml
+    modified:   linden/indra/newview/llagent.cpp
+    modified:   linden/indra/newview/llstartup.cpp
+    modified:   linden/indra/newview/llviewerdisplay.cpp
+    modified:   linden/indra/newview/llviewerdisplay.h
+
+
+2009-03-26 Boy Lane <boy.lane@yahoo.com>
+
+    * Fixed a possible crash related to ShowLookAt targets
+
+    modified:   linden/indra/newview/llhudeffectlookat.cpp
+
+
+2009-03-26 Boy Lane <boy.lane@yahoo.com>
+
     * Disallow removal of Linden hair (base) by RLV which can lead to unrezzed AVs
 
     modified:   linden/indra/newview/RRInterface.cpp

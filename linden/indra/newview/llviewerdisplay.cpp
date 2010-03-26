@@ -95,6 +95,7 @@ const F32 TELEPORT_ARRIVAL_DELAY = 2.f; // Time to preload the world before rais
 BOOL		 gTeleportDisplay = FALSE;
 LLFrameTimer gTeleportDisplayTimer;
 LLFrameTimer gTeleportArrivalTimer;
+F32			gSavedDrawDistance = 0.0f;
 const F32		RESTORE_GL_TIME = 5.f;	// Wait this long while reloading textures before we raise the curtain
 
 BOOL gForceRenderLandFence = FALSE;
@@ -399,6 +400,7 @@ void display(BOOL rebuild, F32 zoom_factor, int subfield, BOOL for_snapshot)
 		case LLAgent::TELEPORT_NONE:
 			// No teleport in progress
 			gViewerWindow->setShowProgress(FALSE);
+			gTeleportArrivalTimer.reset();
 			gTeleportDisplay = FALSE;
 			break;
 		}
@@ -438,6 +440,31 @@ void display(BOOL rebuild, F32 zoom_factor, int subfield, BOOL for_snapshot)
 			}
 			
 			gViewerWindow->setProgressPercent( percent_done );
+		}
+	}
+
+	// Progressively increase draw distance after TP when required.
+	if (gSavedDrawDistance > 0.0f && gAgent.getTeleportState() == LLAgent::TELEPORT_NONE)
+	{
+		if (gTeleportArrivalTimer.getElapsedTimeF32() >=
+			(F32)gSavedSettings.getU32("SpeedRezInterval"))
+		{
+			gTeleportArrivalTimer.reset();
+			F32 current = gSavedSettings.getF32("RenderFarClip");
+			if (gSavedDrawDistance > current)
+			{
+				current *= 2.0;
+				if (current > gSavedDrawDistance)
+				{
+					current = gSavedDrawDistance;
+				}
+				gSavedSettings.setF32("RenderFarClip", current);
+			}
+			if (current >= gSavedDrawDistance)
+			{
+				gSavedDrawDistance = 0.0f;
+				gSavedSettings.setF32("SavedRenderFarClip", 0.0f);
+			}
 		}
 	}
 
