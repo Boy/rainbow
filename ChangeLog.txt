@@ -1,3 +1,10 @@
+2009-03-26 Boy Lane <boy.lane@yahoo.com>
+
+    * Disallow removal of Linden hair (base) by RLV which can lead to unrezzed AVs
+
+    modified:   linden/indra/newview/RRInterface.cpp
+
+
 2009-03-25 Boy Lane <boy.lane@yahoo.com>
 
     * Small fix for RLV debug mode

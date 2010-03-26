@@ -814,8 +814,8 @@ BOOL RRInterface::force (LLUUID object_uuid, std::string command, std::string op
 		else {
 			EWearableType type = getOutfitLayerAsType (option);
 			if (type != WT_INVALID) {
-				 // clothes and hair only, not skin, eyes, or shape
-				if (type == WT_HAIR || LLWearable::typeToAssetType(type) == LLAssetType::AT_CLOTHING) {
+				 // clothes only, not hair, skin, eyes, or shape
+				if (LLWearable::typeToAssetType(type) == LLAssetType::AT_CLOTHING) {
 					gAgent.removeWearable (type); // remove by layer
 				}
 			}
