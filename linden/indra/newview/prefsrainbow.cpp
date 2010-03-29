@@ -63,6 +63,7 @@ protected:
 	BOOL mPrivateLookAt;
 	BOOL mFetchInventoryOnLogin;
 	BOOL mRestrainedLove;
+	BOOL mBreastPhysics;
 	BOOL mSecondsInChatAndIMs;
 	U32 mTimeFormat;
 	U32 mDateFormat;
@@ -106,6 +107,7 @@ void LLPrefsRainbowImpl::refresh()
 	mPrivateLookAt				= gSavedSettings.getBOOL("PrivateLookAt");
 	mSecondsInChatAndIMs		= gSavedSettings.getBOOL("SecondsInChatAndIMs");
 	mRestrainedLove				= gSavedSettings.getBOOL("RestrainedLove");
+	mBreastPhysics				= gSavedSettings.getBOOL("EmeraldBreastPhysicsToggle");
 	if (mRestrainedLove)
 	{
 		mFetchInventoryOnLogin	= TRUE;
@@ -183,6 +185,7 @@ void LLPrefsRainbowImpl::cancel()
 	gSavedSettings.setBOOL("PrivateLookAt",				mPrivateLookAt);
 	gSavedSettings.setBOOL("FetchInventoryOnLogin",		mFetchInventoryOnLogin);
 	gSavedSettings.setBOOL("RestrainedLove",			mRestrainedLove);
+	gSavedSettings.setBOOL("EmeraldBreastPhysicsToggle",			mBreastPhysics);
 	gSavedSettings.setBOOL("SecondsInChatAndIMs",		mSecondsInChatAndIMs);
 }
 
