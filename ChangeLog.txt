@@ -1,11 +1,16 @@
 2009-03-29 Boy Lane <boy.lane@yahoo.com>
 
+    * UnknownJointsCrashFix
+
+    modified:   linden/indra/llcharacter/llkeyframemotion.cpp
+
+
     * Preview animations inworld before uploading + missing speedrez prefs
 
     modified:   linden/indra/newview/app_settings/settings.xml
     modified:   linden/indra/newview/llfloateranimpreview.cpp
     modified:   linden/indra/newview/llfloateranimpreview.h
-    modified:	linden/indra/newview/prefsrainbow.cpp
+    modified:   linden/indra/newview/prefsrainbow.cpp
     modified:   linden/indra/newview/skins/default/xui/en-us/floater_animation_preview.xml
     modified:   linden/indra/newview/skins/default/xui/en-us/panel_preferences_rainbow.xml
 
