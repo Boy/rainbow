@@ -1,5 +1,15 @@
 2009-03-29 Boy Lane <boy.lane@yahoo.com>
 
+    * Fix for missing .xml filter
+
+    modified:   linden/indra/newview/llfilepicker.cpp
+
+
+    * Fix for VWR-14475 (Advanced/XUI/Load from XML)
+
+    modified:   linden/indra/llui/lluictrlfactory.cpp
+
+
     * Preferences panel updated, complicated breast physics config remains in debug
 
     modified:   linden/indra/newview/prefsrainbow.cpp
