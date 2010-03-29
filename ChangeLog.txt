@@ -1,5 +1,10 @@
 2009-03-29 Boy Lane <boy.lane@yahoo.com>
 
+    * SaveTextureAsFileExtension patch
+
+    modified:   linden/indra/newview/llpreviewtexture.cpp
+
+
     * Fix for missing .xml filter
 
     modified:   linden/indra/newview/llfilepicker.cpp
