@@ -65,6 +65,12 @@ protected:
 	BOOL mRestrainedLove;
 	BOOL mBreastPhysics;
 	BOOL mSecondsInChatAndIMs;
+	BOOL mPreviewAnimInWorld;
+	BOOL mSpeedRez;
+	BOOL mRevokePermsOnStandUp;
+	U32 mSpeedRezInterval;
+	U32 mDecimalsForTools;
+	U32 mLinksForChattingObjects;
 	U32 mTimeFormat;
 	U32 mDateFormat;
 };
@@ -75,6 +81,7 @@ LLPrefsRainbowImpl::LLPrefsRainbowImpl()
 {
 	LLUICtrlFactory::getInstance()->buildPanel(this, "panel_preferences_rainbow.xml");
 	childSetCommitCallback("restrained_love_check", onCommitCheckBox, this);
+	childSetCommitCallback("speed_rez_check", onCommitCheckBox, this);
 	refresh();
 }
 
@@ -91,6 +98,17 @@ void LLPrefsRainbowImpl::onCommitCheckBox(LLUICtrl* ctrl, void* user_data)
 	else
 	{
 		self->childEnable("fetch_inventory_on_login_check");
+	}
+
+	if (self->childGetValue("speed_rez_check").asBoolean())
+	{
+		self->childEnable("speed_rez_interval");
+		self->childEnable("speed_rez_seconds");
+	}
+	else
+	{
+		self->childDisable("speed_rez_interval");
+		self->childDisable("speed_rez_seconds");
 	}
 }
 
@@ -117,6 +135,9 @@ void LLPrefsRainbowImpl::refresh()
 	{
 		mFetchInventoryOnLogin	= gSavedSettings.getBOOL("FetchInventoryOnLogin");
 	}
+	mPreviewAnimInWorld			= gSavedSettings.getBOOL("PreviewAnimInWorld");
+	mSpeedRez					= gSavedSettings.getBOOL("SpeedRez");
+	mSpeedRezInterval			= gSavedSettings.getU32("SpeedRezInterval");
 
 	if (LLStartUp::getStartupState() != STATE_STARTED)
 	{
@@ -131,6 +152,17 @@ void LLPrefsRainbowImpl::refresh()
 	else
 	{
 		childEnable("fetch_inventory_on_login_check");
+	}
+
+	if (mSpeedRez)
+	{
+		childEnable("speed_rez_interval");
+		childEnable("speed_rez_seconds");
+	}
+	else
+	{
+		childDisable("speed_rez_interval");
+		childDisable("speed_rez_seconds");
 	}
 
 	std::string format = gSavedSettings.getString("ShortTimeFormat");
@@ -187,6 +219,9 @@ void LLPrefsRainbowImpl::cancel()
 	gSavedSettings.setBOOL("RestrainedLove",			mRestrainedLove);
 	gSavedSettings.setBOOL("EmeraldBreastPhysicsToggle",			mBreastPhysics);
 	gSavedSettings.setBOOL("SecondsInChatAndIMs",		mSecondsInChatAndIMs);
+	gSavedSettings.setBOOL("PreviewAnimInWorld",		mPreviewAnimInWorld);
+	gSavedSettings.setBOOL("SpeedRez",					mSpeedRez);
+	gSavedSettings.setU32("SpeedRezInterval",			mSpeedRezInterval);
 }
 
 void LLPrefsRainbowImpl::apply()

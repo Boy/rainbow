@@ -5832,6 +5832,17 @@
       <key>Value</key>
       <integer>13</integer>
     </map>
+    <key>PreviewAnimInWorld</key>
+    <map>
+      <key>Comment</key>
+      <string>Play animation preview in-world when uploading</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
     <key>PreviewAnimRect</key>
     <map>
       <key>Comment</key>

@@ -91,6 +91,28 @@
 	           label="Enable teleporting via double-click in-world" left="10"
 	           mouse_opaque="true" name="double_click_teleport_check" radio_style="false"
 	           width="400" />
+	  <check_box bottom_delta="-20" control_name="SpeedRez" enabled="true"
+	           follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
+	    	   label="Enable speed-rezzing via draw distance stepping" left="10"
+		   mouse_opaque="true" name="speed_rez_check" radio_style="false"
+		   width="400" />
+	  <spinner bottom_delta="-20" control_name="SpeedRezInterval" enabled="true" decimal_digits="0"
+	  	   follows="left|top" font="SansSerifSmall" height="16" left="30" width="230"
+		   label="Draw distance stepping interval:" label_width="180"
+		   max_val="60" min_val="5" initial_val="20" increment="5"
+		   mouse_opaque="true" name="speed_rez_interval" />
+	  <text type="string" length="1" bottom_delta="0" left="265" bg_visible="false"
+	  	   border_visible="false" border_drop_shadow_visible="false"
+		   drop_shadow_visible="true" enabled="true" follows="left|top"
+	    	   font="SansSerifSmall" h_pad="0" halign="left" height="16"
+	     	   mouse_opaque="true" name="speed_rez_seconds" v_pad="0" width="100">
+		   seconds
+	  </text>
+	  <check_box bottom_delta="-20" control_name="PreviewAnimInWorld" enabled="true"
+	           follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
+	    	   label="Preview animations on the avatar instead on a dummy before uploading" left="10"
+		   mouse_opaque="true" name="preview_anim_in_world_check" radio_style="false"
+		   width="400" />
        	  <check_box bottom_delta="-20" control_name="PrivateLookAt" enabled="true"
 	           follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
 	           label="Do not look at or point to objects beyond 20m (defeats ShowLookAt)" left="10"
@@ -101,11 +123,11 @@
 	           label="Automatically fetch the inventory in the background after login" left="10"
 	           mouse_opaque="true" name="fetch_inventory_on_login_check" radio_style="false"
 	           width="400" />
-		  <check_box bottom_delta="-20" control_name="EmeraldBreastPhysicsToggle" enabled="true"
-		     follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
-	   	     label="Enable enhanced physics on avatar breasts" left="10"
-                 mouse_opaque="true" name="breast_physics_check" radio_style="false"
-		     width="400"/>
+  				<check_box bottom_delta="-20" control_name="EmeraldBreastPhysicsToggle" enabled="true"
+             follows="left|top" font="SansSerifSmall" height="16"  initial_value="true"
+	   				 label="Enable enhanced physics on avatar breasts" left="10" mouse_opaque="true"
+             mouse_opaque="true" name="breast_physics_check" radio_style="false"
+		  			 width="400"/>
     </panel>
 	</tab_container>
 </panel>
