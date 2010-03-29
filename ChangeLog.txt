@@ -1,5 +1,11 @@
 2009-03-29 Boy Lane <boy.lane@yahoo.com>
 
+    * ImageGLPickMaskCrashFix patch
+
+    modified:   linden/indra/llrender/llimagegl.cpp
+    modified:   linden/indra/llrender/llimagegl.h
+
+
     * UnknownJointsCrashFix
 
     modified:   linden/indra/llcharacter/llkeyframemotion.cpp
