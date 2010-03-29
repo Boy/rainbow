@@ -1,12 +1,27 @@
 2009-03-29 Boy Lane <boy.lane@yahoo.com>
 
+    * Better Notecard / Script Editor patch
+
+    modified:   linden/indra/newview/CMakeLists.txt
+    modified:   linden/indra/newview/llpreview.cpp
+    modified:   linden/indra/newview/llpreviewnotecard.cpp
+    modified:   linden/indra/newview/llpreviewnotecard.h
+    modified:   linden/indra/newview/llpreviewscript.cpp
+    modified:   linden/indra/newview/llpreviewscript.h
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_preview_notecard.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_preview_notecard_keep_discard.xml
+    new file:   linden/indra/newview/llfloatersearchreplace.cpp
+    new file:   linden/indra/newview/llfloatersearchreplace.h
+    new file:   linden/indra/newview/skins/default/xui/en-us/floater_search_replace.xml
+
+
     * ImageGLPickMaskCrashFix patch
 
     modified:   linden/indra/llrender/llimagegl.cpp
     modified:   linden/indra/llrender/llimagegl.h
 
 
-    * UnknownJointsCrashFix
+    * UnknownJointsCrashFix patch
 
     modified:   linden/indra/llcharacter/llkeyframemotion.cpp
 
