@@ -1,5 +1,13 @@
 2009-03-29 Boy Lane <boy.lane@yahoo.com>
 
+    * Optional text for payments to show in transaction history (VWR-9597/SNOW-436) 
+
+    modified:   linden/indra/newview/llgivemoney.cpp
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_pay.xml
+
+
+2009-03-29 Boy Lane <boy.lane@yahoo.com>
+
     * Better Notecard / Script Editor patch
 
     modified:   linden/indra/newview/CMakeLists.txt
