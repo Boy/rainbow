@@ -79,11 +79,11 @@
 		</combo_item>
 	  </combo_box>
 	</panel>	
-  <panel border="true" left="1" bottom="-408" height="408" width="500" mouse_opaque="true"
-    		 follows="left|top|right|bottom" label="Miscellaneous" name="Miscellaneous">
+	<panel border="true" left="1" bottom="-408" height="408" width="500" mouse_opaque="true"
+    	  follows="left|top|right|bottom" label="Miscellaneous" name="Miscellaneous">
           <check_box bottom_delta="-20" control_name="SaveScriptsAsMono" enabled="true"
 	           follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
-             label="Save scripts in inventory as Mono scripts instead of LSL2" left="10"
+    	           label="Save scripts in inventory as Mono scripts instead of LSL2" left="10"
 	           mouse_opaque="true" name="save_scripts_as_mono_check" radio_style="false"
 	           width="400" />
        	  <check_box bottom_delta="-20" control_name="DoubleClickTeleport" enabled="true"
@@ -123,11 +123,11 @@
 	           label="Automatically fetch the inventory in the background after login" left="10"
 	           mouse_opaque="true" name="fetch_inventory_on_login_check" radio_style="false"
 	           width="400" />
-  				<check_box bottom_delta="-20" control_name="EmeraldBreastPhysicsToggle" enabled="true"
-             follows="left|top" font="SansSerifSmall" height="16"  initial_value="true"
-	   				 label="Enable enhanced physics on avatar breasts" left="10" mouse_opaque="true"
-             mouse_opaque="true" name="breast_physics_check" radio_style="false"
-		  			 width="400"/>
-    </panel>
-	</tab_container>
+	  <check_box bottom_delta="-20" control_name="EmeraldBreastPhysicsToggle" enabled="true"
+        	   follows="left|top" font="SansSerifSmall" height="16"  initial_value="true"
+	   	   label="Enable enhanced physics on avatar breasts" left="10"
+                   mouse_opaque="true" name="breast_physics_check" radio_style="false"
+		   width="400"/>
+	  </panel>
+    </tab_container>
 </panel>

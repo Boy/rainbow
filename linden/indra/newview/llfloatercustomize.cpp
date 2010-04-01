@@ -245,6 +245,8 @@ public:
 
 		childSetAction("Save", onSave, this ); 
 		childSetAction("Cancel", onCancel, this ); 
+		childSetAction("Check All", onCheckAll, this );
+		childSetAction("Uncheck All", onUncheckAll, this );
 	}
 
 	BOOL getRenameClothing()
@@ -324,6 +326,26 @@ public:
 	{
 		LLMakeOutfitDialog* self = (LLMakeOutfitDialog*) userdata;
 		self->close(); // destroys this object
+	}
+
+	static void onCheckAll( void* userdata )
+	{
+		LLMakeOutfitDialog* self = (LLMakeOutfitDialog*) userdata;
+		for( S32 i = 0; i < (S32)(self->mCheckBoxList.size()); i++)
+		{
+			std::string name = self->mCheckBoxList[i].first;
+			if(self->childIsEnabled(name))self->childSetValue(name,TRUE);
+		}
+	}
+
+	static void onUncheckAll( void* userdata )
+	{
+		LLMakeOutfitDialog* self = (LLMakeOutfitDialog*) userdata;
+		for( S32 i = 0; i < (S32)(self->mCheckBoxList.size()); i++)
+		{
+			std::string name = self->mCheckBoxList[i].first;
+			if(self->childIsEnabled(name))self->childSetValue(name,FALSE);
+		}
 	}
 };
 
@@ -536,10 +558,26 @@ void LLPanelEditWearable::setSubpart( ESubpart subpart )
 		item = (LLViewerInventoryItem*)gAgent.getWearableInventoryItem(mType);
 		U32 perm_mask = 0x0;
 		BOOL is_complete = FALSE;
+		bool can_export = false;
+		bool can_import = false;
 		if(item)
 		{
 			perm_mask = item->getPermissions().getMaskOwner();
 			is_complete = item->isComplete();
+			
+			if (subpart <= 18) // body parts only
+			{
+				can_import = true;
+
+				if (is_complete && 
+					gAgent.getID() == item->getPermissions().getOwner() &&
+					gAgent.getID() == item->getPermissions().getCreator() &&
+					(PERM_ITEM_UNRESTRICTED &
+					perm_mask) == PERM_ITEM_UNRESTRICTED)
+				{
+					can_export = true;
+				}
+			}
 		}
 		setUIPermissions(perm_mask, is_complete);
 		BOOL editable = ((perm_mask & PERM_MODIFY) && is_complete) ? TRUE : FALSE;
@@ -563,7 +601,8 @@ void LLPanelEditWearable::setSubpart( ESubpart subpart )
 		}
 		gFloaterCustomize->generateVisualParamHints(NULL, sorted_params);
 		gFloaterCustomize->updateScrollingPanelUI();
-
+		gFloaterCustomize->childSetEnabled("Export", can_export);
+		gFloaterCustomize->childSetEnabled("Import", can_import);
 
 		// Update the camera
 		gMorphView->setCameraTargetJoint( gAgent.getAvatarObject()->getJoint( part->mTargetJoint ) );
@@ -1293,7 +1332,7 @@ void LLScrollingPanelParam::onSliderMoved(LLUICtrl* ctrl, void* userdata)
 		//KOWs avatar height stuff
 		LLVOAvatar* avatar = gAgent.getAvatarObject();
 		F32 avatar_size = (avatar->mBodySize.mV[VZ]) + (F32)0.17; //mBodySize is actually quite a bit off.
-		avatar_size += (F32)99; //mBodySize is actually quite a bit off.
+		//avatar_size += (F32)99; //mBodySize is actually quite a bit off.
 		
 		floater_customize->getChild<LLTextBox>("HeightText")->setValue(llformat("%.2f", avatar_size) + "m");
 		floater_customize->getChild<LLTextBox>("HeightText2")->setValue(llformat("%.2f",llround(avatar_size / 0.3048)) + "'"
@@ -1575,6 +1614,10 @@ BOOL LLFloaterCustomize::postBuild()
 	childSetAction("Save All", LLFloaterCustomize::onBtnSaveAll, (void*)this);
 	childSetAction("Close", LLFloater::onClickClose, (void*)this);
 
+    // reX
+	childSetAction("Import", LLFloaterCustomize::onBtnImport, (void*)this);
+	childSetAction("Export", LLFloaterCustomize::onBtnExport, (void*)this);
+
 	// Wearable panels
 	initWearablePanels();
 
@@ -1633,6 +1676,131 @@ void LLFloaterCustomize::setCurrentWearableType( EWearableType type )
 			gFloaterCustomize->switchToDefaultSubpart();
 		}
 	}
+}
+
+
+// reX: new function
+void LLFloaterCustomize::onBtnImport( void* userdata )
+{
+	LLFilePicker& file_picker = LLFilePicker::instance();
+	if( !file_picker.getOpenFile( LLFilePicker::FFLOAD_XML ) )
+		{
+			// User canceled import.
+			return;
+		}
+
+	const std::string filename = file_picker.getFirstFile();
+
+	FILE* fp = LLFile::fopen(filename, "rb");
+
+	//char text_buffer[2048];		/* Flawfinder: ignore */
+	S32 c;
+	S32 typ;
+	S32 count;
+	S32 param_id=0;
+	F32 param_weight=0;
+	S32 fields_read;
+
+	for( S32 i=0; i < WT_COUNT; i++ )
+	{
+		fields_read = fscanf( fp, "type %d\n", &typ);
+		if( fields_read != 1 )
+		{
+			llwarns << "Bad asset type: early end of file" << llendl;
+			return;
+		}
+
+		fields_read = fscanf( fp, "parameters %d\n", &count);
+		if( fields_read != 1 )
+		{
+			llwarns << "Bad parameters : early end of file" << llendl;
+			return;
+		}
+		for(c=0;c<count;c++)
+		{
+			fields_read = fscanf( fp, "%d %f\n", &param_id, &param_weight );
+			if( fields_read != 2 )
+			{
+				llwarns << "Bad parameters list: early end of file" << llendl;
+				return;
+			}
+			gAgent.getAvatarObject()->setVisualParamWeight( param_id, param_weight, TRUE);
+			gAgent.getAvatarObject()->updateVisualParams();
+		}
+	}
+
+
+
+	fclose(fp);
+	return;
+}
+
+// reX: new function
+void LLFloaterCustomize::onBtnExport( void* userdata )
+{
+	LLFilePicker& file_picker = LLFilePicker::instance();
+	if( !file_picker.getSaveFile( LLFilePicker::FFSAVE_XML ) )
+		{
+			// User canceled export.
+			return;
+		}
+
+	LLViewerInventoryItem* item;
+	BOOL is_modifiable;
+
+	const std::string filename = file_picker.getFirstFile();
+
+	FILE* fp = LLFile::fopen(filename, "wb");
+
+	for( S32 i=0; i < WT_COUNT; i++ )
+	{
+		is_modifiable = FALSE;
+		LLWearable* old_wearable = gAgent.getWearable((EWearableType)i);
+		if( old_wearable )
+		{
+			item = (LLViewerInventoryItem*)gAgent.getWearableInventoryItem((EWearableType)i);
+			if(item)
+			{
+				const LLPermissions& perm = item->getPermissions();
+				is_modifiable = perm.allowModifyBy(gAgent.getID(), gAgent.getGroupID());
+			}
+		}
+		if (is_modifiable)
+		{
+			old_wearable->FileExportParams(fp);
+		}
+		if (!is_modifiable)
+		{
+			fprintf( fp, "type %d\n",i);
+			fprintf( fp, "parameters 0\n");
+		}
+	}	
+
+	for( S32 i=0; i < WT_COUNT; i++ )
+	{
+		is_modifiable = FALSE;
+		LLWearable* old_wearable = gAgent.getWearable((EWearableType)i);
+		if( old_wearable )
+		{
+			item = (LLViewerInventoryItem*)gAgent.getWearableInventoryItem((EWearableType)i);
+			if(item)
+			{
+				const LLPermissions& perm = item->getPermissions();
+				is_modifiable = perm.allowModifyBy(gAgent.getID(), gAgent.getGroupID());
+			}
+		}
+		if (is_modifiable)
+		{
+			old_wearable->FileExportTextures(fp);
+		}
+		if (!is_modifiable)
+		{
+			fprintf( fp, "type %d\n",i);
+			fprintf( fp, "textures 0\n");
+		}
+	}	
+
+	fclose(fp);
 }
 
 // static
@@ -2118,7 +2286,6 @@ void LLFloaterCustomize::spawnWearableAppearance(EWearableType type)
 	}
 }
 
-
 void LLFloaterCustomize::draw()
 {
 	if( isMinimized() )
@@ -2168,7 +2335,6 @@ BOOL LLFloaterCustomize::isDirty() const
 	return FALSE;
 }
 
-
 // static
 void LLFloaterCustomize::onTabChanged( void* userdata, bool from_click )
 {
@@ -2182,7 +2348,6 @@ void LLFloaterCustomize::onClose(bool app_quitting)
 	gFloaterView->sendChildToBack(this);
 	handle_reset_view();  // Calls askToSaveAllIfDirty
 }
-
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -2254,7 +2419,6 @@ void LLFloaterCustomize::updateScrollingPanelList(BOOL allow_modify)
 	}
 }
 
-
 void LLFloaterCustomize::askToSaveAllIfDirty( void(*next_step_callback)(BOOL proceed, void* userdata), void* userdata )
 {
 	if( isDirty())
@@ -2275,7 +2439,6 @@ void LLFloaterCustomize::askToSaveAllIfDirty( void(*next_step_callback)(BOOL pro
 		next_step_callback( TRUE, userdata );
 	}
 }
-
 
 // static
 void LLFloaterCustomize::onSaveAllDialog( S32 option, void* userdata )
@@ -2479,7 +2642,6 @@ void LLUndoWearable::setWearable( EWearableType type )
 		}
 	}
 }
-
 
 void LLUndoWearable::applyUndoRedo()
 {
