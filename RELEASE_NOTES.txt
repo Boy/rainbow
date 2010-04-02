@@ -1,5 +1,8 @@
 Release Notes for Rainbow Viewer 1.22.12 Release 5, April 2nd 2010
 ==================================================================
+Rainbow Viewer is a speedy Metaverse Client that can connect you to a huge variety of exciting Virtual Worlds!
+
+You can find more information and downloads on the following websites:
 http://my.opera.com/boylane (blog)
 http://coolviewer.googlecode.com (installers)
 http://github.com/boy (source code)
@@ -11,6 +14,7 @@ Thanks to Henri Beauchamp who laid the foundation for this viewer with his Cool 
 Winter Ventura for the Cool Viewer logo and Jacek Antonelli and Peter Stindberg for the Rainbow Viewer logo :).
 And to all the others who helped and supported me, especially the people involved and behind Imprudence!
 
+Details of included features:
 
 Patches by Aimee Trescothick: 
 * AmbiantMasterVolume: Fixes the issue with ambient sounds not being affected by the master volume (VWR-4371).

@@ -336,7 +336,7 @@ static std::string get_viewer_release_notes_url()
 		<< LL_VERSION_BUILD;
 
 	std::ostringstream url;
-	url << RELEASE_NOTES_BASE_URL << "Release_Notes_"+version.str()+".txt";
+	url << RELEASE_NOTES_BASE_URL;
 
 	return url.str();
 }
