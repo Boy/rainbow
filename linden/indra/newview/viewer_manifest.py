@@ -173,6 +173,7 @@ class WindowsManifest(ViewerManifest):
         self.path("RestrainedLoveReadme.txt")
 #        self.path("RL_Viewer_API.txt") //outdated API description 
         self.path("README_IMPORTANT!!!.txt")
+        self.path("LICENSE.txt")
         self.path("nrc_install.exe")
 
         # For use in crash reporting (generates minidumps)

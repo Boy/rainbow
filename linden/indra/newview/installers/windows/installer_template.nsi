@@ -24,6 +24,7 @@ RequestExecutionLevel admin	; on Vista we must be admin because we write to Prog
 
 %%VERSION%%
 
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; - language files - one for each language (or flavor thereof)
 ;; (these files are in the same place as the nsi template but the python script generates a new nsi file in the 
@@ -67,7 +68,7 @@ Name ${INSTNAME}
 
 SubCaption 0 $(LicenseSubTitleSetup)	; override "license agreement" text
 
-BrandingText "Rainbow Viewer 1.22.12.0 R4"		; bottom of window text
+BrandingText "Rainbow Viewer 1.22.12 R5 final"		; bottom of window text
 Icon %%SOURCE%%\res\install_icon.ico			; our custom icon
 UninstallIcon %%SOURCE%%\res\uninstall_icon.ico    	; our custom icon
 WindowIcon on						; show our icon in left corner
@@ -82,6 +83,10 @@ InstallDir "$PROGRAMFILES\${INSTNAME}"
 InstallDirRegKey HKEY_LOCAL_MACHINE "SOFTWARE\RainbowViewer\${INSTNAME}" ""
 DirText $(DirectoryChooseTitle) $(DirectoryChooseSetup)
 
+LicenseText "Please read the following carefully. You must understand and agree to these terms if you want to install and use Rainbow Viewer."
+LicenseData "%%SOURCE%%\license.txt"
+LicenseForceSelection checkbox
+LicenseForceSelection checkbox "I have read all, I understand and I accept!"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Variables

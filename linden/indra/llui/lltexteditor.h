@@ -159,6 +159,7 @@ public:
 	void			setCursor(S32 row, S32 column);
 	void			setCursorPos(S32 offset);
 	void			setCursorAndScrollToEnd();
+	void			scrollToPos(S32 pos);
 
 	void			getLineAndColumnForPosition( S32 position,  S32* line, S32* col, BOOL include_wordwrap );
 	void			getCurrentLineAndColumn( S32* line, S32* col, BOOL include_wordwrap );
@@ -250,6 +251,8 @@ public:
 	void getSelectedSegments(std::vector<const LLTextSegment*>& segments) const;
 
 	static bool		isPartOfWord(llwchar c) { return (c == '_') || LLStringOps::isAlnum((char)c); }
+
+	BOOL isReadOnly() { return mReadOnly; }
 
 protected:
 	//

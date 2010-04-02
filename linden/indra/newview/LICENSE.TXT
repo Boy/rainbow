@@ -1,0 +1,48 @@
+Welcome to the Installation of Rainbow Viewer, a speedy Metaverse Client 
+that can connect you to a huge variety of exciting Virtual Worlds!
+
+You can find more information and downloads on the following websites:
+Blog:	http://my.opera.com/boylane
+Binaries:	http://coolviewer.googlecode.com
+Sources:	http://github.com/boy
+
+This software is provided 'as-is' under the terms and protection of GPL2 
+licensing, without any express or implied warranty. The user in downloading,
+installing, using, modifying or distributing this product, assumes all liability
+for their actions and holds harmless the creators/distributors of this product
+for damages real or imagined, intentional, unintentional or negligent. In no
+event will the author(s) be held liable for any consequences arising from the
+development, use or distribution of this software. This product does not fall
+under the laws of merchantability of any state, province or government.
+
+By using Rainbow Viewer, you agree and are subject to the Terms of Service
+(ToS) and Policies of the Grids to which you connect to. If you intend to use
+this software to connect to Linden Lab's SecondLife service the following
+additional conditions and disclosures apply:
+
+1) This software "Rainbow Viewer 1.22.12 R5" is not provided, supported or
+    approved by Linden Lab.
+2) Limited customer support in best effort only is available at the developers
+    website http://my.opera.com/boylane
+3) No surprising or unexpected content or functionality other than listed in the
+    Release Notes is included. 
+4) Rainbow Viewer does not collect, store, distribute or make any other use of 
+    private user details. The exemption are the local storage of your user name
+    and password for automatic login as well as the local storage of chat and IM
+    logs as in Linden Lab's official client.
+
+This software is provided before an eventual commencement and without
+acceptance of Linden Lab's Third Party Viewer Policy (TPV). Before using
+Rainbow Viewer at YOUR OWN FULL RISK please make sure you also read
+and understand TPV and its implications: 
+http://secondlife.com/corporate/tpv.php
+
+If you disagree with LL's TPV Policy, voice your opinion directly to Linden Lab
+to support the ongoing development of 3rd Party Viewers!
+
+For reference, these terms can be found in LICENSE.txt in your RainbowViewer
+folder together with the accompanying Release_Notes.txt. Please also have a
+look at README_IMPORTANT!!!.txt in the same place for further information
+on performance optimization. 
+
+Boy Lane, 2 April 2010

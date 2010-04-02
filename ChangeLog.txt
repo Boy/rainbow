@@ -1,3 +1,33 @@
+2009-04-02 Boy Lane <boy.lane@yahoo.com>
+
+    * License/Disclaimer, Installer, lots of cleanup, some missing icons
+
+    modified:   README.txt
+    modified:   linden/indra/llcommon/llsecondlifeurls.cpp
+    modified:   linden/indra/llcommon/llversionviewer.h
+    modified:   linden/indra/llui/lltexteditor.h
+    modified:   linden/indra/newview/English.lproj/InfoPlist.strings
+    modified:   linden/indra/newview/Info-RainbowViewer.plist
+    modified:   linden/indra/newview/app_settings/settings.xml
+    modified:   linden/indra/newview/installers/windows/installer_template.nsi
+    modified:   linden/indra/newview/llfloaterabout.cpp
+    modified:   linden/indra/newview/res/viewerRes.rc
+    modified:   linden/indra/newview/skins/default/xui/en-us/menu_login.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/panel_login.xml
+    modified:   linden/indra/newview/viewer_manifest.py
+
+    new file:   linden/indra/newview/LICENSE.TXT
+    new file:   linden/indra/newview/RestrainedLoveReadme.txt
+    new file:   linden/indra/newview/res-sdl/ll_icon.BMP
+    new file:   linden/indra/newview/res/bitmap2.bmp
+    new file:   linden/indra/newview/res/icon1.ico
+    new file:   linden/indra/newview/res/install_icon.bmp
+    new file:   linden/indra/newview/res/install_icon.ico
+    new file:   linden/indra/newview/res/ll_icon.BMP
+    new file:   linden/indra/newview/res/ll_icon.ico
+    new file:   linden/indra/newview/res/ll_icon.png
+
+
 2009-04-01 Boy Lane <boy.lane@yahoo.com>
 
     * AV shape export/import (creator only) + un/check all in Make Outfit

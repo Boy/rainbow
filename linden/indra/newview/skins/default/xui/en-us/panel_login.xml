@@ -90,6 +90,6 @@
 	     font="SansSerifSmall" h_pad="0" halign="right" height="16"
 	     left="-310" mouse_opaque="true" name="channel_text" v_pad="0" width="300"
 	     hover="true" hover_color="50 115 185">
-		Rainbow Viewer 1.22.12.0 R4
+		Rainbow Viewer 1.22.12.5 final
 	</text>
 </panel>

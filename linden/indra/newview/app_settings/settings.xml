@@ -2392,7 +2392,7 @@
       <key>Type</key>
       <string>F32</string>
       <key>Value</key>
-      <real>54.0</real>
+      <real>74.0</real>
     </map>
     <key>EmeraldBoobHardness</key>
     <map>
@@ -2436,7 +2436,7 @@
       <key>Type</key>
       <string>F32</string>
       <key>Value</key>
-      <real>64</real>
+      <real>74</real>
     </map>
     <key>EmeraldBoobFriction</key>
     <map>
@@ -2458,7 +2458,7 @@
       <key>Type</key>
       <string>F32</string>
       <key>Value</key>
-      <real>24</real>
+      <real>14</real>
     </map>
     <key>EmeraldBoobXYInfluence</key>
     <map>
