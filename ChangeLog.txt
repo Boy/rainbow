@@ -1,5 +1,14 @@
 2009-04-02 Boy Lane <boy.lane@yahoo.com>
 
+    * Fresh OpenJPEG built from sources with SSE2 optimization
+
+    new file:   linden/libraries/i686-win32/lib/debug/OpenJPEGd.dll
+    new file:   linden/libraries/i686-win32/lib/debug/OpenJPEGd.lib
+    new file:   linden/libraries/i686-win32/lib/release/OpenJPEG.dll
+    new file:   linden/libraries/i686-win32/lib/release/OpenJPEG.lib
+    new file:   linden/libraries/include/openjpeg/openjpeg.h
+    
+
     * License/Disclaimer, Installer, lots of cleanup, some missing icons
 
     modified:   README.txt
