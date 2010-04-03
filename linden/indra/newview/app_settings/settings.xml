@@ -6981,6 +6981,8 @@
       <integer>1</integer>
       <key>Type</key>
       <string>F32</string>
+      <key>Value</key>
+      <real>1.0</real>
     </map>  
     <key>SavedRenderFarClip</key>
     <map>
@@ -7014,9 +7016,6 @@
       <string>U32</string>
       <key>Value</key>
       <integer>20</integer>
-    </map>
-      <key>Value</key>
-      <real>1.0</real>
     </map>
     <key>RenderWater</key>
     <map>
@@ -7859,7 +7858,6 @@
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
-
       <string>U32</string>
       <key>Value</key>
       <integer>20</integer>
