@@ -6981,6 +6981,7 @@
       <integer>1</integer>
       <key>Type</key>
       <string>F32</string>
+    </map>  
     <key>SavedRenderFarClip</key>
     <map>
       <key>Comment</key>
@@ -7839,6 +7840,7 @@
       <string>Boolean</string>
       <key>Value</key>
       <integer>0</integer>
+    </map>  
     <key>SpeedRez</key>
     <map>
       <key>Comment</key>
@@ -7857,10 +7859,10 @@
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
+
       <string>U32</string>
       <key>Value</key>
       <integer>20</integer>
-    </map>
     </map>
     <key>ShowMovementControls</key>
     <map>
