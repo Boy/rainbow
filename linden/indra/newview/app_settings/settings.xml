@@ -23,22 +23,6 @@
       <key>Value</key>
       <integer>1</integer>
     </map>
-    <key>UserChatColor</key>
-        <map>
-        <key>Comment</key>
-            <string>Color of your chat messages</string>
-        <key>Persist</key>
-            <integer>1</integer>
-        <key>Type</key>
-            <string>Color4</string>
-        <key>Value</key>
-            <array>
-                <real>1.0</real>
-                <real>1.0</real>
-                <real>1.0</real>
-                <real>1.0</real>
-            </array>
-        </map>
     <key>AgentChatColor</key>
     <map>
       <key>Comment</key>
@@ -77,6 +61,17 @@
       <key>Value</key>
       <integer>1</integer>
     </map>
+    <key>AllowMUpose</key>
+    <map>
+      <key>Comment</key>
+      <string>Allow MU* pose style in chat and IM (with ':' as a synonymous to '/me ')</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
     <key>AllowTapTapHoldRun</key>
     <map>
       <key>Comment</key>
@@ -103,17 +98,6 @@
     <map>
       <key>Comment</key>
       <string>Show active animations in a bubble above avatars head</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <integer>0</integer>
-    </map>
-    <key>PreviewAnimInWorld</key>
-    <map>
-      <key>Comment</key>
-      <string>Play animation preview in-world when uploading</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
@@ -340,6 +324,17 @@
       <string>Boolean</string>
       <key>Value</key>
       <integer>0</integer>
+    </map>
+    <key>AutoCloseOOC</key>
+    <map>
+      <key>Comment</key>
+      <string>Auto-close OOC chat (i.e. add \"))\" if not found and \"((\" was used)</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
     </map>
     <key>AutoLeveling</key>
     <map>
@@ -1164,29 +1159,6 @@
     <map>
       <key>Comment</key>
       <string>Show timestamps in chat</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <integer>1</integer>
-    </map>
-    <key>AllowMUpose</key>
-    <map>
-      <key>Comment</key>
-      <string>Allow MU* pose style in chat and IM (with ':' as a synonymous to '/me ')</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <integer>1</integer>
-    </map>
-    <key>ChatVisible</key>
-    <key>AutoCloseOOC</key>
-    <map>
-      <key>Comment</key>
-      <string>Auto-close OOC chat (i.e. add \"))\" if not found and \"((\" was used)</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
@@ -2277,7 +2249,7 @@
       <key>Type</key>
       <string>Boolean</string>
       <key>Value</key>
-      <integer>0</integer>
+      <integer>1</integer>
     </map>
     <key>DragAndDropToolTipDelay</key>
     <map>
@@ -2537,16 +2509,16 @@
       <key>Value</key>
       <integer>175</integer>
     </map>
-    <key>FPSLogFrequency</key>
+    <key>FetchInventoryOnLogin</key>
     <map>
       <key>Comment</key>
-      <string>Seconds between display of FPS in log (0 for never)</string>
+      <string>Automatically fetch the inventory in the background after login</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
-      <string>F32</string>
+      <string>Boolean</string>
       <key>Value</key>
-      <real>60.0</real>
+      <integer>1</integer>
     </map>
     <key>FilterItemsPerFrame</key>
     <map>
@@ -2647,17 +2619,6 @@
       <key>Value</key>
       <integer>0</integer>
     </map>
-    <key>PrivateLookAt</key>
-    <map>
-      <key>Comment</key>
-      <string>When TRUE, do not disclose what we are looking at</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <integer>0</integer>
-    </map>
     <key>FirstPersonBtnState</key>
     <map>
       <key>Comment</key>
@@ -2684,72 +2645,6 @@
     <map>
       <key>Comment</key>
       <string>Weather effects do not change over time</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <integer>0</integer>
-    </map>
-    <key>LongDateFormat</key>
-    <map>
-      <key>Comment</key>
-      <string>Long date format to use</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>String</string>
-      <key>Value</key>
-      <string>%A %d %B %Y</string>
-    </map>
-    <key>ShortDateFormat</key>
-    <map>
-      <key>Comment</key>
-      <string>Short date format to use</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>String</string>
-      <key>Value</key>
-      <string>%Y-%m-%d</string>
-    </map>
-    <key>ShortTimeFormat</key>
-    <map>
-      <key>Comment</key>
-      <string>Short time format (hours and minutes) to use</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>String</string>
-      <key>Value</key>
-      <string>%H:%M</string>
-    </map>
-    <key>LongTimeFormat</key>
-    <map>
-      <key>Comment</key>
-      <string>Long time format (hours, minutes and seconds) to use</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>String</string>
-      <key>Value</key>
-      <string>%H:%M:%S</string>
-    </map>
-    <key>TimestampFormat</key>
-    <map>
-      <key>Comment</key>
-      <string>Timestamp format to use</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>String</string>
-      <key>Value</key>
-      <string>%a %d %b %Y %H:%M:%S</string>
-    </map>
-    <key>SecondsInChatAndIMs</key>
-    <map>
-      <key>Comment</key>
-      <string>TRUE to add seconds to timestamps for IM and chat</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
@@ -3193,8 +3088,8 @@
       <key>Value</key>
       <array>
         <integer>0</integer>
-        <integer>0</integer>
-        <integer>0</integer>
+        <integer>25</integer>
+        <integer>400</integer>
         <integer>0</integer>
       </array>
     </map>
@@ -3229,132 +3124,6 @@
         <integer>350</integer>
         <integer>0</integer>
       </array>
-    </map>
-    <key>ShowRadar</key>
-    <map>
-      <key>Comment</key>
-      <string>Show the radar floater</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <integer>0</integer>
-    </map>
-    <key>FloaterRadarRect</key>
-    <map>
-      <key>Comment</key>
-      <string>Rectangle for Radar</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Rect</string>
-      <key>Value</key>
-      <array>
-        <integer>0</integer>
-        <integer>400</integer>
-        <integer>200</integer>
-        <integer>0</integer>
-      </array>
-    </map>
-    <key>RadarKeepOpen</key>
-    <map>
-      <key>Comment</key>
-      <string>Keeps radar updates running in background</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <integer>0</integer>
-    </map>
-    <key>RadarUpdateRate</key>
-    <map>
-      <key>Comment</key>
-      <string>Radar update rate (0 = high, 1 = medium, 2 = low)</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>U32</string>
-      <key>Value</key>
-      <integer>1</integer>
-    </map>
-    <key>RadarAlertSim</key>
-    <map>
-      <key>Comment</key>
-      <string>Whether the radar emits chat alerts for avatars entering/exiting sim</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <integer>0</integer>
-    </map>
-    <key>RadarAlertDraw</key>
-    <map>
-      <key>Comment</key>
-      <string>Whether the radar emits chat alerts for avatars entering/exiting draw distance</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <integer>0</integer>
-    </map>
-    <key>RadarAlertShoutRange</key>
-    <map>
-      <key>Comment</key>
-      <string>Whether the radar emits chat alerts for avatars entering/exiting shout range</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <integer>0</integer>
-    </map>
-    <key>RadarAlertChatRange</key>
-    <map>
-      <key>Comment</key>
-      <string>Whether the radar emits chat alerts for avatars entering/exiting chat range</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <integer>1</integer>
-    </map>
-    <key>RadarChatAlerts</key>
-    <map>
-      <key>Comment</key>
-      <string>Whether the radar emits chat alerts regarding the status of avatars it displays</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <integer>0</integer>
-    </map>
-    <key>RadarChatKeys</key>
-    <map>
-      <key>Comment</key>
-      <string>Enable private chat alerts for avatars entering the region</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <integer>0</integer>
-    </map>
-    <key>RadarChatKeysChannel</key>
-    <map>
-      <key>Comment</key>
-      <string>Private channel used to broadcast the key of incoming avatars</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>S32</string>
-      <key>Value</key>
-      <integer>-8888888</integer>
     </map>
     <key>FloaterLandRect5</key>
     <map>
@@ -3481,6 +3250,22 @@
         <integer>0</integer>
         <integer>150</integer>
         <integer>400</integer>
+        <integer>0</integer>
+      </array>
+    </map>
+    <key>FloaterRadarRect</key>
+    <map>
+      <key>Comment</key>
+      <string>Rectangle for Radar</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Rect</string>
+      <key>Value</key>
+      <array>
+        <integer>0</integer>
+        <integer>400</integer>
+        <integer>200</integer>
         <integer>0</integer>
       </array>
     </map>
@@ -4011,6 +3796,17 @@
         <integer>29</integer>
       </array>
     </map>
+    <key>FPSLogFrequency</key>
+    <map>
+      <key>Comment</key>
+      <string>Seconds between display of FPS in log (0 for never)</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>F32</string>
+      <key>Value</key>
+      <real>60.0</real>
+    </map>
     <key>FreezeTime</key>
     <map>
       <key>Comment</key>
@@ -4176,22 +3972,6 @@
       <key>Value</key>
       <integer>400</integer>
     </map>
-    <key>HTMLLinkColor</key>
-    <map>
-      <key>Comment</key>
-      <string>Color of hyperlinks</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Color4</string>
-      <key>Value</key>
-      <array>
-        <real>0.600000023842</real>
-        <real>0.600000023842</real>
-        <real>1.0</real>
-        <real>1.0</real>
-      </array>
-    </map>
     <key>HelpHomeURL</key>
     <map>
       <key>Comment</key>
@@ -4213,6 +3993,28 @@
       <string>String</string>
       <key>Value</key>
       <string>help/index.html</string>
+    </map>
+    <key>HideIMInChat</key>
+    <map>
+      <key>Comment</key>
+      <string>Hide IM in chat console</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>HideNotificationsInChat</key>
+    <map>
+      <key>Comment</key>
+      <string>Do not echo/log notifications in chat</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
     </map>
     <key>HighResSnapshot</key>
     <map>
@@ -4268,6 +4070,22 @@
         <integer>128</integer>
       </array>
     </map>
+    <key>HTMLLinkColor</key>
+    <map>
+      <key>Comment</key>
+      <string>Color of hyperlinks</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Color4</string>
+      <key>Value</key>
+      <array>
+        <real>0.600000023842</real>
+        <real>0.600000023842</real>
+        <real>1.0</real>
+        <real>1.0</real>
+      </array>
+    </map>
     <key>HtmlReleaseMessage</key>
     <map>
       <key>Comment</key>
@@ -4299,28 +4117,6 @@
         <real>1.0</real>
         <real>1.0</real>
       </array>
-    </map>
-    <key>HideNotificationsInChat</key>
-    <map>
-      <key>Comment</key>
-      <string>Do not echo/log notifications in chat</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <integer>0</integer>
-    </map>
-    <key>HideIMInChat</key>
-    <map>
-      <key>Comment</key>
-      <string>Hide IM in chat console</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <integer>0</integer>
     </map>
     <key>IMInChatHistory</key>
     <map>
@@ -4387,17 +4183,6 @@
       <string>String</string>
       <key>Value</key>
       <string>default</string>
-    </map>
-    <key>FetchInventoryOnLogin</key>
-    <map>
-      <key>Comment</key>
-      <string>Automatically fetch the inventory in the background after login</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <integer>1</integer>
     </map>
     <key>InventoryAutoOpenDelay</key>
     <map>
@@ -4575,55 +4360,6 @@
       <key>Value</key>
       <integer>1</integer>
     </map>
-    <key>LCDDestination</key>
-    <map>
-      <key>Comment</key>
-      <string>Which LCD to use</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>S32</string>
-      <key>Value</key>
-      <integer>0</integer>
-    </map>
-    <key>LSLFindCaseInsensitivity</key>
-        <map>
-        <key>Comment</key>
-            <string>Use case insensitivity when searching in LSL editor</string>
-        <key>Persist</key>
-            <integer>1</integer>
-        <key>Type</key>
-            <string>Boolean</string>
-        <key>Value</key>
-            <integer>0</integer>
-        </map>
-    <key>LSLHelpRect</key>
-    <map>
-      <key>Comment</key>
-      <string>Rectangle for LSL help window</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Rect</string>
-      <key>Value</key>
-      <array>
-        <integer>0</integer>
-        <integer>400</integer>
-        <integer>400</integer>
-        <integer>0</integer>
-      </array>
-    </map>
-    <key>LSLHelpURL</key>
-    <map>
-      <key>Comment</key>
-      <string>URL that points to LSL help files, with [LSL_STRING] corresponding to the referenced LSL function or keyword</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>String</string>
-      <key>Value</key>
-      <string>http://wiki.secondlife.com/wiki/[LSL_STRING]</string>
-    </map>
     <key>LagMeterShrunk</key>
     <map>
       <key>Comment</key>
@@ -4712,7 +4448,6 @@
       <key>Value</key>
       <string>0.0.0</string>
     </map>
-  
     <key>LastSnapshotToEmailHeight</key>
     <map>
       <key>Comment</key>
@@ -4783,6 +4518,17 @@
     <map>
       <key>Comment</key>
       <string>Select this as next type of snapshot to take (0 = postcard, 1 = texture, 2 = local image)</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>S32</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>LCDDestination</key>
+    <map>
+      <key>Comment</key>
+      <string>Which LCD to use</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
@@ -4944,6 +4690,28 @@
       <key>Value</key>
       <string />
     </map>
+    <key>LongDateFormat</key>
+    <map>
+      <key>Comment</key>
+      <string>Long date format to use</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>String</string>
+      <key>Value</key>
+      <string>%A %d %B %Y</string>
+    </map>
+    <key>LongTimeFormat</key>
+    <map>
+      <key>Comment</key>
+      <string>Long time format (hours, minutes and seconds) to use</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>String</string>
+      <key>Value</key>
+      <string>%H:%M:%S</string>
+    </map>
     <key>LosslessJ2CUpload</key>
     <map>
       <key>Comment</key>
@@ -4954,6 +4722,44 @@
       <string>Boolean</string>
       <key>Value</key>
       <integer>0</integer>
+    </map>
+    <key>LSLFindCaseInsensitivity</key>
+        <map>
+        <key>Comment</key>
+            <string>Use case insensitivity when searching in LSL editor</string>
+        <key>Persist</key>
+            <integer>1</integer>
+        <key>Type</key>
+            <string>Boolean</string>
+        <key>Value</key>
+            <integer>0</integer>
+        </map>
+    <key>LSLHelpRect</key>
+    <map>
+      <key>Comment</key>
+      <string>Rectangle for LSL help window</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Rect</string>
+      <key>Value</key>
+      <array>
+        <integer>0</integer>
+        <integer>400</integer>
+        <integer>400</integer>
+        <integer>0</integer>
+      </array>
+    </map>
+    <key>LSLHelpURL</key>
+    <map>
+      <key>Comment</key>
+      <string>URL that points to LSL help files, with [LSL_STRING] corresponding to the referenced LSL function or keyword</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>String</string>
+      <key>Value</key>
+      <string>http://wiki.secondlife.com/wiki/[LSL_STRING]</string>
     </map>
     <key>MainloopTimeoutDefault</key>
     <map>
@@ -5854,6 +5660,17 @@
       <key>Value</key>
       <integer>13</integer>
     </map>
+    <key>PreviewAnimInWorld</key>
+    <map>
+      <key>Comment</key>
+      <string>Play animation preview in-world when uploading</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
     <key>PreviewAnimRect</key>
     <map>
       <key>Comment</key>
@@ -5950,17 +5767,6 @@
         <integer>0</integer>
       </array>
     </map>
-    <key>SaveScriptsAsMono</key>
-    <map>
-      <key>Comment</key>
-      <string>When set to TRUE, save scripts in inventory as Mono scripts instead of LSL2</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <integer>1</integer>
-    </map>
     <key>PreviewSoundRect</key>
     <map>
       <key>Comment</key>
@@ -6024,6 +5830,17 @@
         <integer>300</integer>
         <integer>0</integer>
       </array>
+    </map>
+    <key>PrivateLookAt</key>
+    <map>
+      <key>Comment</key>
+      <string>When TRUE, do not disclose what we are looking at</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
     </map>
     <key>ProbeHardwareOnStartup</key>
     <map>
@@ -6128,6 +5945,105 @@
       <string>F32</string>
       <key>Value</key>
       <real>0.0</real>
+    </map>
+    <key>RadarAlertSim</key>
+    <map>
+      <key>Comment</key>
+      <string>Whether the radar emits chat alerts for avatars entering/exiting sim</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>RadarAlertDraw</key>
+    <map>
+      <key>Comment</key>
+      <string>Whether the radar emits chat alerts for avatars entering/exiting draw distance</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>RadarAlertShoutRange</key>
+    <map>
+      <key>Comment</key>
+      <string>Whether the radar emits chat alerts for avatars entering/exiting shout range</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>RadarAlertChatRange</key>
+    <map>
+      <key>Comment</key>
+      <string>Whether the radar emits chat alerts for avatars entering/exiting chat range</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>RadarChatAlerts</key>
+    <map>
+      <key>Comment</key>
+      <string>Whether the radar emits chat alerts regarding the status of avatars it displays</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>RadarChatKeys</key>
+    <map>
+      <key>Comment</key>
+      <string>Enable private chat alerts for avatars entering the region</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>RadarChatKeysChannel</key>
+    <map>
+      <key>Comment</key>
+      <string>Private channel used to broadcast the key of incoming avatars</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>S32</string>
+      <key>Value</key>
+      <integer>-8888888</integer>
+    </map>
+    <key>RadarKeepOpen</key>
+    <map>
+      <key>Comment</key>
+      <string>Keeps radar updates running in background</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>RadarUpdateRate</key>
+    <map>
+      <key>Comment</key>
+      <string>Radar update rate (0 = high, 1 = medium, 2 = low)</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>U32</string>
+      <key>Value</key>
+      <integer>1</integer>
     </map>
     <key>RadioLandBrushAction</key>
     <map>
@@ -6983,39 +6899,6 @@
       <string>F32</string>
       <key>Value</key>
       <real>1.0</real>
-    </map>  
-    <key>SavedRenderFarClip</key>
-    <map>
-      <key>Comment</key>
-      <string>Saved draw distance (used in case of logout during speed rezzing)</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>F32</string>
-      <key>Value</key>
-      <real>0.0</real>
-    </map>
-    <key>SpeedRez</key>
-    <map>
-      <key>Comment</key>
-      <string>Set to TRUE to increase rezzing speed via draw distance stepping</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <integer>0</integer>
-    </map>
-    <key>SpeedRezInterval</key>
-    <map>
-      <key>Comment</key>
-      <string>Interval in seconds between each draw distance increment</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>U32</string>
-      <key>Value</key>
-      <integer>20</integer>
     </map>
     <key>RenderWater</key>
     <map>
@@ -7082,39 +6965,6 @@
       <string>Boolean</string>
       <key>Value</key>
       <integer>0</integer>
-    </map>
-    <key>SavedRenderFarClip</key>
-    <map>
-      <key>Comment</key>
-      <string>Saved draw distance (used in case of logout during speed rezzing)</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>F32</string>
-      <key>Value</key>
-      <real>0.0</real>
-    </map>
-    <key>SpeedRez</key>
-    <map>
-      <key>Comment</key>
-      <string>Set to TRUE to increase rezzing speed via draw distance stepping</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <integer>0</integer>
-    </map>
-    <key>SpeedRezInterval</key>
-    <map>
-      <key>Comment</key>
-      <string>Interval in seconds between each draw distance increment</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>U32</string>
-      <key>Value</key>
-      <integer>20</integer>
     </map>
     <key>RestrainedLoveNoSetEnv</key>
     <map>
@@ -7193,17 +7043,6 @@
       <key>Value</key>
       <integer>1</integer>
     </map>
-    <key>SavedRenderFarClip</key>
-    <map>
-      <key>Comment</key>
-      <string>Saved draw distance (used in case of logout during speed rezzing)</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>F32</string>
-      <key>Value</key>
-      <real>0.0</real>
-    </map>
     <key>SafeMode</key>
     <map>
       <key>Comment</key>
@@ -7215,10 +7054,32 @@
       <key>Value</key>
       <integer>0</integer>
     </map>
+    <key>SavedRenderFarClip</key>
+    <map>
+      <key>Comment</key>
+      <string>Saved draw distance (used in case of logout during speed rezzing)</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>F32</string>
+      <key>Value</key>
+      <real>0.0</real>
+    </map>
     <key>SaveMinidump</key>
     <map>
       <key>Comment</key>
       <string>Save minidump for developer debugging on crash</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>SaveScriptsAsMono</key>
+    <map>
+      <key>Comment</key>
+      <string>When set to TRUE, save scripts in inventory as Mono scripts instead of LSL2</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
@@ -7330,6 +7191,17 @@
       <key>Value</key>
       <string>lang=[LANG]&amp;mat=[MATURITY]&amp;t=[TEEN]&amp;region=[REGION]&amp;x=[X]&amp;y=[Y]&amp;z=[Z]&amp;session=[SESSION]</string>
     </map>
+    <key>SecondsInChatAndIMs</key>
+    <map>
+      <key>Comment</key>
+      <string>TRUE to add seconds to timestamps for IM and chat</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
     <key>SelectMovableOnly</key>
     <map>
       <key>Comment</key>
@@ -7439,6 +7311,28 @@
       <string>S32</string>
       <key>Value</key>
       <integer>0</integer>
+    </map>
+    <key>ShortDateFormat</key>
+    <map>
+      <key>Comment</key>
+      <string>Short date format to use</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>String</string>
+      <key>Value</key>
+      <string>%Y-%m-%d</string>
+    </map>
+    <key>ShortTimeFormat</key>
+    <map>
+      <key>Comment</key>
+      <string>Short time format (hours and minutes) to use</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>String</string>
+      <key>Value</key>
+      <string>%H:%M</string>
     </map>
     <key>ShowActiveSpeakers</key>
     <map>
@@ -7829,39 +7723,6 @@
       <key>Value</key>
       <integer>0</integer>
     </map>
-    <key>UseOldTrackingDots</key>
-    <map>
-      <key>Comment</key>
-      <string>Use old T-like tracking dots in mini-map (takes effect after viewer restart)</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <integer>0</integer>
-    </map>  
-    <key>SpeedRez</key>
-    <map>
-      <key>Comment</key>
-      <string>Set to TRUE to increase rezzing speed via draw distance stepping</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <integer>0</integer>
-    </map>
-    <key>SpeedRezInterval</key>
-    <map>
-      <key>Comment</key>
-      <string>Interval in seconds between each draw distance increment</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>U32</string>
-      <key>Value</key>
-      <integer>20</integer>
-    </map>
     <key>ShowMovementControls</key>
     <map>
       <key>Comment</key>
@@ -7954,6 +7815,17 @@
     <map>
       <key>Comment</key>
       <string>Show line overlay demarking property boundaries</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>ShowRadar</key>
+    <map>
+      <key>Comment</key>
+      <string>Show the radar floater</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
@@ -8334,7 +8206,7 @@
       <key>Type</key>
       <string>Boolean</string>
       <key>Value</key>
-      <integer>0</integer>
+      <integer>1</integer>
     </map>
     <key>SpeedRezInterval</key>
     <map>
@@ -8587,6 +8459,17 @@
       <string>F32</string>
       <key>Value</key>
       <real>1000.0</real>
+    </map>
+    <key>TimestampFormat</key>
+    <map>
+      <key>Comment</key>
+      <string>Timestamp format to use</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>String</string>
+      <key>Value</key>
+      <string>%a %d %b %Y %H:%M:%S</string>
     </map>
     <key>ToolHelpRect</key>
     <map>
@@ -10246,6 +10129,33 @@
       <string>Boolean</string>
       <key>Value</key>
       <integer>1</integer>
+    </map>
+    <key>UseOldTrackingDots</key>
+    <map>
+      <key>Comment</key>
+      <string>Use old T-like tracking dots in mini-map (takes effect after viewer restart)</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>UserChatColor</key>
+    <map>
+      <key>Comment</key>
+      <string>Color of your chat messages</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Color4</string>
+      <key>Value</key>
+      <array>
+        <real>1.0</real>
+        <real>1.0</real>
+        <real>1.0</real>
+        <real>1.0</real>
+      </array>
     </map>
     <key>UseStartScreen</key>
     <map>

@@ -19,6 +19,6 @@
 	<string name="draw_distance_tooltip">Draw distance</string>
 	<spinner bottom="-40" control_name="RenderFarClip" decimal_digits="0" enabled="true" hidden="false"
 		follows="bottom|right" height="16" width="45" right="-4"
-		label="" label_width="1" max_val="512" min_val="64" initial_val="160" increment="32"
+		label="" label_width="1" max_val="512" min_val="32" initial_val="160" increment="32"
 		mouse_opaque="true" name="draw_distance" />
 </floater>
