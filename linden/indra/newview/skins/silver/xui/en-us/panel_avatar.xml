@@ -402,17 +402,17 @@ notes.  This person cannot see them, nor can other people.
 	<button bottom="-482" font="SansSerif" halign="center" height="20" label="Cancel"
 	     label_selected="Cancel" left_delta="264" mouse_opaque="true" name="Cancel"
 	     width="100" />
-	<button bottom_delta="135" font="SansSerif" halign="center" height="20" label="Kick"
-	     label_selected="Kick" left="4" mouse_opaque="true" name="Kick" width="72" />
-	<button bottom_delta="-24" font="SansSerif" halign="center" height="20" label="Freeze"
+	<button bottom_delta="90" font="SansSerif" halign="center" height="18" label="Kick"
+	     label_selected="Kick" left="4" mouse_opaque="true" name="Kick" width="65" />
+	<button bottom_delta="-20" font="SansSerif" halign="center" height="18" label="Freeze"
 	     label_selected="Freeze" left="4" mouse_opaque="true" name="Freeze"
-	     tool_tip="Stop this resident&apos;s movement and chat." width="72" />
-	<button bottom_delta="-24" font="SansSerif" halign="center" height="20"
+	     tool_tip="Stop this resident&apos;s movement and chat." width="65" />
+	<button bottom_delta="-20" font="SansSerif" halign="center" height="18"
 	     label="Unfreeze" label_selected="Unfreeze" left="4" mouse_opaque="true"
-	     name="Unfreeze" tool_tip="Thaw resident" width="72" />
-	<button bottom_delta="-24" font="SansSerif" halign="center" height="20" label="CSR"
+	     name="Unfreeze" tool_tip="Thaw resident" width="65" />
+	<button bottom_delta="-20" font="SansSerif" halign="center" height="18" label="CSR"
 	     label_selected="CSR" left="4" mouse_opaque="true" name="csr_btn"
-	     tool_tip="Open customer service tool for this resident" width="72" />
+	     tool_tip="Open customer service tool for this resident" width="65" />
 	<string name="ShowOnMapNonFriend">
 		Show location on the map.
 Disabled because you have not

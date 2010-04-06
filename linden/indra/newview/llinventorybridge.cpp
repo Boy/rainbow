@@ -866,9 +866,10 @@ std::string LLItemBridge::getLabelSuffix() const
 	LLInventoryItem* item = getItem();
 	if(item) 
 	{
+		LLPermissions perm = item->getPermissions();
 		// it's a bit confusing to put nocopy/nomod/etc on calling cards.
 		if(LLAssetType::AT_CALLINGCARD != item->getType()
-		   && item->getPermissions().getOwner() == gAgent.getID())
+		   && perm.getOwner() == gAgent.getID())
 		{
 			BOOL copy = item->getPermissions().allowCopyBy(gAgent.getID());
 			BOOL mod = item->getPermissions().allowModifyBy(gAgent.getID());
@@ -879,6 +880,7 @@ std::string LLItemBridge::getLabelSuffix() const
 			const char* NO_COPY = " (no copy)";
 			const char* NO_MOD = " (no modify)";
 			const char* NO_XFER = " (no transfer)";
+			const char* TEMPO = " (temporary)";
 			const char* scopy;
 			if(copy) scopy = EMPTY;
 			else scopy = NO_COPY;
@@ -888,7 +890,10 @@ std::string LLItemBridge::getLabelSuffix() const
 			const char* sxfer;
 			if(xfer) sxfer = EMPTY;
 			else sxfer = NO_XFER;
-			suffix = llformat("%s%s%s",scopy,smod,sxfer);
+			const char* stempo;
+			if(perm.getGroup() == gAgent.getID())stempo = TEMPO;
+			else stempo = EMPTY;
+			suffix = llformat("%s%s%s%s",scopy,smod,sxfer,stempo);
 		}
 	}
 	return suffix;
@@ -1863,10 +1868,10 @@ void LLFolderBridge::buildContextMenu(LLMenuGL& menu, U32 flags)
 	LLUUID trash_id = model->findCategoryUUIDForType(LLAssetType::AT_TRASH);
 	LLUUID lost_and_found_id = model->findCategoryUUIDForType(LLAssetType::AT_LOST_AND_FOUND);
 //MK
-	// Not only this is needed for RestrainedLife, but this also fixes
+	// Not only this is needed for RestrainedLove, but this also fixes
 	// a regular viewer bug.
 	// We need to clear the context menu, or some menu items would not refresh
-	// when objects are locked/unlocked (RestrainedLife), or worn/unworn or
+	// when objects are locked/unlocked (RestrainedLove), or worn/unworn or
 	// attached/detached (regular viewers) and the context menu is pulled down
 	// in-between.
 	mItems.clear();
@@ -3254,7 +3259,7 @@ void LLObjectBridge::performAction(LLFolderView* folder, LLInventoryModel* model
 						// but the name itself could also have the information => check
 						attachmentp = gAgent.mRRInterface.findAttachmentPointFromName (item->getName());
 						if (attachmentp) rez_attachment(item, attachmentp);
-						else if (!gAgent.mRRInterface.mContainsDefaultwear && gSavedSettings.getBOOL("RestrainedLifeAllowWear")) rez_attachment(item, NULL);
+						else if (!gAgent.mRRInterface.mContainsDefaultwear && gSavedSettings.getBOOL("RestrainedLoveAllowWear")) rez_attachment(item, NULL);
 					}
 				}
 				else
@@ -3262,7 +3267,7 @@ void LLObjectBridge::performAction(LLFolderView* folder, LLInventoryModel* model
 					// this is a mod item, wear it according to its name
 					attachmentp = gAgent.mRRInterface.findAttachmentPointFromName (item->getName());
 					if (attachmentp) rez_attachment(item, attachmentp);
-					else if (!gAgent.mRRInterface.mContainsDefaultwear && gSavedSettings.getBOOL("RestrainedLifeAllowWear")) rez_attachment(item, NULL);
+					else if (!gAgent.mRRInterface.mContainsDefaultwear && gSavedSettings.getBOOL("RestrainedLoveAllowWear")) rez_attachment(item, NULL);
 
 				}
 			}
@@ -3483,7 +3488,7 @@ void LLObjectBridge::buildContextMenu(LLMenuGL& menu, U32 flags)
 				items.push_back(std::string("Object Wear"));
 //MK
 				if (RRenabled && gAgent.mRRInterface.mContainsDetach
-					&& (gAgent.mRRInterface.mContainsDefaultwear || !gSavedSettings.getBOOL("RestrainedLifeAllowWear"))
+					&& (gAgent.mRRInterface.mContainsDefaultwear || !gSavedSettings.getBOOL("RestrainedLoveAllowWear"))
 					&& gAgent.mRRInterface.findAttachmentPointFromName (item->getName()) == NULL
 					&& gAgent.mRRInterface.findAttachmentPointFromParentName (item) == NULL)
 				{
@@ -4346,7 +4351,19 @@ BOOL LLWearableBridge::isItemRemovable()
 	if(gAgent.isWearingItem(mUUID)) return FALSE;
 	return LLInvFVBridge::isItemRemovable();
 }
-
+//k, all uploadable asset types do not use this characteristic; therefore, we can use it to show temporaryness and not interfere cuz we're awesome like that
+LLFontGL::StyleFlags LLItemBridge::getLabelStyle() const
+{
+	LLPermissions perm = getItem()->getPermissions();
+	if(perm.getGroup() == gAgent.getID())
+	{
+		return LLFontGL::ITALIC;
+	}
+	else
+	{
+		return LLFontGL::NORMAL;
+	}
+}
 LLFontGL::StyleFlags LLWearableBridge::getLabelStyle() const
 { 
 	if( gAgent.isWearingItem( mUUID ) )

@@ -363,8 +363,8 @@ bool idle_startup()
 	static bool samename = false;
 
 //MK
-	RRenabled = gSavedSettings.getBOOL("RestrainedLife");
-	RRNoSetEnv = gSavedSettings.getBOOL("RestrainedLifeNoSetEnv");
+	RRenabled = gSavedSettings.getBOOL("RestrainedLove");
+	RRNoSetEnv = gSavedSettings.getBOOL("RestrainedLoveNoSetEnv");
 //mk
 	// HACK: These are things from the main loop that usually aren't done
 	// until initialization is complete, but need to be done here for things
@@ -2522,6 +2522,16 @@ bool idle_startup()
 		LLUserAuth::getInstance()->reset();
 
 		LLStartUp::setStartupState( STATE_STARTED );
+
+		if (gSavedSettings.getBOOL("SpeedRez"))
+		{
+			// Speed up rezzing if requested.
+			F32 dist1 = gSavedSettings.getF32("RenderFarClip");
+			F32 dist2 = gSavedSettings.getF32("SavedRenderFarClip");
+			gSavedDrawDistance = (dist1 >= dist2 ? dist1 : dist2);
+			gSavedSettings.setF32("SavedRenderFarClip", gSavedDrawDistance);
+			gSavedSettings.setF32("RenderFarClip", 32.0f);
+		}
 
 		// Unmute audio if desired and setup volumes.
 		// Unmute audio if desired and setup volumes.

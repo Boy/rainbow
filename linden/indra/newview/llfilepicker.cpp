@@ -1100,6 +1100,12 @@ static std::string add_imageload_filter_to_gtkchooser(GtkWindow *picker)
 	return filtername;
 }
 
+static std::string add_xml_filter_to_gtkchooser(GtkWindow *picker)
+{
+	return add_simple_pattern_filter_to_gtkchooser(picker,  "*.xml",
+						       LLTrans::getString("xml_file") + " (*.xml)");
+}
+
 
 BOOL LLFilePicker::getSaveFile( ESaveFilter filter, const std::string& filename )
 {
@@ -1214,6 +1220,9 @@ BOOL LLFilePicker::getOpenFile( ELoadFilter filter )
 			break;
 		case FFLOAD_IMAGE:
 			filtername = add_imageload_filter_to_gtkchooser(picker);
+			break;
+		case FFLOAD_XML:
+			filtername = add_xml_filter_to_gtkchooser(picker);
 			break;
 		default:;
 			break;

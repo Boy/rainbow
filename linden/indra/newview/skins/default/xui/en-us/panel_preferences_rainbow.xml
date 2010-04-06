@@ -1,26 +1,25 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <panel border="true" top="20" enabled="true" follows="left|top|right|bottom"
-     height="400" label="Rainbow Features" left="10" mouse_opaque="true" name="rainbow"
+     height="400" label="Cool Features" left="10" mouse_opaque="true" name="rainbow"
      width="517">
-	<check_box bottom_delta="-20" control_name="ForceShowGrid" enabled="true"
+  <tab_container label="Cool Prefs" bottom="0" height="408" width="500" left="0"
+    name="Cool Prefs" tab_min_width="90" tab_position="top">
+		<panel border="true" left="1" bottom="-408" height="408" width="500" mouse_opaque="true"
+			follows="left|top|right|bottom" label="User Interface" name="User Interface">
+	  <check_box bottom_delta="-20" control_name="ForceShowGrid" enabled="true"
 	     follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
 	     label="Show the grid selection combo on the login screen" left="10"
 	     mouse_opaque="true" name="force_show_grid_check" radio_style="false"
-	     width="400" />
-	<check_box bottom_delta="-20" control_name="SaveScriptsAsMono" enabled="true"
-	     follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
-	     label="Save scripts in inventory as Mono scripts instead of LSL2" left="10"
-	     mouse_opaque="true" name="save_scripts_as_mono_check" radio_style="false"
-	     width="400" />
-	<check_box bottom_delta="-20" control_name="DoubleClickTeleport" enabled="true"
-	     follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
-	     label="Enable teleporting via double-click in-world" left="10"
-	     mouse_opaque="true" name="double_click_teleport_check" radio_style="false"
 	     width="400" />
 	<check_box bottom_delta="-20" control_name="HideNotificationsInChat" enabled="true"
 	     follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
 	     label="Do not echo/log notifications in chat" left="10"
 	     mouse_opaque="true" name="hide_notifications_in_chat_check" radio_style="false"
+	     width="400" />
+	<check_box bottom_delta="-20" control_name="DisableMessagesSpacing" enabled="true"
+	     follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
+	     label="Disable extra messages spacing in chat console" left="10"
+	     mouse_opaque="true" name="disable_messages_spacing_check" radio_style="false"
 	     width="400" />
 	<check_box bottom_delta="-20" control_name="AllowMUpose" enabled="true"
 	     follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
@@ -32,25 +31,35 @@
 	     label="Auto-close OOC chat (i.e. add '))' if not found and '((' was used)" left="10"
 	     mouse_opaque="true" name="auto_close_ooc_check" radio_style="false"
 	     width="400" />
+	<check_box bottom_delta="-20" control_name="HideMasterRemote" enabled="true"
+	     follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
+	     label="Hide the Master Remote volume control when useless" left="10"
+	     mouse_opaque="true" name="hide_master_remote_check" radio_style="false"
+	     width="400" />
+	<check_box bottom_delta="-20" control_name="ShowGroupsButton" enabled="true"
+	     follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
+	     label="Show the Groups button in the toolbar (requires a restart)" left="10"
+	     mouse_opaque="true" name="show_group_button_check" radio_style="false"
+	     width="400" />
+	<check_box bottom_delta="-20" control_name="UseOldChatHistory" enabled="true"
+	     follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
+	     label="Use the old style 'Chat history' window (requires a restart)" left="10"
+	     mouse_opaque="true" name="use_old_chat_history_check" radio_style="false"
+	     width="400" />
+	<check_box bottom_delta="-20" control_name="UseOldStatusBarIcons" enabled="true"
+	     follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
+	     label="Use the old, more readable, status bar icons (requires a restart)" left="10"
+	     mouse_opaque="true" name="use_old_statusbar_icons_check" radio_style="false"
+	     width="400" />
 	<check_box bottom_delta="-20" control_name="UseOldTrackingDots" enabled="true"
 	     follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
 	     label="Use the old T-like tracking dots in the mini-map" left="10"
 	     mouse_opaque="true" name="use_old_tracking_dots_check" radio_style="false"
 	     width="400" />
-	<check_box bottom_delta="-20" control_name="PrivateLookAt" enabled="true"
+ 	  <check_box bottom_delta="-30" control_name="RestrainedLove" enabled="true"
 	     follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
-	     label="Do not look at or point to objects beyond 20m (defeats ShowLookAt)" left="10"
-	     mouse_opaque="true" name="private_look_at_check" radio_style="false"
-	     width="400" />
-	<check_box bottom_delta="-20" control_name="FetchInventoryOnLogin" enabled="true"
-	     follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
-	     label="Automatically fetch the inventory in the background after login" left="10"
-	     mouse_opaque="true" name="fetch_inventory_on_login_check" radio_style="false"
-	     width="400" />
-	<check_box bottom_delta="-20" control_name="RestrainedLife" enabled="true"
-	     follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
-	     label="RestrainedLife (BDSM toys support) mode (requires a restart)" left="10"
-	     mouse_opaque="true" name="restrained_life_check" radio_style="false"
+	     label="RestrainedLove (BDSM toys support) mode (requires a restart)" left="10"
+	     mouse_opaque="true" name="restrained_love_check" radio_style="false"
 	     width="400" />
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 	     bottom_delta="-30" drop_shadow_visible="true" enabled="true" follows="left|top"
@@ -93,5 +102,62 @@
 		<combo_item type="string" length="1" enabled="true" name="month_first" value="default">
 			MM/DD/YYYY
 		</combo_item>
-	</combo_box>
+	  </combo_box>
+	</panel>	
+	<panel border="true" left="1" bottom="-408" height="408" width="500" mouse_opaque="true"
+    	  follows="left|top|right|bottom" label="Miscellaneous" name="Miscellaneous">
+          <check_box bottom_delta="-20" control_name="SaveScriptsAsMono" enabled="true"
+	           follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
+    	           label="Save scripts in inventory as Mono scripts instead of LSL2" left="10"
+	           mouse_opaque="true" name="save_scripts_as_mono_check" radio_style="false"
+	           width="400" />
+       	  <check_box bottom_delta="-20" control_name="DoubleClickTeleport" enabled="true"
+	           follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
+	           label="Enable teleporting via double-click in-world" left="10"
+	           mouse_opaque="true" name="double_click_teleport_check" radio_style="false"
+	           width="400" />
+	  <check_box bottom_delta="-20" control_name="SpeedRez" enabled="true"
+	           follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
+	    	   label="Enable speed-rezzing via draw distance stepping" left="10"
+		   mouse_opaque="true" name="speed_rez_check" radio_style="false"
+		   width="400" />
+	  <spinner bottom_delta="-20" control_name="SpeedRezInterval" enabled="true" decimal_digits="0"
+	  	   follows="left|top" font="SansSerifSmall" height="16" left="30" width="230"
+		   label="Draw distance stepping interval:" label_width="180"
+		   max_val="60" min_val="5" initial_val="20" increment="5"
+		   mouse_opaque="true" name="speed_rez_interval" />
+	  <text type="string" length="1" bottom_delta="0" left="265" bg_visible="false"
+	  	   border_visible="false" border_drop_shadow_visible="false"
+		   drop_shadow_visible="true" enabled="true" follows="left|top"
+	    	   font="SansSerifSmall" h_pad="0" halign="left" height="16"
+	     	   mouse_opaque="true" name="speed_rez_seconds" v_pad="0" width="100">
+		   seconds
+	  </text>
+	  <check_box bottom_delta="-20" control_name="PreviewAnimInWorld" enabled="true"
+	           follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
+	    	   label="Preview animations on the avatar instead on a dummy before uploading" left="10"
+		   mouse_opaque="true" name="preview_anim_in_world_check" radio_style="false"
+		   width="400" />
+       	  <check_box bottom_delta="-20" control_name="PrivateLookAt" enabled="true"
+	           follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
+	           label="Do not look at or point to objects beyond 20m (defeats ShowLookAt)" left="10"
+	           mouse_opaque="true" name="private_look_at_check" radio_style="false"
+	           width="400" />
+       	  <check_box bottom_delta="-20" control_name="FetchInventoryOnLogin" enabled="true"
+	           follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
+	           label="Automatically fetch the inventory in the background after login" left="10"
+	           mouse_opaque="true" name="fetch_inventory_on_login_check" radio_style="false"
+	           width="400" />
+	  <check_box bottom_delta="-20" control_name="PlayTypingSound" enabled="true"
+	  	   follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
+	  	   label="Play the typing sound when an avatar types in chat" left="10"
+	  	   mouse_opaque="true" name="play_typing_sound_check" radio_style="false"
+	  	   width="400" />
+	  <check_box bottom_delta="-20" control_name="EmeraldBreastPhysicsToggle" enabled="true"
+        	   follows="left|top" font="SansSerifSmall" height="16"  initial_value="true"
+	   	   label="Enable enhanced physics on avatar breasts" left="10"
+                   mouse_opaque="true" name="breast_physics_check" radio_style="false"
+		   width="400"/>
+	  </panel>
+    </tab_container>
 </panel>

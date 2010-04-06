@@ -1,6 +1,6 @@
 /* Localized versions of Info.plist keys */
 
 CFBundleName = "Cool Viewer";
-CFBundleShortVersionString = "Rainbow Viewer::Cool Edition version 1.22.12.0 R11";
-CFBundleGetInfoString = "Rainbow Viewer::Cool Edition version 1.22.12.0 R11, GPL, Boy Lane";
+CFBundleShortVersionString = "Rainbow Viewer::Cool Edition version 1.22.12 R12";
+CFBundleGetInfoString = "Rainbow Viewer::Cool Edition version 1.22.12 R12, GPL, Boy Lane";
 

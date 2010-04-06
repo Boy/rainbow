@@ -169,10 +169,11 @@ class WindowsManifest(ViewerManifest):
         self.path(src="licenses-win32.txt", dst="licenses.txt")
 
         self.path("featuretable.txt")
-        self.path("RELEASE_NOTES.txt")
-        self.path("RestrainedLifeReadme.txt")
+        self.path("Release_Notes.txt")
+        self.path("RestrainedLoveReadme.txt")
 #        self.path("RL_Viewer_API.txt") //outdated API description 
         self.path("README_IMPORTANT!!!.txt")
+        self.path("LICENSE.txt")
         self.path("nrc_install.exe")
 
         # For use in crash reporting (generates minidumps)
@@ -338,7 +339,7 @@ class WindowsManifest(ViewerManifest):
                 !define INSTFLAGS "%(flags)s"
                 !define INSTNAME   "CoolViewer%(grid_caps)s"
                 !define SHORTCUT   "Cool Viewer (%(grid_caps)s)"
-                !define URLNAME   "coolviewer%(grid)s"
+                !define URLNAME   "secondlife%(grid)s"
                 !define UNINSTALL_SETTINGS 1
                 Caption "Cool Viewer %(grid)s ${VERSION}"
                 """

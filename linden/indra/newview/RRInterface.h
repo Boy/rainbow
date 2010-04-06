@@ -1,10 +1,34 @@
+/** 
+ * @file RRInterface.h
+ * @author Marine Kelley
+ * @brief The header for all RLV features
+ *
+ * RLV Source Code
+ * The source code in this file ("Source Code") is provided by Marine Kelley
+ * to you under the terms of the GNU General Public License, version 2.0
+ * ("GPL"), unless you have obtained a separate licensing agreement
+ * ("Other License"), formally executed by you and Marine Kelley.  Terms of
+ * the GPL can be found in doc/GPL-license.txt in the distribution of the
+ * original source of the Second Life Viewer, or online at 
+ * http://secondlifegrid.net/programs/open_source/licensing/gplv2
+ * 
+ * By copying, modifying or distributing this software, you acknowledge
+ * that you have read and understood your obligations described above,
+ * and agree to abide by those obligations.
+ * 
+ * ALL SOURCE CODE FROM MARINE KELLEY IS PROVIDED "AS IS." MARINE KELLEY 
+ * MAKES NO WARRANTIES, EXPRESS, IMPLIED OR OTHERWISE, REGARDING 
+ * ITS ACCURACY, COMPLETENESS OR PERFORMANCE.
+ */
+
 #ifndef LL_RRINTERFACE_H
 #define LL_RRINTERFACE_H
 
 #define RR_VIEWER_NAME "RestrainedLife"
-#define RR_VERSION_NUM "1220102"
-#define RR_VERSION "1.22.1"
-#define RR_SLV_VERSION "1.22.12.0"
+#define RR_VIEWER_NAME_NEW "RestrainedLove"
+#define RR_VERSION_NUM "1230000"
+#define RR_VERSION "1.23.0"
+#define RR_SLV_VERSION "CV 1.22.12.12"
 
 #define RR_PREFIX "@"
 #define RR_SHARED_FOLDER "#RLV"
@@ -59,7 +83,8 @@ public:
 	RRInterface ();
 	~RRInterface ();
 
-	std::string getVersion ();
+	std::string getVersion (); // returns "RestrainedLife Viewer blah blah"
+	std::string getVersion2 (); // returns "RestrainedLove Viewer blah blah"
 	BOOL isAllowed (LLUUID object_uuid, std::string action, BOOL log_it = TRUE);
 	BOOL contains (std::string action); // return TRUE if the action is contained
 	BOOL containsSubstr (std::string action);

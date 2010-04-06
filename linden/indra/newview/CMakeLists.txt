@@ -61,6 +61,7 @@ include_directories(
     )
 
 set(viewer_SOURCE_FILES
+    emeraldboobutils.cpp
     llagent.cpp
     llagentaccess.cpp
     llagentdata.cpp
@@ -178,6 +179,7 @@ set(viewer_SOURCE_FILES
     llfloaterproperties.cpp
     llfloaterregioninfo.cpp
     llfloaterreporter.cpp
+    llfloatersearchreplace.cpp
     llfloaterscriptdebug.cpp
     llfloatersellland.cpp
     llfloatersettingsdebug.cpp
@@ -460,7 +462,7 @@ endif (LINUX)
 set(viewer_HEADER_FILES
     CMakeLists.txt
     ViewerInstall.cmake
-
+    emeraldboobutils.h
     llagent.h
     llagentaccess.h
     llagentdata.h
@@ -580,6 +582,7 @@ set(viewer_HEADER_FILES
     llfloaterproperties.h
     llfloaterregioninfo.h
     llfloaterreporter.h
+    llfloatersearchreplace.h
     llfloaterscriptdebug.h
     llfloatersellland.h
     llfloatersettingsdebug.h
@@ -1118,7 +1121,7 @@ set(viewer_XUI_FILES
     skins/default/xui/en-us/floater_script_ed_panel.xml
     skins/default/xui/en-us/floater_script_preview.xml
     skins/default/xui/en-us/floater_script_queue.xml
-    skins/default/xui/en-us/floater_script_search.xml
+    skins/default/xui/en-us/floater_search_replace.xml
     skins/default/xui/en-us/floater_select_key.xml
     skins/default/xui/en-us/floater_sell_land.xml
     skins/default/xui/en-us/floater_settings_debug.xml

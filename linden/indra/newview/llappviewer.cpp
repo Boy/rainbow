@@ -1892,7 +1892,7 @@ bool LLAppViewer::initConfiguration()
     if(clp.hasOption("url"))
     {
 //MK
-        if (!gSavedSettings.getBOOL("RestrainedLife"))
+        if (!gSavedSettings.getBOOL("RestrainedLove"))
         {
 //mk
             std::string slurl = clp.getOption("url")[0];
@@ -1909,7 +1909,7 @@ bool LLAppViewer::initConfiguration()
     else if(clp.hasOption("slurl"))
     {
 //MK
-        if (!gSavedSettings.getBOOL("RestrainedLife"))
+        if (!gSavedSettings.getBOOL("RestrainedLove"))
         {
 //mk
             std::string slurl = clp.getOption("slurl")[0];
@@ -2623,7 +2623,7 @@ void LLAppViewer::requestQuit()
 		gFloaterView->closeAllChildren(true);
 	}
 
-	send_stats();
+	// send_stats();
 
 	gLogoutTimer.reset();
 	mQuitRequested = true;
@@ -3200,12 +3200,12 @@ void LLAppViewer::idle()
 
 		// Update session stats every large chunk of time
 		// *FIX: (???) SAMANTHA
-		if (viewer_stats_timer.getElapsedTimeF32() >= SEND_STATS_PERIOD && !gDisconnected)
+		/* if (viewer_stats_timer.getElapsedTimeF32() >= SEND_STATS_PERIOD && !gDisconnected)
 		{
 			llinfos << "Transmitting sessions stats" << llendl;
 			send_stats();
 			viewer_stats_timer.reset();
-		}
+		} */
 
 		// Print the object debugging stats
 		static LLFrameTimer object_debug_timer;

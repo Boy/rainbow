@@ -78,6 +78,10 @@ public:
 
 	BOOL				exportFile(LLFILE* file);
 	BOOL				importFile(LLFILE* file);
+	// reX: new function
+	BOOL				FileExportParams(FILE* file);
+	// reX: new function
+	BOOL				FileExportTextures(FILE* file);
 
 	EWearableType		getType() const							{ return mType; }
 	void				setType( EWearableType type )			{ mType = type; }
@@ -118,11 +122,11 @@ public:
 
 	friend std::ostream& operator<<(std::ostream &s, const LLWearable &w);
 
-private:
-	// Private constructor used by LLWearableList
+public:
+	// -not anymore Private- constructor used by LLWearableList
 	LLWearable(const LLTransactionID& transactionID);
 	LLWearable(const LLAssetID& assetID);
-
+private:
 	static S32			sCurrentDefinitionVersion;	// Depends on the current state of the avatar_lad.xml.
 	S32					mDefinitionVersion;			// Depends on the state of the avatar_lad.xml when this asset was created.
 	std::string			mName;

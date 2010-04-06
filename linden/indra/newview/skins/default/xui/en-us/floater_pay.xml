@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <floater bottom="-197" can_close="true" can_drag_on_left="false" can_minimize="false"
-     can_resize="false" enabled="true" height="140" left="439" min_height="100"
+     can_resize="false" enabled="true" height="180" left="439" min_height="100"
      min_width="100" mouse_opaque="true" name="Give Money"
      rect_control="FloaterPayRectB" title="" width="300">
 	<button bottom="-74" enabled="true" font="SansSerif" halign="center" height="20"
@@ -15,10 +15,10 @@
 	<button bottom="-98" enabled="true" font="SansSerif" halign="center" height="20"
 	     label="L$20" label_selected="L$20" left="203" mouse_opaque="true"
 	     name="fastpay 20" scale_image="true" width="80" />
-	<button bottom="-132" enabled="false" font="SansSerif" halign="center" height="20"
+	<button bottom="-162" enabled="false" font="SansSerif" halign="center" height="20"
 	     label="Pay" label_selected="Pay" left="120" mouse_opaque="true"
 	     name="pay btn" scale_image="true" width="80" />
-	<button bottom="-132" enabled="true" font="SansSerif" halign="center" height="20"
+	<button bottom="-162" enabled="true" font="SansSerif" halign="center" height="20"
 	     label="Cancel" label_selected="Cancel" left="203" mouse_opaque="true"
 	     name="cancel btn" scale_image="true" width="80" />
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
@@ -39,15 +39,24 @@
 	     mouse_opaque="true" name="fastpay text" v_pad="0" width="95">
 		Fast Pay:
 	</text>
+	<text name="message text"
+	      bottom="-130" left="12" height="18" width="60"
+	      follows="left|top" font="SansSerif">
+	  Message:
+	</text>
+	<line_editor name="message" max_length="140"
+	             bottom_delta="1" left="80" height="18" right="-15"
+	             bevel_style="in" border_style="line" border_thickness="1"
+	             follows="left|top|right" font="SansSerif" />
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
-	     bottom="-130" drop_shadow_visible="true" enabled="true" follows="left|top"
+	     bottom="-162" drop_shadow_visible="true" enabled="true" follows="left|top"
 	     font="SansSerif" h_pad="0" halign="left" height="18" left="12"
 	     mouse_opaque="true" name="amount text" v_pad="0" width="75">
 		Amount:
 	</text>
-	<line_editor bevel_style="in" border_style="line" border_thickness="1" bottom="-130"
+	<line_editor bevel_style="in" border_style="line" border_thickness="1" bottom="-160"
 	     enabled="true" follows="left|top|right" font="SansSerif"
-	     handle_edit_keys_directly="false" height="18" left="58" max_length="9"
+	     handle_edit_keys_directly="false" height="18" left="60" max_length="9"
 	     mouse_opaque="true" name="amount" select_all_on_focus_received="false"
 	     select_on_focus="false" width="57" />
 </floater>

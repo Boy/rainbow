@@ -21,7 +21,7 @@
 	<menu bottom="219" create_jump_keys="true" drop_shadow="true" enabled="true"
 	     height="317" label="Help" left="80" mouse_opaque="false" name="Help"
 	     opaque="true" tear_off="false" width="166">
-		<menu_item_call bottom="-29" enabled="true" height="19" label="About Rainbow Viewer..." left="0"
+		<menu_item_call bottom="-29" enabled="true" height="19" label="About Cool Viewer..." left="0"
 		     mouse_opaque="true" name="About Rainbow Viewer..." width="166">
 			<on_click function="ShowFloater" userdata="about" />
 		</menu_item_call>

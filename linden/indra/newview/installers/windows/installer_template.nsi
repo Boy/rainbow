@@ -67,7 +67,7 @@ Name ${INSTNAME}
 
 SubCaption 0 $(LicenseSubTitleSetup)	; override "license agreement" text
 
-BrandingText "Cool Viewer 1.22.12.0 R11"			; bottom of window text
+BrandingText "Cool Viewer 1.22.12 R12 final"			; bottom of window text
 Icon %%SOURCE%%\res\install_icon.ico			; our custom icon
 UninstallIcon %%SOURCE%%\res\uninstall_icon.ico    	; our custom icon
 WindowIcon on						; show our icon in left corner
@@ -82,6 +82,10 @@ InstallDir "$PROGRAMFILES\${INSTNAME}"
 InstallDirRegKey HKEY_LOCAL_MACHINE "SOFTWARE\CoolViewer\${INSTNAME}" ""
 DirText $(DirectoryChooseTitle) $(DirectoryChooseSetup)
 
+LicenseText "Please read the following carefully. You must understand and agree to these terms if you want to install and use Rainbow Viewer::Cool Edition."
+LicenseData "%%SOURCE%%\license.txt"
+LicenseForceSelection checkbox
+LicenseForceSelection checkbox "I have read all, I understand and I accept!"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Variables

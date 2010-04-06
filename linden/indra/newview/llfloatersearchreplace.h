@@ -1,10 +1,10 @@
 /** 
- * @file llviewerdisplay.h
- * @brief LLViewerDisplay class header file
+ * @file llfloatersearchreplace.h
+ * @brief LLFloaterSearchReplace class definition
  *
- * $LicenseInfo:firstyear=2004&license=viewergpl$
+ * $LicenseInfo:firstyear=2002&license=viewergpl$
  * 
- * Copyright (c) 2004-2009, Linden Research, Inc.
+ * Copyright (c) 2002-2009, Linden Research, Inc.
  * 
  * Second Life Viewer Source Code
  * The source code in this file ("Source Code") is provided by Linden Lab
@@ -17,7 +17,8 @@
  * There are special exceptions to the terms and conditions of the GPL as
  * it is applied to this Source Code. View the full text of the exception
  * in the file doc/FLOSS-exception.txt in this software distribution, or
- * online at http://secondlifegrid.net/programs/open_source/licensing/flossexception
+ * online at
+ * http://secondlifegrid.net/programs/open_source/licensing/flossexception
  * 
  * By copying, modifying or distributing this software, you acknowledge
  * that you have read and understood your obligations described above,
@@ -29,21 +30,35 @@
  * $/LicenseInfo$
  */
 
-#ifndef LL_LLVIEWERDISPLAY_H
-#define LL_LLVIEWERDISPLAY_H
+#ifndef LL_LLFLOATERSEARCHREPLACE_H
+#define LL_LLFLOATERSEARCHREPLACE_H
 
-class LLPostProcess;
+#include "llfloater.h"
+#include "lltexteditor.h"
 
-void display_startup();
-void display_cleanup();
+class LLFloaterSearchReplace : public LLFloater
+{
+private:
+	LLFloaterSearchReplace();
+	virtual ~LLFloaterSearchReplace();
 
-void display(BOOL rebuild = TRUE, F32 zoom_factor = 1.f, int subfield = 0, BOOL for_snapshot = FALSE);
+public:
+	virtual void open();
+	virtual	BOOL postBuild();
 
-extern BOOL gDisplaySwapBuffers;
-extern BOOL gDepthDirty;
-extern BOOL	gTeleportDisplay;
-extern LLFrameTimer	gTeleportDisplayTimer;
-extern BOOL			gForceRenderLandFence;
-extern BOOL gResizeScreenTexture;
-extern F32  gSavedDrawDistance;
-#endif // LL_LLVIEWERDISPLAY_H
+public:
+	static void show(LLTextEditor* editor);
+
+	static void onBtnSearch(void* userdata);
+	static void onBtnReplace(void* userdata);
+	static void onBtnReplaceAll(void* userdata);
+
+	static LLFloaterSearchReplace* getInstance() { return sInstance; }
+
+private:
+	LLTextEditor* mEditor;
+
+	static LLFloaterSearchReplace* sInstance;
+};
+
+#endif // LL_LLFLOATERSEARCHREPLACE_H

@@ -84,4 +84,4 @@ const std::string SL_KB_URL (
 	"http://secondlife.com/knowledgebase/");
 
 const std::string RELEASE_NOTES_BASE_URL (
-	"http://secondlife.com/app/releasenotes/");
+	"http://code.google.com/p/coolviewer/wiki/ReleaseNotes");

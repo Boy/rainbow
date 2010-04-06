@@ -32,7 +32,7 @@ if (WINDOWS)
       "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /Od /Zi /MT"
       CACHE STRING "C++ compiler release-with-debug options" FORCE)
   set(CMAKE_CXX_FLAGS_RELEASE
-      "${CMAKE_CXX_FLAGS_RELEASE} ${LL_CXX_FLAGS} /O2 /Oi /Ob2 /Ot /Oy /MT /arch:SSE2"
+      "${CMAKE_CXX_FLAGS_RELEASE} ${LL_CXX_FLAGS} /O2 /Oi /Ob2 /Ot /Oy /MT /arch:SSE2 /GF /fp:fast"
       CACHE STRING "C++ compiler release options" FORCE)
 
   add_definitions(
@@ -59,7 +59,7 @@ if (WINDOWS)
   
   # Are we using the crummy Visual Studio KDU build workaround?
   if (NOT VS_DISABLE_FATAL_WARNINGS)
-    add_definitions(/WX)
+    #add_definitions(/WX)
   endif (NOT VS_DISABLE_FATAL_WARNINGS)
 endif (WINDOWS)
 

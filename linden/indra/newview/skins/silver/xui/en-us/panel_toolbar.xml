@@ -18,6 +18,11 @@
 	       list_position="above"
 	       width="50" follows="left|right" user_resize="false"/>
     <icon image_name="spacer24.tga" width="2" height="2" follows="left|right" auto_resize="false" color="0,0,0,0"/>
+    <button bottom="0" font="SansSerif" height="24" label="Radar"
+        name="avatar_list_btn" tool_tip="Radar" image_overlay="icn_toolbar_radar.tga" 
+            image_overlay_alignment="left"
+	       width="50" follows="left|right" user_resize="false"/>
+    <icon image_name="spacer24.tga" width="2" height="2" follows="left|right" auto_resize="false" color="0,0,0,0" />
     <button bottom="0" font="SansSerif" height="24" label="Fly"
         image_overlay="icn_toolbar_fly.tga" image_overlay_alignment="left"
                         image_selected="toolbar_btn_selected.tga"

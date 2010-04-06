@@ -524,6 +524,19 @@ class LLSetSortBy : public inventory_listener_t
 	}
 };
 
+class LLSetSearchType : public inventory_listener_t
+{
+	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
+	{
+		std::string toggle = userdata.asString();
+		U32 flags = mPtr->getActivePanel()->getRootFolder()->toggleSearchType(toggle);
+		mPtr->getControl("Inventory.SearchName")->setValue((BOOL)(flags & 1));
+		mPtr->getControl("Inventory.SearchDesc")->setValue((BOOL)(flags & 2));
+		mPtr->getControl("Inventory.SearchCreator")->setValue((BOOL)(flags & 4));
+		return true;
+	}
+};
+
 class LLBeginIMSession : public inventory_panel_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
@@ -711,6 +724,8 @@ void init_inventory_actions(LLInventoryView *floater)
 	(new LLShowFilters())->registerListener(floater, "Inventory.ShowFilters");
 	(new LLResetFilter())->registerListener(floater, "Inventory.ResetFilter");
 	(new LLSetSortBy())->registerListener(floater, "Inventory.SetSortBy");
+
+	(new LLSetSearchType())->registerListener(floater, "Inventory.SetSearchType");
 }
 
 void init_inventory_panel_actions(LLInventoryPanel *panel)

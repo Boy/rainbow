@@ -6118,8 +6118,19 @@ bool LLAgent::teleportCore(bool is_local)
 
 		//release geometry from old location
 		gPipeline.resetVertexBuffers();
+
+		if (gSavedSettings.getBOOL("SpeedRez"))
+		{
+			F32 draw_distance = gSavedSettings.getF32("RenderFarClip");
+			if (gSavedDrawDistance < draw_distance)
+			{
+				gSavedDrawDistance = draw_distance;
+			}
+			gSavedSettings.setF32("SavedRenderFarClip", gSavedDrawDistance);
+			gSavedSettings.setF32("RenderFarClip", 32.0f);
+		}
+		make_ui_sound("UISndTeleportOut");
 	}
-	make_ui_sound("UISndTeleportOut");
 	
 	// MBW -- Let the voice client know a teleport has begun so it can leave the existing channel.
 	// This was breaking the case of teleporting within a single sim.  Backing it out for now.
@@ -7361,13 +7372,20 @@ void LLAgent::sendAgentSetAppearance()
 		 param;
 		 param = (LLViewerVisualParam*)mAvatarObject->getNextVisualParam())
 	{
-		F32 param_value = param->getWeight();
-	
 		if (param->getGroup() == VISUAL_PARAM_GROUP_TWEAKABLE)
 		{
 			msg->nextBlockFast(_PREHASH_VisualParam );
 			
 			// We don't send the param ids.  Instead, we assume that the receiver has the same params in the same sequence.
+			F32 param_value;
+			if(param->getID() == 507)
+				param_value = mAvatarObject->getActualBoobGrav();
+			else if(param->getID() == 795)
+				param_value = mAvatarObject->getActualButtGrav();
+			else if(param->getID() == 157)
+				param_value = mAvatarObject->getActualFatGrav();
+			else
+				param_value = param->getWeight();
 			U8 new_weight = F32_to_U8(param_value, param->getMinWeight(), param->getMaxWeight());
 			msg->addU8Fast(_PREHASH_ParamValue, new_weight );
 			transmitted_params++;

@@ -12,6 +12,10 @@
 	<button bottom="0" font="SansSerif" height="24" label="Groups" left="0"
 	     name="groups_btn" tool_tip="Deal with your groups."
 	     width="50" />
+    	<button bottom="0" font="SansSerif" height="24" label="Radar"
+            name="avatar_list_btn" tool_tip="Radar" image_overlay="icn_toolbar_radar.tga" 
+            image_overlay_alignment="left"
+	    width="50"/>
 	<button bottom="0" font="SansSerif" height="24" label="Fly"
 	     label_selected="Stop Flying" left="0" name="fly_btn"
 	     tool_tip="Start flying. Use E/C or PgUp/PgDn to fly up and down."

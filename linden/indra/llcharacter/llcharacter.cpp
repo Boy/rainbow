@@ -54,7 +54,8 @@ LLCharacter::LLCharacter()
 	mPreferredPelvisHeight( 0.f ),
 	mSex( SEX_FEMALE ),
 	mAppearanceSerialNum( 0 ),
-	mSkeletonSerialNum( 0 )
+	mSkeletonSerialNum( 0 ),
+	mInAppearance( false )
 {
 	mMotionController.setCharacter( this );
 	sInstances.push_back(this);

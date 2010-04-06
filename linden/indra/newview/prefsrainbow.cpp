@@ -67,8 +67,15 @@ protected:
 	BOOL mPlayTypingSound;
 	BOOL mPrivateLookAt;
 	BOOL mFetchInventoryOnLogin;
-	BOOL mRestrainedLife;
+	BOOL mRestrainedLove;
+	BOOL mBreastPhysics;
 	BOOL mSecondsInChatAndIMs;
+	BOOL mPreviewAnimInWorld;
+	BOOL mSpeedRez;
+	BOOL mRevokePermsOnStandUp;
+	U32 mSpeedRezInterval;
+	U32 mDecimalsForTools;
+	U32 mLinksForChattingObjects;
 	U32 mTimeFormat;
 	U32 mDateFormat;
 };
@@ -78,7 +85,8 @@ LLPrefsRainbowImpl::LLPrefsRainbowImpl()
  : LLPanel("Rainbow Prefs Panel")
 {
 	LLUICtrlFactory::getInstance()->buildPanel(this, "panel_preferences_rainbow.xml");
-	childSetCommitCallback("restrained_life_check", onCommitCheckBox, this);
+	childSetCommitCallback("restrained_love_check", onCommitCheckBox, this);
+	childSetCommitCallback("speed_rez_check", onCommitCheckBox, this);
 	refresh();
 }
 
@@ -86,7 +94,7 @@ LLPrefsRainbowImpl::LLPrefsRainbowImpl()
 void LLPrefsRainbowImpl::onCommitCheckBox(LLUICtrl* ctrl, void* user_data)
 {
 	LLPrefsRainbowImpl* self = (LLPrefsRainbowImpl*)user_data;
-	if (self->childGetValue("restrained_life_check").asBoolean())
+	if (self->childGetValue("restrained_love_check").asBoolean())
 	{
 		gSavedSettings.setBOOL("FetchInventoryOnLogin",	TRUE);
 		self->childSetValue("fetch_inventory_on_login_check", TRUE);
@@ -95,6 +103,17 @@ void LLPrefsRainbowImpl::onCommitCheckBox(LLUICtrl* ctrl, void* user_data)
 	else
 	{
 		self->childEnable("fetch_inventory_on_login_check");
+	}
+
+	if (self->childGetValue("speed_rez_check").asBoolean())
+	{
+		self->childEnable("speed_rez_interval");
+		self->childEnable("speed_rez_seconds");
+	}
+	else
+	{
+		self->childDisable("speed_rez_interval");
+		self->childDisable("speed_rez_seconds");
 	}
 }
 
@@ -115,8 +134,9 @@ void LLPrefsRainbowImpl::refresh()
 	mPlayTypingSound			= gSavedSettings.getBOOL("PlayTypingSound");
 	mPrivateLookAt				= gSavedSettings.getBOOL("PrivateLookAt");
 	mSecondsInChatAndIMs		= gSavedSettings.getBOOL("SecondsInChatAndIMs");
-	mRestrainedLife				= gSavedSettings.getBOOL("RestrainedLife");
-	if (mRestrainedLife)
+	mRestrainedLove				= gSavedSettings.getBOOL("RestrainedLove");
+	mBreastPhysics				= gSavedSettings.getBOOL("EmeraldBreastPhysicsToggle");
+	if (mRestrainedLove)
 	{
 		mFetchInventoryOnLogin	= TRUE;
 		gSavedSettings.setBOOL("FetchInventoryOnLogin",	TRUE);
@@ -125,13 +145,16 @@ void LLPrefsRainbowImpl::refresh()
 	{
 		mFetchInventoryOnLogin	= gSavedSettings.getBOOL("FetchInventoryOnLogin");
 	}
+	mPreviewAnimInWorld			= gSavedSettings.getBOOL("PreviewAnimInWorld");
+	mSpeedRez					= gSavedSettings.getBOOL("SpeedRez");
+	mSpeedRezInterval			= gSavedSettings.getU32("SpeedRezInterval");
 
 	if (LLStartUp::getStartupState() != STATE_STARTED)
 	{
-		childDisable("restrained_life_check");
+		childDisable("restrained_love_check");
 	}
 
-	if (mRestrainedLife)
+	if (mRestrainedLove)
 	{
 		childSetValue("fetch_inventory_on_login_check", TRUE);
 		childDisable("fetch_inventory_on_login_check");
@@ -139,6 +162,17 @@ void LLPrefsRainbowImpl::refresh()
 	else
 	{
 		childEnable("fetch_inventory_on_login_check");
+	}
+
+	if (mSpeedRez)
+	{
+		childEnable("speed_rez_interval");
+		childEnable("speed_rez_seconds");
+	}
+	else
+	{
+		childDisable("speed_rez_interval");
+		childDisable("speed_rez_seconds");
 	}
 
 	std::string format = gSavedSettings.getString("ShortTimeFormat");
@@ -197,8 +231,12 @@ void LLPrefsRainbowImpl::cancel()
 	gSavedSettings.setBOOL("PlayTypingSound",			mPlayTypingSound);
 	gSavedSettings.setBOOL("PrivateLookAt",				mPrivateLookAt);
 	gSavedSettings.setBOOL("FetchInventoryOnLogin",		mFetchInventoryOnLogin);
-	gSavedSettings.setBOOL("RestrainedLife",			mRestrainedLife);
+	gSavedSettings.setBOOL("RestrainedLove",			mRestrainedLove);
+	gSavedSettings.setBOOL("EmeraldBreastPhysicsToggle",			mBreastPhysics);
 	gSavedSettings.setBOOL("SecondsInChatAndIMs",		mSecondsInChatAndIMs);
+	gSavedSettings.setBOOL("PreviewAnimInWorld",		mPreviewAnimInWorld);
+	gSavedSettings.setBOOL("SpeedRez",					mSpeedRez);
+	gSavedSettings.setU32("SpeedRezInterval",			mSpeedRezInterval);
 }
 
 void LLPrefsRainbowImpl::apply()
