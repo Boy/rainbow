@@ -43,9 +43,11 @@
 																			// pre-cached on viewer
 
 // Grass Images
+const LLUUID IMG_CLEAR			("11ee27f5-43c0-414e-afd5-d7f5688c351f");  // VIEWER
 const LLUUID IMG_SMOKE			("b4ba225c-373f-446d-9f7e-6cb7b5cf9b3d");  // VIEWER
 
 const LLUUID IMG_DEFAULT		("d2114404-dd59-4a4d-8e6c-49359e91bbf0");  // VIEWER
+const LLUUID IMG_INVISIBLE		("3a367d1c-bef1-6d43-7595-e88c1e3aadb3");  // dataserver
 
 const LLUUID IMG_SUN			("cce0f112-878f-4586-a2e2-a8f104bba271"); // dataserver
 const LLUUID IMG_MOON			("d07f6eed-b96a-47cd-b51d-400ad4a1c428"); // dataserver

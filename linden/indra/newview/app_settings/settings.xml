@@ -9338,6 +9338,17 @@
       <key>Value</key>
       <string>6e1a3980-bf2d-4274-8970-91e60d85fb52</string>
     </map>
+    <key>UIImgDefaultAlphaUUID</key>
+    <map>
+      <key>Comment</key>
+      <string />
+      <key>Persist</key>
+      <integer>0</integer>
+      <key>Type</key>
+      <string>String</string>
+      <key>Value</key>
+      <string>5748decc-f629-461c-9a36-a35a221fe21f</string>
+    </map>
     <key>UIImgDefaultEyesUUID</key>
     <map>
       <key>Comment</key>

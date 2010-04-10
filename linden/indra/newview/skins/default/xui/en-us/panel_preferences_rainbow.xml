@@ -123,6 +123,11 @@
 	           label="Automatically fetch the inventory in the background after login" left="10"
 	           mouse_opaque="true" name="fetch_inventory_on_login_check" radio_style="false"
 	           width="400" />
+	  <check_box bottom_delta="-20" control_name="PlayTypingSound" enabled="true"
+		   follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
+	     	   label="Play the typing sound when an avatar types in chat" left="10"
+	  	   mouse_opaque="true" name="play_typing_sound_check" radio_style="false"
+	 	   width="400" />
 	  <check_box bottom_delta="-20" control_name="EmeraldBreastPhysicsToggle" enabled="true"
         	   follows="left|top" font="SansSerifSmall" height="16"  initial_value="true"
 	   	   label="Enable enhanced physics on avatar breasts" left="10"
