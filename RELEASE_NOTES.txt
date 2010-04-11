@@ -1,4 +1,4 @@
-Release Notes for Rainbow Viewer 1.22.12 Release 5a, April 10th 2010
+Release Notes for Rainbow Viewer 1.22.12 Release 5b, April 11th 2010
 ====================================================================
 Rainbow Viewer is a speed Metaverse Client that can connect you to a huge variety of exciting Virtual Worlds!
 
@@ -32,7 +32,7 @@ Patches by Alissa Sabre:
 
 Patches by Boy Lane:
 * AdultCompatibility: backport of the adult compliancy protocols introduced in the v1.23 viewer to 1.22, adaption of Henri Beauchamps AdultCompliance patch, allowing to get search results for and access to adult stuff when your avatar is "adult verified".
-* AlphaTattooLayers: backport from SL2.0, thanks to Henri for the patches for 1.19 and 1.23 
+* AlphaTattooLayers: backport from SL2.0, thanks to Henri for the patches for 1.19 and 1.23 this is based on 
 * AvatarHeight: backport from Emerald, this show the avatar height in the appearance panel  
 * AvatarUUID: based on a feature from the Emerald viewer, this patch shows the key of avatars in the "2nd Life" tab of the Profile panel.
 * AVShapeExportImport: Baed on Emerald, this patch allows the Export and Import of avatar shapes (creator only)  

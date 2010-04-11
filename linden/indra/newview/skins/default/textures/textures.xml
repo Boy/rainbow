@@ -114,7 +114,7 @@
   <texture name="inv_folder_sound.tga"/>
   <texture name="inv_folder_texture.tga"/>
   <texture name="inv_folder_trash.tga"/>
-  
+  <texture name="inv_item_alpha.tga"/> 
   <texture name="inv_item_animation.tga"/>
   <texture name="inv_item_skin.tga"/>
   <texture name="inv_item_callingcard_offline.tga"/>
@@ -138,6 +138,7 @@
   <texture name="inv_item_snapshot.tga"/>
   <texture name="inv_item_socks.tga"/>
   <texture name="inv_item_sound.tga"/>
+  <texture name="inv_item_tattoo.tga"/> 
   <texture name="inv_item_texture.tga"/>
   <texture name="inv_item_underpants.tga"/>
   <texture name="inv_item_undershirt.tga"/>

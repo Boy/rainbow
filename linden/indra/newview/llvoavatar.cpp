@@ -1356,7 +1356,7 @@ void LLVOAvatar::restoreGL()
 		inst->invalidateComposite( inst->mLowerBodyLayerSet,	FALSE );
 		inst->invalidateComposite( inst->mUpperBodyLayerSet,	FALSE );
 		inst->invalidateComposite( inst->mEyesLayerSet,	FALSE );
-		inst->invalidateComposite(inst->mHairLayerSet, FALSE);
+		inst->invalidateComposite( inst->mHairLayerSet, FALSE );
 		inst->invalidateComposite( inst->mSkirtLayerSet,	FALSE );
 		inst->updateMeshTextures();
 	}
@@ -4443,7 +4443,7 @@ U32 LLVOAvatar::renderSkinned(EAvatarRenderPass pass)
 
 		if (should_alpha_mask)
 		{
-			glAlphaFunc(GL_GREATER, 0.5f);
+			gGL.setAlphaRejectSettings(LLRender::CF_GREATER, 0.5f);
 		}
 
 		BOOL first_pass = TRUE;
@@ -4466,7 +4466,7 @@ U32 LLVOAvatar::renderSkinned(EAvatarRenderPass pass)
 			first_pass = FALSE;
 		}
 
-		glAlphaFunc(GL_GREATER, 0.01f);
+		gGL.setAlphaRejectSettings(LLRender::CF_DEFAULT);
 
 		{
 			LLGLState blend(GL_BLEND, !mIsDummy);
@@ -4584,6 +4584,13 @@ U32 LLVOAvatar::renderFootShadows()
 	{
 		return 0;
 	}
+	
+	// Don't render foot shadows if your lower body is completely invisible.
+	// (non-humanoid avatars rule!)
+	if (! isTextureVisible(TEX_LOWER_BAKED))
+	{
+		return 0;
+	}
 
 	// Update the shadow, tractor, and text label geometry.
 	if (mDrawable->isState(LLDrawable::REBUILD_SHADOW) && !isImpostor())
@@ -4676,7 +4683,7 @@ void LLVOAvatar::updateTextures(LLAgent &agent)
 	BOOL upper_baked = ( getTEImage( TEX_UPPER_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL lower_baked = ( getTEImage( TEX_LOWER_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL eyes_baked = ( getTEImage( TEX_EYES_BAKED )->getID() != IMG_DEFAULT_AVATAR );
-	BOOL hair_baked = (getTEImage(TEX_HAIR_BAKED)->getID() != IMG_DEFAULT_AVATAR);
+	BOOL hair_baked = (getTEImage(TEX_HAIR_BAKED )->getID() != IMG_DEFAULT_AVATAR);
 	BOOL skirt_baked = ( getTEImage( TEX_SKIRT_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 
 	if( mIsSelf )
@@ -7618,10 +7625,10 @@ void LLVOAvatar::updateMeshTextures()
 	BOOL upper_baked = (getTEImage( TEX_UPPER_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL lower_baked = (getTEImage( TEX_LOWER_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL eyes_baked = (getTEImage( TEX_EYES_BAKED )->getID() != IMG_DEFAULT_AVATAR );
-	BOOL hair_baked = (getTEImage(TEX_HAIR_BAKED)->getID() != IMG_DEFAULT_AVATAR);
+	BOOL hair_baked = (getTEImage(TEX_HAIR_BAKED )->getID() != IMG_DEFAULT_AVATAR);
 	BOOL skirt_baked = (getTEImage( TEX_SKIRT_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 
-	// Turn on alpha masking correctly for yourself and other avatars on 1.19.2 or 1.23+
+	// Turn on alpha masking correctly for yourself and other avatars on 1.19.2 or 1.22+
 	mSupportsAlphaLayers = mIsSelf || hair_baked;
 	mHasBakedHair = self_customize || !hair_baked;
 
@@ -7678,7 +7685,6 @@ void LLVOAvatar::updateMeshTextures()
 
 	}
 	else
-	if( !self_customize )
 	{
 		// When you're changing clothes and you're not in Appearance mode,
 		// use the last-known good baked texture until you finish the first
@@ -8034,8 +8040,8 @@ void LLVOAvatar::updateMeshTextures()
 	// Head
 	BOOL head_baked_ready = (head_baked && mHeadBakedLoaded) || other_culled;
 	setLocalTexture( LOCTEX_HEAD_BODYPAINT,		getTEImage( TEX_HEAD_BODYPAINT ),	head_baked_ready );
-	setLocalTexture(LOCTEX_HEAD_ALPHA,			getTEImage(TEX_HEAD_ALPHA),			head_baked_ready);
-	setLocalTexture(LOCTEX_HEAD_TATTOO,			getTEImage(TEX_HEAD_TATTOO),		head_baked_ready);
+	setLocalTexture( LOCTEX_HEAD_ALPHA,			getTEImage( TEX_HEAD_ALPHA ),		head_baked_ready );
+	setLocalTexture( LOCTEX_HEAD_TATTOO,		getTEImage( TEX_HEAD_TATTOO ),		head_baked_ready );
 
 	// Upper body
 	BOOL upper_baked_ready = (upper_baked && mUpperBakedLoaded) || other_culled;
@@ -8044,8 +8050,8 @@ void LLVOAvatar::updateMeshTextures()
 	setLocalTexture( LOCTEX_UPPER_JACKET,		getTEImage( TEX_UPPER_JACKET ),		upper_baked_ready );
 	setLocalTexture( LOCTEX_UPPER_GLOVES,		getTEImage( TEX_UPPER_GLOVES ),		upper_baked_ready );
 	setLocalTexture( LOCTEX_UPPER_UNDERSHIRT,	getTEImage( TEX_UPPER_UNDERSHIRT ),	upper_baked_ready );
-	setLocalTexture(LOCTEX_UPPER_ALPHA,			getTEImage(TEX_UPPER_ALPHA),		upper_baked_ready);
-	setLocalTexture(LOCTEX_UPPER_TATTOO,		getTEImage(TEX_UPPER_TATTOO),		upper_baked_ready);
+	setLocalTexture( LOCTEX_UPPER_ALPHA,		getTEImage( TEX_UPPER_ALPHA ),		upper_baked_ready );
+	setLocalTexture( LOCTEX_UPPER_TATTOO,		getTEImage( TEX_UPPER_TATTOO ),		upper_baked_ready );
 
 	// Lower body
 	BOOL lower_baked_ready = (lower_baked && mLowerBakedLoaded) || other_culled;
@@ -8055,18 +8061,18 @@ void LLVOAvatar::updateMeshTextures()
 	setLocalTexture( LOCTEX_LOWER_SOCKS,		getTEImage( TEX_LOWER_SOCKS ),		lower_baked_ready );
 	setLocalTexture( LOCTEX_LOWER_JACKET,		getTEImage( TEX_LOWER_JACKET ),		lower_baked_ready );
 	setLocalTexture( LOCTEX_LOWER_UNDERPANTS,	getTEImage( TEX_LOWER_UNDERPANTS ),	lower_baked_ready );
-	setLocalTexture(LOCTEX_LOWER_ALPHA,			getTEImage(TEX_LOWER_ALPHA),		lower_baked_ready);
-	setLocalTexture(LOCTEX_LOWER_TATTOO,		getTEImage(TEX_LOWER_TATTOO),		lower_baked_ready);
+	setLocalTexture( LOCTEX_LOWER_ALPHA,		getTEImage( TEX_LOWER_ALPHA ),		lower_baked_ready );
+	setLocalTexture( LOCTEX_LOWER_TATTOO,		getTEImage( TEX_LOWER_TATTOO ),		lower_baked_ready );
 
 	// Eyes
 	BOOL eyes_baked_ready = (eyes_baked && mEyesBakedLoaded) || other_culled;
 	setLocalTexture( LOCTEX_EYES_IRIS,			getTEImage( TEX_EYES_IRIS ),		eyes_baked_ready );
-	setLocalTexture(LOCTEX_EYES_ALPHA,			getTEImage(TEX_EYES_ALPHA),			eyes_baked_ready);
+	setLocalTexture( LOCTEX_EYES_ALPHA,			getTEImage( TEX_EYES_ALPHA ),		eyes_baked_ready );
 
 	// Hair
 	BOOL hair_baked_ready = (hair_baked && mHairBakedLoaded) || other_culled;
-	setLocalTexture(LOCTEX_HAIR,				getTEImage(TEX_HAIR),				hair_baked_ready);
-	setLocalTexture(LOCTEX_HAIR_ALPHA,			getTEImage(TEX_HAIR_ALPHA),			hair_baked_ready);
+	setLocalTexture( LOCTEX_HAIR,				getTEImage( TEX_HAIR ),				hair_baked_ready );
+	setLocalTexture( LOCTEX_HAIR_ALPHA,			getTEImage( TEX_HAIR_ALPHA ),		hair_baked_ready );
 
 	// Skirt
 	BOOL skirt_baked_ready = (skirt_baked && mSkirtBakedLoaded) || other_culled;
@@ -8122,7 +8128,7 @@ void LLVOAvatar::requestLayerSetUploads()
 	BOOL lower_baked = (getTEImage( TEX_LOWER_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL head_baked = (getTEImage( TEX_HEAD_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL eyes_baked = (getTEImage( TEX_EYES_BAKED )->getID() != IMG_DEFAULT_AVATAR );
-	BOOL hair_baked = (getTEImage(TEX_HAIR_BAKED)->getID() != IMG_DEFAULT_AVATAR);
+	BOOL hair_baked = (getTEImage(TEX_HAIR_BAKED )->getID() != IMG_DEFAULT_AVATAR);
 	BOOL skirt_baked = (getTEImage( TEX_SKIRT_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 
 	if( !head_baked && mHeadLayerSet )
@@ -8258,9 +8264,9 @@ BOOL LLVOAvatar::isLocalTextureDataFinal( LLTexLayerSet* layerset )
 			getLocalDiscardLevel( LOCTEX_UPPER_BODYPAINT ) == 0 &&
 			getLocalDiscardLevel( LOCTEX_UPPER_JACKET ) == 0 && 
 			getLocalDiscardLevel( LOCTEX_UPPER_GLOVES ) == 0 && 
-			getLocalDiscardLevel(LOCTEX_UPPER_UNDERSHIRT) == 0 &&
-			getLocalDiscardLevel(LOCTEX_UPPER_ALPHA) == 0 &&
-			getLocalDiscardLevel(LOCTEX_UPPER_TATTOO) == 0;
+			getLocalDiscardLevel( LOCTEX_UPPER_UNDERSHIRT ) == 0 &&
+			getLocalDiscardLevel( LOCTEX_UPPER_ALPHA ) == 0 &&
+			getLocalDiscardLevel( LOCTEX_UPPER_TATTOO ) == 0;
 	}
 	else if( layerset == mLowerBodyLayerSet )
 	{
@@ -8269,9 +8275,9 @@ BOOL LLVOAvatar::isLocalTextureDataFinal( LLTexLayerSet* layerset )
 			getLocalDiscardLevel( LOCTEX_LOWER_SHOES ) == 0 && 
 			getLocalDiscardLevel( LOCTEX_LOWER_SOCKS ) == 0 && 
 			getLocalDiscardLevel( LOCTEX_LOWER_JACKET ) == 0 && 
-			getLocalDiscardLevel(LOCTEX_LOWER_UNDERPANTS) == 0 &&
-			getLocalDiscardLevel(LOCTEX_LOWER_ALPHA) == 0 &&
-			getLocalDiscardLevel(LOCTEX_LOWER_TATTOO) == 0;
+			getLocalDiscardLevel( LOCTEX_LOWER_UNDERPANTS ) == 0 &&
+			getLocalDiscardLevel( LOCTEX_LOWER_ALPHA ) == 0 &&
+			getLocalDiscardLevel( LOCTEX_LOWER_TATTOO ) == 0;
 	}
 	else if( layerset == mEyesLayerSet )
 	{
@@ -8310,9 +8316,9 @@ BOOL LLVOAvatar::isLocalTextureDataAvailable( LLTexLayerSet* layerset )
 			getLocalDiscardLevel( LOCTEX_UPPER_BODYPAINT ) >= 0 &&
 			getLocalDiscardLevel( LOCTEX_UPPER_JACKET ) >= 0 && 
 			getLocalDiscardLevel( LOCTEX_UPPER_GLOVES ) >= 0 && 
-			getLocalDiscardLevel(LOCTEX_UPPER_UNDERSHIRT) >= 0 &&
-			getLocalDiscardLevel(LOCTEX_UPPER_ALPHA) >= 0 &&
-			getLocalDiscardLevel(LOCTEX_UPPER_TATTOO) >= 0;
+			getLocalDiscardLevel( LOCTEX_UPPER_UNDERSHIRT ) >= 0 &&
+			getLocalDiscardLevel( LOCTEX_UPPER_ALPHA ) >= 0 &&
+			getLocalDiscardLevel( LOCTEX_UPPER_TATTOO ) >= 0;
 	}
 	else if( layerset == mLowerBodyLayerSet )
 	{
@@ -8321,9 +8327,9 @@ BOOL LLVOAvatar::isLocalTextureDataAvailable( LLTexLayerSet* layerset )
 			getLocalDiscardLevel( LOCTEX_LOWER_SHOES ) >= 0 && 
 			getLocalDiscardLevel( LOCTEX_LOWER_SOCKS ) >= 0 && 
 			getLocalDiscardLevel( LOCTEX_LOWER_JACKET ) >= 0 && 
-			getLocalDiscardLevel(LOCTEX_LOWER_UNDERPANTS) >= 0 &&
-			getLocalDiscardLevel(LOCTEX_LOWER_ALPHA) >= 0 &&
-			getLocalDiscardLevel(LOCTEX_LOWER_TATTOO) >= 0;
+			getLocalDiscardLevel( LOCTEX_LOWER_UNDERPANTS ) >= 0 &&
+			getLocalDiscardLevel( LOCTEX_LOWER_ALPHA ) >= 0 &&
+			getLocalDiscardLevel( LOCTEX_LOWER_TATTOO ) >= 0;
 	}
 	else if( layerset == mEyesLayerSet )
 	{
@@ -8455,14 +8461,7 @@ bool LLVOAvatar::hasPendingBakedUploads()
 	//	<< " skirt_pending " << skirt_pending
 	//	<< llendl;
 
-	if (head_pending || upper_pending || lower_pending || eyes_pending || hair_pending || skirt_pending)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return head_pending || upper_pending || lower_pending || eyes_pending || hair_pending || skirt_pending;
 }
 
 //-----------------------------------------------------------------------------
@@ -9017,7 +9016,7 @@ void LLVOAvatar::onFirstTEMessageReceived()
 		BOOL upper_baked = ( getTEImage( TEX_UPPER_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 		BOOL lower_baked = ( getTEImage( TEX_LOWER_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 		BOOL eyes_baked = ( getTEImage( TEX_EYES_BAKED )->getID() != IMG_DEFAULT_AVATAR );
-		BOOL hair_baked = (getTEImage(TEX_HAIR_BAKED)->getID() != IMG_DEFAULT_AVATAR);
+		BOOL hair_baked = (getTEImage(TEX_HAIR_BAKED )->getID() != IMG_DEFAULT_AVATAR);
 		BOOL skirt_baked = ( getTEImage( TEX_SKIRT_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 
 		// Use any baked textures that we have even if they haven't downloaded yet.
@@ -9152,7 +9151,7 @@ void LLVOAvatar::processAvatarAppearance( LLMessageSystem* mesgsys )
 //		(( getTEImage( TEX_UPPER_BAKED )->getID() != IMG_DEFAULT_AVATAR ) ? "UPPER " : "upper " ) <<
 //		(( getTEImage( TEX_LOWER_BAKED )->getID() != IMG_DEFAULT_AVATAR ) ? "LOWER " : "lower " ) <<
 //		(( getTEImage( TEX_EYES_BAKED )->getID() != IMG_DEFAULT_AVATAR )  ? "EYES" : "eyes" ) <<
-//		((getTEImage(TEX_HAIR_BAKED)->getID() != IMG_DEFAULT_AVATAR) ? "HAIR" : "hair") << llendl;
+//		(( getTEImage(TEX_HAIR_BAKED )->getID() != IMG_DEFAULT_AVATAR ) ? "HAIR" : "hair" ) << llendl;
  
 	if( !mFirstTEMessageReceived )
 	{
@@ -9472,7 +9471,7 @@ void LLVOAvatar::useBakedTexture( const LLUUID& id )
 	LLViewerImage* upper_baked =	getTEImage( TEX_UPPER_BAKED );
 	LLViewerImage* lower_baked =	getTEImage( TEX_LOWER_BAKED );
 	LLViewerImage* eyes_baked =		getTEImage( TEX_EYES_BAKED );
-	LLViewerImage* hair_baked =		getTEImage(TEX_HAIR_BAKED);
+	LLViewerImage* hair_baked =		getTEImage( TEX_HAIR_BAKED );
 	LLViewerImage* skirt_baked =	getTEImage( TEX_SKIRT_BAKED );
 
 	if( id == head_baked->getID() )
@@ -9491,8 +9490,8 @@ void LLVOAvatar::useBakedTexture( const LLUUID& id )
 			mHeadLayerSet->destroyComposite();
 		}
 		setLocalTexture( LOCTEX_HEAD_BODYPAINT,		getTEImage( TEX_HEAD_BODYPAINT ),	TRUE );
-		setLocalTexture(LOCTEX_HEAD_ALPHA,			getTEImage(TEX_HEAD_ALPHA),			TRUE);
-		setLocalTexture(LOCTEX_HEAD_TATTOO,			getTEImage(TEX_HEAD_TATTOO),		TRUE);
+		setLocalTexture( LOCTEX_HEAD_ALPHA,			getTEImage( TEX_HEAD_ALPHA ),		TRUE );
+		setLocalTexture( LOCTEX_HEAD_TATTOO,		getTEImage( TEX_HEAD_TATTOO ),		TRUE );
 	}
 	else
 	if( id == upper_baked->getID() )
@@ -9515,8 +9514,8 @@ void LLVOAvatar::useBakedTexture( const LLUUID& id )
 		setLocalTexture( LOCTEX_UPPER_JACKET,		getTEImage( TEX_UPPER_JACKET ),		TRUE );
 		setLocalTexture( LOCTEX_UPPER_GLOVES,		getTEImage( TEX_UPPER_GLOVES ),		TRUE );
 		setLocalTexture( LOCTEX_UPPER_UNDERSHIRT,	getTEImage( TEX_UPPER_UNDERSHIRT ),	TRUE );
-		setLocalTexture(LOCTEX_UPPER_ALPHA,			getTEImage(TEX_UPPER_ALPHA),		TRUE);
-		setLocalTexture(LOCTEX_UPPER_TATTOO,		getTEImage(TEX_UPPER_TATTOO),		TRUE);
+		setLocalTexture( LOCTEX_UPPER_ALPHA,		getTEImage( TEX_UPPER_ALPHA ),		TRUE );
+		setLocalTexture( LOCTEX_UPPER_TATTOO,		getTEImage( TEX_UPPER_TATTOO ),		TRUE );
 	}
 	else
 	if( id == lower_baked->getID() )
@@ -9540,8 +9539,8 @@ void LLVOAvatar::useBakedTexture( const LLUUID& id )
 		setLocalTexture( LOCTEX_LOWER_SOCKS,		getTEImage( TEX_LOWER_SOCKS ),		TRUE );
 		setLocalTexture( LOCTEX_LOWER_JACKET,		getTEImage( TEX_LOWER_JACKET ),		TRUE );
 		setLocalTexture( LOCTEX_LOWER_UNDERPANTS,	getTEImage( TEX_LOWER_UNDERPANTS ),	TRUE );
-		setLocalTexture(LOCTEX_LOWER_ALPHA,			getTEImage(TEX_LOWER_ALPHA),		TRUE);
-		setLocalTexture(LOCTEX_LOWER_TATTOO,		getTEImage(TEX_LOWER_TATTOO),		TRUE);
+		setLocalTexture( LOCTEX_LOWER_ALPHA,		getTEImage( TEX_LOWER_ALPHA ),		TRUE );
+		setLocalTexture( LOCTEX_LOWER_TATTOO,		getTEImage( TEX_LOWER_TATTOO ),		TRUE );
 	}
 	else
 	if( id == eyes_baked->getID() )

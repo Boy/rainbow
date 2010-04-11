@@ -118,7 +118,7 @@ LLFloaterAbout::LLFloaterAbout()
 
 	// Version string
 	std::string version = LLAppViewer::instance()->getSecondLifeTitle()
-		+ llformat(" %d.%d.%d (%d) SSE2GL, %s %s\nChannel: %s\n",
+		+ llformat(" %d.%d.%d (%db) SSE2GL, %s %s\nChannel: %s\n",
 				   LL_VERSION_MAJOR, LL_VERSION_MINOR, LL_VERSION_PATCH, LL_VIEWER_BUILD,
 				   __DATE__, __TIME__,
 				   gSavedSettings.getString("VersionChannelName").c_str());

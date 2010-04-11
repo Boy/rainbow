@@ -1400,6 +1400,7 @@ void init_restrained_love_menu(LLMenuGL* menu)
 void init_debug_baked_texture_menu(LLMenuGL* menu)
 {
 	menu->append(new LLMenuItemCallGL("Iris", handle_grab_texture, enable_grab_texture, (void*) LLVOAvatar::TEX_EYES_BAKED));
+	menu->append(new LLMenuItemCallGL("Hair", handle_grab_texture, enable_grab_texture, (void*) LLVOAvatar::TEX_HAIR_BAKED));
 	menu->append(new LLMenuItemCallGL("Head", handle_grab_texture, enable_grab_texture, (void*) LLVOAvatar::TEX_HEAD_BAKED));
 	menu->append(new LLMenuItemCallGL("Upper Body", handle_grab_texture, enable_grab_texture, (void*) LLVOAvatar::TEX_UPPER_BAKED));
 	menu->append(new LLMenuItemCallGL("Lower Body", handle_grab_texture, enable_grab_texture, (void*) LLVOAvatar::TEX_LOWER_BAKED));
@@ -7413,6 +7414,9 @@ void handle_grab_texture(void* data)
 			{
 			case LLVOAvatar::TEX_EYES_BAKED:
 				name.append("Iris");
+				break;
+			case LLVOAvatar::TEX_HAIR_BAKED:
+				name.append("Hair");
 				break;
 			case LLVOAvatar::TEX_HEAD_BAKED:
 				name.append("Head");

@@ -1,4 +1,21 @@
-2009-04-04 Boy Lane <boy.lane@yahoo.com>
+2009-04-11 Boy Lane <boy.lane@yahoo.com>
+
+    * Fixed bug with baking of alpha layers when changing outfits
+
+    modified:   RELEASE_NOTES.txt
+    modified:   linden/indra/llcommon/imageids.h
+    modified:   linden/indra/newview/app_settings/settings.xml
+    modified:   linden/indra/newview/llagent.cpp
+    modified:   linden/indra/newview/llfloaterabout.cpp
+    modified:   linden/indra/newview/lltoolmorph.cpp
+    modified:   linden/indra/newview/llviewermenu.cpp
+    modified:   linden/indra/newview/llvoavatar.cpp
+    modified:   linden/indra/newview/llvoavatar.h
+    modified:   linden/indra/newview/skins/default/textures/textures.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/panel_login.xml
+
+
+2009-04-10 Boy Lane <boy.lane@yahoo.com>
 
     * Backport of Alpha and Tattoo layers to 1.22, tnx Henri
 

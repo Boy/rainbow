@@ -396,7 +396,7 @@ public:
 		TEX_LOWER_TATTOO = 28,
 		TEX_NUM_ENTRIES = 29
 	};
-	// Note: if TEX_NUM_ENTRIES changes, update AGENT_TEXTURES in llagentinfo.h, mTextureIndexBaked, and BAKED_TEXTURE_COUNT
+	// Note: if TEX_NUM_ENTRIES changes, update AGENT_TEXTURES in BAKED_TEXTURE_COUNT
 
 	static BOOL isTextureIndexBaked( S32 i )
 		{
@@ -1042,7 +1042,7 @@ protected:
 	BOOL				mFirstTEMessageReceived;
 	BOOL				mFirstAppearanceMessageReceived;
 	BOOL				mHasBakedHair;
-	BOOL				mSupportsAlphaLayers; // For backwards compatibility, TRUE for 1.19.2 and 1.23+ clients
+	BOOL				mSupportsAlphaLayers; // For backwards compatibility, TRUE for 1.19.2 and 1.22+ clients
 
 	BOOL				mHeadBakedLoaded;
 	S32					mHeadMaskDiscard;
