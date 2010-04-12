@@ -789,6 +789,7 @@ void LLPanelEditWearable::onInvisibilityCommit(LLUICtrl* ctrl, void* userdata)
 			self->mPreviousTextureList[(S32)te] = current_te->getID();
 		}
 		avatar->setLocTexTE(te, image, TRUE);
+		gAgent.sendAgentSetAppearance();
 	}
 	else
 	{
@@ -802,6 +803,7 @@ void LLPanelEditWearable::onInvisibilityCommit(LLUICtrl* ctrl, void* userdata)
 		{
 			LLViewerImage* image = gImageList.getImage(prev_id);
 			avatar->setLocTexTE(te, image, TRUE);
+			gAgent.sendAgentSetAppearance();
 		}		
 	}
 }
@@ -833,9 +835,9 @@ void LLPanelEditWearable::onColorCommit( LLUICtrl* ctrl, void* userdata )
 			
 			// Set the new version
 			avatar->setClothesColor( te, new_color, TRUE );
-			gAgent.sendAgentSetAppearance();
 
 			LLVisualParamHint::requestHintUpdates();
+			gAgent.sendAgentSetAppearance();
 		}
 	}
 }
@@ -921,6 +923,7 @@ void LLPanelEditWearable::onTextureCommit( LLUICtrl* ctrl, void* userdata )
 		if (gAgent.getWearable(self->mType))
 		{
 			avatar->setLocTexTE(te, image, TRUE);
+			gAgent.sendAgentSetAppearance();
 		}
 		if (self->mType == WT_ALPHA && image->getID() != IMG_INVISIBLE)
 		{
@@ -1696,7 +1699,7 @@ const std::string& LLFloaterCustomize::getEditGroup()
 // LLFloaterCustomize
 
 // statics
-EWearableType	LLFloaterCustomize::sCurrentWearableType = WT_SHAPE;
+EWearableType	LLFloaterCustomize::sCurrentWearableType = WT_INVALID;
 
 struct WearablePanelData
 {
@@ -1736,8 +1739,8 @@ LLFloaterCustomize::LLFloaterCustomize()
 	factory_map["Undershirt"] = LLCallbackMap(createWearablePanel, (void*)(new WearablePanelData(this, WT_UNDERSHIRT) ) );
 	factory_map["Underpants"] = LLCallbackMap(createWearablePanel, (void*)(new WearablePanelData(this, WT_UNDERPANTS) ) );
 	factory_map["Skirt"] = LLCallbackMap(createWearablePanel, (void*)(new WearablePanelData(this, WT_SKIRT) ) );
-	factory_map["Alpha"] = LLCallbackMap(createWearablePanel, (void*)(new WearablePanelData(this, WT_ALPHA)));
-	factory_map["Tattoo"] = LLCallbackMap(createWearablePanel, (void*)(new WearablePanelData(this, WT_TATTOO)));
+	factory_map["Alpha"] = LLCallbackMap(createWearablePanel, (void*)(new WearablePanelData(this, WT_ALPHA) ) );
+	factory_map["Tattoo"] = LLCallbackMap(createWearablePanel, (void*)(new WearablePanelData(this, WT_TATTOO) ) );
 
 	LLUICtrlFactory::getInstance()->buildFloater(this, "floater_customize.xml", &factory_map);
 	
@@ -1789,10 +1792,16 @@ BOOL LLFloaterCustomize::postBuild()
 	
 	// Scrolling Panel
 	initScrollingPanelList();
-
-	childShowTab("customize tab container", "Shape", true);
 	
 	return TRUE;
+}
+
+void LLFloaterCustomize::open()
+{
+	LLFloater::open();
+	// childShowTab depends on gFloaterCustomize being defined and therefore must be called after the constructor. - Nyx
+	childShowTab("customize tab container", "Shape", true);
+	setCurrentWearableType(WT_SHAPE);
 }
 
 ////////////////////////////////////////////////////////////////////////////

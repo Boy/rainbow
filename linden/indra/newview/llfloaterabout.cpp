@@ -58,11 +58,7 @@
 #include "llappviewer.h" 
 #include "llglheaders.h"
 #include "llmediamanager.h"
-#include "llwindow.h"
 
-#if LL_WINDOWS
-#include "lldxhardware.h"
-#endif
 
 extern LLCPUInfo gSysCPU;
 extern LLMemoryInfo gSysMemory;
@@ -118,7 +114,7 @@ LLFloaterAbout::LLFloaterAbout()
 
 	// Version string
 	std::string version = LLAppViewer::instance()->getSecondLifeTitle()
-		+ llformat(" %d.%d.%d (%db) SSE2GL, %s %s\nChannel: %s\n",
+		+ llformat(" %d.%d.%d (%dc) SSE2GL, %s %s\nChannel: %s\n",
 				   LL_VERSION_MAJOR, LL_VERSION_MINOR, LL_VERSION_PATCH, LL_VIEWER_BUILD,
 				   __DATE__, __TIME__,
 				   gSavedSettings.getString("VersionChannelName").c_str());
@@ -227,20 +223,6 @@ LLFloaterAbout::LLFloaterAbout()
 	support.append( (const char*) glGetString(GL_RENDERER) );
 	support.append("\n");
 
-#if LL_WINDOWS
-    getWindow()->incBusyCount();
-    getWindow()->setCursor(UI_CURSOR_ARROW);
-    support.append("Windows Graphics Driver Version: ");
-    LLSD driver_info = gDXHardware.getDisplayInfo();
-    if (driver_info.has("DriverVersion"))
-    {
-        support.append(driver_info["DriverVersion"]);
-    }
-    support.append("\n");
-    getWindow()->decBusyCount();
-    getWindow()->setCursor(UI_CURSOR_ARROW);
-#endif
-
 	support.append("OpenGL Version: ");
 	support.append( (const char*) glGetString(GL_VERSION) );
 	support.append("\n");
@@ -263,14 +245,6 @@ LLFloaterAbout::LLFloaterAbout()
 	LLMediaManager *mgr = LLMediaManager::getInstance();
 	if (mgr)
 	{
-		LLMediaBase *gstreamer = mgr->createSourceFromMimeType("http", "audio/mpeg");
-		if (gstreamer)
-		{
-			support.append("GStreamer Version: ");
-			support.append( gstreamer->getVersion() );
-			support.append("\n");
-		} 
-
 		LLMediaBase *media_source = mgr->createSourceFromMimeType("http", "text/html");
 		if (media_source)
 		{

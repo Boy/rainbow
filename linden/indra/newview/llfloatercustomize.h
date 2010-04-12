@@ -81,6 +81,7 @@ public:
 	// Inherted methods from LLFloater (and above)
 	virtual void	onClose(bool app_quitting);
 	virtual void	draw();
+	/*virtual*/ void open();
 
 	// New methods
 	void			clearScrollingPanelList();

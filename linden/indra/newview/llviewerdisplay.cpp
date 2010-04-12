@@ -534,7 +534,8 @@ void display(BOOL rebuild, F32 zoom_factor, int subfield, BOOL for_snapshot)
 	}
 
 	gViewerWindow->setupViewport();
-	
+
+	gPipeline.resetFrameStats();	// Reset per-frame statistics.
 	if (!gDisconnected)
 	{
 		LLAppViewer::instance()->pingMainloopTimeout("Display:Update");
@@ -600,9 +601,17 @@ void display(BOOL rebuild, F32 zoom_factor, int subfield, BOOL for_snapshot)
 		}
 		gDepthDirty = FALSE;
 
+		LLGLState::checkStates();
+		LLGLState::checkTextureChannels();
+		LLGLState::checkClientArrays();
+
 		static LLCullResult result;
 		gPipeline.updateCull(*LLViewerCamera::getInstance(), result, water_clip);
 		stop_glerror();
+
+		LLGLState::checkStates();
+		LLGLState::checkTextureChannels();
+		LLGLState::checkClientArrays();
 
 		BOOL to_texture = !for_snapshot &&
 						gPipeline.canUseVertexShaders() &&
@@ -625,9 +634,16 @@ void display(BOOL rebuild, F32 zoom_factor, int subfield, BOOL for_snapshot)
 
 			gGL.setColorMask(true, true);
 			glClearColor(0,0,0,0);
-			
+
+			LLGLState::checkStates();
+			LLGLState::checkTextureChannels();
+			LLGLState::checkClientArrays();
+
 			if (!for_snapshot)
 			{
+				LLGLState::checkStates();
+				LLGLState::checkTextureChannels();
+				LLGLState::checkClientArrays();
 				glh::matrix4f proj = glh_get_current_projection();
 				glh::matrix4f mod = glh_get_current_modelview();
 				glViewport(0,0,512,512);
@@ -640,6 +656,11 @@ void display(BOOL rebuild, F32 zoom_factor, int subfield, BOOL for_snapshot)
 				glMatrixMode(GL_MODELVIEW);
 				glLoadMatrixf(mod.m);
 				gViewerWindow->setupViewport();
+
+				LLGLState::checkStates();
+				LLGLState::checkTextureChannels();
+				LLGLState::checkClientArrays();
+
 			}
 			glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		}

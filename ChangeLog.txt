@@ -1,3 +1,15 @@
+2009-04-12 Boy Lane <boy.lane@yahoo.com>
+
+    * Further improvement for alpha rendering, still reverts back after 30s
+
+    modified:   linden/indra/llwindow/lldxhardware.cpp
+    modified:   linden/indra/newview/llfloaterabout.cpp
+    modified:   linden/indra/newview/llfloatercustomize.cpp
+    modified:   linden/indra/newview/llfloatercustomize.h
+    modified:   linden/indra/newview/llviewerdisplay.cpp
+    modified:   linden/indra/newview/skins/default/xui/en-us/panel_login.xml
+
+
 2009-04-11 Boy Lane <boy.lane@yahoo.com>
 
     * Fixed bug with baking of alpha layers when changing outfits
