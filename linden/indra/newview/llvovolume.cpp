@@ -2191,6 +2191,8 @@ void LLVolumeGeometryManager::getGeometry(LLSpatialGroup* group)
 
 void LLVolumeGeometryManager::rebuildGeom(LLSpatialGroup* group)
 {
+	static int warningsCount = 20;
+
 	if (LLPipeline::sSkipUpdate)
 	{
 		return;
@@ -2268,8 +2270,12 @@ void LLVolumeGeometryManager::rebuildGeom(LLSpatialGroup* group)
 			//if not all buffers are unmapped
 			if(num_mapped_veretx_buffer != LLVertexBuffer::sMappedCount) 
 			{
+				if(++warningsCount > 20)	// Do not spam the log file uselessly...
+				{
 				llwarns << "Not all mapped vertex buffers are unmapped!" << llendl ; 
-				for (LLSpatialGroup::element_iter drawable_iter = group->getData().begin(); drawable_iter != group->getData().end(); ++drawable_iter)
+				warningsCount = 1;
+				}
+					for (LLSpatialGroup::element_iter drawable_iter = group->getData().begin(); drawable_iter != group->getData().end(); ++drawable_iter)
 				{
 					LLDrawable* drawablep = *drawable_iter;
 					for (S32 i = 0; i < drawablep->getNumFaces(); ++i)

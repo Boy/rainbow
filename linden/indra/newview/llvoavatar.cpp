@@ -1232,7 +1232,7 @@ void LLVOAvatar::dumpBakedStatus()
 				llcont << " eyes";
 			}
 
-			if (inst->getTEImage(TEX_HAIR_BAKED)->getID() == IMG_DEFAULT_AVATAR)
+			if (inst->getTEImage( TEX_HAIR_BAKED )->getID() == IMG_DEFAULT_AVATAR )
 			{
 				llcont << " hair";
 			}
@@ -1352,12 +1352,12 @@ void LLVOAvatar::restoreGL()
 	{
 		LLVOAvatar* inst = (LLVOAvatar*) *iter;
 		inst->setCompositeUpdatesEnabled( TRUE );
-		inst->invalidateComposite( inst->mHeadLayerSet,		FALSE );
+		inst->invalidateComposite( inst->mHeadLayerSet,			FALSE );
 		inst->invalidateComposite( inst->mLowerBodyLayerSet,	FALSE );
 		inst->invalidateComposite( inst->mUpperBodyLayerSet,	FALSE );
-		inst->invalidateComposite( inst->mEyesLayerSet,	FALSE );
-		inst->invalidateComposite( inst->mHairLayerSet, FALSE );
-		inst->invalidateComposite( inst->mSkirtLayerSet,	FALSE );
+		inst->invalidateComposite( inst->mEyesLayerSet,			FALSE );
+		inst->invalidateComposite( inst->mHairLayerSet, 		FALSE );
+		inst->invalidateComposite( inst->mSkirtLayerSet,		FALSE );
 		inst->updateMeshTextures();
 	}
 }
@@ -3720,6 +3720,10 @@ BOOL LLVOAvatar::updateCharacter(LLAgent &agent)
 		{ //back 25% of max visible avatars are slow updating impostors
 			mUpdatePeriod = 8;
 		}
+		else if (visible && mVisibilityRank > (U32) LLVOAvatar::sMaxVisible)
+		{ //background avatars are REALLY slow updating impostors
+			mUpdatePeriod = 16;
+		}
 		else if (visible && mImpostorPixelArea <= impostor_area)
 		{  // stuff in between gets an update period based on pixel area
 			mUpdatePeriod = llclamp((S32) sqrtf(impostor_area*4.f/mImpostorPixelArea), 2, 8);
@@ -4438,7 +4442,8 @@ U32 LLVOAvatar::renderSkinned(EAvatarRenderPass pass)
 	if (pass == AVATAR_RENDER_PASS_SINGLE)
 	{
 		const bool should_alpha_mask = mSupportsAlphaLayers && mHasBakedHair
-									    && !LLDrawPoolAlpha::sShowDebugAlpha;	// Don't alpha mask if "Highlight Transparent" checked
+									    && !LLDrawPoolAlpha::sShowDebugAlpha // Don't alpha mask if "Highlight Transparent" checked
+										&& !LLDrawPoolAvatar::sSkipTransparent;
 		LLGLState test(GL_ALPHA_TEST, should_alpha_mask);
 
 		if (should_alpha_mask)
@@ -4447,6 +4452,8 @@ U32 LLVOAvatar::renderSkinned(EAvatarRenderPass pass)
 		}
 
 		BOOL first_pass = TRUE;
+		if (!LLDrawPoolAvatar::sSkipOpaque)
+		{
 		if (!mIsSelf || gAgent.needsRenderHead())
 		{
 			if (isTextureVisible(TEX_HEAD_BAKED) || mIsDummy)
@@ -4464,10 +4471,12 @@ U32 LLVOAvatar::renderSkinned(EAvatarRenderPass pass)
 		{
 			num_indices += mLowerBodyLOD.render(mAdjustedPixelArea, first_pass);
 			first_pass = FALSE;
+			}
 		}
 
 		gGL.setAlphaRejectSettings(LLRender::CF_DEFAULT);
 
+		if (!LLDrawPoolAvatar::sSkipTransparent || LLPipeline::sImpostorRender)
 		{
 			LLGLState blend(GL_BLEND, !mIsDummy);
 			LLGLState test(GL_ALPHA_TEST, !mIsDummy);
@@ -4546,7 +4555,8 @@ U32 LLVOAvatar::renderRigid()
 	}
 
 	const bool should_alpha_mask = mSupportsAlphaLayers && mHasBakedHair
-								    && !LLDrawPoolAlpha::sShowDebugAlpha;	// Don't alpha mask if "Highlight Transparent" checked
+								    && !LLDrawPoolAlpha::sShowDebugAlpha // Don't alpha mask if "Highlight Transparent" checked
+									&& !LLDrawPoolAvatar::sSkipTransparent;
 
 	LLGLState test(GL_ALPHA_TEST, should_alpha_mask);
 
@@ -4633,23 +4643,6 @@ U32 LLVOAvatar::renderImpostor(LLColor4U color)
 	LLGLEnable test(GL_ALPHA_TEST);
 	gGL.setAlphaRejectSettings(LLRender::CF_GREATER, 0.f);
 
-	F32 blend = gFrameTimeSeconds - mFadeTime;
-
-	LLGLState gl_blend(GL_BLEND, blend < 1.f ? TRUE : FALSE);
-	gGL.setSceneBlendType(LLRender::BT_ALPHA);
-
-	F32 alpha;
-	if (mVisibilityRank >= (U32) LLVOAvatar::sMaxVisible)
-	{ //fade out
-		alpha = 1.f - llmin(blend, 1.f);
-	}
-	else 
-	{ //fade in
-		alpha = llmin(blend, 1.f);
-	}
-
-	color.mV[3] = (U8) (alpha*255);
-	
 	gGL.color4ubv(color.mV);
 	gGL.getTexUnit(0)->bind(&mImpostor);
 	gGL.begin(LLRender::QUADS);
@@ -4683,7 +4676,7 @@ void LLVOAvatar::updateTextures(LLAgent &agent)
 	BOOL upper_baked = ( getTEImage( TEX_UPPER_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL lower_baked = ( getTEImage( TEX_LOWER_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL eyes_baked = ( getTEImage( TEX_EYES_BAKED )->getID() != IMG_DEFAULT_AVATAR );
-	BOOL hair_baked = (getTEImage(TEX_HAIR_BAKED )->getID() != IMG_DEFAULT_AVATAR);
+	BOOL hair_baked = ( getTEImage(TEX_HAIR_BAKED )->getID() != IMG_DEFAULT_AVATAR);
 	BOOL skirt_baked = ( getTEImage( TEX_SKIRT_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 
 	if( mIsSelf )
@@ -5690,7 +5683,7 @@ BOOL LLVOAvatar::loadAvatar()
 			{
 				mEyesLayerSet = layer_set;
 			}
-			else if (layer_set->isBodyRegion( "hair" ))
+			else if( layer_set->isBodyRegion( "hair" ) )
 			{
 				mHairLayerSet = layer_set;
 			}
@@ -7301,8 +7294,7 @@ void LLVOAvatar::dumpTotalLocalTextureByteCount()
 BOOL LLVOAvatar::isVisible()
 {
 	return mDrawable.notNull()
-		&& (mDrawable->isVisible() || mIsDummy)
-		&& (mVisibilityRank < (U32) sMaxVisible || gFrameTimeSeconds - mFadeTime < 1.f); 
+		&& (mDrawable->isVisible() || mIsDummy);
 }
 
 
@@ -7321,8 +7313,15 @@ BOOL LLVOAvatar::updateIsFullyLoaded()
 		loading = TRUE;
 	}
 
-	// are our texture settings still default?
-	if ((getTEImage( TEX_HAIR )->getID() == IMG_DEFAULT))
+	// 
+	if (mIsSelf)
+	{
+		if (!isTextureDefined(TEX_HAIR))
+		{
+			loading = TRUE;
+		}
+	}
+	else if (!isTextureDefined(TEX_LOWER_BAKED) || !isTextureDefined(TEX_UPPER_BAKED) || !isTextureDefined(TEX_HEAD_BAKED))
 	{
 		loading = TRUE;
 	}
@@ -7576,11 +7575,11 @@ void LLVOAvatar::setupComposites()
 	}
 	if (mEyesLayerSet)
 	{
-		mEyesLayerSet->setUpdatesEnabled(		!eyes_baked  );
+		mEyesLayerSet->setUpdatesEnabled(		!eyes_baked );
 	}
 	if (mHairLayerSet)
 	{
-		mHairLayerSet->setUpdatesEnabled(!hair_baked);
+		mHairLayerSet->setUpdatesEnabled(		!hair_baked );
 	}
 	if (mSkirtLayerSet)
 	{
@@ -7625,7 +7624,7 @@ void LLVOAvatar::updateMeshTextures()
 	BOOL upper_baked = (getTEImage( TEX_UPPER_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL lower_baked = (getTEImage( TEX_LOWER_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL eyes_baked = (getTEImage( TEX_EYES_BAKED )->getID() != IMG_DEFAULT_AVATAR );
-	BOOL hair_baked = (getTEImage(TEX_HAIR_BAKED )->getID() != IMG_DEFAULT_AVATAR);
+	BOOL hair_baked = (getTEImage( TEX_HAIR_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL skirt_baked = (getTEImage( TEX_SKIRT_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 
 	// Turn on alpha masking correctly for yourself and other avatars on 1.19.2 or 1.22+
@@ -7726,7 +7725,10 @@ void LLVOAvatar::updateMeshTextures()
 			mSkirtLayerSet->setUpdatesEnabled( TRUE );
 		}
 	}
-
+	
+	// Turn on alpha masking correctly for yourself and other avatars on 1.22+
+	mSupportsAlphaLayers = mIsSelf || hair_baked;
+	
 	// Baked textures should be requested from the sim this avatar is on. JC
 	LLHost target_host = getObjectHost();
 	if (!target_host.isOk())
@@ -8128,7 +8130,7 @@ void LLVOAvatar::requestLayerSetUploads()
 	BOOL lower_baked = (getTEImage( TEX_LOWER_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL head_baked = (getTEImage( TEX_HEAD_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL eyes_baked = (getTEImage( TEX_EYES_BAKED )->getID() != IMG_DEFAULT_AVATAR );
-	BOOL hair_baked = (getTEImage(TEX_HAIR_BAKED )->getID() != IMG_DEFAULT_AVATAR);
+	BOOL hair_baked = (getTEImage( TEX_HAIR_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL skirt_baked = (getTEImage( TEX_SKIRT_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 
 	if( !head_baked && mHeadLayerSet )
@@ -8247,7 +8249,7 @@ S32 LLVOAvatar::getLocalDiscardLevel( S32 index )
 
 //-----------------------------------------------------------------------------
 // isLocalTextureDataFinal()
-// Returns true is the highest quality discard level exists for every texture
+// Returns true if the highest quality discard level exists for every texture
 // in the layerset.
 //-----------------------------------------------------------------------------
 BOOL LLVOAvatar::isLocalTextureDataFinal( LLTexLayerSet* layerset )
@@ -8300,7 +8302,7 @@ BOOL LLVOAvatar::isLocalTextureDataFinal( LLTexLayerSet* layerset )
 
 //-----------------------------------------------------------------------------
 // isLocalTextureDataAvailable()
-// Returns true is at least the lowest quality discard level exists for every texture
+// Returns true if at least the lowest quality discard level exists for every texture
 // in the layerset.
 //-----------------------------------------------------------------------------
 BOOL LLVOAvatar::isLocalTextureDataAvailable( LLTexLayerSet* layerset )
@@ -9016,7 +9018,7 @@ void LLVOAvatar::onFirstTEMessageReceived()
 		BOOL upper_baked = ( getTEImage( TEX_UPPER_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 		BOOL lower_baked = ( getTEImage( TEX_LOWER_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 		BOOL eyes_baked = ( getTEImage( TEX_EYES_BAKED )->getID() != IMG_DEFAULT_AVATAR );
-		BOOL hair_baked = (getTEImage(TEX_HAIR_BAKED )->getID() != IMG_DEFAULT_AVATAR);
+		BOOL hair_baked = ( getTEImage(TEX_HAIR_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 		BOOL skirt_baked = ( getTEImage( TEX_SKIRT_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 
 		// Use any baked textures that we have even if they haven't downloaded yet.
@@ -9151,7 +9153,7 @@ void LLVOAvatar::processAvatarAppearance( LLMessageSystem* mesgsys )
 //		(( getTEImage( TEX_UPPER_BAKED )->getID() != IMG_DEFAULT_AVATAR ) ? "UPPER " : "upper " ) <<
 //		(( getTEImage( TEX_LOWER_BAKED )->getID() != IMG_DEFAULT_AVATAR ) ? "LOWER " : "lower " ) <<
 //		(( getTEImage( TEX_EYES_BAKED )->getID() != IMG_DEFAULT_AVATAR )  ? "EYES" : "eyes" ) <<
-//		(( getTEImage(TEX_HAIR_BAKED )->getID() != IMG_DEFAULT_AVATAR ) ? "HAIR" : "hair" ) << llendl;
+//		(( getTEImage( TEX_HAIR_BAKED )->getID() != IMG_DEFAULT_AVATAR ) ? "HAIR" : "hair" ) << llendl;
  
 	if( !mFirstTEMessageReceived )
 	{
@@ -10043,7 +10045,7 @@ void LLVOAvatar::removeMissingBakedTextures()
 		invalidateComposite( mUpperBodyLayerSet,	FALSE );
 		invalidateComposite( mLowerBodyLayerSet,	FALSE );
 		invalidateComposite( mSkirtLayerSet,		FALSE );
-		invalidateComposite(mHairLayerSet,			FALSE);
+		invalidateComposite( mHairLayerSet,			FALSE );
 		updateMeshTextures();
 		requestLayerSetUploads();
 	}

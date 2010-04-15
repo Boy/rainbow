@@ -1318,7 +1318,7 @@ void LLTextureCtrl::draw()
 {
 	mBorder->setKeyboardFocusHighlight(hasFocus());
 
-	if (mImageAssetID.isNull() || !mValid)
+	if (!mValid)
 	{
 		mTexturep = NULL;
 	}

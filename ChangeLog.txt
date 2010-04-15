@@ -1,5 +1,17 @@
 2009-04-12 Boy Lane <boy.lane@yahoo.com>
 
+    * More progress with the alpha layer textures
+
+    modified:   linden/indra/newview/lldrawpoolavatar.cpp
+    modified:   linden/indra/newview/lldrawpoolavatar.h
+    modified:   linden/indra/newview/lltexlayer.cpp
+    modified:   linden/indra/newview/lltexturectrl.cpp
+    modified:   linden/indra/newview/llvoavatar.cpp
+    modified:   linden/indra/newview/llvovolume.cpp
+
+
+2009-04-12 Boy Lane <boy.lane@yahoo.com>
+
     * Further improvement for alpha rendering, still reverts back after 30s
 
     modified:   linden/indra/llwindow/lldxhardware.cpp

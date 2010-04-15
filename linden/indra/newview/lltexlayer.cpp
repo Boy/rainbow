@@ -66,13 +66,13 @@ S32 LLTexLayerSetBuffer::sGLByteCount = 0;
 //-----------------------------------------------------------------------------
 // LLBakedUploadData()
 //-----------------------------------------------------------------------------
-LLBakedUploadData::LLBakedUploadData( LLVOAvatar* avatar,
-									  LLTexLayerSet* layerset, 
-									  LLTexLayerSetBuffer* layerset_buffer, 
-									  const LLUUID & id ) : 
-	mAvatar( avatar ),
-	mLayerSet( layerset ),
-	mLayerSetBuffer( layerset_buffer ),
+LLBakedUploadData::LLBakedUploadData(LLVOAvatar* avatar,
+									 LLTexLayerSet* layerset,
+									 LLTexLayerSetBuffer* layerset_buffer,
+									 const LLUUID & id) : 
+	mAvatar(avatar),
+	mLayerSet(layerset),
+	mLayerSetBuffer(layerset_buffer),
 	mID(id)
 { 
 	mStartTime = LLFrameTimer::getTotalTime();		// Record starting time
@@ -375,9 +375,7 @@ void LLTexLayerSetBuffer::readBackAndUpload()
 			
 			if( valid )
 			{
-				// baked_upload_data is owned by the responder and deleted after the request completes
-				LLBakedUploadData* baked_upload_data =
-					new LLBakedUploadData( gAgent.getAvatarObject(), this->mTexLayerSet, this, asset_id );
+				LLBakedUploadData* baked_upload_data = new LLBakedUploadData(gAgent.getAvatarObject(), this->mTexLayerSet, this, asset_id);
 				mUploadID = asset_id;
 
 				gAssetStorage->storeAssetData(tid,
@@ -445,10 +443,10 @@ void LLTexLayerSetBuffer::onTextureUploadComplete(const LLUUID& uuid, void* user
 				LLVOAvatar::ETextureIndex baked_te = avatar->getBakedTE(layerset_buffer->mTexLayerSet);
 				U64 now = LLFrameTimer::getTotalTime();		// Record starting time
 				llinfos << "Baked texture upload took " << (S32)((now - baked_upload_data->mStartTime) / 1000) << " ms" << llendl;
-				avatar->setNewBakedTexture(baked_te, uuid);
+				avatar->setNewBakedTexture( baked_te, uuid );
 			}
 			else
-			{	
+			{
 				// Avatar appearance is changing, ignore the upload results
 				llinfos << "Baked upload failed. Reason: " << result << llendl;
 				// *FIX: retry upload after n seconds, asset server could be busy
@@ -558,6 +556,7 @@ LLTexLayerSet::LLTexLayerSet( LLVOAvatar* avatar )
 	mAvatar( avatar ),
 	mUpdatesEnabled( FALSE ),
 	mIsVisible(TRUE),
+	mBakedTexIndex(BAKED_HEAD),
 	mInfo( NULL )
 {
 }
