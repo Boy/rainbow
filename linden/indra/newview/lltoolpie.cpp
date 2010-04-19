@@ -664,10 +664,14 @@ BOOL LLToolPie::handleDoubleClick(S32 x, S32 y, MASK mask)
 				 && !mPick.mPosGlobal.isExactlyZero())
 		{
 			// Hit an object
-			// HACK: Call the last hit position the point we hit on the object
-			//gLastHitPosGlobal += gLastHitObjectOffset;
-			handle_go_to();
-			return TRUE;
+			// Do not go to attachments...
+			if (!mPick.getObject()->isHUDAttachment())
+			{
+				// HACK: Call the last hit position the point we hit on the object
+				//gLastHitPosGlobal += gLastHitObjectOffset;
+				handle_go_to();
+				return TRUE;
+			}
 		}
 	}
 

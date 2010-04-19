@@ -227,7 +227,7 @@ const LLUUID BAKED_TEXTURE_HASH[BAKED_TEXTURE_COUNT] =
 	LLUUID("91b4a2c7-1b1a-ba16-9a16-1f8f8dcc1c3f"),
 	LLUUID("b2cf28af-b840-1071-3c6a-78085d8128b5"),
 	LLUUID("ea800387-ea1a-14e0-56cb-24f2022f969a"),
-	LLUUID("4327c2df-f619-4ffd-aaf7-9d71dc46a50e")
+	LLUUID("0af1ef7c-ad24-11dd-8790-001f5bf833e8")
 };
 
 // The agent instance.
@@ -5993,7 +5993,7 @@ void LLAgent::processAgentCachedTextureResponse(LLMessageSystem *mesgsys, void *
 			&& (S32)texture_index < BAKED_TEXTURE_COUNT 
 			&& gAgent.mActiveCacheQueries[ texture_index ] == query_id)
 		{
-			//llinfos << "Received cached texture " << (U32)texture_index << ": " << texture_id << llendl;
+			llinfos << "Received cached texture " << (U32)texture_index << ": " << texture_id << llendl;
 			avatarp->setCachedBakedTexture((LLVOAvatar::ETextureIndex)LLVOAvatar::sBakedTextureIndices[texture_index], texture_id);
 			//avatarp->setTETexture( LLVOAvatar::sBakedTextureIndices[texture_index], texture_id );
 			gAgent.mActiveCacheQueries[ texture_index ] = 0;

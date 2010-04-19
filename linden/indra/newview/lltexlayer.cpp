@@ -56,7 +56,6 @@
 
 //#include "../tools/imdebug/imdebug.h"
 
-
 // SJB: We really always want to use the GL cache;
 // let GL page textures in and out of video RAM instead of trying to do so by hand.
 
@@ -556,7 +555,7 @@ LLTexLayerSet::LLTexLayerSet( LLVOAvatar* avatar )
 	mAvatar( avatar ),
 	mUpdatesEnabled( FALSE ),
 	mIsVisible(TRUE),
-	mBakedTexIndex(BAKED_HEAD),
+	mBakedTexIndex(LLVOAvatar::TEX_HEAD_BAKED),
 	mInfo( NULL )
 {
 }

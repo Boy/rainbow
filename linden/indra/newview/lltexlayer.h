@@ -280,6 +280,8 @@ public:
 	void					applyMorphMask(U8* tex_data, S32 width, S32 height, S32 num_components);
 	const std::string		getBodyRegion() 				{ return mInfo->mBodyRegion; }
 	BOOL					hasComposite()					{ return (mComposite != NULL); }
+	LLVOAvatar::ETextureIndex getBakedTE() { return mBakedTexIndex; }
+	void					setBakedTE(LLVOAvatar::ETextureIndex index) { mBakedTexIndex = index; }
 	BOOL					isVisible() const 				{ return mIsVisible; }
 
 public:
@@ -294,6 +296,8 @@ protected:
 	LLVOAvatar*				mAvatar;
 	BOOL					mUpdatesEnabled;
 	BOOL					mIsVisible;
+
+	LLVOAvatar::ETextureIndex mBakedTexIndex;
 
 	LLTexLayerSetInfo 		*mInfo;
 };

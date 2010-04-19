@@ -1227,7 +1227,11 @@ void LLPipeline::updateCull(LLCamera& camera, LLCullResult& result, S32 water_cl
 	LLGLDisable test(GL_ALPHA_TEST);
 	gGL.getTexUnit(0)->unbind(LLTexUnit::TT_TEXTURE);
 
-	gGL.setColorMask(false, false);
+	if (sUseOcclusion > 1)
+	{
+		gGL.setColorMask(false, false);
+	}
+
 	LLGLDepthTest depth(GL_TRUE, GL_FALSE);
 
 	for (LLWorld::region_list_t::iterator iter = LLWorld::getInstance()->getRegionList().begin(); 
@@ -1288,10 +1292,14 @@ void LLPipeline::updateCull(LLCamera& camera, LLCullResult& result, S32 water_cl
 	gGL.setColorMask(true, false);
 	glPopMatrix();
 
+	if (sUseOcclusion > 1)
+	{
+		gGL.setColorMask(true, false);
+	}
+
 	if (to_texture)
 	{
 		mScreen.flush();
-		LLRenderTarget::unbindTarget();
 	}
 	else if (LLPipeline::sUseOcclusion > 1)
 	{
@@ -1598,8 +1606,8 @@ void LLPipeline::shiftObjects(const LLVector3 &offset)
 	assertInitialized();
 
 	glClear(GL_DEPTH_BUFFER_BIT);
-	gDepthDirty = FALSE;
-
+	gDepthDirty = TRUE;
+		
 	for (LLDrawable::drawable_vector_t::iterator iter = mShiftList.begin();
 		 iter != mShiftList.end(); iter++)
 	{
@@ -2051,6 +2059,22 @@ void LLPipeline::postSort(LLCamera& camera)
 	}
 	LLSpatialGroup::sNoDelete = TRUE;
 
+
+	const S32 bin_count = 1024*8;
+		
+	static LLCullResult::drawinfo_list_t alpha_bins[bin_count];
+	static U32 bin_size[bin_count];
+
+	//clear one bin per frame to avoid memory bloat
+	static S32 clear_idx = 0;
+	clear_idx = (1+clear_idx)%bin_count;
+	alpha_bins[clear_idx].clear();
+
+	for (U32 j = 0; j < bin_count; j++)
+	{
+		bin_size[j] = 0;
+	}
+
 	//build render map
 	for (LLCullResult::sg_list_t::iterator i = sCull->beginVisibleGroups(); i != sCull->endVisibleGroups(); ++i)
 	{
@@ -2493,25 +2517,27 @@ void LLPipeline::renderGeom(LLCamera& camera, BOOL forceVBOUpdate)
 			iter1 = iter2;
 			stop_glerror();
 		}
-	}
 	
 	LLAppViewer::instance()->pingMainloopTimeout("Pipeline:RenderDrawPoolsEnd");
+
+	LLVertexBuffer::unbind();
+		
+		gGLLastMatrix = NULL;
+		glLoadMatrixd(gGLModelView);
+
+		if (occlude)
+		{
+			occlude = FALSE;
+			gGLLastMatrix = NULL;
+			glLoadMatrixd(gGLModelView);
+			doOcclusion(camera);
+		}
+	}
 
 	LLVertexBuffer::unbind();
 	LLGLState::checkStates();
 	LLGLState::checkTextureChannels();
 	LLGLState::checkClientArrays();
-
-	gGLLastMatrix = NULL;
-	glLoadMatrixd(gGLModelView);
-
-	if (occlude)
-	{
-		occlude = FALSE;
-		gGLLastMatrix = NULL;
-		glLoadMatrixd(gGLModelView);
-		doOcclusion(camera);
-	}
 
 	stop_glerror();
 		
@@ -5275,6 +5301,10 @@ void LLPipeline::renderGroups(LLRenderPass* pass, U32 type, U32 mask, BOOL textu
 
 void LLPipeline::generateImpostor(LLVOAvatar* avatar)
 {
+	LLGLState::checkStates();
+	LLGLState::checkTextureChannels();
+	LLGLState::checkClientArrays();
+
 	static LLCullResult result;
 	result.clear();
 	grabReferences(result);
@@ -5464,6 +5494,11 @@ void LLPipeline::generateImpostor(LLVOAvatar* avatar)
 
 	avatar->mNeedsImpostorUpdate = FALSE;
 	avatar->cacheImpostorValues();
+
+	LLVertexBuffer::unbind();
+	LLGLState::checkStates();
+	LLGLState::checkTextureChannels();
+	LLGLState::checkClientArrays();
 }
 
 BOOL LLPipeline::hasRenderBatches(const U32 type) const

@@ -1,4 +1,18 @@
-2009-04-12 Boy Lane <boy.lane@yahoo.com>
+2009-04-19 Boy Lane <boy.lane@yahoo.com>
+
+    * Final Tattoo and Alpha support (unfinished, partial textures do not show but are rendered correctly for others)
+    * Double click teleport fix to not go to HUDs  
+
+    modified:   linden/indra/newview/llagent.cpp
+    modified:   linden/indra/newview/llassetuploadresponders.cpp
+    modified:   linden/indra/newview/lltexlayer.cpp
+    modified:   linden/indra/newview/lltexlayer.h
+    modified:   linden/indra/newview/lltoolpie.cpp
+    modified:   linden/indra/newview/llvoavatar.cpp
+    modified:   linden/indra/newview/pipeline.cpp
+
+
+2009-04-14 Boy Lane <boy.lane@yahoo.com>
 
     * More progress with the alpha layer textures
 
