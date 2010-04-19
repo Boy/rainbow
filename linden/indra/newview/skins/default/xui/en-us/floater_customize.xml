@@ -1095,7 +1095,9 @@ scratch and wear it.
 			     bottom="-74" drop_shadow_visible="true" follows="left|top|right"
 			     font="SansSerifSmall" h_pad="0" halign="left" height="28" left="8"
 			     mouse_opaque="true" name="not worn instructions" v_pad="0" width="373">
-                Put on a new tattoo by dragging one from your inventory to your avatar. Alternately, you create a new one from scratch and wear it.
+                Put on a new tattoo by dragging one from your inventory
+to your avatar. Alternately, you create a new one from
+scratch and wear it.
 			</text>
 			<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 			     bottom="-74" drop_shadow_visible="true" follows="left|top|right"
@@ -1166,12 +1168,16 @@ scratch and wear it.
 			     font="SansSerifSmall" h_pad="0" halign="left" height="14" left="8"
 			     mouse_opaque="true" name="path" v_pad="0" width="373">
 				Located in [PATH]
+Please note that only full body parts work correctly. Partial alpha textures
+are not showing in Rainbow but are rendered correctly for others.
 			</text>
 			<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 			     bottom="-74" drop_shadow_visible="true" follows="left|top|right"
 			     font="SansSerifSmall" h_pad="0" halign="left" height="28" left="8"
 			     mouse_opaque="true" name="not worn instructions" v_pad="0" width="373">
-                Put on a new alpha mask by dragging one from your inventory to your avatar. Alternately, you create a new one from scratch and wear it.
+                Put on a new alpha mask by dragging one from your inventory
+to your avatar. Alternately, you create a new one from
+scratch and wear it.
 			</text>
 			<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 			     bottom="-74" drop_shadow_visible="true" follows="left|top|right"

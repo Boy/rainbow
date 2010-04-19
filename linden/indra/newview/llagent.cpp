@@ -6300,6 +6300,34 @@ void LLAgent::teleportViaLocation(const LLVector3d& pos_global)
 	}
 }
 
+void LLAgent::stopCurrentAnimations()
+{
+	// This function stops all current overriding animations on this
+	// avatar, propagating this change back to the server.
+
+	LLVOAvatar* avatarp = gAgent.getAvatarObject();
+	if (avatarp)
+	{
+		for (LLVOAvatar::AnimIterator anim_it = avatarp->mPlayingAnimations.begin();
+			 anim_it != avatarp->mPlayingAnimations.end(); anim_it++)
+		{
+			// don't cancel a ground-sit anim, as viewers use this animation's status in
+			// determining whether we're sitting. ick.
+			if (anim_it->first != ANIM_AGENT_SIT_GROUND_CONSTRAINED)
+			{
+				// stop this animation locally
+				avatarp->stopMotion(anim_it->first, TRUE);
+				// ...and tell the server to tell everyone.
+				sendAnimationRequest(anim_it->first, ANIM_REQUEST_STOP);
+			}
+		}
+
+		// re-assert at least the default standing animation, because
+		// viewers get confused by avs with no associated anims.
+		sendAnimationRequest(ANIM_AGENT_STAND, ANIM_REQUEST_START);
+	}
+}
+
 void LLAgent::setTeleportState(ETeleportState state)
 {
 	mTeleportState = state;
