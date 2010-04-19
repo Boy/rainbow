@@ -35,7 +35,7 @@
 const S32 LL_VERSION_MAJOR = 1;
 const S32 LL_VERSION_MINOR = 22;
 const S32 LL_VERSION_PATCH = 12;
-const S32 LL_VERSION_BUILD = 5;
+const S32 LL_VERSION_BUILD = 6;
 
 const char * const LL_CHANNEL = "Rainbow Viewer";
 
