@@ -5669,7 +5669,7 @@
       <key>Type</key>
       <string>Boolean</string>
       <key>Value</key>
-      <integer>0</integer>
+      <integer>1</integer>
     </map>
     <key>PreviewAnimRect</key>
     <map>
@@ -6992,6 +6992,17 @@
     <map>
       <key>Comment</key>
       <string>When TRUE, enables the Wear command in the inventory context menus (unless @defaultwear is in force).</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>RezWithLandGroup</key>
+    <map>
+      <key>Comment</key>
+      <string>Rez objects with land group when possible</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>

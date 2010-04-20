@@ -1,3 +1,22 @@
+2009-04-20 Boy Lane <boy.lane@yahoo.com>
+
+    * RezWithLandGroup and some final cleanup
+
+    modified:   ChangeLog.txt
+    modified:   README.txt
+    modified:   RELEASE_NOTES.txt
+    modified:   linden/indra/newview/Info-RainbowViewer.plist
+    modified:   linden/indra/newview/LICENSE.TXT
+    modified:   linden/indra/newview/RRInterface.h
+    modified:   linden/indra/newview/app_settings/settings.xml
+    modified:   linden/indra/newview/installers/windows/installer_template.nsi
+    modified:   linden/indra/newview/lltooldraganddrop.cpp
+    modified:   linden/indra/newview/lltoolplacer.cpp
+    modified:   linden/indra/newview/res/viewerRes.rc
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_build_options.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/panel_preferences_rainbow.xml
+
+
 2009-04-19 Boy Lane <boy.lane@yahoo.com>
 
     * Branding R6

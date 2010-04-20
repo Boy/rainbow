@@ -1,4 +1,4 @@
-Release Notes for Rainbow Viewer 1.22.12 Release 5b, April 11th 2010
+Release Notes for Rainbow Viewer 1.22.12 Release 6, April 19th 2010
 ====================================================================
 Rainbow Viewer is a speed Metaverse Client that can connect you to a huge variety of exciting Virtual Worlds!
 
@@ -139,7 +139,8 @@ Patches by Zi Ree:
 Miscellaneous patches:
 * DoubleClickTeleport (unknown author: from Emerald viewer): implements a double-click teleport feature (double-clicking in world, teleports you at the mouse pointer position, provided the parcel teleport routing allows it). This also makes the "Go To" pie menu use teleport instead of auto-pilot.
 * FlexibleSculpties (by Zwagoth Klaar & Qarl Linden): implements flexible sculpties (BEWARE: flexible sculpties introduce a *lot* of lag on the viewer side: use sparsely!). Implements VWR-9203.
-* ForceSitOnGround: based on Emerald, reimplemented by Henri, Beauchamp, this patch allows to sit down anywhere "on the ground" (and not just on actual land ground). Adds a new "Sit On Ground" entry in the "World" menu, bound to a new CTRL ALT SHIFT S shortcut.
+* ForceSitOnGround: based on Emerald, reimplemented by Henri Beauchamp, this patch allows to sit down anywhere "on the ground" (and not just on actual land ground). Adds a new "Sit On Ground" entry in the "World" menu, bound to a new CTRL ALT SHIFT S shortcut.
+* HighFPSwithSlowLinkLag (by Zwagoth Klaar): helps preventing lag spikes on high performance computers with poor Internet uplink bandwidth. Fixes VWR-1488.
 * LinuxShortcuts: based on a patch by Khyota Wulluf, this improved patch changes some shortcuts which collide with Linux console switching keys (CTRL ALT Fn shortcuts are turned into CTRL SHIFT Fn). See VWR-2085.
 * LLFaceVerifyCrash: backport from v1.23 of a fix for a possible crash bug when teleporting.  
 * LlhttpclientMemLeak: based on a patch by Carjay McGinnis, this patch plugs a couple of memory leaks (VWR-9400).
@@ -151,8 +152,10 @@ Miscellaneous patches:
 * PreviewAnimInWorld: from Emerald, this patch allows to preview animations on your own avatar prior to uploading. 
 * RemembersStatsPosAndSize (Latif Khalifa): allows to remember the stats floater position and size (VWR-9540).
 * RenderDeferred / obsolete OpenGL libs (Luricos Alderton, Boy Lane): fixes OpenGL issues (VWR-12540) 
+* RezWithLandGroupWhenPossible (unknown author, comes from Emerald): allows (when the RezWithLandGroup setting is set to TRUE) to rez object with land group when possible (i.e. if your avatar belongs to that group).
 * SendParcelSelectObjectWrongReturnType (by Carjay McGinnis): fixes a wrong type which triggers warnings in the log file (VWR-9620). 
-* ShiftReturnWhisper (unknown author): implements whispers for avatars via SHIFT+ENTER in the chatbar. 
+* ShiftReturnWhisper (unknown author): implements whispers for avatars via SHIFT+ENTER in the chatbar.
+* StopAllAnimations: backport from v1.23 of the true "Stop Animating My Avatar" tool, to replace the old and useless (since client-side only) "Stop All Animations" tool. 
 * StuckGroupProposalArchives (by Dale Glass): fixes a problem with group proposal archives viewing (VWR-12532).
 * TPabove1000m (by Peter Lameth. For v1.21): fixes a problem with the world map clamping the max altitude to 1000m (VWR-7331).
 * WornInventoryTab (by Vadim Bigbear): Adds a "Worn" tab to the inventory floater. Implements VWR-2199, VWR-508.
