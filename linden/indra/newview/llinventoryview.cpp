@@ -1217,6 +1217,12 @@ std::string get_item_icon_name(LLAssetType::EType asset_type,
 		case WT_SKIRT:
 			idx = CLOTHING_SKIRT_ICON_NAME;
 			break;
+		case WT_ALPHA:
+			idx = CLOTHING_ALPHA_ICON_NAME;
+			break;
+		case WT_TATTOO:
+			idx = CLOTHING_TATTOO_ICON_NAME;
+			break;
 		default:
 			// no-op, go with choice above
 			break;

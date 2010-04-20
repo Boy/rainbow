@@ -294,7 +294,6 @@ void LLNewAgentInventoryResponder::uploadComplete(const LLSD& content)
 	}
 }
 
-
 LLUpdateAgentInventoryResponder::LLUpdateAgentInventoryResponder(const LLSD& post_data,
 																 const LLUUID& vfile_id,
 																 LLAssetType::EType asset_type)

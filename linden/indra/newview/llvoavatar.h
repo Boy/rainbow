@@ -40,6 +40,8 @@
 #include <algorithm>
 #include <deque>
 
+#include "imageids.h"			// IMG_INVISIBLE
+#include "lldrawpoolalpha.h"
 #include "llchat.h"
 #include "llviewerobject.h"
 #include "lljointsolverrp3.h"
@@ -111,7 +113,7 @@ typedef enum e_render_name
 	RENDER_NAME_ALWAYS
 } eRenderName;
 
-const S32 BAKED_TEXTURE_COUNT = 5;  // number of values in ETextureIndex that are pre-composited
+const S32 BAKED_TEXTURE_COUNT = 6;  // number of values in ETextureIndex that are pre-composited
 
 //------------------------------------------------------------------------
 // LLVOAvatar Support classes
@@ -308,7 +310,7 @@ public:
 	U32 renderImpostor(LLColor4U color = LLColor4U(255,255,255,255));
 	U32 renderRigid();
 	U32 renderSkinned(EAvatarRenderPass pass);
-	U32 renderTransparent();
+	U32 renderTransparent(BOOL first_pass);
 	void renderCollisionVolumes();
 	
 	/*virtual*/ BOOL lineSegmentIntersect(const LLVector3& start, const LLVector3& end,
@@ -383,9 +385,18 @@ public:
 		TEX_LOWER_UNDERPANTS = 17,
 		TEX_SKIRT = 18,
 		TEX_SKIRT_BAKED = 19,		// Pre-composited
-		TEX_NUM_ENTRIES = 20
+		TEX_HAIR_BAKED = 20,		// Pre-composited
+		TEX_LOWER_ALPHA = 21,
+		TEX_UPPER_ALPHA = 22,
+		TEX_HEAD_ALPHA = 23,
+		TEX_EYES_ALPHA = 24,
+		TEX_HAIR_ALPHA = 25,
+		TEX_HEAD_TATTOO = 26,
+		TEX_UPPER_TATTOO = 27,
+		TEX_LOWER_TATTOO = 28,
+		TEX_NUM_ENTRIES = 29
 	};
-	// Note: if TEX_NUM_ENTRIES changes, update AGENT_TEXTURES in llagentinfo.h, mTextureIndexBaked, and BAKED_TEXTURE_COUNT
+	// Note: if TEX_NUM_ENTRIES changes, update AGENT_TEXTURES in BAKED_TEXTURE_COUNT
 
 	static BOOL isTextureIndexBaked( S32 i )
 		{
@@ -396,6 +407,7 @@ public:
 			case TEX_LOWER_BAKED:
 			case TEX_EYES_BAKED:
 			case TEX_SKIRT_BAKED:
+			case TEX_HAIR_BAKED:
 				return TRUE;
 			default:
 				return FALSE;
@@ -459,6 +471,8 @@ public:
 	void			dumpLocalTextures();
 	const LLUUID&	grabLocalTexture(ETextureIndex index);
 	BOOL			canGrabLocalTexture(ETextureIndex index);
+	BOOL            isTextureDefined(U8 te) const;
+	BOOL			isTextureVisible(U8 te) const;
 	void			startAppearanceAnimation(BOOL set_by_user, BOOL play_sound);
 
 	void			setCompositeUpdatesEnabled(BOOL b);
@@ -551,7 +565,16 @@ public:
 		LOCTEX_LOWER_UNDERPANTS = 11,
 		LOCTEX_EYES_IRIS = 12,
 		LOCTEX_SKIRT = 13,
-		LOCTEX_NUM_ENTRIES = 14
+ 		LOCTEX_HAIR = 14,
+		LOCTEX_LOWER_ALPHA = 15,
+		LOCTEX_UPPER_ALPHA = 16,
+		LOCTEX_HEAD_ALPHA = 17,
+		LOCTEX_EYES_ALPHA = 18,
+		LOCTEX_HAIR_ALPHA = 19,
+		LOCTEX_HEAD_TATTOO = 20,
+		LOCTEX_UPPER_TATTOO = 21,
+		LOCTEX_LOWER_TATTOO = 22,
+		LOCTEX_NUM_ENTRIES = 23
 	};
 
 	//--------------------------------------------------------------------
@@ -722,6 +745,7 @@ public:
 	LLUUID			mLastLowerBodyBakedID;
 	LLUUID			mLastEyesBakedID;
 	LLUUID			mLastSkirtBakedID;
+	LLUUID			mLastHairBakedID;
 
 	//--------------------------------------------------------------------
 	// impostor state
@@ -982,6 +1006,7 @@ public:
 	LLTexLayerSet*		mLowerBodyLayerSet;
 	LLTexLayerSet*		mEyesLayerSet;
 	LLTexLayerSet*		mSkirtLayerSet;
+	LLTexLayerSet*		mHairLayerSet;
 
 
 protected:
@@ -1016,6 +1041,8 @@ protected:
 	LLUUID				mSavedTE[ TEX_NUM_ENTRIES ];
 	BOOL				mFirstTEMessageReceived;
 	BOOL				mFirstAppearanceMessageReceived;
+	BOOL				mHasBakedHair;
+	BOOL				mSupportsAlphaLayers; // For backwards compatibility, TRUE for 1.19.2 and 1.22+ clients
 
 	BOOL				mHeadBakedLoaded;
 	S32					mHeadMaskDiscard;
@@ -1025,6 +1052,7 @@ protected:
 	S32					mLowerMaskDiscard;
 	BOOL				mEyesBakedLoaded;
 	BOOL				mSkirtBakedLoaded;
+	BOOL				mHairBakedLoaded;
 
 	//RN: testing 2 pass rendering
 	U32					mHeadMaskTexName;
@@ -1106,5 +1134,20 @@ private:
 public:
 	static void updateFreezeCounter(S32 counter = 0 ) ;
 };
+
+//-----------------------------------------------------------------------------------------------
+// Inlines
+//-----------------------------------------------------------------------------------------------
+inline BOOL LLVOAvatar::isTextureDefined(U8 te) const
+{
+	return (getTEImage(te)->getID() != IMG_DEFAULT_AVATAR && getTEImage(te)->getID() != IMG_DEFAULT);
+}
+
+inline BOOL LLVOAvatar::isTextureVisible(U8 te) const
+{
+	return ((isTextureDefined(te) || mIsSelf)
+			&& (getTEImage(te)->getID() != IMG_INVISIBLE 
+				|| LLDrawPoolAlpha::sShowDebugAlpha));
+}
 
 #endif // LL_VO_AVATAR_H

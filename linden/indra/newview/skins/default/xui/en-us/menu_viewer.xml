@@ -476,8 +476,9 @@
 		     mouse_opaque="true" name="Set Busy" width="185">
 			<on_click function="World.SetBusy" userdata="" />
 		</menu_item_call>
-		<menu_item_call bottom="-281" enabled="false" height="19" label="Stop All Animations" left="0"
-		     mouse_opaque="true" name="Stop All Animations" width="250">
+		<menu_item_call bottom="-281" enabled="false" height="19" hidden="false"
+		     label="Stop Animating My Avatar" left="0" mouse_opaque="true"
+		     name="Stop Animating My Avatar" width="250">
 			<on_click function="Tools.StopAllAnimations" userdata="" />
 		</menu_item_call>
 		<menu_item_call bottom="-213" enabled="false" height="19" label="Release Keys" left="0"

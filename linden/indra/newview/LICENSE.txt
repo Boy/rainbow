@@ -20,7 +20,7 @@ of Service (ToS) and Policies of the Grids to which you connect to. If you
 intend to use this software to connect to Linden Lab's SecondLife service the
 following additional conditions and disclosures apply:
 
-1) This software "Rainbow Viewer::Cool Edition 1.22.12 R12" ("Cool Viewer") is
+1) This software "Rainbow Viewer::Cool Edition 1.22.12 R13" ("Cool Viewer") is
     not provided, supported or approved by Linden Lab.
 2) Limited customer support in best effort only is available at the developers
     website http://my.opera.com/boylane
@@ -45,4 +45,4 @@ folder together with the accompanying Release_Notes.txt. Please also have a
 look at README_IMPORTANT!!!.txt in the same place for further information
 on performance optimization. 
 
-Boy Lane, 2 April 2010
+Boy Lane, 19 April 2010

@@ -236,7 +236,8 @@ LLVOAvatar::ETextureIndex LLVOAvatar::sBakedTextureIndices[BAKED_TEXTURE_COUNT] 
 	LLVOAvatar::TEX_UPPER_BAKED,
 	LLVOAvatar::TEX_LOWER_BAKED,
 	LLVOAvatar::TEX_EYES_BAKED,
-	LLVOAvatar::TEX_SKIRT_BAKED
+	LLVOAvatar::TEX_SKIRT_BAKED,
+	LLVOAvatar::TEX_HAIR_BAKED
 };
 
 //-----------------------------------------------------------------------------
@@ -640,6 +641,7 @@ LLVOAvatar::LLVOAvatar(
 	mLastUpperBodyBakedID( IMG_DEFAULT_AVATAR ),
 	mLastLowerBodyBakedID( IMG_DEFAULT_AVATAR ),
 	mLastEyesBakedID( IMG_DEFAULT_AVATAR ),
+	mLastHairBakedID(IMG_DEFAULT_AVATAR),
 	mLastSkirtBakedID( IMG_DEFAULT_AVATAR ),
 	mIsDummy(FALSE),
 	mSpecialRenderMode(0),
@@ -662,6 +664,7 @@ LLVOAvatar::LLVOAvatar(
 	mUpperBodyLayerSet( NULL ),
 	mLowerBodyLayerSet( NULL ),
 	mEyesLayerSet( NULL ),
+	mHairLayerSet(NULL),
 	mSkirtLayerSet( NULL ),
 	mRenderPriority(1.0f),
 	mNameString(),
@@ -682,6 +685,7 @@ LLVOAvatar::LLVOAvatar(
 	mLowerBakedLoaded(FALSE),
 	mLowerMaskDiscard(-1),
 	mEyesBakedLoaded(FALSE),
+	mHairBakedLoaded(FALSE),
 	mSkirtBakedLoaded(FALSE),
 	mHeadMaskTexName(0),
 	mUpperMaskTexName(0),
@@ -694,6 +698,8 @@ LLVOAvatar::LLVOAvatar(
 	mTexSkinColor( NULL ),
 	mTexHairColor( NULL ),
 	mTexEyeColor( NULL ),
+	mHasBakedHair(FALSE),
+	mSupportsAlphaLayers(FALSE),
 	mNeedsSkin(FALSE),
 	mUpdatePeriod(1),
 	mFullyLoadedInitialized(FALSE),
@@ -1019,6 +1025,9 @@ LLVOAvatar::~LLVOAvatar()
 	delete mEyesLayerSet;
 	mEyesLayerSet = NULL;
 
+	delete mHairLayerSet;
+	mHairLayerSet = NULL;
+
 	delete mSkirtLayerSet;
 	mSkirtLayerSet = NULL;
 
@@ -1070,15 +1079,16 @@ BOOL LLVOAvatar::isFullyBaked()
 	BOOL upper_baked = ( getTEImage( TEX_UPPER_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL lower_baked = ( getTEImage( TEX_LOWER_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL eyes_baked = ( getTEImage( TEX_EYES_BAKED )->getID() != IMG_DEFAULT_AVATAR );
+	BOOL hair_baked = ( getTEImage( TEX_HAIR_BAKED )->getID() != IMG_DEFAULT_AVATAR);
 	BOOL skirt_baked = ( getTEImage( TEX_SKIRT_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 
 	if (isWearingWearableType(WT_SKIRT))
 	{
-		return head_baked && upper_baked && lower_baked && eyes_baked && skirt_baked;
+		return head_baked && upper_baked && lower_baked && eyes_baked && hair_baked && skirt_baked;
 	}
 	else
 	{
-		return head_baked && upper_baked && lower_baked && eyes_baked;
+		return head_baked && upper_baked && lower_baked && eyes_baked && hair_baked;
 	}
 }
 
@@ -1088,6 +1098,7 @@ void LLVOAvatar::deleteLayerSetCaches()
 	if( mUpperBodyLayerSet )	mUpperBodyLayerSet->deleteCaches();
 	if( mLowerBodyLayerSet )	mLowerBodyLayerSet->deleteCaches();
 	if( mEyesLayerSet )			mEyesLayerSet->deleteCaches();
+	if (mHairLayerSet)			mHairLayerSet->deleteCaches();
 	if( mSkirtLayerSet )		mSkirtLayerSet->deleteCaches();
 
 	if(mUpperMaskTexName)
@@ -1221,6 +1232,11 @@ void LLVOAvatar::dumpBakedStatus()
 				llcont << " eyes";
 			}
 
+			if (inst->getTEImage( TEX_HAIR_BAKED )->getID() == IMG_DEFAULT_AVATAR )
+			{
+				llcont << " hair";
+			}
+
 			if (inst->isWearingWearableType(WT_SKIRT))
 			{
 				if( inst->getTEImage( TEX_SKIRT_BAKED )->getID()  == IMG_DEFAULT_AVATAR )
@@ -1336,11 +1352,12 @@ void LLVOAvatar::restoreGL()
 	{
 		LLVOAvatar* inst = (LLVOAvatar*) *iter;
 		inst->setCompositeUpdatesEnabled( TRUE );
-		inst->invalidateComposite( inst->mHeadLayerSet,		FALSE );
+		inst->invalidateComposite( inst->mHeadLayerSet,			FALSE );
 		inst->invalidateComposite( inst->mLowerBodyLayerSet,	FALSE );
 		inst->invalidateComposite( inst->mUpperBodyLayerSet,	FALSE );
-		inst->invalidateComposite( inst->mEyesLayerSet,	FALSE );
-		inst->invalidateComposite( inst->mSkirtLayerSet,	FALSE );
+		inst->invalidateComposite( inst->mEyesLayerSet,			FALSE );
+		inst->invalidateComposite( inst->mHairLayerSet, 		FALSE );
+		inst->invalidateComposite( inst->mSkirtLayerSet,		FALSE );
 		inst->updateMeshTextures();
 	}
 }
@@ -2432,7 +2449,7 @@ void LLVOAvatar::updateMeshData()
 
 			for(S32 k = j ; k < part_index ; k++)
 			{
-				av_parts[k]->updateFaceData(facep, mAdjustedPixelArea, (k == 7));
+				av_parts[k]->updateFaceData(facep, mAdjustedPixelArea, (k == MESH_ID_HAIR));
 			}
 
 			stop_glerror();
@@ -3703,6 +3720,10 @@ BOOL LLVOAvatar::updateCharacter(LLAgent &agent)
 		{ //back 25% of max visible avatars are slow updating impostors
 			mUpdatePeriod = 8;
 		}
+		else if (visible && mVisibilityRank > (U32) LLVOAvatar::sMaxVisible)
+		{ //background avatars are REALLY slow updating impostors
+			mUpdatePeriod = 16;
+		}
 		else if (visible && mImpostorPixelArea <= impostor_area)
 		{  // stuff in between gets an update period based on pixel area
 			mUpdatePeriod = llclamp((S32) sqrtf(impostor_area*4.f/mImpostorPixelArea), 2, 8);
@@ -4420,22 +4441,49 @@ U32 LLVOAvatar::renderSkinned(EAvatarRenderPass pass)
 
 	if (pass == AVATAR_RENDER_PASS_SINGLE)
 	{
+		const bool should_alpha_mask = mSupportsAlphaLayers && mHasBakedHair
+									    && !LLDrawPoolAlpha::sShowDebugAlpha // Don't alpha mask if "Highlight Transparent" checked
+										&& !LLDrawPoolAvatar::sSkipTransparent;
+		LLGLState test(GL_ALPHA_TEST, should_alpha_mask);
+
+		if (should_alpha_mask)
+		{
+			gGL.setAlphaRejectSettings(LLRender::CF_GREATER, 0.5f);
+		}
+
 		BOOL first_pass = TRUE;
+		if (!LLDrawPoolAvatar::sSkipOpaque)
+		{
 		if (!mIsSelf || gAgent.needsRenderHead())
 		{
-			num_indices += mHeadLOD.render(mAdjustedPixelArea);
+			if (isTextureVisible(TEX_HEAD_BAKED) || mIsDummy)
+			{
+				num_indices += mHeadLOD.render(mAdjustedPixelArea, first_pass);
+				first_pass = FALSE;
+			}
+		}
+		if (isTextureVisible(TEX_UPPER_BAKED) || mIsDummy)
+		{
+			num_indices += mUpperBodyLOD.render(mAdjustedPixelArea, first_pass);
 			first_pass = FALSE;
 		}
-		num_indices += mUpperBodyLOD.render(mAdjustedPixelArea, first_pass);
-		num_indices += mLowerBodyLOD.render(mAdjustedPixelArea, FALSE);
-
+		if (isTextureVisible(TEX_LOWER_BAKED) || mIsDummy)
 		{
-			LLGLEnable blend(GL_BLEND);
-			LLGLEnable test(GL_ALPHA_TEST);
-			num_indices += renderTransparent();
+			num_indices += mLowerBodyLOD.render(mAdjustedPixelArea, first_pass);
+			first_pass = FALSE;
+			}
+		}
+
+		gGL.setAlphaRejectSettings(LLRender::CF_DEFAULT);
+
+		if (!LLDrawPoolAvatar::sSkipTransparent || LLPipeline::sImpostorRender)
+		{
+			LLGLState blend(GL_BLEND, !mIsDummy);
+			LLGLState test(GL_ALPHA_TEST, !mIsDummy);
+			num_indices += renderTransparent(first_pass);
 		}
 	}
-	
+
 	LLViewerJointMesh::sRenderPass = AVATAR_RENDER_PASS_SINGLE;
 	
 	//llinfos << "Avatar render: " << render_timer.getElapsedTimeF32() << llendl;
@@ -4445,11 +4493,10 @@ U32 LLVOAvatar::renderSkinned(EAvatarRenderPass pass)
 	return num_indices;
 }
 
-U32 LLVOAvatar::renderTransparent()
+U32 LLVOAvatar::renderTransparent(BOOL first_pass)
 {
 	U32 num_indices = 0;
-	BOOL first_pass = FALSE;
-	if( isWearingWearableType( WT_SKIRT ) )
+	if( isWearingWearableType( WT_SKIRT ) && (mIsDummy || isTextureVisible(TEX_SKIRT_BAKED)) )
 	{
 		gGL.setAlphaRejectSettings(LLRender::CF_GREATER, 0.25f);
 		num_indices += mSkirtLOD.render(mAdjustedPixelArea, FALSE);
@@ -4463,8 +4510,19 @@ U32 LLVOAvatar::renderTransparent()
 		{
 			gGL.setAlphaRejectSettings(LLRender::CF_GREATER, 0.5f);
 		}
-		num_indices += mEyeLashLOD.render(mAdjustedPixelArea, first_pass);
-		num_indices += mHairLOD.render(mAdjustedPixelArea, FALSE);
+		
+		if (isTextureVisible(TEX_HEAD_BAKED))
+		{
+			num_indices += mEyeLashLOD.render(mAdjustedPixelArea, first_pass);
+			first_pass = FALSE;
+		}
+		// Can't test for baked hair being defined, since that won't always be the case (not all viewers send baked hair)
+		// TODO: 1.25 will be able to switch this logic back to calling isTextureVisible();
+		if (getTEImage(TEX_HAIR_BAKED)->getID() != IMG_INVISIBLE || LLDrawPoolAlpha::sShowDebugAlpha)
+		{
+			num_indices += mHairLOD.render(mAdjustedPixelArea, first_pass);
+			first_pass = FALSE;
+		}
 		if (LLPipeline::sImpostorRender)
 		{
 			gGL.setAlphaRejectSettings(LLRender::CF_DEFAULT);
@@ -4496,9 +4554,25 @@ U32 LLVOAvatar::renderRigid()
 		return 0;
 	}
 
-	num_indices += mEyeBallLeftLOD.render(mAdjustedPixelArea);
-	num_indices += mEyeBallRightLOD.render(mAdjustedPixelArea);
-	
+	const bool should_alpha_mask = mSupportsAlphaLayers && mHasBakedHair
+								    && !LLDrawPoolAlpha::sShowDebugAlpha // Don't alpha mask if "Highlight Transparent" checked
+									&& !LLDrawPoolAvatar::sSkipTransparent;
+
+	LLGLState test(GL_ALPHA_TEST, should_alpha_mask);
+
+	if (should_alpha_mask)
+	{
+		gGL.setAlphaRejectSettings(LLRender::CF_GREATER, 0.5f);
+	}
+
+	if (isTextureVisible(TEX_EYES_BAKED) || mIsDummy)
+	{
+		num_indices += mEyeBallLeftLOD.render(mAdjustedPixelArea, TRUE);
+		num_indices += mEyeBallRightLOD.render(mAdjustedPixelArea, TRUE);
+	}
+
+	gGL.setAlphaRejectSettings(LLRender::CF_DEFAULT);
+
 	return num_indices;
 }
 
@@ -4517,6 +4591,13 @@ U32 LLVOAvatar::renderFootShadows()
 	}
 	
 	if (!mIsBuilt)
+	{
+		return 0;
+	}
+	
+	// Don't render foot shadows if your lower body is completely invisible.
+	// (non-humanoid avatars rule!)
+	if (! isTextureVisible(TEX_LOWER_BAKED))
 	{
 		return 0;
 	}
@@ -4562,23 +4643,6 @@ U32 LLVOAvatar::renderImpostor(LLColor4U color)
 	LLGLEnable test(GL_ALPHA_TEST);
 	gGL.setAlphaRejectSettings(LLRender::CF_GREATER, 0.f);
 
-	F32 blend = gFrameTimeSeconds - mFadeTime;
-
-	LLGLState gl_blend(GL_BLEND, blend < 1.f ? TRUE : FALSE);
-	gGL.setSceneBlendType(LLRender::BT_ALPHA);
-
-	F32 alpha;
-	if (mVisibilityRank >= (U32) LLVOAvatar::sMaxVisible)
-	{ //fade out
-		alpha = 1.f - llmin(blend, 1.f);
-	}
-	else 
-	{ //fade in
-		alpha = llmin(blend, 1.f);
-	}
-
-	color.mV[3] = (U8) (alpha*255);
-	
 	gGL.color4ubv(color.mV);
 	gGL.getTexUnit(0)->bind(&mImpostor);
 	gGL.begin(LLRender::QUADS);
@@ -4612,6 +4676,7 @@ void LLVOAvatar::updateTextures(LLAgent &agent)
 	BOOL upper_baked = ( getTEImage( TEX_UPPER_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL lower_baked = ( getTEImage( TEX_LOWER_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL eyes_baked = ( getTEImage( TEX_EYES_BAKED )->getID() != IMG_DEFAULT_AVATAR );
+	BOOL hair_baked = ( getTEImage(TEX_HAIR_BAKED )->getID() != IMG_DEFAULT_AVATAR);
 	BOOL skirt_baked = ( getTEImage( TEX_SKIRT_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 
 	if( mIsSelf )
@@ -4643,6 +4708,10 @@ void LLVOAvatar::updateTextures(LLAgent &agent)
 		if( eyes_baked && ! mEyesBakedLoaded )
 		{
 			gGL.getTexUnit(0)->bind(getTEImage( TEX_EYES_BAKED ));
+		}
+		if (hair_baked && !mHairBakedLoaded)
+		{
+			gGL.getTexUnit(0)->bind(getTEImage( TEX_HAIR_BAKED ));
 		}
 		if( skirt_baked && ! mSkirtBakedLoaded )
 		{
@@ -4699,6 +4768,7 @@ void LLVOAvatar::updateTextures(LLAgent &agent)
 			// Spam if this is a baked texture, not set to default image, without valid host info
 			if (isTextureIndexBaked(i)
 				&& imagep->getID() != IMG_DEFAULT_AVATAR
+				&& imagep->getID() != IMG_INVISIBLE
 				&& !imagep->getTargetHost().isOk())
 			{
 				llwarns << "LLVOAvatar::updateTextures No host for texture "
@@ -4712,6 +4782,14 @@ void LLVOAvatar::updateTextures(LLAgent &agent)
 			// Head
 			case TEX_HEAD_BODYPAINT:
 				addLocalTextureStats( LOCTEX_HEAD_BODYPAINT, imagep, texel_area_ratio, render_avatar, head_baked );
+				break;
+
+			case TEX_HEAD_ALPHA:
+				addLocalTextureStats( LOCTEX_HEAD_ALPHA, imagep, texel_area_ratio, render_avatar, head_baked );
+				break;
+
+			case TEX_HEAD_TATTOO:
+				addLocalTextureStats( LOCTEX_HEAD_TATTOO, imagep, texel_area_ratio, render_avatar, head_baked );
 				break;
 
 			// Upper
@@ -4733,6 +4811,14 @@ void LLVOAvatar::updateTextures(LLAgent &agent)
 
 			case TEX_UPPER_BODYPAINT:
 				addLocalTextureStats( LOCTEX_UPPER_BODYPAINT, imagep, texel_area_ratio, render_avatar, upper_baked );
+				break;
+
+			case TEX_UPPER_ALPHA:
+				addLocalTextureStats( LOCTEX_UPPER_ALPHA, imagep, texel_area_ratio, render_avatar, upper_baked );
+				break;
+
+			case TEX_UPPER_TATTOO:
+				addLocalTextureStats( LOCTEX_UPPER_TATTOO, imagep, texel_area_ratio, render_avatar, upper_baked );
 				break;
 
 			// Lower
@@ -4760,14 +4846,35 @@ void LLVOAvatar::updateTextures(LLAgent &agent)
 				addLocalTextureStats( LOCTEX_LOWER_BODYPAINT, imagep, texel_area_ratio, render_avatar, lower_baked );
 				break;
 
+			case TEX_LOWER_ALPHA:
+				addLocalTextureStats( LOCTEX_LOWER_ALPHA, imagep, texel_area_ratio, render_avatar, lower_baked );
+				break;
+
+			case TEX_LOWER_TATTOO:
+				addLocalTextureStats( LOCTEX_LOWER_TATTOO, imagep, texel_area_ratio, render_avatar, lower_baked );
+				break;
+
 			// Eyes
 			case TEX_EYES_IRIS:
 				addLocalTextureStats( LOCTEX_EYES_IRIS, imagep, texel_area_ratio, render_avatar, eyes_baked );
 				break;
 
+			case TEX_EYES_ALPHA:
+				addLocalTextureStats( LOCTEX_EYES_ALPHA, imagep, texel_area_ratio, render_avatar, eyes_baked );
+				break;
+
 			// Skirt
 			case TEX_SKIRT:
 				addLocalTextureStats( LOCTEX_SKIRT, imagep, texel_area_ratio, render_avatar, skirt_baked );
+				break;
+
+			// Hair
+			case TEX_HAIR:
+				addLocalTextureStats( LOCTEX_HAIR, imagep, texel_area_ratio, render_avatar, hair_baked );
+				break;
+
+			case TEX_HAIR_ALPHA:
+				addLocalTextureStats( LOCTEX_HAIR_ALPHA, imagep, texel_area_ratio, render_avatar, hair_baked );
 				break;
 
 			// Baked
@@ -4806,12 +4913,11 @@ void LLVOAvatar::updateTextures(LLAgent &agent)
 				}
 				break;
 
-			case TEX_HAIR:
-				// Hair is neither a local texture used for baking, nor the output
-				// of the baking process.  It's just a texture that happens to be
-				// used to draw avatars.  Hence BOOST_AVATAR.  JC
-			  	boost_level = mIsSelf ? LLViewerImage::BOOST_AVATAR_SELF : LLViewerImage::BOOST_AVATAR;
-			  	addBakedTextureStats( imagep, mPixelArea, texel_area_ratio, boost_level );
+			case TEX_HAIR_BAKED:
+				if (hair_baked)
+				{
+					addBakedTextureStats( imagep, mPixelArea, texel_area_ratio, boost_level );
+				}
 				break;
 			
 			default:
@@ -5577,6 +5683,10 @@ BOOL LLVOAvatar::loadAvatar()
 			{
 				mEyesLayerSet = layer_set;
 			}
+			else if( layer_set->isBodyRegion( "hair" ) )
+			{
+				mHairLayerSet = layer_set;
+			}
 			else if( layer_set->isBodyRegion( "skirt" ) )
 			{
 				mSkirtLayerSet = layer_set;
@@ -6327,6 +6437,8 @@ void LLVOAvatar::requestLayerSetUpdate( LLVOAvatar::ELocTexIndex i )
 	switch( i )
 	{
 	case LOCTEX_HEAD_BODYPAINT:
+	case LOCTEX_HEAD_ALPHA:
+	case LOCTEX_HEAD_TATTOO:
 		if( mHeadLayerSet )
 		{
 			mHeadLayerSet->requestUpdate();
@@ -6337,6 +6449,8 @@ void LLVOAvatar::requestLayerSetUpdate( LLVOAvatar::ELocTexIndex i )
 	case LOCTEX_UPPER_SHIRT:
 	case LOCTEX_UPPER_GLOVES:
 	case LOCTEX_UPPER_UNDERSHIRT:
+	case LOCTEX_UPPER_ALPHA:
+	case LOCTEX_UPPER_TATTOO:
 		if( mUpperBodyLayerSet )
 		{
 			mUpperBodyLayerSet->requestUpdate();
@@ -6348,6 +6462,8 @@ void LLVOAvatar::requestLayerSetUpdate( LLVOAvatar::ELocTexIndex i )
 	case LOCTEX_LOWER_SHOES:
 	case LOCTEX_LOWER_SOCKS:
 	case LOCTEX_LOWER_UNDERPANTS:
+	case LOCTEX_LOWER_ALPHA:
+	case LOCTEX_LOWER_TATTOO:
 		if( mLowerBodyLayerSet )
 		{
 			mLowerBodyLayerSet->requestUpdate();
@@ -6355,9 +6471,19 @@ void LLVOAvatar::requestLayerSetUpdate( LLVOAvatar::ELocTexIndex i )
 		break;
 
 	case LOCTEX_EYES_IRIS:
+	case LOCTEX_EYES_ALPHA:
 		if( mEyesLayerSet )
 		{
 			mEyesLayerSet->requestUpdate();
+		}
+		break;
+
+
+	case LOCTEX_HAIR:
+	case LOCTEX_HAIR_ALPHA:
+		if (mHairLayerSet)
+		{
+			mHairLayerSet->requestUpdate();
 		}
 		break;
 
@@ -6881,6 +7007,11 @@ void LLVOAvatar::updateComposites()
 		mEyesLayerSet->updateComposite();
 	}
 
+	if ( mHairLayerSet )
+	{
+		mHairLayerSet->updateComposite();
+	}
+
 	if( mSkirtLayerSet && isWearingWearableType( WT_SKIRT ))
 	{
 		mSkirtLayerSet->updateComposite();
@@ -6935,6 +7066,10 @@ void LLVOAvatar::invalidateComposite( LLTexLayerSet* layerset, BOOL set_by_user 
 	{
 		layer_name = "eyes";
 	}
+	else if (layerset == mHairLayerSet)
+	{
+		layer_name = "hair";
+	}
 	else if (layerset == mSkirtLayerSet)
 	{
 		layer_name = "skirt";
@@ -6979,15 +7114,21 @@ void LLVOAvatar::onGlobalColorChanged( LLTexGlobalColor* global_color, BOOL set_
 	if( global_color == mTexHairColor )
 	{
 //		llinfos << "invalidateComposite cause: onGlobalColorChanged( hair color )" << llendl; 
-		invalidateComposite( mHeadLayerSet, set_by_user );
+		invalidateComposite(mHeadLayerSet, set_by_user);
+		invalidateComposite(mHairLayerSet, set_by_user);
 
-		LLColor4 color = mTexHairColor->getColor();
-		mHairMesh0.setColor( color.mV[VX], color.mV[VY], color.mV[VZ], color.mV[VW] );
-		mHairMesh1.setColor( color.mV[VX], color.mV[VY], color.mV[VZ], color.mV[VW] );
-		mHairMesh2.setColor( color.mV[VX], color.mV[VY], color.mV[VZ], color.mV[VW] );
-		mHairMesh3.setColor( color.mV[VX], color.mV[VY], color.mV[VZ], color.mV[VW] );
-		mHairMesh4.setColor( color.mV[VX], color.mV[VY], color.mV[VZ], color.mV[VW] );
-		mHairMesh5.setColor( color.mV[VX], color.mV[VY], color.mV[VZ], color.mV[VW] );
+		// ! BACKWARDS COMPATIBILITY !
+		// Fix for dealing with avatars from viewers that don't bake hair.
+		if (getTEImage(TEX_HAIR_BAKED)->getID() == IMG_DEFAULT_AVATAR)
+		{
+			LLColor4 color = mTexHairColor->getColor();
+			mHairMesh0.setColor(color.mV[VX], color.mV[VY], color.mV[VZ], color.mV[VW]);
+			mHairMesh1.setColor(color.mV[VX], color.mV[VY], color.mV[VZ], color.mV[VW]);
+			mHairMesh2.setColor(color.mV[VX], color.mV[VY], color.mV[VZ], color.mV[VW]);
+			mHairMesh3.setColor(color.mV[VX], color.mV[VY], color.mV[VZ], color.mV[VW]);
+			mHairMesh4.setColor(color.mV[VX], color.mV[VY], color.mV[VZ], color.mV[VW]);
+			mHairMesh5.setColor(color.mV[VX], color.mV[VY], color.mV[VZ], color.mV[VW]);
+		}
 	}
 	else
 	if( global_color == mTexEyeColor )
@@ -7116,10 +7257,10 @@ BOOL LLVOAvatar::getLocalTextureGL(S32 index, LLImageGL** image_gl_pp)
 		}
 	}
 
-	if( !success )
-	{
+//	if( !success )
+//	{
 //		llinfos << "getLocalTextureGL(" << index << ") had no data" << llendl;
-	}
+//	}
 	return success;
 }
 
@@ -7153,8 +7294,7 @@ void LLVOAvatar::dumpTotalLocalTextureByteCount()
 BOOL LLVOAvatar::isVisible()
 {
 	return mDrawable.notNull()
-		&& (mDrawable->isVisible() || mIsDummy)
-		&& (mVisibilityRank < (U32) sMaxVisible || gFrameTimeSeconds - mFadeTime < 1.f); 
+		&& (mDrawable->isVisible() || mIsDummy);
 }
 
 
@@ -7173,8 +7313,15 @@ BOOL LLVOAvatar::updateIsFullyLoaded()
 		loading = TRUE;
 	}
 
-	// are our texture settings still default?
-	if ((getTEImage( TEX_HAIR )->getID() == IMG_DEFAULT))
+	// 
+	if (mIsSelf)
+	{
+		if (!isTextureDefined(TEX_HAIR))
+		{
+			loading = TRUE;
+		}
+	}
+	else if (!isTextureDefined(TEX_LOWER_BAKED) || !isTextureDefined(TEX_UPPER_BAKED) || !isTextureDefined(TEX_HEAD_BAKED))
 	{
 		loading = TRUE;
 	}
@@ -7342,8 +7489,8 @@ LLGLuint LLVOAvatar::getScratchTexName( LLGLenum format, U32* texture_bytes )
 			0, format, GL_UNSIGNED_BYTE, NULL );
 		stop_glerror();
 
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 		stop_glerror();
@@ -7411,6 +7558,7 @@ void LLVOAvatar::setupComposites()
 	BOOL upper_baked = ( getTEImage( TEX_UPPER_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL lower_baked = ( getTEImage( TEX_LOWER_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL eyes_baked =  ( getTEImage( TEX_EYES_BAKED  )->getID() != IMG_DEFAULT_AVATAR );
+	BOOL hair_baked =  ( getTEImage( TEX_HAIR_BAKED  )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL skirt_baked = ( getTEImage( TEX_SKIRT_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	
 	if (mHeadLayerSet)
@@ -7427,11 +7575,15 @@ void LLVOAvatar::setupComposites()
 	}
 	if (mEyesLayerSet)
 	{
-		mEyesLayerSet->setUpdatesEnabled(		!eyes_baked  );
+		mEyesLayerSet->setUpdatesEnabled(		!eyes_baked );
+	}
+	if (mHairLayerSet)
+	{
+		mHairLayerSet->setUpdatesEnabled(		!hair_baked );
 	}
 	if (mSkirtLayerSet)
 	{
-		mSkirtLayerSet->setUpdatesEnabled(		!skirt_baked  );
+		mSkirtLayerSet->setUpdatesEnabled(		!skirt_baked );
 	}
 }
 
@@ -7472,17 +7624,23 @@ void LLVOAvatar::updateMeshTextures()
 	BOOL upper_baked = (getTEImage( TEX_UPPER_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL lower_baked = (getTEImage( TEX_LOWER_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL eyes_baked = (getTEImage( TEX_EYES_BAKED )->getID() != IMG_DEFAULT_AVATAR );
+	BOOL hair_baked = (getTEImage( TEX_HAIR_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL skirt_baked = (getTEImage( TEX_SKIRT_BAKED )->getID() != IMG_DEFAULT_AVATAR );
+
+	// Turn on alpha masking correctly for yourself and other avatars on 1.19.2 or 1.22+
+	mSupportsAlphaLayers = mIsSelf || hair_baked;
+	mHasBakedHair = self_customize || !hair_baked;
 
 	// Nothing should be baked if we're in customize avatar mode.
 	llassert( !( self_customize && 
-		( head_baked || upper_baked || lower_baked || eyes_baked ) ) );
+		( head_baked || upper_baked || lower_baked || eyes_baked || hair_baked ) ) );
 
 	BOOL use_lkg_head_baked =  FALSE;
 	BOOL use_lkg_upper_baked = FALSE;
 	BOOL use_lkg_lower_baked = FALSE;
 	BOOL use_lkg_eyes_baked =  FALSE;
-	BOOL use_lkg_skirt_baked =  FALSE;
+	BOOL use_lkg_hair_baked =  FALSE;
+	BOOL use_lkg_skirt_baked = FALSE;
 
 	BOOL other_culled = !mIsSelf && mCulled;
 	if( other_culled )
@@ -7491,6 +7649,7 @@ void LLVOAvatar::updateMeshTextures()
 		use_lkg_upper_baked = !upper_baked && (mLastUpperBodyBakedID != IMG_DEFAULT_AVATAR);
 		use_lkg_lower_baked = !lower_baked && (mLastLowerBodyBakedID != IMG_DEFAULT_AVATAR);
 		use_lkg_eyes_baked =  !eyes_baked  && (mLastEyesBakedID != IMG_DEFAULT_AVATAR);
+		use_lkg_hair_baked =  !hair_baked  && (mLastHairBakedID != IMG_DEFAULT_AVATAR);
 		use_lkg_skirt_baked = !skirt_baked && (mLastSkirtBakedID != IMG_DEFAULT_AVATAR);
 
 		if( mHeadLayerSet )
@@ -7513,6 +7672,11 @@ void LLVOAvatar::updateMeshTextures()
 			mEyesLayerSet->destroyComposite();
 		}
 
+		if (mHairLayerSet)
+		{
+			mHairLayerSet->destroyComposite();
+		}
+
 		if( mSkirtLayerSet )
 		{
 			mSkirtLayerSet->destroyComposite();
@@ -7520,7 +7684,6 @@ void LLVOAvatar::updateMeshTextures()
 
 	}
 	else
-	if( !self_customize )
 	{
 		// When you're changing clothes and you're not in Appearance mode,
 		// use the last-known good baked texture until you finish the first
@@ -7529,6 +7692,7 @@ void LLVOAvatar::updateMeshTextures()
 		use_lkg_upper_baked = !upper_baked && (mLastUpperBodyBakedID != IMG_DEFAULT_AVATAR) && mUpperBodyLayerSet && !mUpperBodyLayerSet->getComposite()->isInitialized();
 		use_lkg_lower_baked = !lower_baked && (mLastLowerBodyBakedID != IMG_DEFAULT_AVATAR) && mLowerBodyLayerSet && !mLowerBodyLayerSet->getComposite()->isInitialized();
 		use_lkg_eyes_baked =  !eyes_baked  && (mLastEyesBakedID      != IMG_DEFAULT_AVATAR) && mEyesLayerSet      && !mEyesLayerSet->getComposite()->isInitialized();
+		use_lkg_hair_baked =  !hair_baked  && (mLastHairBakedID      != IMG_DEFAULT_AVATAR) && mHairLayerSet      && !mHairLayerSet->getComposite()->isInitialized();
 		use_lkg_skirt_baked = !skirt_baked && (mLastSkirtBakedID     != IMG_DEFAULT_AVATAR) && mSkirtLayerSet     && !mSkirtLayerSet->getComposite()->isInitialized();
 
 		if( use_lkg_head_baked ) 
@@ -7551,12 +7715,20 @@ void LLVOAvatar::updateMeshTextures()
 			mEyesLayerSet->setUpdatesEnabled( TRUE );
 		}
 
+		if (use_lkg_hair_baked)
+		{
+			mHairLayerSet->setUpdatesEnabled(TRUE);
+		}
+
 		if( use_lkg_skirt_baked )  
 		{
 			mSkirtLayerSet->setUpdatesEnabled( TRUE );
 		}
 	}
-
+	
+	// Turn on alpha masking correctly for yourself and other avatars on 1.22+
+	//mSupportsAlphaLayers = mIsSelf || hair_baked;
+	
 	// Baked textures should be requested from the sim this avatar is on. JC
 	LLHost target_host = getObjectHost();
 	if (!target_host.isOk())
@@ -7565,7 +7737,7 @@ void LLVOAvatar::updateMeshTextures()
 	}
 		
 	// Head
-	if( use_lkg_head_baked )
+	if (use_lkg_head_baked && !self_customize)
 	{
 		LLViewerImage* baked = gImageList.getImageFromHost( mLastHeadBakedID, target_host );
 		mHeadMesh0.setTexture( baked );
@@ -7575,8 +7747,7 @@ void LLVOAvatar::updateMeshTextures()
 		mHeadMesh4.setTexture( baked );
 		mEyeLashMesh0.setTexture( baked );
 	}
-	else
-	if( !self_customize && head_baked )
+	else if( !self_customize && head_baked )
 	{
 		LLViewerImage* baked = getTEImage( TEX_HEAD_BAKED );
 		if( baked->getID() == mLastHeadBakedID )
@@ -7588,12 +7759,14 @@ void LLVOAvatar::updateMeshTextures()
 		{
 			mHeadBakedLoaded = FALSE;
 			mHeadMaskDiscard = -1;
-			baked->setLoadedCallback(onBakedTextureMasksLoaded, MORPH_MASK_REQUESTED_DISCARD, TRUE, TRUE, new LLTextureMaskData( mID ));	
+			if (baked->getID() != IMG_INVISIBLE)
+			{
+				baked->setLoadedCallback(onBakedTextureMasksLoaded, MORPH_MASK_REQUESTED_DISCARD, TRUE, TRUE, new LLTextureMaskData(mID));
+			}
 			baked->setLoadedCallback(onBakedTextureLoaded, SWITCH_TO_BAKED_DISCARD, FALSE, FALSE, new LLUUID( mID ) );
 		}
 	}
-	else
-	if( mHeadLayerSet && !other_culled )
+	else if( mHeadLayerSet && !other_culled )
 	{
 		mHeadLayerSet->createComposite();
 		mHeadLayerSet->setUpdatesEnabled( TRUE );
@@ -7615,7 +7788,7 @@ void LLVOAvatar::updateMeshTextures()
 	}
 
 	// Upper body
-	if( use_lkg_upper_baked )
+	if (use_lkg_upper_baked && !self_customize)
 	{
 		LLViewerImage* baked = gImageList.getImageFromHost( mLastUpperBodyBakedID, target_host );
 		mUpperBodyMesh0.setTexture( baked );
@@ -7624,8 +7797,7 @@ void LLVOAvatar::updateMeshTextures()
 		mUpperBodyMesh3.setTexture( baked );
 		mUpperBodyMesh4.setTexture( baked );
 	}
-	else
-	if( !self_customize && upper_baked )
+	else if( !self_customize && upper_baked )
 	{
 		LLViewerImage* baked = getTEImage( TEX_UPPER_BAKED );
 
@@ -7638,12 +7810,14 @@ void LLVOAvatar::updateMeshTextures()
 		{
 			mUpperBakedLoaded = FALSE;
 			mUpperMaskDiscard = -1;
-			baked->setLoadedCallback(onBakedTextureMasksLoaded, MORPH_MASK_REQUESTED_DISCARD, TRUE, TRUE, new LLTextureMaskData( mID ));
+			if (baked->getID() != IMG_INVISIBLE)
+			{
+				baked->setLoadedCallback(onBakedTextureMasksLoaded, MORPH_MASK_REQUESTED_DISCARD, TRUE, TRUE, new LLTextureMaskData(mID));
+			}
 			baked->setLoadedCallback(onBakedTextureLoaded, SWITCH_TO_BAKED_DISCARD, FALSE, FALSE, new LLUUID( mID ) );
 		}
 	}
-	else
-	if( mUpperBodyLayerSet && !other_culled )
+	else if( mUpperBodyLayerSet && !other_culled )
 	{
 		mUpperBodyLayerSet->createComposite();
 		mUpperBodyLayerSet->setUpdatesEnabled( TRUE );
@@ -7663,7 +7837,7 @@ void LLVOAvatar::updateMeshTextures()
 	}
 
 	// Lower body
-	if( use_lkg_lower_baked )
+	if (use_lkg_lower_baked && !self_customize)
 	{
 		LLViewerImage* baked = gImageList.getImageFromHost( mLastLowerBodyBakedID, target_host );
 		mLowerBodyMesh0.setTexture( baked );
@@ -7672,8 +7846,7 @@ void LLVOAvatar::updateMeshTextures()
 		mLowerBodyMesh3.setTexture( baked );
 		mLowerBodyMesh4.setTexture( baked );
 	}
-	else
-	if( !self_customize && lower_baked )
+	else if( !self_customize && lower_baked )
 	{
 		LLViewerImage* baked = getTEImage( TEX_LOWER_BAKED );
 		if( baked->getID() == mLastLowerBodyBakedID )
@@ -7685,12 +7858,14 @@ void LLVOAvatar::updateMeshTextures()
 		{
 			mLowerBakedLoaded = FALSE;
 			mLowerMaskDiscard = -1;
-			baked->setLoadedCallback(onBakedTextureMasksLoaded, MORPH_MASK_REQUESTED_DISCARD, TRUE, TRUE, new LLTextureMaskData( mID ));
+			if (baked->getID() != IMG_INVISIBLE)
+			{
+				baked->setLoadedCallback(onBakedTextureMasksLoaded, MORPH_MASK_REQUESTED_DISCARD, TRUE, TRUE, new LLTextureMaskData( mID ));
+			}
 			baked->setLoadedCallback(onBakedTextureLoaded, SWITCH_TO_BAKED_DISCARD, FALSE, FALSE, new LLUUID( mID ) );
 		}
 	}
-	else
-	if( mLowerBodyLayerSet && !other_culled )
+	else if( mLowerBodyLayerSet && !other_culled )
 	{
 		mLowerBodyLayerSet->createComposite();
 		mLowerBodyLayerSet->setUpdatesEnabled( TRUE );
@@ -7710,7 +7885,7 @@ void LLVOAvatar::updateMeshTextures()
 	}
 
 	// Eyes
-	if( use_lkg_eyes_baked )
+	if (use_lkg_eyes_baked && !self_customize)
 	{
 		LLViewerImage* baked = gImageList.getImageFromHost( mLastEyesBakedID, target_host );
 		mEyeBallLeftMesh0.setTexture(  baked );
@@ -7718,8 +7893,7 @@ void LLVOAvatar::updateMeshTextures()
 		mEyeBallRightMesh0.setTexture( baked );
 		mEyeBallRightMesh1.setTexture( baked );
 	}
-	else
-	if( !self_customize && eyes_baked )
+	else if( !self_customize && eyes_baked )
 	{
 		LLViewerImage* baked = getTEImage( TEX_EYES_BAKED );
 		if( baked->getID() == mLastEyesBakedID )
@@ -7733,8 +7907,7 @@ void LLVOAvatar::updateMeshTextures()
 			baked->setLoadedCallback(onBakedTextureLoaded, SWITCH_TO_BAKED_DISCARD, FALSE, FALSE, new LLUUID( mID ) );
 		}
 	}
-	else
-	if( mEyesLayerSet && !other_culled )
+	else if( mEyesLayerSet && !other_culled )
 	{
 		mEyesLayerSet->createComposite();
 		mEyesLayerSet->setUpdatesEnabled( TRUE );
@@ -7752,7 +7925,7 @@ void LLVOAvatar::updateMeshTextures()
 	}
 
 	// Skirt
-	if( use_lkg_skirt_baked )
+	if (use_lkg_skirt_baked && !self_customize)
 	{
 		LLViewerImage* baked = gImageList.getImageFromHost( mLastSkirtBakedID, target_host );
 		mSkirtMesh0.setTexture(  baked );
@@ -7761,8 +7934,7 @@ void LLVOAvatar::updateMeshTextures()
 		mSkirtMesh3.setTexture(  baked );
 		mSkirtMesh4.setTexture(  baked );
 	}
-	else
-	if( !self_customize && skirt_baked )
+	else if( !self_customize && skirt_baked )
 	{
 		LLViewerImage* baked = getTEImage( TEX_SKIRT_BAKED );
 		if( baked->getID() == mLastSkirtBakedID )
@@ -7776,8 +7948,7 @@ void LLVOAvatar::updateMeshTextures()
 			baked->setLoadedCallback(onBakedTextureLoaded, SWITCH_TO_BAKED_DISCARD, FALSE, FALSE, new LLUUID( mID ) );
 		}
 	}
-	else
-	if( mSkirtLayerSet && !other_culled)
+	else if( mSkirtLayerSet && !other_culled)
 	{
 		mSkirtLayerSet->createComposite();
 		mSkirtLayerSet->setUpdatesEnabled( TRUE );
@@ -7796,16 +7967,58 @@ void LLVOAvatar::updateMeshTextures()
 		mSkirtMesh4.setTexture( default_tex );
 	}
 
-	mHairMesh0.setTexture(						getTEImage( TEX_HAIR ) );
-	mHairMesh1.setTexture(						getTEImage( TEX_HAIR ) );
-	mHairMesh2.setTexture(						getTEImage( TEX_HAIR ) );
-	mHairMesh3.setTexture(						getTEImage( TEX_HAIR ) );
-	mHairMesh4.setTexture(						getTEImage( TEX_HAIR ) );
-	mHairMesh5.setTexture(						getTEImage( TEX_HAIR ) );
-
-	if( mTexHairColor )
+	// Hair
+	if (use_lkg_hair_baked && !self_customize)
 	{
-		LLColor4 color = mTexHairColor->getColor();
+		LLViewerImage* baked = gImageList.getImageFromHost(mLastHairBakedID, target_host);
+		mHairMesh0.setTexture(baked);
+		mHairMesh1.setTexture(baked);
+		mHairMesh2.setTexture(baked);
+		mHairMesh3.setTexture(baked);
+		mHairMesh4.setTexture(baked);
+		mHairMesh5.setTexture(baked);
+	}
+	else if (!self_customize && hair_baked)
+	{
+		LLViewerImage* baked = getTEImage(TEX_HAIR_BAKED);
+		if (baked->getID() == mLastHairBakedID)
+		{
+			// Even though the file may not be finished loading, we'll consider it loaded and use it (rather than doing compositing).
+			useBakedTexture(baked->getID());
+		}
+		else
+		{
+			mHairBakedLoaded = FALSE;
+			baked->setLoadedCallback(onBakedTextureLoaded, SWITCH_TO_BAKED_DISCARD, FALSE, FALSE, new LLUUID(mID));
+		}
+	}
+	else if (mHairLayerSet && !other_culled
+		&& (hair_baked || mIsSelf)) // ! BACKWARDS COMPATIBILITY ! workaround for old viewers.
+	{
+		mHairLayerSet->createComposite();
+		mHairLayerSet->setUpdatesEnabled(TRUE);
+		mHairMesh0.setLayerSet(mHairLayerSet);
+		mHairMesh1.setLayerSet(mHairLayerSet);
+		mHairMesh2.setLayerSet(mHairLayerSet);
+		mHairMesh3.setLayerSet(mHairLayerSet);
+		mHairMesh4.setLayerSet(mHairLayerSet);
+		mHairMesh5.setLayerSet(mHairLayerSet);
+	}
+	else
+	{
+		mHairMesh0.setTexture(getTEImage(TEX_HAIR));
+		mHairMesh1.setTexture(getTEImage(TEX_HAIR));
+		mHairMesh2.setTexture(getTEImage(TEX_HAIR));
+		mHairMesh3.setTexture(getTEImage(TEX_HAIR));
+		mHairMesh4.setTexture(getTEImage(TEX_HAIR));
+		mHairMesh5.setTexture(getTEImage(TEX_HAIR));
+	}
+
+	// ! BACKWARDS COMPATIBILITY !
+	// Workaround for viewing avatars from old viewers that haven't baked hair textures.
+	if (!mHasBakedHair)
+	{
+		LLColor4 color = mTexHairColor ? mTexHairColor->getColor() : LLColor4(1, 1, 1, 1);
 		mHairMesh0.setColor( color.mV[VX], color.mV[VY], color.mV[VZ], color.mV[VW] );
 		mHairMesh1.setColor( color.mV[VX], color.mV[VY], color.mV[VZ], color.mV[VW] );
 		mHairMesh2.setColor( color.mV[VX], color.mV[VY], color.mV[VZ], color.mV[VW] );
@@ -7817,6 +8030,8 @@ void LLVOAvatar::updateMeshTextures()
 	// Head
 	BOOL head_baked_ready = (head_baked && mHeadBakedLoaded) || other_culled;
 	setLocalTexture( LOCTEX_HEAD_BODYPAINT,		getTEImage( TEX_HEAD_BODYPAINT ),	head_baked_ready );
+	setLocalTexture( LOCTEX_HEAD_ALPHA,			getTEImage( TEX_HEAD_ALPHA ),		head_baked_ready );
+	setLocalTexture( LOCTEX_HEAD_TATTOO,		getTEImage( TEX_HEAD_TATTOO ),		head_baked_ready );
 
 	// Upper body
 	BOOL upper_baked_ready = (upper_baked && mUpperBakedLoaded) || other_culled;
@@ -7825,6 +8040,8 @@ void LLVOAvatar::updateMeshTextures()
 	setLocalTexture( LOCTEX_UPPER_JACKET,		getTEImage( TEX_UPPER_JACKET ),		upper_baked_ready );
 	setLocalTexture( LOCTEX_UPPER_GLOVES,		getTEImage( TEX_UPPER_GLOVES ),		upper_baked_ready );
 	setLocalTexture( LOCTEX_UPPER_UNDERSHIRT,	getTEImage( TEX_UPPER_UNDERSHIRT ),	upper_baked_ready );
+	setLocalTexture( LOCTEX_UPPER_ALPHA,		getTEImage( TEX_UPPER_ALPHA ),		upper_baked_ready );
+	setLocalTexture( LOCTEX_UPPER_TATTOO,		getTEImage( TEX_UPPER_TATTOO ),		upper_baked_ready );
 
 	// Lower body
 	BOOL lower_baked_ready = (lower_baked && mLowerBakedLoaded) || other_culled;
@@ -7834,10 +8051,18 @@ void LLVOAvatar::updateMeshTextures()
 	setLocalTexture( LOCTEX_LOWER_SOCKS,		getTEImage( TEX_LOWER_SOCKS ),		lower_baked_ready );
 	setLocalTexture( LOCTEX_LOWER_JACKET,		getTEImage( TEX_LOWER_JACKET ),		lower_baked_ready );
 	setLocalTexture( LOCTEX_LOWER_UNDERPANTS,	getTEImage( TEX_LOWER_UNDERPANTS ),	lower_baked_ready );
+	setLocalTexture( LOCTEX_LOWER_ALPHA,		getTEImage( TEX_LOWER_ALPHA ),		lower_baked_ready );
+	setLocalTexture( LOCTEX_LOWER_TATTOO,		getTEImage( TEX_LOWER_TATTOO ),		lower_baked_ready );
 
 	// Eyes
 	BOOL eyes_baked_ready = (eyes_baked && mEyesBakedLoaded) || other_culled;
 	setLocalTexture( LOCTEX_EYES_IRIS,			getTEImage( TEX_EYES_IRIS ),		eyes_baked_ready );
+	setLocalTexture( LOCTEX_EYES_ALPHA,			getTEImage( TEX_EYES_ALPHA ),		eyes_baked_ready );
+
+	// Hair
+	BOOL hair_baked_ready = (hair_baked && mHairBakedLoaded) || other_culled;
+	setLocalTexture( LOCTEX_HAIR,				getTEImage( TEX_HAIR ),				hair_baked_ready );
+	setLocalTexture( LOCTEX_HAIR_ALPHA,			getTEImage( TEX_HAIR_ALPHA ),		hair_baked_ready );
 
 	// Skirt
 	BOOL skirt_baked_ready = (skirt_baked && mSkirtBakedLoaded) || other_culled;
@@ -7893,6 +8118,7 @@ void LLVOAvatar::requestLayerSetUploads()
 	BOOL lower_baked = (getTEImage( TEX_LOWER_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL head_baked = (getTEImage( TEX_HEAD_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL eyes_baked = (getTEImage( TEX_EYES_BAKED )->getID() != IMG_DEFAULT_AVATAR );
+	BOOL hair_baked = (getTEImage( TEX_HAIR_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 	BOOL skirt_baked = (getTEImage( TEX_SKIRT_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 
 	if( !head_baked && mHeadLayerSet )
@@ -7913,6 +8139,11 @@ void LLVOAvatar::requestLayerSetUploads()
 	if( !eyes_baked && mEyesLayerSet )
 	{
 		mEyesLayerSet->requestUpload();
+	}
+
+	if (!hair_baked && mHairLayerSet)
+	{
+		mHairLayerSet->requestUpload();
 	}
 
 	if( !skirt_baked && mSkirtLayerSet )
@@ -7945,6 +8176,11 @@ void LLVOAvatar::setCompositeUpdatesEnabled( BOOL b )
 	if( mEyesLayerSet )
 	{
 		mEyesLayerSet->setUpdatesEnabled( b );
+	}
+
+	if (mHairLayerSet)
+	{
+		mHairLayerSet->setUpdatesEnabled( b );
 	}
 
 	if( mSkirtLayerSet )
@@ -8001,14 +8237,16 @@ S32 LLVOAvatar::getLocalDiscardLevel( S32 index )
 
 //-----------------------------------------------------------------------------
 // isLocalTextureDataFinal()
-// Returns true is the highest quality discard level exists for every texture
+// Returns true if the highest quality discard level exists for every texture
 // in the layerset.
 //-----------------------------------------------------------------------------
 BOOL LLVOAvatar::isLocalTextureDataFinal( LLTexLayerSet* layerset )
 {
 	if( layerset == mHeadLayerSet )
 	{
-		return getLocalDiscardLevel( LOCTEX_HEAD_BODYPAINT ) == 0;
+		return getLocalDiscardLevel(LOCTEX_HEAD_BODYPAINT) == 0 &&
+			getLocalDiscardLevel(LOCTEX_HEAD_ALPHA) == 0 &&
+			getLocalDiscardLevel(LOCTEX_HEAD_TATTOO) == 0;
 	}
 	else if( layerset == mUpperBodyLayerSet )
 	{
@@ -8016,7 +8254,9 @@ BOOL LLVOAvatar::isLocalTextureDataFinal( LLTexLayerSet* layerset )
 			getLocalDiscardLevel( LOCTEX_UPPER_BODYPAINT ) == 0 &&
 			getLocalDiscardLevel( LOCTEX_UPPER_JACKET ) == 0 && 
 			getLocalDiscardLevel( LOCTEX_UPPER_GLOVES ) == 0 && 
-			getLocalDiscardLevel( LOCTEX_UPPER_UNDERSHIRT ) == 0;
+			getLocalDiscardLevel( LOCTEX_UPPER_UNDERSHIRT ) == 0 &&
+			getLocalDiscardLevel( LOCTEX_UPPER_ALPHA ) == 0 &&
+			getLocalDiscardLevel( LOCTEX_UPPER_TATTOO ) == 0;
 	}
 	else if( layerset == mLowerBodyLayerSet )
 	{
@@ -8025,11 +8265,19 @@ BOOL LLVOAvatar::isLocalTextureDataFinal( LLTexLayerSet* layerset )
 			getLocalDiscardLevel( LOCTEX_LOWER_SHOES ) == 0 && 
 			getLocalDiscardLevel( LOCTEX_LOWER_SOCKS ) == 0 && 
 			getLocalDiscardLevel( LOCTEX_LOWER_JACKET ) == 0 && 
-			getLocalDiscardLevel( LOCTEX_LOWER_UNDERPANTS ) == 0;
+			getLocalDiscardLevel( LOCTEX_LOWER_UNDERPANTS ) == 0 &&
+			getLocalDiscardLevel( LOCTEX_LOWER_ALPHA ) == 0 &&
+			getLocalDiscardLevel( LOCTEX_LOWER_TATTOO ) == 0;
 	}
 	else if( layerset == mEyesLayerSet )
 	{
-		return getLocalDiscardLevel( LOCTEX_EYES_IRIS ) == 0;
+		return getLocalDiscardLevel(LOCTEX_EYES_IRIS) == 0 &&
+			getLocalDiscardLevel(LOCTEX_EYES_ALPHA) == 0;
+	}
+	else if (layerset == mHairLayerSet)
+	{
+		return getLocalDiscardLevel(LOCTEX_HAIR) == 0 &&
+			getLocalDiscardLevel(LOCTEX_HAIR_ALPHA) == 0;
 	}
 	else if( layerset == mSkirtLayerSet )
 	{
@@ -8042,14 +8290,15 @@ BOOL LLVOAvatar::isLocalTextureDataFinal( LLTexLayerSet* layerset )
 
 //-----------------------------------------------------------------------------
 // isLocalTextureDataAvailable()
-// Returns true is at least the lowest quality discard level exists for every texture
+// Returns true if at least the lowest quality discard level exists for every texture
 // in the layerset.
 //-----------------------------------------------------------------------------
 BOOL LLVOAvatar::isLocalTextureDataAvailable( LLTexLayerSet* layerset )
 {
 	if( layerset == mHeadLayerSet )
 	{
-		return getLocalDiscardLevel( LOCTEX_HEAD_BODYPAINT ) >= 0;
+		return getLocalDiscardLevel(LOCTEX_HEAD_BODYPAINT) >= 0 &&
+			getLocalDiscardLevel(LOCTEX_HEAD_ALPHA) >= 0;
 	}
 	else if( layerset == mUpperBodyLayerSet )
 	{
@@ -8057,7 +8306,9 @@ BOOL LLVOAvatar::isLocalTextureDataAvailable( LLTexLayerSet* layerset )
 			getLocalDiscardLevel( LOCTEX_UPPER_BODYPAINT ) >= 0 &&
 			getLocalDiscardLevel( LOCTEX_UPPER_JACKET ) >= 0 && 
 			getLocalDiscardLevel( LOCTEX_UPPER_GLOVES ) >= 0 && 
-			getLocalDiscardLevel( LOCTEX_UPPER_UNDERSHIRT ) >= 0;
+			getLocalDiscardLevel( LOCTEX_UPPER_UNDERSHIRT ) >= 0 &&
+			getLocalDiscardLevel( LOCTEX_UPPER_ALPHA ) >= 0 &&
+			getLocalDiscardLevel( LOCTEX_UPPER_TATTOO ) >= 0;
 	}
 	else if( layerset == mLowerBodyLayerSet )
 	{
@@ -8066,11 +8317,19 @@ BOOL LLVOAvatar::isLocalTextureDataAvailable( LLTexLayerSet* layerset )
 			getLocalDiscardLevel( LOCTEX_LOWER_SHOES ) >= 0 && 
 			getLocalDiscardLevel( LOCTEX_LOWER_SOCKS ) >= 0 && 
 			getLocalDiscardLevel( LOCTEX_LOWER_JACKET ) >= 0 && 
-			getLocalDiscardLevel( LOCTEX_LOWER_UNDERPANTS ) >= 0;
+			getLocalDiscardLevel( LOCTEX_LOWER_UNDERPANTS ) >= 0 &&
+			getLocalDiscardLevel( LOCTEX_LOWER_ALPHA ) >= 0 &&
+			getLocalDiscardLevel( LOCTEX_LOWER_TATTOO ) >= 0;
 	}
 	else if( layerset == mEyesLayerSet )
 	{
-		return getLocalDiscardLevel( LOCTEX_EYES_IRIS ) >= 0;
+		return getLocalDiscardLevel(LOCTEX_EYES_IRIS) >= 0 &&
+			getLocalDiscardLevel(LOCTEX_EYES_ALPHA) >= 0;
+	}
+	else if (layerset == mHairLayerSet)
+	{
+		return getLocalDiscardLevel(LOCTEX_HAIR) >= 0 &&
+			getLocalDiscardLevel(LOCTEX_HAIR_ALPHA) >= 0;
 	}
 	else if( layerset == mSkirtLayerSet )
 	{
@@ -8092,23 +8351,23 @@ LLVOAvatar::ETextureIndex LLVOAvatar::getBakedTE( LLTexLayerSet* layerset )
 	{
 		return TEX_HEAD_BAKED;
 	}
-	else
-	if( layerset == mUpperBodyLayerSet )
+	else if( layerset == mUpperBodyLayerSet )
 	{
 		return TEX_UPPER_BAKED;
 	}
-	else
-	if( layerset == mLowerBodyLayerSet )
+	else if( layerset == mLowerBodyLayerSet )
 	{
 		return TEX_LOWER_BAKED;
 	}
-	else
-	if( layerset == mEyesLayerSet )
+	else if( layerset == mEyesLayerSet )
 	{
 		return TEX_EYES_BAKED;
 	}
-	else
-	if( layerset == mSkirtLayerSet )
+	else if (layerset == mHairLayerSet)
+	{
+		return TEX_HAIR_BAKED;
+	}
+	else if( layerset == mSkirtLayerSet )
 	{
 		return TEX_SKIRT_BAKED;
 	}
@@ -8126,7 +8385,13 @@ void LLVOAvatar::setNewBakedTexture( ETextureIndex te, const LLUUID& uuid )
 	// Baked textures live on other sims.
 	LLHost target_host = getObjectHost();	
 	setTEImage( te, gImageList.getImageFromHost( uuid, target_host ) );
-	updateMeshTextures();
+	if (uuid != IMG_INVISIBLE)
+	{
+		// Do not update textures when setting a new invisible baked texture as
+		// it would result in destroying the calling object (setNewBakedTexture()
+		// is called by LLTexLayerSetBuffer::render()) !
+		updateMeshTextures();
+	}
 	dirtyMesh();
 
 	LLVOAvatar::cullAvatarsByPixelArea();
@@ -8144,6 +8409,9 @@ void LLVOAvatar::setNewBakedTexture( ETextureIndex te, const LLUUID& uuid )
 		break;
 	case TEX_EYES_BAKED:
 		llinfos << "New baked texture: EYES" << llendl;
+		break;
+	case TEX_HAIR_BAKED:
+		llinfos << "New baked texture: HAIR" << llendl;
 		break;
 	case TEX_SKIRT_BAKED:
 		llinfos << "New baked texture: SKIRT" << llendl;
@@ -8167,6 +8435,7 @@ bool LLVOAvatar::hasPendingBakedUploads()
 	bool upper_pending = (mUpperBodyLayerSet && mUpperBodyLayerSet->getComposite()->uploadPending());
 	bool lower_pending = (mLowerBodyLayerSet && mLowerBodyLayerSet->getComposite()->uploadPending());
 	bool eyes_pending = (mEyesLayerSet && mEyesLayerSet->getComposite()->uploadPending());
+	bool hair_pending = (mHairLayerSet && mHairLayerSet->getComposite()->uploadPending());
 	bool skirt_pending = (mSkirtLayerSet && mSkirtLayerSet->getComposite()->uploadPending());
 
 	//llinfos << "TAT: LLVOAvatar::hasPendingBakedUploads()"
@@ -8174,17 +8443,11 @@ bool LLVOAvatar::hasPendingBakedUploads()
 	//	<< " upper_pending " << upper_pending
 	//	<< " lower_pending " << lower_pending
 	//	<< " eyes_pending " << eyes_pending
+	//	<< " hair_pending " << hair_pending
 	//	<< " skirt_pending " << skirt_pending
 	//	<< llendl;
 
-	if (head_pending || upper_pending || lower_pending || eyes_pending || skirt_pending)
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	return head_pending || upper_pending || lower_pending || eyes_pending || hair_pending || skirt_pending;
 }
 
 //-----------------------------------------------------------------------------
@@ -8221,30 +8484,20 @@ void LLVOAvatar::setCachedBakedTexture( ETextureIndex te, const LLUUID& uuid )
 			mEyesLayerSet->cancelUpload();
 		}
 		break;
+	case TEX_HAIR_BAKED:
+		if (mHairLayerSet)
+		{
+			mHairLayerSet->cancelUpload();
+		}
+		break;
 	case TEX_SKIRT_BAKED:
 		if( mSkirtLayerSet )
 		{
 			mSkirtLayerSet->cancelUpload();
 		}
 		break;
-
-		case TEX_HEAD_BODYPAINT:
-		case TEX_UPPER_SHIRT:
-		case TEX_LOWER_PANTS:
-		case TEX_EYES_IRIS:
-		case TEX_HAIR:
-		case TEX_UPPER_BODYPAINT:
-		case TEX_LOWER_BODYPAINT:
-		case TEX_LOWER_SHOES:
-		case TEX_LOWER_SOCKS:
-		case TEX_UPPER_JACKET:
-		case TEX_LOWER_JACKET:
-		case TEX_UPPER_GLOVES:
-		case TEX_UPPER_UNDERSHIRT:
-		case TEX_LOWER_UNDERPANTS:
-		case TEX_SKIRT:
-		case TEX_NUM_ENTRIES:
-			break;
+	default:
+		break;
 	}
 }
 
@@ -8300,6 +8553,7 @@ void LLVOAvatar::onCustomizeEnd()
 
 		gAgent.sendAgentSetAppearance();
 	}
+
 
 BOOL LLVOAvatar::teToColorParams( ETextureIndex te, const char* param_name[3] )
 {
@@ -8420,7 +8674,16 @@ void LLVOAvatar::dumpAvatarTEs( const std::string& context )
 			"TEX_UPPER_UNDERSHIRT ",
 			"TEX_LOWER_UNDERPANTS ",
 			"TEX_SKIRT            ",
-			"TEX_SKIRT_BAKED      "
+			"TEX_SKIRT_BAKED      ",
+			"TEX_HAIR_BAKED       ",
+			"TEX_LOWER_ALPHA      ",
+			"TEX_UPPER_ALPHA      ",
+			"TEX_HEAD_ALPHA       ",
+			"TEX_EYES_ALPHA       ",
+			"TEX_HAIR_ALPHA       ",
+			"TEX_HEAD_TATTOO      ",
+			"TEX_UPPER_TATTOO     ",
+			"TEX_LOWER_TATTOO     "
 		};
 
 		LLViewerImage* te_image = getTEImage(i);
@@ -8437,6 +8700,11 @@ void LLVOAvatar::dumpAvatarTEs( const std::string& context )
 		if( te_image->getID() == IMG_DEFAULT )
 		{
 			llinfos << "       " << te_name[i] << ": IMG_DEFAULT" << llendl;
+		}
+		else
+		if (te_image->getID() == IMG_INVISIBLE)
+		{
+			llinfos << "       " << te_name[i] << ": IMG_INVISIBLE" << llendl;
 		}
 		else
 		if( te_image->getID() == IMG_DEFAULT_AVATAR )
@@ -8508,6 +8776,16 @@ LLUUID LLVOAvatar::getDefaultTEImageID( S32 te )
 
 	case TEX_SKIRT:				return LLUUID( gSavedSettings.getString("UIImgDefaultSkirtUUID") );
 
+	case TEX_LOWER_ALPHA:
+	case TEX_UPPER_ALPHA:
+	case TEX_HEAD_ALPHA:
+	case TEX_EYES_ALPHA:
+	case TEX_HAIR_ALPHA:		return LLUUID(gSavedSettings.getString("UIImgDefaultAlphaUUID"));
+
+	case TEX_LOWER_TATTOO:
+	case TEX_UPPER_TATTOO:
+	case TEX_HEAD_TATTOO:		return LLUUID(gSavedSettings.getString("UIImgDefaultTattooUUID"));
+
 	default:					return IMG_DEFAULT_AVATAR;
 	}
 }
@@ -8559,6 +8837,18 @@ EWearableType LLVOAvatar::getTEWearableType( S32 te )
 	case TEX_SKIRT:
 		return WT_SKIRT;
 
+	case TEX_HEAD_ALPHA:
+	case TEX_UPPER_ALPHA:
+	case TEX_LOWER_ALPHA:
+	case TEX_EYES_ALPHA:
+	case TEX_HAIR_ALPHA:
+		return WT_ALPHA;
+
+	case TEX_HEAD_TATTOO:
+	case TEX_UPPER_TATTOO:
+	case TEX_LOWER_TATTOO:
+		return WT_TATTOO;
+
 	default:
 		return WT_INVALID;
 	}
@@ -8607,6 +8897,14 @@ BOOL LLVOAvatar::isWearingWearableType( EWearableType type )
 
 		case WT_SKIRT:
 			indicator_te = TEX_SKIRT;
+			break;
+		
+		case WT_ALPHA:
+			indicator_te = TEX_LOWER_ALPHA;
+			break;
+		
+		case WT_TATTOO:
+			indicator_te = TEX_HEAD_TATTOO;
 			break;
 		
 		case WT_SHAPE:
@@ -8705,6 +9003,7 @@ void LLVOAvatar::onFirstTEMessageReceived()
 		BOOL upper_baked = ( getTEImage( TEX_UPPER_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 		BOOL lower_baked = ( getTEImage( TEX_LOWER_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 		BOOL eyes_baked = ( getTEImage( TEX_EYES_BAKED )->getID() != IMG_DEFAULT_AVATAR );
+		BOOL hair_baked = ( getTEImage( TEX_HAIR_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 		BOOL skirt_baked = ( getTEImage( TEX_SKIRT_BAKED )->getID() != IMG_DEFAULT_AVATAR );
 
 		// Use any baked textures that we have even if they haven't downloaded yet.
@@ -8713,7 +9012,10 @@ void LLVOAvatar::onFirstTEMessageReceived()
 		{
 			mLastHeadBakedID = getTEImage( TEX_HEAD_BAKED )->getID();
 			LLViewerImage* image = getTEImage( TEX_HEAD_BAKED );
-			image->setLoadedCallback( onBakedTextureMasksLoaded, MORPH_MASK_REQUESTED_DISCARD, TRUE, TRUE, new LLTextureMaskData( mID ));	
+			if (image->getID() != IMG_INVISIBLE)
+			{
+				image->setLoadedCallback(onBakedTextureMasksLoaded, MORPH_MASK_REQUESTED_DISCARD, TRUE, TRUE, new LLTextureMaskData(mID));
+			}
 			image->setLoadedCallback( onInitialBakedTextureLoaded, MAX_DISCARD_LEVEL, FALSE, FALSE, new LLUUID( mID ) );
 		}
 
@@ -8721,7 +9023,10 @@ void LLVOAvatar::onFirstTEMessageReceived()
 		{
 			mLastUpperBodyBakedID = getTEImage( TEX_UPPER_BAKED )->getID();
 			LLViewerImage* image = getTEImage( TEX_UPPER_BAKED );
-			image->setLoadedCallback( onBakedTextureMasksLoaded, MORPH_MASK_REQUESTED_DISCARD, TRUE, TRUE, new LLTextureMaskData( mID ));	
+			if (image->getID() != IMG_INVISIBLE)
+			{
+				image->setLoadedCallback(onBakedTextureMasksLoaded, MORPH_MASK_REQUESTED_DISCARD, TRUE, TRUE, new LLTextureMaskData(mID));
+			}
 			image->setLoadedCallback( onInitialBakedTextureLoaded, MAX_DISCARD_LEVEL, FALSE, FALSE, new LLUUID( mID ) );
 		}
 		
@@ -8729,7 +9034,10 @@ void LLVOAvatar::onFirstTEMessageReceived()
 		{
 			mLastLowerBodyBakedID = getTEImage( TEX_LOWER_BAKED )->getID();
 			LLViewerImage* image = getTEImage( TEX_LOWER_BAKED );
-			image->setLoadedCallback( onBakedTextureMasksLoaded, MORPH_MASK_REQUESTED_DISCARD, TRUE, TRUE, new LLTextureMaskData( mID ));	
+			if (image->getID() != IMG_INVISIBLE)
+			{
+				image->setLoadedCallback(onBakedTextureMasksLoaded, MORPH_MASK_REQUESTED_DISCARD, TRUE, TRUE, new LLTextureMaskData(mID));
+			}
 			image->setLoadedCallback( onInitialBakedTextureLoaded, MAX_DISCARD_LEVEL, FALSE, FALSE, new LLUUID( mID ) );
 		}
 
@@ -8738,6 +9046,13 @@ void LLVOAvatar::onFirstTEMessageReceived()
 			mLastEyesBakedID = getTEImage( TEX_EYES_BAKED )->getID();
 			LLViewerImage* image = getTEImage( TEX_EYES_BAKED );
 			image->setLoadedCallback( onInitialBakedTextureLoaded, MAX_DISCARD_LEVEL, FALSE, FALSE, new LLUUID( mID ) );
+		}
+
+		if ( hair_baked )
+		{
+			mLastHairBakedID = getTEImage( TEX_HAIR_BAKED )->getID();
+			LLViewerImage* image = getTEImage( TEX_HAIR_BAKED );
+			image->setLoadedCallback(onInitialBakedTextureLoaded, MAX_DISCARD_LEVEL, FALSE, FALSE, new LLUUID(mID));
 		}
 
 		if( skirt_baked )
@@ -8791,11 +9106,39 @@ void LLVOAvatar::processAvatarAppearance( LLMessageSystem* mesgsys )
 	unpackTEMessage(mesgsys, _PREHASH_ObjectData);
 //	dumpAvatarTEs( "POST processAvatarAppearance()" );
 
+	// prevent the overwriting of valid baked textures with invalid baked textures
+	if (getTEImage(TEX_HEAD_BAKED)->getID() == IMG_DEFAULT_AVATAR &&
+		mLastHeadBakedID != IMG_DEFAULT)
+	{
+			setTEImage(TEX_HEAD_BAKED, gImageList.getImage(mLastHeadBakedID));
+	}
+	if (getTEImage(TEX_UPPER_BAKED)->getID() == IMG_DEFAULT_AVATAR &&
+		mLastUpperBodyBakedID != IMG_DEFAULT)
+	{
+			setTEImage(TEX_UPPER_BAKED, gImageList.getImage(mLastUpperBodyBakedID));
+	}
+	if (getTEImage(TEX_LOWER_BAKED)->getID() == IMG_DEFAULT_AVATAR &&
+		mLastLowerBodyBakedID != IMG_DEFAULT)
+	{
+			setTEImage(TEX_LOWER_BAKED, gImageList.getImage(mLastLowerBodyBakedID));
+	}
+	if (getTEImage(TEX_EYES_BAKED)->getID() == IMG_DEFAULT_AVATAR &&
+		mLastEyesBakedID != IMG_DEFAULT)
+	{
+			setTEImage(TEX_EYES_BAKED, gImageList.getImage(mLastEyesBakedID));
+	}
+	if (getTEImage(TEX_HAIR_BAKED)->getID() == IMG_DEFAULT_AVATAR &&
+		mLastHairBakedID != IMG_DEFAULT)
+	{
+			setTEImage(TEX_HAIR_BAKED, gImageList.getImage(mLastHairBakedID));
+	}
+
 //	llinfos << "Received AvatarAppearance: " << (mIsSelf ? "(self): " : "(other): " ) << 
 //		(( getTEImage( TEX_HEAD_BAKED )->getID() != IMG_DEFAULT_AVATAR )  ? "HEAD " : "head " ) <<
 //		(( getTEImage( TEX_UPPER_BAKED )->getID() != IMG_DEFAULT_AVATAR ) ? "UPPER " : "upper " ) <<
 //		(( getTEImage( TEX_LOWER_BAKED )->getID() != IMG_DEFAULT_AVATAR ) ? "LOWER " : "lower " ) <<
-//		(( getTEImage( TEX_EYES_BAKED )->getID() != IMG_DEFAULT_AVATAR )  ? "EYES" : "eyes" ) << llendl;
+//		(( getTEImage( TEX_EYES_BAKED )->getID() != IMG_DEFAULT_AVATAR )  ? "EYES" : "eyes" ) <<
+//		(( getTEImage( TEX_HAIR_BAKED )->getID() != IMG_DEFAULT_AVATAR ) ? "HAIR" : "hair" ) << llendl;
  
 	if( !mFirstTEMessageReceived )
 	{
@@ -8940,15 +9283,13 @@ void LLVOAvatar::getAnimNames( LLDynamicArray<std::string>* names )
 
 void LLVOAvatar::onBakedTextureMasksLoaded( BOOL success, LLViewerImage *src_vi, LLImageRaw* src, LLImageRaw* aux_src, S32 discard_level, BOOL final, void* userdata )
 {
+	if (!userdata) return;
+
 	//llinfos << "onBakedTextureMasksLoaded: " << src_vi->getID() << llendl;
 	LLMemType mt(LLMemType::MTYPE_AVATAR);
 	
 	LLUUID id = src_vi->getID();
 
-	if (!userdata)
-	{
-		return;
-	}
  
 	LLTextureMaskData* maskData = (LLTextureMaskData*) userdata;
 	LLVOAvatar* self = (LLVOAvatar*) gObjectList.findObject( maskData->mAvatarID );
@@ -9004,8 +9345,7 @@ void LLVOAvatar::onBakedTextureMasksLoaded( BOOL success, LLViewerImage *src_vi,
 					llwarns << "onBakedTextureMasksLoaded: no mHeadLayerSet." << llendl;
 				}
 			}
-			else
-			if( id == upper_baked->getID() )
+			else if( id == upper_baked->getID() )
 			{
 				if ( self->mUpperBodyLayerSet)
 				{
@@ -9024,8 +9364,7 @@ void LLVOAvatar::onBakedTextureMasksLoaded( BOOL success, LLViewerImage *src_vi,
 					llwarns << "onBakedTextureMasksLoaded: no mHeadLayerSet." << llendl;
 				}
 			}
-			else
-			if( id == lower_baked->getID() )
+			else if( id == lower_baked->getID() )
 			{
 				if ( self->mLowerBodyLayerSet )
 				{
@@ -9063,7 +9402,6 @@ void LLVOAvatar::onBakedTextureMasksLoaded( BOOL success, LLViewerImage *src_vi,
 	{
 		delete maskData;
 	}
-
 }
 
 // static
@@ -9115,6 +9453,7 @@ void LLVOAvatar::useBakedTexture( const LLUUID& id )
 	LLViewerImage* upper_baked =	getTEImage( TEX_UPPER_BAKED );
 	LLViewerImage* lower_baked =	getTEImage( TEX_LOWER_BAKED );
 	LLViewerImage* eyes_baked =		getTEImage( TEX_EYES_BAKED );
+	LLViewerImage* hair_baked =		getTEImage( TEX_HAIR_BAKED );
 	LLViewerImage* skirt_baked =	getTEImage( TEX_SKIRT_BAKED );
 
 	if( id == head_baked->getID() )
@@ -9133,9 +9472,10 @@ void LLVOAvatar::useBakedTexture( const LLUUID& id )
 			mHeadLayerSet->destroyComposite();
 		}
 		setLocalTexture( LOCTEX_HEAD_BODYPAINT,		getTEImage( TEX_HEAD_BODYPAINT ),	TRUE );
+		setLocalTexture( LOCTEX_HEAD_ALPHA,			getTEImage( TEX_HEAD_ALPHA ),		TRUE );
+		setLocalTexture( LOCTEX_HEAD_TATTOO,		getTEImage( TEX_HEAD_TATTOO ),		TRUE );
 	}
-	else
-	if( id == upper_baked->getID() )
+	else if( id == upper_baked->getID() )
 	{
 		mUpperBakedLoaded = TRUE;
 
@@ -9155,9 +9495,10 @@ void LLVOAvatar::useBakedTexture( const LLUUID& id )
 		setLocalTexture( LOCTEX_UPPER_JACKET,		getTEImage( TEX_UPPER_JACKET ),		TRUE );
 		setLocalTexture( LOCTEX_UPPER_GLOVES,		getTEImage( TEX_UPPER_GLOVES ),		TRUE );
 		setLocalTexture( LOCTEX_UPPER_UNDERSHIRT,	getTEImage( TEX_UPPER_UNDERSHIRT ),	TRUE );
+		setLocalTexture( LOCTEX_UPPER_ALPHA,		getTEImage( TEX_UPPER_ALPHA ),		TRUE );
+		setLocalTexture( LOCTEX_UPPER_TATTOO,		getTEImage( TEX_UPPER_TATTOO ),		TRUE );
 	}
-	else
-	if( id == lower_baked->getID() )
+	else if( id == lower_baked->getID() )
 	{
 		mLowerBakedLoaded = TRUE;
 
@@ -9178,9 +9519,10 @@ void LLVOAvatar::useBakedTexture( const LLUUID& id )
 		setLocalTexture( LOCTEX_LOWER_SOCKS,		getTEImage( TEX_LOWER_SOCKS ),		TRUE );
 		setLocalTexture( LOCTEX_LOWER_JACKET,		getTEImage( TEX_LOWER_JACKET ),		TRUE );
 		setLocalTexture( LOCTEX_LOWER_UNDERPANTS,	getTEImage( TEX_LOWER_UNDERPANTS ),	TRUE );
+		setLocalTexture( LOCTEX_LOWER_ALPHA,		getTEImage( TEX_LOWER_ALPHA ),		TRUE );
+		setLocalTexture( LOCTEX_LOWER_TATTOO,		getTEImage( TEX_LOWER_TATTOO ),		TRUE );
 	}
-	else
-	if( id == eyes_baked->getID() )
+	else if( id == eyes_baked->getID() )
 	{
 		mEyesBakedLoaded = TRUE;
 
@@ -9195,9 +9537,41 @@ void LLVOAvatar::useBakedTexture( const LLUUID& id )
 		}
 
 		setLocalTexture( LOCTEX_EYES_IRIS,			getTEImage( TEX_EYES_IRIS ), TRUE );
+		setLocalTexture(LOCTEX_EYES_ALPHA,			getTEImage(TEX_EYES_ALPHA),  TRUE);
 	}
-	else
-	if( id == skirt_baked->getID() )
+	else if (id == hair_baked->getID())
+	{
+		mHairBakedLoaded = TRUE;
+
+		mLastHairBakedID = id;
+		mHairMesh0.setTexture(hair_baked);
+		mHairMesh1.setTexture(hair_baked);
+		mHairMesh2.setTexture(hair_baked);
+		mHairMesh3.setTexture(hair_baked);
+		mHairMesh4.setTexture(hair_baked);
+		mHairMesh5.setTexture(hair_baked);
+		if (mHairLayerSet)
+		{
+			mHairLayerSet->destroyComposite();
+		}
+
+		setLocalTexture(LOCTEX_HAIR,		getTEImage(TEX_HAIR),		TRUE);
+		setLocalTexture(LOCTEX_HAIR_ALPHA,	getTEImage(TEX_HAIR_ALPHA),	TRUE);
+
+		// ! BACKWARDS COMPATIBILITY !
+		// Workaround for viewing avatars from old viewers that haven't baked hair textures.
+		// This is paired with similar code in updateMeshTextures that sets hair mesh color.
+		if (!mHasBakedHair)
+			{
+			mHairMesh0.setColor(1.f, 1.f, 1.f, 1.f);
+			mHairMesh1.setColor(1.f, 1.f, 1.f, 1.f);
+			mHairMesh2.setColor(1.f, 1.f, 1.f, 1.f);
+			mHairMesh3.setColor(1.f, 1.f, 1.f, 1.f);
+			mHairMesh4.setColor(1.f, 1.f, 1.f, 1.f);
+			mHairMesh5.setColor(1.f, 1.f, 1.f, 1.f);
+		}	
+	}
+	else if( id == skirt_baked->getID() )
 	{
 		mSkirtBakedLoaded = TRUE;
 
@@ -9428,9 +9802,16 @@ BOOL LLVOAvatar::canGrabLocalTexture(ETextureIndex index)
 	{
 	case TEX_EYES_BAKED:
 		textures.push_back(TEX_EYES_IRIS);
+		textures.push_back(TEX_EYES_ALPHA);
+		break;
+	case TEX_HAIR_BAKED:
+		textures.push_back(TEX_HAIR);
+		textures.push_back(TEX_HAIR_ALPHA);
 		break;
 	case TEX_HEAD_BAKED:
 		textures.push_back(TEX_HEAD_BODYPAINT);
+		textures.push_back(TEX_HEAD_ALPHA);
+		textures.push_back(TEX_HEAD_TATTOO);
 		break;
 	case TEX_UPPER_BAKED:
 		textures.push_back(TEX_UPPER_BODYPAINT);
@@ -9438,6 +9819,8 @@ BOOL LLVOAvatar::canGrabLocalTexture(ETextureIndex index)
 		textures.push_back(TEX_UPPER_SHIRT);
 		textures.push_back(TEX_UPPER_JACKET);
 		textures.push_back(TEX_UPPER_GLOVES);
+		textures.push_back(TEX_UPPER_ALPHA);
+		textures.push_back(TEX_UPPER_TATTOO);
 		break;
 	case TEX_LOWER_BAKED:
 		textures.push_back(TEX_LOWER_BODYPAINT);
@@ -9446,6 +9829,8 @@ BOOL LLVOAvatar::canGrabLocalTexture(ETextureIndex index)
 		textures.push_back(TEX_LOWER_JACKET);
 		textures.push_back(TEX_LOWER_SOCKS);
 		textures.push_back(TEX_LOWER_SHOES);
+		textures.push_back(TEX_LOWER_ALPHA);
+		textures.push_back(TEX_LOWER_TATTOO);
 		break;
 	case TEX_SKIRT_BAKED:
 		textures.push_back(TEX_SKIRT);
@@ -9507,20 +9892,30 @@ void LLVOAvatar::dumpLocalTextures()
 	llinfos << "Local Textures:" << llendl;
 
 	const char* names[] = {
-		"Shirt     ",
-		"UpperTatoo",
-		"Pants     ",
-		"LowerTatoo",
-		"Head Tatoo",
-		"Shoes     ",
-		"Socks     ",
-		"Upper Jckt",
-		"Lower Jckt",
-		"Gloves    ",
-		"Undershirt",
-		"Underpants",
-		"Iris      ",
-		"Skirt      "};
+		"Shirt          ",
+		"Upper Bodypaint",
+		"Pants          ",
+		"Lower Bodypaint",
+		"Head Bodypaint ",
+		"Shoes          ",
+		"Socks          ",
+		"Upper Jacket   ",
+		"Lower Jacket   ",
+		"Gloves         ",
+		"Undershirt     ",
+		"Underpants     ",
+		"Iris           ",
+		"Skirt          ",
+		"Hair           ",
+		"Lower Alpha    ",
+		"Upper Alpha    ",
+		"Head Alpha     ",
+		"Eyes Alpha     ",
+		"Hair Alpha     ",
+		"Head Tattoo    ",
+		"Upper Tattoo   ",
+		"Lower Tattoo   "
+	};
 
 	ETextureIndex baked_equiv[] = {
 		TEX_UPPER_BAKED,
@@ -9536,7 +9931,17 @@ void LLVOAvatar::dumpLocalTextures()
 		TEX_UPPER_BAKED,
 		TEX_LOWER_BAKED,
 		TEX_EYES_BAKED,
-		TEX_SKIRT_BAKED };
+		TEX_SKIRT_BAKED,
+		TEX_HAIR_BAKED,
+		TEX_LOWER_BAKED,
+		TEX_UPPER_BAKED,
+		TEX_HEAD_BAKED,
+		TEX_EYES_BAKED,
+		TEX_HEAD_BAKED,
+		TEX_HAIR_BAKED,
+		TEX_UPPER_BAKED,
+		TEX_LOWER_BAKED
+	};
 
 
 	for( S32 i = 0; i < LOCTEX_NUM_ENTRIES; i++ )
@@ -9618,6 +10023,7 @@ void LLVOAvatar::removeMissingBakedTextures()
 		invalidateComposite( mUpperBodyLayerSet,	FALSE );
 		invalidateComposite( mLowerBodyLayerSet,	FALSE );
 		invalidateComposite( mSkirtLayerSet,		FALSE );
+		invalidateComposite( mHairLayerSet,			FALSE );
 		updateMeshTextures();
 		requestLayerSetUploads();
 	}
@@ -10118,6 +10524,8 @@ LLTexLayerSet* LLVOAvatar::getLayerSet(ETextureIndex index) const
 	{
 	case TEX_HEAD_BAKED:
 	case TEX_HEAD_BODYPAINT:
+	case TEX_HEAD_ALPHA:
+	case TEX_HEAD_TATTOO:
 		return mHeadLayerSet;
 
 	case TEX_UPPER_BAKED:
@@ -10126,6 +10534,8 @@ LLTexLayerSet* LLVOAvatar::getLayerSet(ETextureIndex index) const
 	case TEX_UPPER_JACKET:
 	case TEX_UPPER_GLOVES:
 	case TEX_UPPER_UNDERSHIRT:
+	case TEX_UPPER_ALPHA:
+	case TEX_UPPER_TATTOO:
 		return mUpperBodyLayerSet;
 
 	case TEX_LOWER_BAKED:
@@ -10135,10 +10545,13 @@ LLTexLayerSet* LLVOAvatar::getLayerSet(ETextureIndex index) const
 	case TEX_LOWER_SOCKS:
 	case TEX_LOWER_JACKET:
 	case TEX_LOWER_UNDERPANTS:
+	case TEX_LOWER_ALPHA:
+	case TEX_LOWER_TATTOO:
 		return mLowerBodyLayerSet;
 	
 	case TEX_EYES_BAKED:
 	case TEX_EYES_IRIS:
+	case TEX_EYES_ALPHA:
 		return mEyesLayerSet;
 
 	case TEX_SKIRT_BAKED:
@@ -10146,6 +10559,10 @@ LLTexLayerSet* LLVOAvatar::getLayerSet(ETextureIndex index) const
 		return mSkirtLayerSet;
 
 	case TEX_HAIR:
+	case TEX_HAIR_BAKED:
+	case TEX_HAIR_ALPHA:
+		return mHairLayerSet;
+
 	default:
 		return NULL;
 	}

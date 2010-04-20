@@ -1,3 +1,60 @@
+2010-04-20 Boy Lane <boy.lane@yahoo.com>
+
+    * Merged with changes from RV 1.22.12.6
+
+    modified:   linden/indra/llcommon/imageids.h
+    modified:   linden/indra/llcommon/llversionviewer.h
+    modified:   linden/indra/llrender/llrender.cpp
+    modified:   linden/indra/llrender/llrender.h
+    modified:   linden/indra/llwindow/lldxhardware.cpp
+    modified:   linden/indra/newview/English.lproj/InfoPlist.strings
+    modified:   linden/indra/newview/Info-CoolViewer.plist
+    modified:   linden/indra/newview/LICENSE.txt
+    modified:   linden/indra/newview/RRInterface.h
+    modified:   linden/indra/newview/Release_Notes.txt
+    modified:   linden/indra/newview/app_settings/settings.xml
+    modified:   linden/indra/newview/installers/windows/installer_template.nsi
+    modified:   linden/indra/newview/llagent.cpp
+    modified:   linden/indra/newview/llagent.h
+    modified:   linden/indra/newview/llassetuploadresponders.cpp
+    modified:   linden/indra/newview/lldrawpoolavatar.cpp
+    modified:   linden/indra/newview/lldrawpoolavatar.h
+    modified:   linden/indra/newview/llfloaterabout.cpp
+    modified:   linden/indra/newview/llfloatercustomize.cpp
+    modified:   linden/indra/newview/llfloatercustomize.h
+    modified:   linden/indra/newview/llinventoryactions.cpp
+    modified:   linden/indra/newview/llinventorybridge.cpp
+    modified:   linden/indra/newview/llinventorybridge.h
+    modified:   linden/indra/newview/llinventoryview.cpp
+    modified:   linden/indra/newview/lltexlayer.cpp
+    modified:   linden/indra/newview/lltexlayer.h
+    modified:   linden/indra/newview/lltexturectrl.cpp
+    modified:   linden/indra/newview/lltexturectrl.h
+    modified:   linden/indra/newview/lltooldraganddrop.cpp
+    modified:   linden/indra/newview/lltoolmorph.cpp
+    modified:   linden/indra/newview/lltoolpie.cpp
+    modified:   linden/indra/newview/lltoolplacer.cpp
+    modified:   linden/indra/newview/llviewerdisplay.cpp
+    modified:   linden/indra/newview/llviewermenu.cpp
+    modified:   linden/indra/newview/llvoavatar.cpp
+    modified:   linden/indra/newview/llvoavatar.h
+    modified:   linden/indra/newview/llvovolume.cpp
+    modified:   linden/indra/newview/llwearable.cpp
+    modified:   linden/indra/newview/llwearable.h
+    modified:   linden/indra/newview/pipeline.cpp
+    modified:   linden/indra/newview/prefsrainbow.cpp
+    modified:   linden/indra/newview/res/viewerRes.rc
+    modified:   linden/indra/newview/skins/default/textures/textures.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_build_options.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_customize.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_inventory.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_new_outfit_dialog.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/menu_inventory.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/menu_viewer.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/panel_login.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/panel_preferences_rainbow.xml
+
+
 2010-04-06 Boy Lane <boy.lane@yahoo.com>
 
     * Merged with changes from RV 1.22.12.5

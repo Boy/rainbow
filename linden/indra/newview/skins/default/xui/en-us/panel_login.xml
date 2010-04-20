@@ -90,6 +90,6 @@
 	     font="SansSerifSmall" h_pad="0" halign="right" height="16"
 	     left="-310" mouse_opaque="true" name="channel_text" v_pad="0" width="300"
 	     hover="true" hover_color="50 115 185">
-		Rainbow Viewer::Cool Edition 1.22.12.12 final
+		Rainbow Viewer::Cool Edition 1.22.12.13 final
 	</text>
 </panel>

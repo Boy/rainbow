@@ -145,6 +145,8 @@ std::string ICON_NAME[ICON_NAME_COUNT] =
 	"inv_item_undershirt.tga",
 	"inv_item_underpants.tga",
 	"inv_item_skirt.tga",
+	"inv_item_alpha.tga",
+	"inv_item_tattoo.tga",
 
 	"inv_item_animation.tga",
 	"inv_item_gesture.tga",
@@ -2126,6 +2128,16 @@ void LLFolderBridge::createNewUndershirt(void* user_data)
 void LLFolderBridge::createNewUnderpants(void* user_data)
 {
 	LLFolderBridge::createWearable((LLFolderBridge*)user_data, WT_UNDERPANTS);
+}
+
+void LLFolderBridge::createNewAlpha(void* user_data)
+{
+	LLFolderBridge::createWearable((LLFolderBridge*)user_data, WT_ALPHA);
+}
+
+void LLFolderBridge::createNewTattoo(void* user_data)
+{
+	LLFolderBridge::createWearable((LLFolderBridge*)user_data, WT_TATTOO);
 }
 
 void LLFolderBridge::createNewShape(void* user_data)

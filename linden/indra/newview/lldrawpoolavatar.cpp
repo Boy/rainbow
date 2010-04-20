@@ -52,6 +52,8 @@ static U32 sDataMask = LLDrawPoolAvatar::VERTEX_DATA_MASK;
 static U32 sBufferUsage = GL_STREAM_DRAW_ARB;
 static U32 sShaderLevel = 0;
 static LLGLSLShader* sVertexProgram = NULL;
+BOOL	LLDrawPoolAvatar::sSkipOpaque = FALSE;
+BOOL	LLDrawPoolAvatar::sSkipTransparent = FALSE;
 
 F32 CLOTHING_GRAVITY_EFFECT = 0.7f;
 F32 CLOTHING_ACCEL_FORCE_FACTOR = 0.2f;

@@ -208,15 +208,16 @@ const F32 MIN_RADIUS_ALPHA_SIZZLE = 0.5f;
 
 const F64 CHAT_AGE_FAST_RATE = 3.0;
 
-const S32 MAX_WEARABLES_PER_LAYERSET = 7;
+const S32 MAX_WEARABLES_PER_LAYERSET = 9;
 
 const EWearableType WEARABLE_BAKE_TEXTURE_MAP[BAKED_TEXTURE_COUNT][MAX_WEARABLES_PER_LAYERSET] = 
 {
-	{ WT_SHAPE,	WT_SKIN,	WT_HAIR,	WT_INVALID,	WT_INVALID,	WT_INVALID,		WT_INVALID    },	// TEX_HEAD_BAKED
-	{ WT_SHAPE, WT_SKIN,	WT_SHIRT,	WT_JACKET,	WT_GLOVES,	WT_UNDERSHIRT,	WT_INVALID	  },	// TEX_UPPER_BAKED
-	{ WT_SHAPE, WT_SKIN,	WT_PANTS,	WT_SHOES,	WT_SOCKS,	WT_JACKET,		WT_UNDERPANTS },	// TEX_LOWER_BAKED
-	{ WT_EYES,	WT_INVALID,	WT_INVALID,	WT_INVALID,	WT_INVALID,	WT_INVALID,		WT_INVALID    },	// TEX_EYES_BAKED
-	{ WT_SKIRT,	WT_INVALID,	WT_INVALID,	WT_INVALID,	WT_INVALID,	WT_INVALID,		WT_INVALID    }		// TEX_SKIRT_BAKED
+	{ WT_SHAPE,	WT_SKIN,	WT_HAIR,	WT_TATTOO,	WT_ALPHA,	WT_INVALID,		WT_INVALID,		WT_INVALID,		WT_INVALID },	// TEX_HEAD_BAKED
+	{ WT_SHAPE, WT_SKIN,	WT_SHIRT,	WT_JACKET,	WT_GLOVES,	WT_UNDERSHIRT,	WT_TATTOO,		WT_ALPHA,		WT_INVALID },	// TEX_UPPER_BAKED
+	{ WT_SHAPE, WT_SKIN,	WT_PANTS,	WT_SHOES,	WT_SOCKS,	WT_JACKET,		WT_UNDERPANTS,	WT_TATTOO,		WT_ALPHA   },	// TEX_LOWER_BAKED
+	{ WT_EYES,	WT_ALPHA,	WT_INVALID,	WT_INVALID,	WT_INVALID,	WT_INVALID,		WT_INVALID,		WT_INVALID,		WT_INVALID },	// TEX_EYES_BAKED
+	{ WT_SKIRT,	WT_INVALID,	WT_INVALID,	WT_INVALID,	WT_INVALID,	WT_INVALID,		WT_INVALID,		WT_INVALID,		WT_INVALID },	// TEX_SKIRT_BAKED
+	{ WT_HAIR,	WT_ALPHA,	WT_INVALID,	WT_INVALID,	WT_INVALID,	WT_INVALID,		WT_INVALID,		WT_INVALID,		WT_INVALID }	// TEX_HAIR_BAKED
 };
 
 const LLUUID BAKED_TEXTURE_HASH[BAKED_TEXTURE_COUNT] = 
@@ -225,7 +226,8 @@ const LLUUID BAKED_TEXTURE_HASH[BAKED_TEXTURE_COUNT] =
 	LLUUID("338c29e3-3024-4dbb-998d-7c04cf4fa88f"),
 	LLUUID("91b4a2c7-1b1a-ba16-9a16-1f8f8dcc1c3f"),
 	LLUUID("b2cf28af-b840-1071-3c6a-78085d8128b5"),
-	LLUUID("ea800387-ea1a-14e0-56cb-24f2022f969a")
+	LLUUID("ea800387-ea1a-14e0-56cb-24f2022f969a"),
+	LLUUID("0af1ef7c-ad24-11dd-8790-001f5bf833e8")
 };
 
 // The agent instance.
@@ -2077,8 +2079,9 @@ U32 LLAgent::getControlFlags()
 //-----------------------------------------------------------------------------
 void LLAgent::setControlFlags(U32 mask)
 {
+	U32 old_flags = mControlFlags;
 	mControlFlags |= mask;
-	mbFlagsDirty = TRUE;
+	mbFlagsDirty = mControlFlags ^ old_flags;
 }
 
 
@@ -5991,7 +5994,7 @@ void LLAgent::processAgentCachedTextureResponse(LLMessageSystem *mesgsys, void *
 			&& (S32)texture_index < BAKED_TEXTURE_COUNT 
 			&& gAgent.mActiveCacheQueries[ texture_index ] == query_id)
 		{
-			//llinfos << "Received cached texture " << (U32)texture_index << ": " << texture_id << llendl;
+			llinfos << "Received cached texture " << (U32)texture_index << ": " << texture_id << llendl;
 			avatarp->setCachedBakedTexture((LLVOAvatar::ETextureIndex)LLVOAvatar::sBakedTextureIndices[texture_index], texture_id);
 			//avatarp->setTETexture( LLVOAvatar::sBakedTextureIndices[texture_index], texture_id );
 			gAgent.mActiveCacheQueries[ texture_index ] = 0;
@@ -6295,6 +6298,34 @@ void LLAgent::teleportViaLocation(const LLVector3d& pos_global)
 		pos.mV[VX] += 1;
 		msg->addVector3Fast(_PREHASH_LookAt, pos);
 		sendReliableMessage();
+	}
+}
+
+void LLAgent::stopCurrentAnimations()
+{
+	// This function stops all current overriding animations on this
+	// avatar, propagating this change back to the server.
+
+	LLVOAvatar* avatarp = gAgent.getAvatarObject();
+	if (avatarp)
+	{
+		for (LLVOAvatar::AnimIterator anim_it = avatarp->mPlayingAnimations.begin();
+			 anim_it != avatarp->mPlayingAnimations.end(); anim_it++)
+		{
+			// don't cancel a ground-sit anim, as viewers use this animation's status in
+			// determining whether we're sitting. ick.
+			if (anim_it->first != ANIM_AGENT_SIT_GROUND_CONSTRAINED)
+			{
+				// stop this animation locally
+				avatarp->stopMotion(anim_it->first, TRUE);
+				// ...and tell the server to tell everyone.
+				sendAnimationRequest(anim_it->first, ANIM_REQUEST_STOP);
+			}
+		}
+
+		// re-assert at least the default standing animation, because
+		// viewers get confused by avs with no associated anims.
+		sendAnimationRequest(ANIM_AGENT_STAND, ANIM_REQUEST_START);
 	}
 }
 
@@ -7056,7 +7087,9 @@ void LLAgent::createStandardWearables(BOOL female)
 		FALSE, //WT_GLOVES
 		TRUE,  //WT_UNDERSHIRT
 		TRUE,  //WT_UNDERPANTS
-		FALSE  //WT_SKIRT
+		FALSE, //WT_SKIRT
+		FALSE, //WT_ALPHA
+		FALSE  //WT_TATTOO
 	};
 
 	for( S32 i=0; i < WT_COUNT; i++ )
@@ -7287,7 +7320,8 @@ void LLAgent::sendAgentSetAppearance()
 		(( mAvatarObject->getTEImage( LLVOAvatar::TEX_HEAD_BAKED )->getID() != IMG_DEFAULT_AVATAR )  ? "HEAD " : "head " ) <<
 		(( mAvatarObject->getTEImage( LLVOAvatar::TEX_UPPER_BAKED )->getID() != IMG_DEFAULT_AVATAR ) ? "UPPER " : "upper " ) <<
 		(( mAvatarObject->getTEImage( LLVOAvatar::TEX_LOWER_BAKED )->getID() != IMG_DEFAULT_AVATAR ) ? "LOWER " : "lower " ) <<
-		(( mAvatarObject->getTEImage( LLVOAvatar::TEX_EYES_BAKED )->getID() != IMG_DEFAULT_AVATAR )  ? "EYES" : "eyes" ) << llendl;
+		(( mAvatarObject->getTEImage( LLVOAvatar::TEX_EYES_BAKED )->getID() != IMG_DEFAULT_AVATAR )  ? "EYES " : "eyes " ) <<
+		(( mAvatarObject->getTEImage( LLVOAvatar::TEX_HAIR_BAKED )->getID() != IMG_DEFAULT_AVATAR )  ? "HAIR" : "hair" ) << llendl;
 	//dumpAvatarTEs( "sendAgentSetAppearance()" );
 
 	LLMessageSystem* msg = gMessageSystem;
@@ -7556,6 +7590,8 @@ void LLAgent::setWearableOutfit(
 	wearables_to_remove[WT_UNDERSHIRT]	= (!gAgent.isTeen()) & remove;
 	wearables_to_remove[WT_UNDERPANTS]	= (!gAgent.isTeen()) & remove;
 	wearables_to_remove[WT_SKIRT]		= remove;
+	wearables_to_remove[WT_ALPHA]		= remove;
+	wearables_to_remove[WT_TATTOO]		= remove;
 
 	S32 count = wearables.count();
 	llassert( items.count() == count );
@@ -7846,6 +7882,8 @@ void LLAgent::userRemoveAllClothesStep2( BOOL proceed, void* userdata )
 		gAgent.removeWearable( WT_UNDERSHIRT );
 		gAgent.removeWearable( WT_UNDERPANTS );
 		gAgent.removeWearable( WT_SKIRT );
+		gAgent.removeWearable( WT_ALPHA );
+		gAgent.removeWearable( WT_TATTOO );
 	}
 }
 

@@ -73,6 +73,7 @@ protected:
 	BOOL mPreviewAnimInWorld;
 	BOOL mSpeedRez;
 	BOOL mRevokePermsOnStandUp;
+    BOOL mRezWithLandGroup;
 	U32 mSpeedRezInterval;
 	U32 mDecimalsForTools;
 	U32 mLinksForChattingObjects;
@@ -119,23 +120,24 @@ void LLPrefsRainbowImpl::onCommitCheckBox(LLUICtrl* ctrl, void* user_data)
 
 void LLPrefsRainbowImpl::refresh()
 {
-	mShowGrids					= gSavedSettings.getBOOL("ForceShowGrid");
-	mSaveScriptsAsMono			= gSavedSettings.getBOOL("SaveScriptsAsMono");
+	mShowGrids				= gSavedSettings.getBOOL("ForceShowGrid");
+	mSaveScriptsAsMono		= gSavedSettings.getBOOL("SaveScriptsAsMono");
 	mDoubleClickTeleport		= gSavedSettings.getBOOL("DoubleClickTeleport");
 	mHideNotificationsInChat	= gSavedSettings.getBOOL("HideNotificationsInChat");
 	mDisableMessagesSpacing		= gSavedSettings.getBOOL("DisableMessagesSpacing");
 	mHideMasterRemote			= gSavedSettings.getBOOL("HideMasterRemote");
 	mShowGroupsButton			= gSavedSettings.getBOOL("ShowGroupsButton");
-	mUseOldChatHistory			= gSavedSettings.getBOOL("UseOldChatHistory");
+	mUseOldChatHistory		= gSavedSettings.getBOOL("UseOldChatHistory");
 	mUseOldStatusBarIcons		= gSavedSettings.getBOOL("UseOldStatusBarIcons");
-	mUseOldTrackingDots			= gSavedSettings.getBOOL("UseOldTrackingDots");
-	mAllowMUpose				= gSavedSettings.getBOOL("AllowMUpose");
-	mAutoCloseOOC				= gSavedSettings.getBOOL("AutoCloseOOC");
+	mUseOldTrackingDots		= gSavedSettings.getBOOL("UseOldTrackingDots");
+	mAllowMUpose			= gSavedSettings.getBOOL("AllowMUpose");
+	mAutoCloseOOC			= gSavedSettings.getBOOL("AutoCloseOOC");
 	mPlayTypingSound			= gSavedSettings.getBOOL("PlayTypingSound");
-	mPrivateLookAt				= gSavedSettings.getBOOL("PrivateLookAt");
+	mPrivateLookAt			= gSavedSettings.getBOOL("PrivateLookAt");
 	mSecondsInChatAndIMs		= gSavedSettings.getBOOL("SecondsInChatAndIMs");
-	mRestrainedLove				= gSavedSettings.getBOOL("RestrainedLove");
-	mBreastPhysics				= gSavedSettings.getBOOL("EmeraldBreastPhysicsToggle");
+	mRestrainedLove			= gSavedSettings.getBOOL("RestrainedLove");
+	mBreastPhysics			= gSavedSettings.getBOOL("EmeraldBreastPhysicsToggle");
+	mRezWithLandGroup			= gSavedSettings.getBOOL("RezWithLandGroup");
 	if (mRestrainedLove)
 	{
 		mFetchInventoryOnLogin	= TRUE;
@@ -216,26 +218,27 @@ void LLPrefsRainbowImpl::refresh()
 
 void LLPrefsRainbowImpl::cancel()
 {
-	gSavedSettings.setBOOL("ForceShowGrid",				mShowGrids);
-	gSavedSettings.setBOOL("SaveScriptsAsMono",			mSaveScriptsAsMono);
+	gSavedSettings.setBOOL("ForceShowGrid",			mShowGrids);
+	gSavedSettings.setBOOL("SaveScriptsAsMono",		mSaveScriptsAsMono);
 	gSavedSettings.setBOOL("DoubleClickTeleport",		mDoubleClickTeleport);
 	gSavedSettings.setBOOL("HideNotificationsInChat",	mHideNotificationsInChat);
 	gSavedSettings.setBOOL("DisableMessagesSpacing",	mDisableMessagesSpacing);
-	gSavedSettings.setBOOL("HideMasterRemote",			mHideMasterRemote);
-	gSavedSettings.setBOOL("ShowGroupsButton",			mShowGroupsButton);
-	gSavedSettings.setBOOL("UseOldChatHistory",			mUseOldChatHistory);
+	gSavedSettings.setBOOL("HideMasterRemote",		mHideMasterRemote);
+	gSavedSettings.setBOOL("ShowGroupsButton",		mShowGroupsButton);
+	gSavedSettings.setBOOL("UseOldChatHistory",		mUseOldChatHistory);
 	gSavedSettings.setBOOL("UseOldStatusBarIcons",		mUseOldStatusBarIcons);
 	gSavedSettings.setBOOL("UseOldTrackingDots",		mUseOldTrackingDots);
-	gSavedSettings.setBOOL("AllowMUpose",				mAllowMUpose);
-	gSavedSettings.setBOOL("AutoCloseOOC",				mAutoCloseOOC);
+	gSavedSettings.setBOOL("AllowMUpose",			mAllowMUpose);
+	gSavedSettings.setBOOL("AutoCloseOOC",			mAutoCloseOOC);
 	gSavedSettings.setBOOL("PlayTypingSound",			mPlayTypingSound);
-	gSavedSettings.setBOOL("PrivateLookAt",				mPrivateLookAt);
+	gSavedSettings.setBOOL("PrivateLookAt",			mPrivateLookAt);
 	gSavedSettings.setBOOL("FetchInventoryOnLogin",		mFetchInventoryOnLogin);
 	gSavedSettings.setBOOL("RestrainedLove",			mRestrainedLove);
-	gSavedSettings.setBOOL("EmeraldBreastPhysicsToggle",			mBreastPhysics);
+	gSavedSettings.setBOOL("EmeraldBreastPhysicsToggle",	mBreastPhysics);
 	gSavedSettings.setBOOL("SecondsInChatAndIMs",		mSecondsInChatAndIMs);
 	gSavedSettings.setBOOL("PreviewAnimInWorld",		mPreviewAnimInWorld);
-	gSavedSettings.setBOOL("SpeedRez",					mSpeedRez);
+	gSavedSettings.setBOOL("SpeedRez",				mSpeedRez);
+	gSavedSettings.setBOOL("RezWithLandGroup",		mRezWithLandGroup);
 	gSavedSettings.setU32("SpeedRezInterval",			mSpeedRezInterval);
 }
 

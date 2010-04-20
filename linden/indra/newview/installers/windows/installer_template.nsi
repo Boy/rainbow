@@ -67,7 +67,7 @@ Name ${INSTNAME}
 
 SubCaption 0 $(LicenseSubTitleSetup)	; override "license agreement" text
 
-BrandingText "Cool Viewer 1.22.12 R12 final"			; bottom of window text
+BrandingText "Cool Viewer 1.22.12 R13 final"			; bottom of window text
 Icon %%SOURCE%%\res\install_icon.ico			; our custom icon
 UninstallIcon %%SOURCE%%\res\uninstall_icon.ico    	; our custom icon
 WindowIcon on						; show our icon in left corner

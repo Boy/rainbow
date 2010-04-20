@@ -85,6 +85,9 @@ public:
 	/*virtual*/ LLColor3 getDebugColor() const; // For AGP debug display
 
 	void renderAvatars(LLVOAvatar *single_avatar, S32 pass = -1); // renders only one avatar if single_avatar is not null.
+
+	static BOOL sSkipOpaque;
+	static BOOL sSkipTransparent;
 };
 
 

@@ -249,12 +249,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Boy Lane"
             VALUE "FileDescription", "Rainbow Viewer:Cool Edition"
-            VALUE "FileVersion", "1.22.12.12"
+            VALUE "FileVersion", "1.22.12.13"
             VALUE "InternalName", "Rainbow Viewer::Cool Edition"
             VALUE "LegalCopyright", "GPL"
             VALUE "OriginalFilename", "CoolViewer.exe"
             VALUE "ProductName", "Rainbow Viewer::Cool Edition"
-            VALUE "ProductVersion", "1.22.12 R12"
+            VALUE "ProductVersion", "1.22.12 R13"
         END
     END
     BLOCK "VarFileInfo"
