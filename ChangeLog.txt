@@ -1,3 +1,23 @@
+2011-03-02 Boy Lane <boy.lane@yahoo.com>
+
+    * Area Search
+    
+    modified:   ChangeLog.txt
+    modified:   README.txt
+    modified:	RELEASE_NOTES.txt
+    modified:	linden/indra/newview/CMakeLists.txt
+    modified:	linden/indra/newview/app_settings/settings.xml
+    new file:	linden/indra/newview/jcfloaterareasearch.cpp
+    new file:	linden/indra/newview/jcfloaterareasearch.h
+    modified:	linden/indra/newview/llfloaterreporter.cpp
+    modified:	linden/indra/newview/llgivemoney.cpp
+    modified:	linden/indra/newview/llselectmgr.cpp
+    modified:	linden/indra/newview/llselectmgr.h
+    modified:	linden/indra/newview/llstartup.cpp
+    modified:	linden/indra/newview/llviewermenu.cpp
+    modified:	linden/indra/newview/skins/default/xui/en-us/floater_area_search.xml
+    modified:	linden/indra/newview/skins/default/xui/en-us/menu_viewer.xml
+
 2009-04-20 Boy Lane <boy.lane@yahoo.com>
 
     * RezWithLandGroup and some final cleanup
