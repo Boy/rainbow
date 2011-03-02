@@ -62,6 +62,7 @@ include_directories(
 
 set(viewer_SOURCE_FILES
     emeraldboobutils.cpp
+    jcfloaterareasearch.cpp
     llagent.cpp
     llagentaccess.cpp
     llagentdata.cpp
@@ -463,6 +464,7 @@ set(viewer_HEADER_FILES
     CMakeLists.txt
     ViewerInstall.cmake
     emeraldboobutils.h
+    jcfloaterareasearch.h
     llagent.h
     llagentaccess.h
     llagentdata.h
@@ -1041,6 +1043,7 @@ set(viewer_XUI_FILES
     skins/default/xui/en-us/floater_about.xml
     skins/default/xui/en-us/floater_active_speakers.xml
     skins/default/xui/en-us/floater_animation_preview.xml
+    skins/default/xui/en-us/floater_area_search.xml
     skins/default/xui/en-us/floater_auction.xml
     skins/default/xui/en-us/floater_audio_volume.xml
     skins/default/xui/en-us/floater_avatar_picker.xml

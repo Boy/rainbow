@@ -125,6 +125,7 @@ LLColor4 LLSelectMgr::sHighlightInspectColor;
 LLColor4 LLSelectMgr::sHighlightParentColor;
 LLColor4 LLSelectMgr::sHighlightChildColor;
 LLColor4 LLSelectMgr::sContextSilhouetteColor;
+std::set<LLUUID> LLSelectMgr::sObjectPropertiesFamilyRequests;
 
 static LLObjectSelection *get_null_object_selection();
 template<> 
@@ -4249,8 +4250,18 @@ void LLSelectMgr::sendListToRegions(const std::string& message_name,
 // Network communications
 //
 
+void LLSelectMgr::registerObjectPropertiesFamilyRequest(const LLUUID& object_id)
+{
+	sObjectPropertiesFamilyRequests.insert(object_id);
+}
+
 void LLSelectMgr::requestObjectPropertiesFamily(LLViewerObject* object)
 {
+	// Remember that we asked the properties of this object.
+	registerObjectPropertiesFamilyRequest(object->mID);
+
+	//llinfos << "Registered an ObjectPropertiesFamily request for object " << object->mID << llendl;
+
 	LLMessageSystem* msg = gMessageSystem;
 
 	msg->newMessageFast(_PREHASH_RequestObjectPropertiesFamily);
@@ -4442,6 +4453,15 @@ void LLSelectMgr::processObjectProperties(LLMessageSystem* msg, void** user_data
 void LLSelectMgr::processObjectPropertiesFamily(LLMessageSystem* msg, void** user_data)
 {
 	LLUUID id;
+	msg->getUUIDFast(_PREHASH_ObjectData, _PREHASH_ObjectID, id);
+	if (sObjectPropertiesFamilyRequests.count(id) == 0)
+	{
+		// This reply is not for us.
+		return;
+	}
+	// We got the reply, so remove the object from the list of pending requests
+	sObjectPropertiesFamilyRequests.erase(id);
+	//llinfos << "Got ObjectPropertiesFamily reply for object " << id << llendl;
 
 	U32 request_flags;
 	LLUUID creator_id;
@@ -4453,7 +4473,6 @@ void LLSelectMgr::processObjectPropertiesFamily(LLMessageSystem* msg, void** use
 	LLCategory category;
 	
 	msg->getU32Fast(_PREHASH_ObjectData, _PREHASH_RequestFlags,	request_flags );
-	msg->getUUIDFast(_PREHASH_ObjectData, _PREHASH_ObjectID,		id );
 	msg->getUUIDFast(_PREHASH_ObjectData, _PREHASH_OwnerID,		owner_id );
 	msg->getUUIDFast(_PREHASH_ObjectData, _PREHASH_GroupID,		group_id );
 	msg->getU32Fast(_PREHASH_ObjectData, _PREHASH_BaseMask,		base_mask );

@@ -339,6 +339,13 @@
 			<on_click function="ShowFloater" userdata="stat bar" />
 			<on_check function="FloaterVisible" userdata="stat bar" />
 		</menu_item_check>
+		<menu_item_separator bottom="-300" enabled="true" height="8" label="-----------" left="0"
+		     mouse_opaque="true" name="separator100" width="211" />
+		<menu_item_check bottom="-300" enabled="false" height="20" label="Area Object Search" left="0"
+		     mouse_opaque="true" name="Area Search" shortcut="control|shift|A" width="155">
+			<on_click function="ShowFloater" userdata="areasearch" />
+			<on_check function="FloaterVisible" userdata="areasearch" />
+		</menu_item_check>
 		<menu_item_check bottom="-319" enabled="true" height="19" label="Property Lines" left="0"
 		     mouse_opaque="true" name="Property Lines" shortcut="control|alt|shift|P"
 		     width="211">

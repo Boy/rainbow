@@ -616,6 +616,7 @@ public:
 	//void sendDehinge();
 	void sendSelect();
 
+	static void registerObjectPropertiesFamilyRequest(const LLUUID& id);
 	void requestObjectPropertiesFamily(LLViewerObject* object);	// asks sim for creator, permissions, resources, etc.
 	static void processObjectProperties(LLMessageSystem *mesgsys, void **user_data);
 	static void processObjectPropertiesFamily(LLMessageSystem *mesgsys, void **user_data);
@@ -714,6 +715,8 @@ private:
 	BOOL					mForceSelection;
 
 	LLAnimPauseRequest		mPauseRequest;
+
+	static std::set<LLUUID> sObjectPropertiesFamilyRequests;
 };
 
 // Utilities

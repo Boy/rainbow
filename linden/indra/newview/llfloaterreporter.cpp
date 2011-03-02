@@ -354,6 +354,7 @@ void LLFloaterReporter::getObjectInfo(const LLUUID& object_id)
 			{
 				// we have to query the simulator for information 
 				// about this object
+				LLSelectMgr::registerObjectPropertiesFamilyRequest(mObjectID);
 				LLMessageSystem* msg = gMessageSystem;
 				U32 request_flags = (mReportType == BUG_REPORT) ? BUG_REPORT_REQUEST : COMPLAINT_REPORT_REQUEST;
 				msg->newMessageFast(_PREHASH_RequestObjectPropertiesFamily);
