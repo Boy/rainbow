@@ -331,6 +331,11 @@
 			<on_click function="View.ToggleAvatarList" userdata="radar" />
 			<on_check control="ShowRadar" />
 		</menu_item_check>
+		<menu_item_separator />
+   		<menu_item_check label="Animation Overrider" name="AO" shortcut="control|shift|O">
+	 		<on_click function="View.ToggleAO" userdata="" />
+      			<on_check function="View.CheckAO" />
+    		</menu_item_check>
 		<menu_item_separator bottom="-281" enabled="true" height="8" label="-----------" left="0"
 		     mouse_opaque="true" name="separator3" width="211" />
 		<menu_item_check bottom="-300" enabled="true" height="19" label="Statistics Bar" left="0"

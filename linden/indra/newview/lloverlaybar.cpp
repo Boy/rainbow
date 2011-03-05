@@ -36,6 +36,7 @@
 
 #include "lloverlaybar.h"
 
+#include "aoremotectrl.h"
 #include "audioengine.h"
 #include "llrender.h"
 #include "llagent.h"
@@ -94,6 +95,13 @@ void* LLOverlayBar::createVoiceRemote(void* userdata)
 	return self->mVoiceRemote;
 }
 
+void* LLOverlayBar::createAORemote(void* userdata)
+{
+	LLOverlayBar *self = (LLOverlayBar*)userdata;	
+	self->mAORemote = new AORemoteCtrl();
+	return self->mAORemote;
+}
+
 void* LLOverlayBar::createChatBar(void* userdata)
 {
 	gChatBar = new LLChatBar();
@@ -104,6 +112,7 @@ LLOverlayBar::LLOverlayBar()
 	:	LLPanel(),
 		mMediaRemote(NULL),
 		mVoiceRemote(NULL),
+		mAORemote(NULL),
 		mMusicState(STOPPED)
 {
 	setMouseOpaque(FALSE);
@@ -114,6 +123,7 @@ LLOverlayBar::LLOverlayBar()
 	LLCallbackMap::map_t factory_map;
 	factory_map["media_remote"] = LLCallbackMap(LLOverlayBar::createMediaRemote, this);
 	factory_map["voice_remote"] = LLCallbackMap(LLOverlayBar::createVoiceRemote, this);
+	factory_map["ao_remote"] = LLCallbackMap(LLOverlayBar::createAORemote, this);
 	factory_map["chat_bar"] = LLCallbackMap(LLOverlayBar::createChatBar, this);
 	
 	LLUICtrlFactory::getInstance()->buildPanel(this, "panel_overlaybar.xml", &factory_map);
@@ -246,7 +256,7 @@ void LLOverlayBar::refresh()
 		buttons_changed = TRUE;
 	}
 
-
+	moveChildToBackOfTabGroup(mAORemote);
 	moveChildToBackOfTabGroup(mMediaRemote);
 	moveChildToBackOfTabGroup(mVoiceRemote);
 
@@ -255,6 +265,7 @@ void LLOverlayBar::refresh()
 	{
 		childSetVisible("media_remote_container", FALSE);
 		childSetVisible("voice_remote_container", FALSE);
+		childSetVisible("ao_remote_container", FALSE);
 		childSetVisible("state_buttons", FALSE);
 	}
 	else
@@ -262,6 +273,7 @@ void LLOverlayBar::refresh()
 		// update "remotes"
 		childSetVisible("media_remote_container", TRUE);
 		childSetVisible("voice_remote_container", LLVoiceClient::voiceEnabled());
+		childSetVisible("ao_remote_container", gSavedSettings.getBOOL("EnableAORemote"));
 		childSetVisible("state_buttons", TRUE);
 	}
 

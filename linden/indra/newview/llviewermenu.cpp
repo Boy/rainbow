@@ -81,6 +81,7 @@
 #include "llface.h"
 #include "llfirstuse.h"
 #include "llfloater.h"
+#include "floaterao.h"
 #include "llfloaterabout.h"
 #include "llfloaterbuycurrency.h"
 #include "llfloateractivespeakers.h"
@@ -7828,6 +7829,24 @@ class LLViewCheckHUDAttachments : public view_listener_t
 	}
 };
 
+class LLViewToggleAO : public view_listener_t
+{
+  bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
+  {
+    LLFloaterAO::show(NULL);
+    return true;
+  }
+};
+
+class LLViewCheckAO: public view_listener_t
+{
+	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
+	{
+		gMenuHolder->findControl(userdata["control"].asString())->setValue(LLFloaterAO::getInstance());
+		return true;
+	}
+};
+
 class LLEditEnableTakeOff : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
@@ -8187,6 +8206,7 @@ void initialize_menus()
 	addMenu(new LLViewZoomIn(), "View.ZoomIn");
 	addMenu(new LLViewZoomDefault(), "View.ZoomDefault");
 	addMenu(new LLViewFullscreen(), "View.Fullscreen");
+	addMenu(new LLViewToggleAO(), "View.ToggleAO");
 	addMenu(new LLViewDefaultUISize(), "View.DefaultUISize");
 
 	addMenu(new LLViewEnableMouselook(), "View.EnableMouselook");
@@ -8199,6 +8219,8 @@ void initialize_menus()
 	addMenu(new LLViewCheckHighlightTransparent(), "View.CheckHighlightTransparent");
 	addMenu(new LLViewCheckRenderType(), "View.CheckRenderType");
 	addMenu(new LLViewCheckHUDAttachments(), "View.CheckHUDAttachments");
+	addMenu(new LLViewToggleAO(), "View.ToggleAO");
+	addMenu(new LLViewCheckAO(), "View.CheckAO");
 
 	// World menu
 	addMenu(new LLWorldChat(), "World.Chat");

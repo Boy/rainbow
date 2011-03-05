@@ -68,7 +68,7 @@ Name ${INSTNAME}
 
 SubCaption 0 $(LicenseSubTitleSetup)	; override "license agreement" text
 
-BrandingText "Rainbow Viewer 1.22.12 R6 final"		; bottom of window text
+BrandingText "Rainbow Viewer 1.22.12 R7"		; bottom of window text
 Icon %%SOURCE%%\res\install_icon.ico			; our custom icon
 UninstallIcon %%SOURCE%%\res\uninstall_icon.ico    	; our custom icon
 WindowIcon on						; show our icon in left corner

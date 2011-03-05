@@ -61,7 +61,9 @@ include_directories(
     )
 
 set(viewer_SOURCE_FILES
+    aoremotectrl.cpp
     emeraldboobutils.cpp
+    floaterao.cpp
     jcfloaterareasearch.cpp
     llagent.cpp
     llagentaccess.cpp
@@ -463,7 +465,9 @@ endif (LINUX)
 set(viewer_HEADER_FILES
     CMakeLists.txt
     ViewerInstall.cmake
+    aoremotectrl.h
     emeraldboobutils.h
+    floaterao.h
     jcfloaterareasearch.h
     llagent.h
     llagentaccess.h
@@ -1043,6 +1047,7 @@ set(viewer_XUI_FILES
     skins/default/xui/en-us/floater_about.xml
     skins/default/xui/en-us/floater_active_speakers.xml
     skins/default/xui/en-us/floater_animation_preview.xml
+    skins/default/xui/en-us/floater_ao.xml
     skins/default/xui/en-us/floater_area_search.xml
     skins/default/xui/en-us/floater_auction.xml
     skins/default/xui/en-us/floater_audio_volume.xml
@@ -1155,6 +1160,9 @@ set(viewer_XUI_FILES
     skins/default/xui/en-us/menu_viewer.xml
     skins/default/xui/en-us/mime_types.xml
     skins/default/xui/en-us/notify.xml
+    skins/default/xui/en-us/panel_ao_remote_controls.xml
+    skins/default/xui/en-us/panel_ao_remote.xml
+    skins/default/xui/en-us/panel_ao_remote_expanded.xml
     skins/default/xui/en-us/panel_audio_device.xml
     skins/default/xui/en-us/panel_audio.xml
     skins/default/xui/en-us/panel_avatar_classified.xml
@@ -1227,6 +1235,7 @@ list(APPEND viewer_SOURCE_FILES ${viewer_XUI_FILES})
 
 set(viewer_APPSETTINGS_FILES
     app_settings/anim.ini
+    app_settings/ao_template.ini
     app_settings/cmd_line.xml
     app_settings/grass.xml
     app_settings/grids.xml
