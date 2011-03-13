@@ -2479,6 +2479,7 @@ bool idle_startup()
 	if (STATE_CLEANUP == LLStartUp::getStartupState())
 	{
 		set_startup_status(1.0, "", "");
+		LLViewerParcelMedia::loadDomainFilterList();
 		// Start the AO now that settings have loaded and login successful -- MC
 		if (!gAOInvTimer)
 		{

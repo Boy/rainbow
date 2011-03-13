@@ -79,6 +79,8 @@ public:
 	static void musicPause(void*);
 	static void musicStop(void*);
 	static void mediaStop(void*);
+	static void audioFilterPlay();
+	static void audioFilterStop();
 
 	static void toggleAudioVolumeFloater(void*);
 
@@ -93,7 +95,7 @@ protected:
 protected:
 	LLMediaRemoteCtrl*	mMediaRemote;
 	LLVoiceRemoteCtrl*	mVoiceRemote;
-	AORemoteCtrl*			mAORemote;
+	AORemoteCtrl*		mAORemote;
 	bool mBuilt;	// dialog constructed yet?
 	enum { STOPPED=0, PLAYING=1, PAUSED=2 };
 	S32 mMusicState;

@@ -43,14 +43,23 @@
 #include "llviewerparcelmediaautoplay.h"
 #include "llviewerwindow.h"
 #include "llfirstuse.h"
+#include "llfloaterchat.h"
+#include "llnotify.h"
+#include "llsdserialize.h"
+#include "audioengine.h"
+#include "lloverlaybar.h"
 
 // Static Variables
 
 S32 LLViewerParcelMedia::sMediaParcelLocalID = 0;
 LLUUID LLViewerParcelMedia::sMediaRegionID;
+LLSD LLViewerParcelMedia::sMediaFilterList;
 
 // Local functions
 void callback_play_media(S32 option, void* data);
+void callback_media_alert(S32 option, void* data);
+void callback_audio_alert(S32 option, void* data);
+std::string extractdomain(std::string url);
 
 // Move this to its own file.
 // helper class that tries to download a URL from a web site and calls a method
@@ -145,7 +154,14 @@ void LLViewerParcelMedia::update(LLParcel* parcel)
 						// for the results of a header curl.  In order to change the channel
 						// a mime type MUST be provided.
 						LLViewerMedia::setMimeType(parcel->getMediaType());
+						if (gSavedSettings.getBOOL("MediaEnableFilter"))
+						{
+						filterMediaUrl(parcel);
+						}
+						else
+						{
 						play(parcel);
+						}
 					}
 				}
 				else
@@ -304,7 +320,14 @@ void LLViewerParcelMedia::processParcelMediaCommandMessage( LLMessageSystem *msg
 			else
 			{
 				LLParcel *parcel = LLViewerParcelMgr::getInstance()->getAgentParcel();
-				play(parcel);
+				if (gSavedSettings.getBOOL("MediaEnableFilter"))
+				{
+					filterMediaUrl(parcel);
+				}
+				else
+				{
+					play(parcel);
+				}
 			}
 		}
 		else
@@ -320,7 +343,14 @@ void LLViewerParcelMedia::processParcelMediaCommandMessage( LLMessageSystem *msg
 		if(! LLViewerMedia::hasMedia())
 		{
 			LLParcel *parcel = LLViewerParcelMgr::getInstance()->getAgentParcel();
-			play(parcel);
+			if (gSavedSettings.getBOOL("MediaEnableFilter"))
+			{
+				filterMediaUrl(parcel);
+			}
+			else
+			{
+				play(parcel);
+			}
 		}
 		seek(time);
 	}
@@ -377,7 +407,14 @@ void LLViewerParcelMedia::processParcelMediaUpdate( LLMessageSystem *msg, void *
 			parcel->setMediaAutoScale(media_auto_scale);
 			parcel->setMediaLoop(media_loop);
 
-			play(parcel);
+			if (gSavedSettings.getBOOL("MediaEnableFilter"))
+			{
+				filterMediaUrl(parcel);
+			}
+			else
+			{
+				play(parcel);
+			}
 		}
 	}
 }
@@ -388,13 +425,222 @@ void callback_play_media(S32 option, void* data)
 	if (option == 0)
 	{
 		gSavedSettings.setBOOL("AudioStreamingVideo", TRUE);
-		LLViewerParcelMedia::play(parcel);
+		if (gSavedSettings.getBOOL("MediaEnableFilter"))
+		{
+			LLViewerParcelMedia::filterMediaUrl(parcel);
+		}
+		else
+		{
+			LLViewerParcelMedia::play(parcel);
+		}
 	}
 	else
 	{
 		gSavedSettings.setBOOL("AudioStreamingVideo", FALSE);
 	}
 	gSavedSettings.setWarning("FirstStreamingVideo", FALSE);
-
 }
 
+void LLViewerParcelMedia::filterMediaUrl(LLParcel* parcel)
+{
+	std::string media_url = parcel->getMediaURL();
+	std::string media_action;
+	std::string domain = extractdomain(media_url);
+    
+	for(int i = 0;i<(int)sMediaFilterList.size();i++)
+	{
+		if (sMediaFilterList[i].has(domain))
+		{
+			media_action = sMediaFilterList[i][domain].asString();
+			break;
+		}
+	}
+	if (media_action=="allow")
+	{
+		play(parcel);
+	}
+	else if (media_action=="deny")
+	{
+		LLChat chat;
+		chat.mText = "Media URL "+media_url+" blocked"+" - Blacklisted domain: "+domain;
+		chat.mSourceType = CHAT_SOURCE_SYSTEM;
+		LLFloaterChat::addChat(chat,FALSE,FALSE);
+	}
+	else
+	{
+		LLStringUtil::format_map_t args;
+		args["[MEDIAURL]"] = media_url;
+		gViewerWindow->alertXml("MediaAlert", args, callback_media_alert, parcel);
+	}
+}
+
+void callback_media_alert(S32 option, void* data)
+{
+	LLParcel* parcel = (LLParcel*)data;
+	std::string media_url = parcel->getMediaURL();
+	std::string domain = extractdomain(media_url);
+
+	LLChat chat;
+	chat.mSourceType = CHAT_SOURCE_SYSTEM;
+
+	if (option== 0) //allow
+	{
+		LLViewerParcelMedia::play(parcel);
+	}
+	else if (option== 2) //Blacklist
+	{
+		LLSD newmedia;
+		newmedia[domain] = "deny";
+		LLViewerParcelMedia::sMediaFilterList.append(newmedia);
+		LLViewerParcelMedia::saveDomainFilterList();
+		chat.mText = "Domain "+domain+" is now blacklisted";
+		LLFloaterChat::addChat(chat,FALSE,FALSE);
+	}
+	else if (option== 3) // Whitelist
+	{
+		LLSD newmedia;
+		newmedia[domain] = "allow";
+		LLViewerParcelMedia::sMediaFilterList.append(newmedia);
+		LLViewerParcelMedia::saveDomainFilterList();
+		chat.mText = "Domain "+domain+" is now whitelisted";
+		LLFloaterChat::addChat(chat,FALSE,FALSE);
+		LLViewerParcelMedia::play(parcel);
+	}	
+}
+
+void LLViewerParcelMedia::filterAudioUrl(LLParcel* parcel)
+{
+	std::string media_url = parcel->getMediaURL();
+	std::string media_action;
+	std::string domain = extractdomain(media_url);
+    
+	for(int i = 0;i<(int)sMediaFilterList.size();i++)
+	{
+		if (sMediaFilterList[i].has(domain))
+		{
+			media_action = sMediaFilterList[i][domain].asString();
+			break;
+		}
+	}
+	if (media_action=="allow")
+	{
+		gAudiop->startInternetStream(media_url);
+		LLOverlayBar::audioFilterPlay();
+	}
+	else if (media_action=="deny")
+	{
+		LLChat chat;
+		chat.mText = "Audio URL "+media_url+" blocked"+" - Blacklisted domain: "+domain;
+		chat.mSourceType = CHAT_SOURCE_SYSTEM;
+		LLFloaterChat::addChat(chat,FALSE,FALSE);
+		LLOverlayBar::audioFilterStop();
+	}
+	else
+	{
+		LLStringUtil::format_map_t args;
+		args["[AUDIOURL]"] = media_url;
+		gViewerWindow->alertXml("AudioAlert", args, callback_audio_alert, parcel);
+	}
+}
+
+void callback_audio_alert(S32 option, void* data)
+{
+	LLParcel* parcel = (LLParcel*)data;
+	std::string media_url = parcel->getMediaURL();
+	std::string domain = extractdomain(media_url);
+
+	LLChat chat;
+	chat.mSourceType = CHAT_SOURCE_SYSTEM;
+
+	if (option== 0) //allow
+	{
+		gAudiop->startInternetStream(media_url);
+		LLOverlayBar::audioFilterPlay();	
+	}
+	else if (option== 1) //deny
+	{
+		gAudiop->stopInternetStream();
+		LLOverlayBar::audioFilterStop();
+	}
+	else if (option== 2) //Blacklist
+	{
+		LLSD newmedia;
+		newmedia[domain] = "deny";
+		LLViewerParcelMedia::sMediaFilterList.append(newmedia);
+		LLViewerParcelMedia::saveDomainFilterList();
+		chat.mText = "Domain "+domain+" is now blacklisted";
+		LLFloaterChat::addChat(chat,FALSE,FALSE);
+		gAudiop->stopInternetStream();
+		LLOverlayBar::audioFilterStop();
+	}
+	else if (option== 3) // Whitelist
+	{
+		LLSD newmedia;
+		newmedia[domain] = "allow";
+		LLViewerParcelMedia::sMediaFilterList.append(newmedia);
+		LLViewerParcelMedia::saveDomainFilterList();
+		chat.mText = "Domain "+domain+" is now whitelisted";
+		LLFloaterChat::addChat(chat,FALSE,FALSE);
+		gAudiop->startInternetStream(media_url);
+		LLOverlayBar::audioFilterPlay();
+	}
+}
+
+bool LLViewerParcelMedia::saveDomainFilterList()
+{
+	std::string medialist_filename = gDirUtilp->getExpandedFilename(LL_PATH_PER_SL_ACCOUNT, "medialist.xml");
+
+	llofstream medialistFile(medialist_filename);
+	LLSDSerialize::toPrettyXML(sMediaFilterList, medialistFile);
+	medialistFile.close();
+	return true;
+}
+
+bool LLViewerParcelMedia::loadDomainFilterList()
+{
+	std::string medialist_filename = gDirUtilp->getExpandedFilename(LL_PATH_PER_SL_ACCOUNT, "medialist.xml");
+
+	if(!LLFile::isfile(medialist_filename))
+	{
+		LLSD emptyllsd;
+		llofstream medialistFile(medialist_filename);
+		LLSDSerialize::toPrettyXML(emptyllsd, medialistFile);
+		medialistFile.close();
+	}
+
+	if(LLFile::isfile(medialist_filename))
+	{
+		llifstream medialistFile(medialist_filename);
+		LLSDSerialize::fromXML(sMediaFilterList, medialistFile);
+		medialistFile.close();
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+std::string extractdomain(std::string url)
+{
+	size_t pos = url.find("//");
+
+	if (pos != std::string::npos)
+	{
+		int count = url.size()- pos+2;
+		url = url.substr(pos+2, count);
+	}
+
+	pos = url.find("/");
+
+	if (pos != std::string::npos)
+	{
+		url = url.substr(0, pos);
+	}
+pos = url.find(":");  
+if (pos != std::string::npos)
+{
+	url = url.substr(0, pos);
+}
+return url;
+}

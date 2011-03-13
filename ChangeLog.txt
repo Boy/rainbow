@@ -1,3 +1,25 @@
+2011-03-13 Boy Lane <boy.lane@yahoo.com>
+
+    * Backport of Media Filter from Sione, xml nitemare, editor still not included but the thing works
+
+    new file:   linden/indra/newview/README_IMPORTANT!!!.txt
+    new file:   linden/indra/newview/Release_Notes.txt
+    modified:   linden/indra/newview/app_settings/settings.xml
+    modified:   linden/indra/newview/lloverlaybar.cpp
+    modified:   linden/indra/newview/lloverlaybar.h
+    modified:   linden/indra/newview/llpanelaudioprefs.cpp
+    modified:   linden/indra/newview/llpanelaudioprefs.h
+    modified:   linden/indra/newview/llpreviewnotecard.h
+    modified:   linden/indra/newview/llstartup.cpp
+    modified:   linden/indra/newview/lltoolpie.cpp
+    modified:   linden/indra/newview/llviewercontrol.cpp
+    modified:   linden/indra/newview/llviewerparcelmedia.cpp
+    modified:   linden/indra/newview/llviewerparcelmedia.h
+    modified:   linden/indra/newview/llviewerparcelmediaautoplay.cpp
+    modified:   linden/indra/newview/llviewerparcelmgr.cpp
+    modified:   linden/indra/newview/skins/default/xui/en-us/alerts.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/panel_preferences_audio.xml
+
 2011-03-05 Boy Lane <boy.lane@yahoo.com>
 
     * Backport of built-in AO from Emerald/Imprudence

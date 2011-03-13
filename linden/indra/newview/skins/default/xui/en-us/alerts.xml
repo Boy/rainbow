@@ -4968,5 +4968,43 @@ Would you like to visit the Second Life website to set this up?
 			The string [STRING_NAME] is missing from strings.xml
 		</message>
 	</alert>
+	<alert modal="true" name="MediaAlert">
+		<message name="message">
+		The owner of this parcel has requested media at the following location to be loaded by your viewer:
+
+	   	[MEDIAURL]
+		</message>
+	   	<option name="Allow">
+			 Allow
+		</option>
+	   	<option name="Deny">
+			 Deny
+		</option>
+	   	<option name="Blacklist">
+		     	 Blacklist
+		</option>
+	   	<option name="Whitelist">
+			 Whitelist"
+		</option>
+ 	</alert>
+	<alert modal="true" name="AudioAlert">
+		<message name="message">
+		The owner of this parcel has requested music at the following location to be played by your viewer:
+
+		[AUDIOURL]
+		</message>
+	   	<option name="Allow">
+	 		  Allow
+		</option>
+	   	<option name="Deny">
+			  Deny
+		</option>
+	   	<option name="Blacklist">
+			  Blacklist
+		</option>
+	   	<option name="Whitelist">
+			  Whitelist
+		</option>
+	</alert>
 </alerts>
 

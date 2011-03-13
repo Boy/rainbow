@@ -51,6 +51,12 @@ class LLViewerParcelMedia
 
 		static void play(LLParcel* parcel);
 			// user clicked play button in media transport controls
+		static void filterMediaUrl(LLParcel* parcel);
+			// user has media filter enabled and play requested
+		static void filterAudioUrl(LLParcel* parcel);
+			// user has media filter enabled and play requested
+		static bool loadDomainFilterList();
+		static bool saveDomainFilterList();
 
 		static void stop();
 			// user clicked stop button in media transport controls
@@ -70,6 +76,7 @@ class LLViewerParcelMedia
 	public:
 		static S32 sMediaParcelLocalID;
 		static LLUUID sMediaRegionID;
+		static LLSD sMediaFilterList;
 };
 
 #endif

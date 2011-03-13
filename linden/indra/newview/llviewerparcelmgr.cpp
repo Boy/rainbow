@@ -83,7 +83,7 @@ LLPointer<LLViewerImage> sBlockedImage;
 LLPointer<LLViewerImage> sPassImage;
 
 // Local functions
-void optionally_start_music(const std::string& music_url);
+void optionally_start_music(LLParcel* parcel);
 void callback_start_music(S32 option, void* data);
 void optionally_prepare_video(const LLParcel *parcelp);
 void callback_prepare_video(S32 option, void* data);
@@ -1669,7 +1669,7 @@ void LLViewerParcelMgr::processParcelProperties(LLMessageSystem *msg, void **use
 					{
 						if (music_url.substr(0,7) == "http://")
 						{
-							optionally_start_music(music_url);
+							optionally_start_music(parcel);
 						}
 					}
 					else if (!gAudiop->getInternetStreamURL().empty())
@@ -1687,11 +1687,11 @@ void LLViewerParcelMgr::processParcelProperties(LLMessageSystem *msg, void **use
 		}//if gAudiop
 
 		// now check for video
-		LLViewerParcelMedia::update( parcel );
+		LLViewerParcelMedia::update(parcel);
 	};
 }
 
-void optionally_start_music(const std::string& music_url)
+void optionally_start_music(LLParcel* parcel)
 {
 	if (gSavedSettings.getBOOL("AudioStreamingMusic"))
 	{
@@ -1702,7 +1702,14 @@ void optionally_start_music(const std::string& music_url)
 		// changed as part of SL-4878
 		if ( gOverlayBar && gOverlayBar->musicPlaying())
 		{
-			gAudiop->startInternetStream(music_url);
+			if (gSavedSettings.getBOOL("MediaEnableFilter"))
+			{
+				LLViewerParcelMedia::filterAudioUrl(parcel);
+			}
+			else
+			{
+				gAudiop->startInternetStream(parcel->getMediaURL());
+			}
 		}
 	}
 }
