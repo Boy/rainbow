@@ -510,7 +510,7 @@ void callback_media_alert(S32 option, void* data)
 
 void LLViewerParcelMedia::filterAudioUrl(LLParcel* parcel)
 {
-	std::string media_url = parcel->getMediaURL();
+	std::string media_url = parcel->getMusicURL();
 	std::string media_action;
 	std::string domain = extractdomain(media_url);
     
@@ -546,7 +546,7 @@ void LLViewerParcelMedia::filterAudioUrl(LLParcel* parcel)
 void callback_audio_alert(S32 option, void* data)
 {
 	LLParcel* parcel = (LLParcel*)data;
-	std::string media_url = parcel->getMediaURL();
+	std::string media_url = parcel->getMusicURL();
 	std::string domain = extractdomain(media_url);
 
 	LLChat chat;
