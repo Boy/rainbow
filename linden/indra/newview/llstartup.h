@@ -73,6 +73,7 @@ typedef enum {
 
 // exported symbols
 extern bool gAgentMovementCompleted;
+extern bool gIsInSecondLife;
 extern LLPointer<LLImageGL> gStartImageGL;
 extern std::string gInitialOutfit;
 extern std::string gInitialOutfitGender;	// "male" or "female"

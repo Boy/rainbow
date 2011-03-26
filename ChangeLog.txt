@@ -1,5 +1,12 @@
 2011-03-26 Boy Lane <boy.lane@yahoo.com>
 
+    * SecondLife grid detection from CoolVL
+
+    modified:   llstartup.cpp
+    modified:   llstartup.h
+
+2011-03-26 Boy Lane <boy.lane@yahoo.com>
+
     * URL de-obfuscation - backport from STORM-1037 (removes hide URL checkboxes and always shows full media/audio URLs for parcel)
 
     modified:   ChangeLog.txt
