@@ -118,6 +118,7 @@
 #include "llfloaterland.h"
 #include "llfloaterlandholdings.h"
 #include "llfloatermap.h"
+#include "llfloatermediafilter.h"
 #include "llfloatermute.h"
 #include "llfloateropenobject.h"
 #include "llfloaterpermissionsmgr.h"
@@ -5652,6 +5653,10 @@ class LLShowFloater : public view_listener_t
 		{
 			LLFloaterMute::toggleInstance();
 		}
+		else if (floater_name == "media filter")
+		{
+			LLFloaterMediaFilter::toggleInstance();
+		}
 		else if (floater_name == "camera controls")
 		{
 			LLFloaterCamera::toggleInstance();
@@ -5812,6 +5817,10 @@ class LLFloaterVisible : public view_listener_t
 		else if (floater_name == "mute list")
 		{
 			new_value = LLFloaterMute::instanceVisible();
+		}
+		else if (floater_name == "media filter")
+		{
+			new_value = LLFloaterMediaFilter::instanceVisible();
 		}
 		else if (floater_name == "camera controls")
 		{

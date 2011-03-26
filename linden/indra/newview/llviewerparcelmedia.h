@@ -49,14 +49,21 @@ class LLViewerParcelMedia
 			// called when the agent's parcel has a new URL, or the agent has
 			// walked on to a new parcel with media
 
-		static void play(LLParcel* parcel);
+		static void play(LLParcel* parcel, bool filter = true);
 			// user clicked play button in media transport controls
+		static void playStreamingMusic(LLParcel* parcel, bool filter = true);
+			// play the parcel music stream
+		static void stopStreamingMusic();
+			// stop the parcel music stream
 		static void filterMediaUrl(LLParcel* parcel);
 			// user has media filter enabled and play requested
 		static void filterAudioUrl(LLParcel* parcel);
-			// user has media filter enabled and play requested
+			// user has audio filter enabled and play requested
+		static bool allowedMedia(std::string media_url);
 		static bool loadDomainFilterList();
-		static bool saveDomainFilterList();
+		static void saveDomainFilterList();
+		static void clearDomainFilterList();
+		static std::string extractDomain(std::string url);
 
 		static void stop();
 			// user clicked stop button in media transport controls
@@ -76,7 +83,13 @@ class LLViewerParcelMedia
 	public:
 		static S32 sMediaParcelLocalID;
 		static LLUUID sMediaRegionID;
+
+		static bool sIsUserAction;
+		static bool sMediaFilterListLoaded;
 		static LLSD sMediaFilterList;
+		static std::set<std::string> sMediaQueries;
+		static std::set<std::string> sAllowedMedia;
+		static std::set<std::string> sDeniedMedia;
 };
 
 #endif

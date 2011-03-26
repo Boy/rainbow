@@ -1089,4 +1089,9 @@ Click Accept to join the chat or Decline to decline the invitation. Click Mute t
 			For instructions, make a new template in the AO. Use the toolbar to toggle the AO on/off.
 		</message>
 	</notify>
+	<notify name="MediaBlocked" tip="true">
+		<message name="message">
+			Media/audio URL blocked for DOMAIN.
+		</notify>
+	</alert>
 </notifications>

@@ -300,9 +300,14 @@
 			<on_check function="FloaterVisible" userdata="mute list" />
 		</menu_item_check>
 		<menu_item_check bottom="189" enabled="true" height="19" label="Teleport History" left="0"
-						 mouse_opaque="true" name="Teleport History" shortcut="" width="211">
+		     mouse_opaque="true" name="Teleport History" shortcut="" width="211">
 			<on_click function="ShowFloater" userdata="teleport history" />
 			<on_check function="FloaterVisible" userdata="teleport history" />
+		</menu_item_check>
+		<menu_item_check bottom="-192" enabled="true" height="19" label="Media Filter" left="0"
+		     mouse_opaque="true" name="Media Filter" width="211">
+			<on_click function="ShowFloater" userdata="media filter" />
+			<on_check function="FloaterVisible" userdata="media filter" />
 		</menu_item_check>
 		<menu_item_separator bottom="-197" enabled="true" height="8" label="-----------" left="0"
 		     mouse_opaque="true" name="separator2" width="211" />

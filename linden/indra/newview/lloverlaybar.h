@@ -95,7 +95,7 @@ protected:
 protected:
 	LLMediaRemoteCtrl*	mMediaRemote;
 	LLVoiceRemoteCtrl*	mVoiceRemote;
-	AORemoteCtrl*		mAORemote;
+	AORemoteCtrl*			mAORemote;
 	bool mBuilt;	// dialog constructed yet?
 	enum { STOPPED=0, PLAYING=1, PAUSED=2 };
 	S32 mMusicState;

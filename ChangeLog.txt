@@ -1,3 +1,28 @@
+2011-03-26 Boy Lane <boy.lane@yahoo.com>
+
+    * Final media filter based on Sione/Henri. Fixed a bug in Henri's version that led to double display of 2 URLs in parcels with audio and media enabled (separated media_url and music_url again)
+
+modified:   ChangeLog.txt
+modified:   linden/indra/newview/CMakeLists.txt
+modified:   linden/indra/newview/app_settings/settings.xml
+modified:   linden/indra/newview/lloverlaybar.cpp
+modified:   linden/indra/newview/lloverlaybar.h
+modified:   linden/indra/newview/llpanelaudioprefs.cpp
+modified:   linden/indra/newview/llstartup.cpp
+modified:   linden/indra/newview/lltoolpie.cpp
+modified:   linden/indra/newview/llviewercontrol.cpp
+modified:   linden/indra/newview/llviewermenu.cpp
+modified:   linden/indra/newview/llviewerparcelmedia.cpp
+modified:   linden/indra/newview/llviewerparcelmedia.h
+modified:   linden/indra/newview/llviewerparcelmediaautoplay.cpp
+modified:   linden/indra/newview/llviewerparcelmgr.cpp
+modified:   linden/indra/newview/skins/default/xui/en-us/alerts.xml
+modified:   linden/indra/newview/skins/default/xui/en-us/menu_viewer.xml
+modified:   linden/indra/newview/skins/default/xui/en-us/notify.xml
+new file:   linden/indra/newview/llfloatermediafilter.cpp
+new file:   linden/indra/newview/llfloatermediafilter.h
+new file:   linden/indra/newview/skins/default/xui/en-us/floater_media_filter.xml
+
 2011-03-25 Boy Lane <boy.lane@yahoo.com>
 
     * Minor nasty bug fixed with the mediafilter (getMediaURL instead of getMusicURL for audio filter), just to clean up at this stage
@@ -5,7 +30,6 @@
     modified:   ChangeLog.txt
     modified:   linden/indra/newview/llviewerparcelmedia.cpp
 
-	
 2011-03-13 Boy Lane <boy.lane@yahoo.com>
 
     * Backport of Media Filter from Sione, xml nitemare, editor still not included but the thing works

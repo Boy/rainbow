@@ -321,14 +321,7 @@ static bool handleAudioStreamMusicChanged(const LLSD& newvalue)
 				// otherwise music will briefly stop
 				if ( !gAudiop->isInternetStreamPlaying() )
 				{
-					if (gSavedSettings.getBOOL("MediaEnableFilter"))
-					{
-						LLViewerParcelMedia::filterAudioUrl(LLViewerParcelMgr::getInstance()->getAgentParcel());
-					}
-					else
-					{
-						gAudiop->startInternetStream(LLViewerParcelMgr::getInstance()->getAgentParcel()->getMusicURL());
-					}
+					LLViewerParcelMedia::playStreamingMusic(LLViewerParcelMgr::getInstance()->getAgentParcel());
 				}
 			}
 		}

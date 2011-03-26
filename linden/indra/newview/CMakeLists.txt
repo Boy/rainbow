@@ -169,6 +169,7 @@ set(viewer_SOURCE_FILES
     llfloaterlandholdings.cpp
     llfloaterlandmark.cpp
     llfloatermap.cpp
+    llfloatermediafilter.cpp
     llfloatermemleak.cpp
     llfloatermute.cpp
     llfloaternamedesc.cpp
@@ -575,6 +576,7 @@ set(viewer_HEADER_FILES
     llfloaterlandholdings.h
     llfloaterlandmark.h
     llfloatermap.h
+    llfloatermediafilter.h
     llfloatermemleak.h
     llfloatermute.h
     llfloaternamedesc.h

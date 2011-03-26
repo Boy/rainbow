@@ -1696,20 +1696,13 @@ void optionally_start_music(LLParcel* parcel)
 	if (gSavedSettings.getBOOL("AudioStreamingMusic"))
 	{
 		// Make the user click the start button on the overlay bar. JC
-		//		llinfos << "Starting parcel music " << music_url << llendl;
+		//		llinfos << "Starting parcel music " << parcel->getMusicURL() << llendl;
 
 		// now only play music when you enter a new parcel if the control is in PLAY state
 		// changed as part of SL-4878
-		if ( gOverlayBar && gOverlayBar->musicPlaying())
+		if (gOverlayBar && gOverlayBar->musicPlaying())
 		{
-			if (gSavedSettings.getBOOL("MediaEnableFilter"))
-			{
-				LLViewerParcelMedia::filterAudioUrl(parcel);
-			}
-			else
-			{
-				gAudiop->startInternetStream(parcel->getMediaURL());
-			}
+			LLViewerParcelMedia::playStreamingMusic(parcel);
 		}
 	}
 }
