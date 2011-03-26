@@ -594,7 +594,7 @@ void join_group_callback(S32 option, void* user_data)
 	if(option == 0 && data && !data->mGroupID.isNull())
 	{
 		// check for promotion or demotion.
-		S32 max_groups = MAX_AGENT_GROUPS;
+		S32 max_groups = gMaxAgentGroups;
 		if(gAgent.isInGroup(data->mGroupID)) ++max_groups;
 
 		if(gAgent.mGroups.count() < max_groups)

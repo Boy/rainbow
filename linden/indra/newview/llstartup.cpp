@@ -210,6 +210,8 @@ std::string gInitialOutfitGender;
 std::string SCREEN_HOME_FILENAME = "screen_home.bmp";
 std::string SCREEN_LAST_FILENAME = "screen_last.bmp";
 
+S32  gMaxAgentGroups = DEFAULT_MAX_AGENT_GROUPS;
+
 //
 // Imported globals
 //
@@ -1029,6 +1031,8 @@ bool idle_startup()
 		requested_options.push_back("buddy-list");
 		requested_options.push_back("ui-config");
 #endif
+		requested_options.push_back("max_groups");			// OpenSim
+		requested_options.push_back("max-agent-groups");	// SL
 		requested_options.push_back("tutorial_setting");
 		requested_options.push_back("login-flags");
 		requested_options.push_back("global-textures");
@@ -1113,7 +1117,7 @@ bool idle_startup()
 		// reset globals
 		gAcceptTOS = FALSE;
 		gAcceptCriticalMessage = FALSE;
-		std::string temp_uri = LLViewerLogin::getInstance()->getCurrentGridURI();
+		std::string temp_uri = sAuthUris[sAuthUriNum];
 		LLStringUtil::toLower(temp_uri);
 		gIsInSecondLife = (temp_uri.find("aditi") != std::string::npos ||
 						   temp_uri.find("agni") != std::string::npos ||
@@ -1548,6 +1552,21 @@ bool idle_startup()
 				}
 			}
 
+			std::string max_agent_groups = LLUserAuth::getInstance()->getResponse("max-agent-groups");
+			if (max_agent_groups.empty())
+			{
+				max_agent_groups = LLUserAuth::getInstance()->getResponse("max_groups");
+			}
+			if (!max_agent_groups.empty())
+			{
+				gMaxAgentGroups = atoi(max_agent_groups.c_str());
+				LL_INFOS("LLStartup") << "gMaxAgentGroups read from login.cgi: " << gMaxAgentGroups << LL_ENDL;
+			}
+			else
+			{
+				gMaxAgentGroups = (gIsInSecondLife ? DEFAULT_MAX_AGENT_GROUPS : OPENSIM_DEFAULT_MAX_AGENT_GROUPS);
+				LL_INFOS("LLStartup") << "gMaxAgentGroups set to default: " << gMaxAgentGroups << LL_ENDL;
+			}
 
 			// JC: gesture loading done below, when we have an asset system
 			// in place.  Don't delete/clear user_credentials until then.
