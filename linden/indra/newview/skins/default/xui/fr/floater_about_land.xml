@@ -365,8 +365,6 @@ média :
 			</text>
 			<check_box left="97" label="Échelle automatique" name="media_auto_scale" tool_tip="Si vous sélectionnez cette option, le contenu de cette parcelle sera automatiquement mis à l&apos;échelle. La qualité visuelle sera peut-être amoindrie mais vous n&apos;aurez à faire aucune autre mise à l&apos;échelle ou alignement."/>
 			<check_box label="Média en boucle" name="media_loop" tool_tip="Jouer le média en boucle. Lorsque le média aura fini de jouer, il recommencera."/>
-			<check_box left="97" label="Masquer l&apos;URL du média" name="hide_media_url" tool_tip="Si vous cochez cette option, les personnes non autorisées à accéder aux infos de cette parcelle ne verront pas l&apos;URL du média. Cette option n&apos;est pas disponible pour les fichiers HTML."/>
-			<check_box label="Masquer l&apos;URL de la musique" name="hide_music_url" tool_tip="Si vous cochez cette option, les personnes non autorisées à accéder aux infos de cette parcelle ne verront pas l&apos;URL de la musique."/>
 			<text name="media_size" tool_tip="Taille du média Web, laisser 0 pour la valeur par défaut." width="105" left="102">
 				Taille du média :
 			</text>

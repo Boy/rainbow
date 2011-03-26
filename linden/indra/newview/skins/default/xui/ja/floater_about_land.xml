@@ -359,8 +359,6 @@
 			</text>
 			<check_box label="スケールを自動設定" name="media_auto_scale" tool_tip="このオプションをチェックすると、この区画のコンテンツのスケールが自動的に設定されます。 動作速度と画質が少し低下することがありますが、他のテクスチャーのスケーリングや整列が必要になることはありません。"/>
 			<check_box label="メディアのループ" name="media_loop" tool_tip="メディアをループ再生します。  メディアの再生が終わったら、最初から再生し直します。"/>
-			<check_box label="メディア URL を隠す" name="hide_media_url" tool_tip="このオプションをオンにすると、許可なしでこの区画情報にアクセスしているユーザーにはメディア URL が表示されません。 これは HTML タイプには使用できませんのでご注意ください。"/>
-			<check_box label="音楽のURLを隠す" name="hide_music_url" tool_tip="このオプションをオンにすると、許可なしでこの区画情報にアクセスしているユーザーには音楽の URL が表示されません。"/>
 			<text name="media_size" tool_tip="レンダリングするウェブ・メディアのサイズ。デフォルトの 0 のままにします。">
 				サイズ：
 			</text>

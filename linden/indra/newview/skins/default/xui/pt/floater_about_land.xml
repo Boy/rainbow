@@ -358,8 +358,6 @@ Mídia:
 			</text>
 			<check_box left="97" label="Escala automática" name="media_auto_scale" tool_tip="Marcando esta opção o conteúdo se ajustará ao lote automaticamente. O lote pode se tornar lento e com baixa qualidade visual nenhum outro ajuste de textura ou alinhamento será necessário."/>
 			<check_box label="Mídia em Repetição" name="media_loop" tool_tip="Executar a mídia repetidamente. Quando a mídia terminar a execução, ela reiniciará do começo."/>
-			<check_box left="97" label="Esconder a URL da Mídia" name="hide_media_url" tool_tip="Ativando esta opção, a URL da mídia se ocultará para quaisquer visualizadores não autorizados a ver esta informação do terreno. Notar que isto não está disponível para tipos HTML."/>
-			<check_box label="Esconder a URL de Música" name="hide_music_url" tool_tip="Ativando esta opção, a URL de música se esconderá para visualizadores não autorizados a ver esta informação do terreno"/>
 			<text name="media_size" tool_tip="Tamanho para desenhar a mídia Web, deixar 0 como padrão." width="115" left="102">
 				Tamanho da mídia:
 			</text>

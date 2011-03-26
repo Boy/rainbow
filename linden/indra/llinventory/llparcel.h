@@ -216,8 +216,6 @@ public:
 	void	setMediaID(const LLUUID& id) { mMediaID = id; }
 	void	setMediaAutoScale ( U8 flagIn ) { mMediaAutoScale = flagIn; }
 	void    setMediaLoop (U8 loop) { mMediaLoop = loop; }
-	void	setObscureMedia( U8 flagIn ) { mObscureMedia = flagIn; }
-	void	setObscureMusic( U8 flagIn ) { mObscureMusic = flagIn; }
 	void setMediaWidth(S32 width);
 	void setMediaHeight(S32 height);
 	virtual void	setLocalID(S32 local_id);
@@ -314,8 +312,6 @@ public:
 	S32				getMediaHeight() const		{ return mMediaHeight; }
 	U8				getMediaAutoScale() const	{ return mMediaAutoScale; }
 	U8              getMediaLoop() const        { return mMediaLoop; }
-	U8				getObscureMedia() const		{ return mObscureMedia; }
-	U8				getObscureMusic() const		{ return mObscureMusic; }
 	S32				getLocalID() const			{ return mLocalID; }
 	const LLUUID&	getOwnerID() const			{ return mOwnerID; }
 	const LLUUID&	getGroupID() const			{ return mGroupID; }
@@ -597,8 +593,6 @@ protected:
 	S32					mMediaHeight;
 	U8					mMediaAutoScale;
 	U8                  mMediaLoop;
-	U8					mObscureMedia;
-	U8					mObscureMusic;
 	LLUUID				mMediaID;
 	S32					mPassPrice;
 	F32					mPassHours;

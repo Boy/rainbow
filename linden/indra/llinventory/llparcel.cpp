@@ -217,8 +217,6 @@ void LLParcel::init(const LLUUID &owner_id,
 	mMediaID.setNull();
 	mMediaAutoScale = 0;
 	mMediaLoop = TRUE;
-	mObscureMedia = 1;
-	mObscureMusic = 1;
 	mMediaWidth = 0;
 	mMediaHeight = 0;
 
@@ -636,14 +634,6 @@ BOOL LLParcel::importStream(std::istream& input_stream)
 		{
 			LLStringUtil::convertToU8(value, mMediaLoop);
 		}
-		else if ("obscure_media" == keyword)
-		{
-			LLStringUtil::convertToU8(value, mObscureMedia);
-		}		
-		else if ("obscure_music" == keyword)
-		{
-			LLStringUtil::convertToU8(value, mObscureMusic);
-		}		
 		else if ("owner_id" == keyword)
 		{
 			mOwnerID.set( value );
@@ -1120,8 +1110,6 @@ BOOL LLParcel::exportStream(std::ostream& output_stream)
 
 	output_stream << "\t\t media_auto_scale " << (mMediaAutoScale ? 1 : 0)  << "\n";
 	output_stream << "\t\t media_loop " << (mMediaLoop ? 1 : 0)  << "\n";
-	output_stream << "\t\t obscure_media " << (mObscureMedia ? 1 : 0)  << "\n";
-	output_stream << "\t\t obscure_music " << (mObscureMusic ? 1 : 0)  << "\n";
 
 	mMediaID.toString(id_string);
 	output_stream << "\t\t media_id         " << id_string  << "\n";
@@ -1346,8 +1334,8 @@ void LLParcel::packMessage(LLSD& msg)
 	msg["media_height"] = getMediaHeight();
 	msg["auto_scale"] = getMediaAutoScale();
 	msg["media_loop"] = getMediaLoop();
-	msg["obscure_media"] = getObscureMedia();
-	msg["obscure_music"] = getObscureMusic();
+	msg["obscure_media"] = FALSE; // OBSOLETE - no longer used
+	msg["obscure_music"] = FALSE; // OBSOLETE - no longer used
 	msg["media_id"] = getMediaID();
 	msg["group_id"] = getGroupID();
 	msg["pass_price"] = mPassPrice;
@@ -1407,16 +1395,12 @@ void LLParcel::unpackMessage(LLMessageSystem* msg)
 		msg->getS32("MediaData", "MediaWidth", mMediaWidth);
 		msg->getS32("MediaData", "MediaHeight", mMediaHeight);
 		msg->getU8 ( "MediaData", "MediaLoop", mMediaLoop );
-		msg->getU8 ( "MediaData", "ObscureMedia", mObscureMedia );
-		msg->getU8 ( "MediaData", "ObscureMusic", mObscureMusic );
 	}
 	else
 	{
 		setMediaType(std::string("video/vnd.secondlife.qt.legacy"));
 		setMediaDesc(std::string("No Description available without Server Upgrade"));
 		mMediaLoop = true;
-		mObscureMedia = true;
-		mObscureMusic = true;
 	}
 }
 
@@ -1853,8 +1837,6 @@ void LLParcel::clearParcel()
     setMediaDesc(LLStringUtil::null);
 	setMediaAutoScale(0);
 	setMediaLoop(TRUE);
-	mObscureMedia = 1;
-	mObscureMusic = 1;
 	mMediaWidth = 0;
 	mMediaHeight = 0;
 	setMusicURL(LLStringUtil::null);

@@ -1,5 +1,22 @@
 2011-03-26 Boy Lane <boy.lane@yahoo.com>
 
+    * URL de-obfuscation - backport from STORM-1037 (removes hide URL checkboxes and always shows full media/audio URLs for parcel)
+
+    modified:   ChangeLog.txt
+    modified:   linden/indra/llinventory/llparcel.cpp
+    modified:   linden/indra/llinventory/llparcel.h
+    modified:   linden/indra/newview/llmediaremotectrl.cpp
+    modified:   linden/indra/newview/llpanellandmedia.cpp
+    modified:   linden/indra/newview/skins/default/xui/de/floater_about_land.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_about_land.xml
+    modified:   linden/indra/newview/skins/default/xui/fr/floater_about_land.xml
+    modified:   linden/indra/newview/skins/default/xui/ja/floater_about_land.xml
+    modified:   linden/indra/newview/skins/default/xui/ko/floater_about_land.xml
+    modified:   linden/indra/newview/skins/default/xui/pt/floater_about_land.xml
+    modified:   linden/indra/newview/skins/default/xui/zh/floater_about_land.xml
+
+2011-03-26 Boy Lane <boy.lane@yahoo.com>
+
     * Small AO fix from Imprudence
 
     modified:   floaterao.cpp

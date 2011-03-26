@@ -357,8 +357,6 @@ Optionen:
 			</text>
 			<check_box label="Automatisch skalieren" name="media_auto_scale" tool_tip="Aktivieren Sie diese Option, um den Inhalt für diese Parzelle automatisch zu skalieren. Dies ist eventuell langsamer und die Qualität ist schlechter, aber Sie müssen keine weitere Texturskalierung oder -anpassung vornehmen."/>
 			<check_box label="Als Schleife wiedergeben" name="media_loop" tool_tip="Spielt das Medium in einer Schleife ab.  Der Abspielvorgang wird immer wieder von vorne fortgesetzt."/>
-			<check_box label="Medien-URL verstecken" name="hide_media_url" tool_tip="Aktivieren Sie diese Option, wenn Sie nicht möchten, dass unautorisierte Personen die Medien-URL sehen können. Diese Option ist für HTML-Medien nicht verfügbar."/>
-			<check_box label="Musik-URL verstecken" name="hide_music_url" tool_tip="Aktivieren Sie diese Option, wenn Sie nicht möchten, dass unautorisierte Personen die Musik-URL sehen können."/>
 			<text name="media_size" tool_tip="Darstellungsgröße von Webmedien, für Standard bei 0 belassen.">
 				Größe:
 			</text>

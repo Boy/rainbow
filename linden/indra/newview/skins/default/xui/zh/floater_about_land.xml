@@ -413,16 +413,6 @@
 				 label="循环播放"
 				 name="media_loop"
 				 tool_tip="循环播放媒体。当媒体播放完毕时，它将从开始处重新播放。" />
-			<check_box
-				 initial_value="false"
-				 label="隐藏媒体 URL"
-				 name="hide_media_url"
-				 tool_tip="打开该选项将对未经允许的土地信息察看者隐藏媒体 URL。请注意该选项不适用于 HTML 类型。" />
-			<check_box
-				 initial_value="false"
-				 label="隐藏音乐 URL"
-				 name="hide_music_url"
-				 tool_tip="打开该选项将对未经允许的土地信息察看者隐藏音乐 URL。" />
 			<text
 				 name="media_size"
 				 tool_tip="渲染媒体的尺寸，设为 0 使用默认值">
