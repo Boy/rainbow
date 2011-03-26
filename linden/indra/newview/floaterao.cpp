@@ -128,6 +128,9 @@ AOInvTimer::AOInvTimer() : LLEventTimer( (F32)1.0 )
 AOInvTimer::~AOInvTimer()
 {
 }
+
+BOOL AOInvTimer::fullfetch = FALSE;
+
 BOOL AOInvTimer::tick()
 {
 	if (!(gSavedSettings.getBOOL("AOEnabled"))) return TRUE;
@@ -138,6 +141,15 @@ BOOL AOInvTimer::tick()
 //			cmdline_printchat("Inventory fetched, loading AO.");
 			LLFloaterAO::init();
 			return TRUE;
+		}else
+		{
+			//static BOOL startedfetch = FALSE;
+			if(fullfetch == FALSE)
+			{
+				fullfetch = TRUE;
+				//no choice, can't move the AO till we find it, should only have to happen once
+				gInventory.startBackgroundFetch();
+			}
 		}
 	}
 	return FALSE;

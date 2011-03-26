@@ -42,15 +42,16 @@ const int STATE_AGENT_FLYSLOW = 19;
 class AOStandTimer : public LLEventTimer
 {
 public:
-    AOStandTimer();
-    ~AOStandTimer();
-    virtual BOOL tick();
+    	AOStandTimer();
+    	~AOStandTimer();
+    	virtual BOOL tick();
 	virtual void reset();
 };
 
 class AOInvTimer : public LLEventTimer
 {
 public:
+	static BOOL fullfetch;
 	AOInvTimer();
 	~AOInvTimer();
 	BOOL tick();
@@ -60,9 +61,9 @@ class LLFloaterAO : public LLFloater
 {
 public:
 
-    LLFloaterAO();
+    	LLFloaterAO();
 	virtual	BOOL	postBuild();
-    virtual ~LLFloaterAO();
+    	virtual ~LLFloaterAO();
 
 	static void show(void*);
 	static void init();
