@@ -69,7 +69,11 @@
 
 	<check_box bottom="-70" follows="left|top" font="SansSerifSmall" height="16"
 	     initial_value="false" label="Position" left="4" mouse_opaque="true"
-	     name="radio position" radio_style="true" width="114" />
+	     name="radio position" radio_style="true" width="70" />
+	<check_box bottom="-70" follows="left|top" font="SansSerifSmall" height="16"
+	     initial_value="false" label="Align" left="75" mouse_opaque="true"
+	     name="radio align" radio_style="true" width="50"
+	     tool_tip="Aligns the edges of the selected prims along an axis, Keep SHIFT pressed to pack the prims till they are touching." />
 	<check_box bottom_delta="-15" follows="left|top" font="SansSerifSmall" height="16"
 	     initial_value="false" label="Rotate (Ctrl)" left="4" mouse_opaque="true"
 	     name="radio rotate" radio_style="true" width="114" />

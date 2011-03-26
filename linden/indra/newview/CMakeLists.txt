@@ -300,7 +300,6 @@ set(viewer_SOURCE_FILES
     llpolymesh.cpp
     llpolymorph.cpp
     llprefschat.cpp
-    prefsrainbow.cpp
     llprefsim.cpp
     llprefsvoice.cpp
     llpreviewanim.cpp
@@ -375,7 +374,6 @@ set(viewer_SOURCE_FILES
     llviewerimage.cpp
     llviewerimagelist.cpp
     llviewerinventory.cpp
-    primbackup.cpp
     llviewerjointattachment.cpp
     llviewerjoint.cpp
     llviewerjointmesh.cpp
@@ -443,6 +441,9 @@ set(viewer_SOURCE_FILES
     llxmlrpctransaction.cpp
     noise.cpp
     pipeline.cpp
+    prefsrainbow.cpp
+    primbackup.cpp
+    qtoolalign.cpp
     RRInterface.cpp
     )
 
@@ -707,7 +708,6 @@ set(viewer_HEADER_FILES
     llpolymesh.h
     llpolymorph.h
     llprefschat.h
-    prefsrainbow.h
     llprefsim.h
     llprefsvoice.h
     llpreview.h
@@ -786,7 +786,6 @@ set(viewer_HEADER_FILES
     llviewerimage.h
     llviewerimagelist.h
     llviewerinventory.h
-    primbackup.h
     llviewerjoint.h
     llviewerjointattachment.h
     llviewerjointmesh.h
@@ -855,6 +854,9 @@ set(viewer_HEADER_FILES
     macmain.h
     noise.h
     pipeline.h
+    prefsrainbow.h
+    primbackup.h
+    qtoolalign.h
     randgauss.h
     VertexCache.h
     VorbisFramework.h

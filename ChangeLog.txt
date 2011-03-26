@@ -1,5 +1,17 @@
 2011-03-26 Boy Lane <boy.lane@yahoo.com>
 
+    * Prim align tool from Karl Stiefvater (Qarl): http://www.qarl.com/qLab/?p=66
+
+    modified:   ChangeLog.txt
+    modified:   linden/indra/newview/CMakeLists.txt
+    modified:   linden/indra/newview/llfloatertools.cpp
+    modified:   linden/indra/newview/llfloatertools.h
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_tools.x
+    new file:   linden/indra/newview/qtoolalign.cpp
+    new file:   linden/indra/newview/qtoolalign.h
+
+2011-03-26 Boy Lane <boy.lane@yahoo.com>
+
     * Automatic detection of maximum supported groups from CoolVL
     * Small fix for grid detection
 
