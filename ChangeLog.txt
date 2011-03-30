@@ -1,3 +1,41 @@
+2011-03-30 Boy Lane <boy.lane@yahoo.com>
+
+    * Boost hack to compile display names (added signals2)
+
+    modified:   ChangeLog.txt
+    new file:   linden/libraries/include/boost/signals2.hpp
+    new file:   linden/libraries/include/boost/signals2/connection.hpp
+    new file:   linden/libraries/include/boost/signals2/deconstruct.hpp
+    new file:   linden/libraries/include/boost/signals2/deconstruct_ptr.hpp
+    new file:   linden/libraries/include/boost/signals2/detail/lwm_nop.hpp
+    new file:   linden/libraries/include/boost/signals2/detail/lwm_pthreads.hpp
+    new file:   linden/libraries/include/boost/signals2/detail/lwm_win32_cs.hpp
+    new file:   linden/libraries/include/boost/signals2/detail/null_output_iterator.hpp
+    new file:   linden/libraries/include/boost/signals2/detail/result_type_wrapper.hpp
+    new file:   linden/libraries/include/boost/signals2/detail/signal_template.hpp
+    new file:   linden/libraries/include/boost/signals2/detail/signals_common.hpp
+    new file:   linden/libraries/include/boost/signals2/detail/signals_common_macros.hpp
+    new file:   linden/libraries/include/boost/signals2/detail/slot_call_iterator.hpp
+    new file:   linden/libraries/include/boost/signals2/detail/slot_groups.hpp
+    new file:   linden/libraries/include/boost/signals2/detail/slot_template.hpp
+    new file:   linden/libraries/include/boost/signals2/detail/stack_allocator.hpp
+    new file:   linden/libraries/include/boost/signals2/detail/stack_vector.hpp
+    new file:   linden/libraries/include/boost/signals2/detail/tracked_objects_visitor.hpp
+    new file:   linden/libraries/include/boost/signals2/detail/unique_lock.hpp
+    new file:   linden/libraries/include/boost/signals2/dummy_mutex.hpp
+    new file:   linden/libraries/include/boost/signals2/last_value.hpp
+    new file:   linden/libraries/include/boost/signals2/mutex.hpp
+    new file:   linden/libraries/include/boost/signals2/optional_last_value.hpp
+    new file:   linden/libraries/include/boost/signals2/postconstructible.hpp
+    new file:   linden/libraries/include/boost/signals2/predestructible.hpp
+    new file:   linden/libraries/include/boost/signals2/shared_connection_block.hpp
+    new file:   linden/libraries/include/boost/signals2/signal.hpp
+    new file:   linden/libraries/include/boost/signals2/signal_base.hpp
+    new file:   linden/libraries/include/boost/signals2/signal_type.hpp
+    new file:   linden/libraries/include/boost/signals2/slot.hpp
+    new file:   linden/libraries/include/boost/signals2/slot_base.hpp
+    new file:   linden/libraries/include/boost/signals2/trackable.hpp
+
 2011-03-26 Boy Lane <boy.lane@yahoo.com>
 
     * Prim align tool from Karl Stiefvater (Qarl): http://www.qarl.com/qLab/?p=66
