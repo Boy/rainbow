@@ -747,6 +747,23 @@ namespace LLStringFn
 		return output;
 	}
 
+	/**
+	 * @brief Replace all control characters (c < 0x20) with replacement in
+	 * string.
+	 */
+	void replace_ascii_controlchars(std::basic_string<char>& string, char replacement)
+	{
+		const unsigned char MIN = 0x20;
+		std::basic_string<char>::size_type len = string.size();
+		for(std::basic_string<char>::size_type ii = 0; ii < len; ++ii)
+		{
+			const unsigned char c = (unsigned char) string[ii];
+			if(c < MIN)
+			{
+				string[ii] = replacement;
+			}
+		}
+	}
 }
 
 

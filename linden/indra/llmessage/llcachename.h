@@ -31,9 +31,9 @@
 
 #ifndef LL_LLCACHENAME_H
 #define LL_LLCACHENAME_H
-#include "llhttpclient.h"
-#include "llhost.h"
-#include "lluri.h"
+
+#include "llavatarnamecache.h"
+
 class LLMessageSystem;
 class LLHost;
 class LLUUID;

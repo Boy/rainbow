@@ -86,7 +86,14 @@ LLSpeaker::LLSpeaker(const LLUUID& id, const std::string& name, const ESpeakerTy
 
 void LLSpeaker::lookupName()
 {
-	gCacheName->getName(mID, onAvatarNameLookup, new LLHandle<LLSpeaker>(getHandle()));
+	if (LLAvatarNameCache::useDisplayNames())
+	{
+		LLAvatarNameCache::get(mID, boost::bind(&LLSpeaker::onAvatarDisplayNameLookup, _1, _2, new LLHandle<LLSpeaker>(getHandle())));
+	}
+	else
+	{
+		gCacheName->getName(mID, onAvatarNameLookup, new LLHandle<LLSpeaker>(getHandle()));
+	}
 }
 
 //static 
@@ -97,7 +104,24 @@ void LLSpeaker::onAvatarNameLookup(const LLUUID& id, const std::string& first, c
 
 	if (speaker_ptr)
 	{
-		speaker_ptr->mDisplayName = first + " " + last;
+		speaker_ptr->mDisplayName = first;
+		if (!is_group && (!LLAvatarName::sOmitResidentAsLastName || last != "Resident"))
+		{
+			speaker_ptr->mDisplayName += " " + last;
+		}
+	}
+}
+
+//static 
+void LLSpeaker::onAvatarDisplayNameLookup(const LLUUID& id, const LLAvatarName& avatar_name, void* user_data)
+{
+	LLSpeaker* speaker_ptr = ((LLHandle<LLSpeaker>*)user_data)->get();
+	delete (LLHandle<LLSpeaker>*)user_data;
+
+	if (speaker_ptr)
+	{
+		// Always show "Display Name [Legacy Name]" for security reasons
+		speaker_ptr->mDisplayName = avatar_name.getNames();
 	}
 }
 

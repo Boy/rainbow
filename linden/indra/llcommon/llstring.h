@@ -222,7 +222,8 @@ public:
 	static void	replaceTabsWithSpaces( std::basic_string<T>& string, size_type spaces_per_tab );
 	static void	replaceNonstandardASCII( std::basic_string<T>& string, T replacement );
 	static void	replaceChar( std::basic_string<T>& string, T target, T replacement );
-
+	static void replaceString( std::basic_string<T>& string, std::basic_string<T> target, std::basic_string<T> replacement );
+	
 	static BOOL	containsNonprintable(const std::basic_string<T>& string);
 	static void	stripNonprintable(std::basic_string<T>& string);
 
@@ -535,6 +536,18 @@ namespace LLStringFn
 	 * Works with US ASCII and UTF-8 encoded strings.  JC
 	 */
 	std::string strip_invalid_xml(const std::string& input);
+
+	/**
+	 * @brief Replace all control characters (0 <= c < 0x20) with replacement in
+	 * string.   This is safe for utf-8
+	 *
+	 * @param [in,out] string the to modify. out value is the string
+	 * with zero non-printable characters.
+	 * @param The replacement character. use LL_UNKNOWN_CHAR if unsure.
+	 */
+	void replace_ascii_controlchars(
+		std::basic_string<char>& string,
+		char replacement);
 }
 
 ////////////////////////////////////////////////////////////
@@ -892,11 +905,22 @@ template<class T>
 void LLStringUtilBase<T>::replaceChar( std::basic_string<T>& string, T target, T replacement )
 {
 	size_type found_pos = 0;
-	for (found_pos = string.find(target, found_pos); 
-		found_pos != std::basic_string<T>::npos; 
-		found_pos = string.find(target, found_pos))
+	while( (found_pos = string.find(target, found_pos)) != std::basic_string<T>::npos ) 
 	{
 		string[found_pos] = replacement;
+		found_pos++; // avoid infinite defeat if target == replacement
+	}
+}
+
+//static
+template<class T> 
+void LLStringUtilBase<T>::replaceString( std::basic_string<T>& string, std::basic_string<T> target, std::basic_string<T> replacement )
+{
+	size_type found_pos = 0;
+	while( (found_pos = string.find(target, found_pos)) != std::basic_string<T>::npos )
+	{
+		string.replace( found_pos, target.length(), replacement );
+		found_pos += replacement.length(); // avoid infinite defeat if replacement contains target
 	}
 }
 

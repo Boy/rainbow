@@ -32,6 +32,7 @@
 #ifndef LL_IMPANEL_H
 #define LL_IMPANEL_H
 
+#include "llavatarnamecache.h"
 #include "llfloater.h"
 #include "lllogchat.h"
 #include "lluuid.h"
@@ -192,6 +193,9 @@ public:
 					 EInstantMessage dialog);
 	virtual ~LLFloaterIMPanel();
 
+	void lookupName();
+	static void onAvatarNameLookup(const LLUUID& id, const LLAvatarName& avatar_name, void* user_data);
+
 	/*virtual*/ BOOL postBuild();
 
 	// Check typing timeout timer.
@@ -342,6 +346,7 @@ private:
 	BOOL mShowSpeakersOnConnect;
 
 	BOOL mAutoConnect;
+	BOOL mProfileButtonEnabled;
 
 	LLIMSpeakerMgr* mSpeakers;
 	LLPanelActiveSpeakers* mSpeakerPanel;
@@ -358,6 +363,8 @@ private:
 
 	typedef std::map<LLUUID, LLStyleSP> styleMap;
 	static styleMap mStyleMap;
+
+	static std::set<LLFloaterIMPanel*> sFloaterIMPanels;
 };
 
 

@@ -75,6 +75,10 @@ void LLNameBox::setNameID(const LLUUID& name_id, BOOL is_group)
 	if (!is_group)
 	{
 		gCacheName->getFullName(name_id, name);
+		if (LLAvatarName::sOmitResidentAsLastName)
+		{
+			LLStringUtil::replaceString(name, " Resident", "");
+		}
 	}
 	else
 	{
@@ -89,14 +93,10 @@ void LLNameBox::refresh(const LLUUID& id, const std::string& firstname,
 {
 	if (id == mNameID)
 	{
-		std::string name;
-		if (!is_group)
+		std::string name = firstname;
+		if (!is_group && (!LLAvatarName::sOmitResidentAsLastName || lastname != "Resident"))
 		{
-			name = firstname + " " + lastname;
-		}
-		else
-		{
-			name = firstname;
+			name += " " + lastname;
 		}
 		setText(name);
 	}

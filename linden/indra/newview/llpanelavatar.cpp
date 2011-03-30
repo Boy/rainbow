@@ -1387,14 +1387,38 @@ void LLPanelAvatar::setAvatarID(const LLUUID &avatar_id, const std::string &name
 		}
 		else
 		{
-			name_edit->setText(name);
+			std::string avname = name;
+			if (LLAvatarName::sOmitResidentAsLastName)
+			{
+				LLStringUtil::replaceString(avname, " Resident", "");
+			}
+			name_edit->setText(avname);
 		}
+		childSetVisible("name", TRUE);
 	}
-
-	LLNameEditor* avatar_key = getChild<LLNameEditor>("avatar_key");
-	if (avatar_key)
+	LLNameEditor* complete_name_edit = getChild<LLNameEditor>("complete_name");
+	if (complete_name_edit)
 	{
-		avatar_key->setText(avatar_id.asString());
+		if (LLAvatarNameCache::useDisplayNames())
+		{
+			LLAvatarName avatar_name;
+			if (LLAvatarNameCache::get(avatar_id, &avatar_name))
+			{
+				// Always show "Display Name [Legacy Name]" for security reasons
+				complete_name_edit->setText(avatar_name.getNames());
+			}
+			else
+			{
+				complete_name_edit->setText(name_edit->getText());
+				LLAvatarNameCache::get(avatar_id, boost::bind(&LLPanelAvatar::completeNameCallback, _1, _2, this));			
+			}
+			childSetVisible("name", FALSE);
+			childSetVisible("complete_name", TRUE);
+		}
+		else
+		{
+			childSetVisible("complete_name", FALSE);
+		}
 	}
 
 // 	if (avatar_changed)
@@ -1503,6 +1527,22 @@ void LLPanelAvatar::setAvatarID(const LLUUID &avatar_id, const std::string &name
 	childSetEnabled("csr_btn", is_god);
 }
 
+void LLPanelAvatar::completeNameCallback(const LLUUID& agent_id,
+										 const LLAvatarName& avatar_name,
+										 void *userdata)
+{
+	LLPanelAvatar* self = (LLPanelAvatar*)userdata;
+	if (!LLAvatarNameCache::useDisplayNames() || agent_id != self->mAvatarID)
+	{
+		return;
+	}
+	LLLineEditor* complete_name_edit = self->getChild<LLLineEditor>("complete_name");
+	if (complete_name_edit)
+	{
+		// Always show "Display Name [Legacy Name]" for security reasons
+		complete_name_edit->setText(avatar_name.getNames());
+	}
+}
 
 void LLPanelAvatar::resetGroupList()
 {

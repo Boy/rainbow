@@ -37,10 +37,9 @@
 #include "lltabcontainer.h"
 #include "llimview.h"
 
-S32 COL_1_WIDTH = 200;
+S32 COL_1_WIDTH = 400;
 
 static std::string sOnlineDescriptor = "*";
-static std::string sNameFormat = "[FIRST] [LAST]";
 
 LLFloaterNewIM::LLFloaterNewIM()
 {
@@ -68,7 +67,6 @@ BOOL LLFloaterNewIM::postBuild()
 			llwarns << "LLUICtrlFactory::getNameListByName() returned NULL for 'user_list'" << llendl;
 		}
 		sOnlineDescriptor = getString("online_descriptor");
-		sNameFormat = getString("name_format");
 		setDefaultBtn("start_btn");
 		return TRUE;
 	}	
@@ -134,11 +132,8 @@ void LLFloaterNewIM::addGroup(const LLUUID& uuid, void* data, BOOL bold, BOOL on
 
 void LLFloaterNewIM::addAgent(const LLUUID& uuid, void* data, BOOL online)
 {
-	std::string first, last;
-	gCacheName->getName(uuid, first, last);
-	LLUIString fullname = sNameFormat;
-	fullname.setArg("[FIRST]", first);
-	fullname.setArg("[LAST]", last);
+	std::string fullname;
+	gCacheName->getFullName(uuid, fullname);
 
 	LLSD row;
 	row["id"] = uuid;
@@ -190,6 +185,13 @@ void LLFloaterNewIM::onStart(void* userdata)
 		EInstantMessage* t = (EInstantMessage*)item->getUserdata();
 		if(t) type = (*t);
 		else type = LLIMMgr::defaultIMTypeForAgent(item->getUUID());
+		if (type != IM_SESSION_GROUP_START)
+		{
+			// Needed to avoid catching a display name, which would
+			// make us use a wrong IM log file...
+			gCacheName->getFullName(item->getUUID(), name);
+		}
+
 		gIMMgr->addSession(name, type, item->getUUID());
 
 		make_ui_sound("UISndStartIM");

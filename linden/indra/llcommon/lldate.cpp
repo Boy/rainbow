@@ -234,6 +234,11 @@ void LLDate::secondsSinceEpoch(F64 seconds)
 	mSecondsSinceEpoch = seconds;
 }
 
+/* static */ LLDate LLDate::now()
+{
+	// time() returns seconds, we want fractions of a second, which LLTimer provides --RN
+	return LLDate(LLTimer::getTotalSeconds());
+}
 std::ostream& operator<<(std::ostream& s, const LLDate& date)
 {
 	date.toStream(s);

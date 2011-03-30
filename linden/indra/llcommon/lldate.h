@@ -111,6 +111,13 @@ public:
 	 * @param seconds The number of seconds since epoch UTC.
 	 */
 	void secondsSinceEpoch(F64 seconds);
+    
+    /**
+     * @brief Create an LLDate object set to the current time.
+	 *
+	 * @return The number of seconds since epoch UTC.
+	 */
+    static LLDate now();
 
 private:
 	F64 mSecondsSinceEpoch;

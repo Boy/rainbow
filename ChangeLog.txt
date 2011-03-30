@@ -1,5 +1,80 @@
 2011-03-30 Boy Lane <boy.lane@yahoo.com>
 
+    * Backport of Display Names to 1.22 code base
+
+    modified:   linden/etc/message.xml
+    modified:   linden/indra/llcommon/CMakeLists.txt
+    modified:   linden/indra/llcommon/indra_constants.h
+    modified:   linden/indra/llcommon/lldate.cpp
+    modified:   linden/indra/llcommon/lldate.h
+    modified:   linden/indra/llcommon/llstring.cpp
+    modified:   linden/indra/llcommon/llstring.h
+    modified:   linden/indra/llmessage/CMakeLists.txt
+    modified:   linden/indra/llmessage/llcachename.cpp
+    modified:   linden/indra/llmessage/llcachename.h
+    modified:   linden/indra/llmessage/llhttpclient.cpp
+    modified:   linden/indra/llmessage/llhttpclient.h
+    modified:   linden/indra/llmessage/llsdmessagebuilder.cpp
+    modified:   linden/indra/llmessage/llsdmessagebuilder.h
+    modified:   linden/indra/llmessage/llsdmessagereader.cpp    
+    modified:   linden/indra/llmessage/llsdmessagereader.h
+    modified:   linden/indra/newview/CMakeLists.txt
+    modified:   linden/indra/newview/app_settings/settings.xml
+    modified:   linden/indra/newview/llappviewer.cpp
+    modified:   linden/indra/newview/llappviewer.h
+    modified:   linden/indra/newview/llcallingcard.cpp
+    modified:   linden/indra/newview/llcallingcard.h
+    modified:   linden/indra/newview/llfloateractivespeakers.cpp
+    modified:   linden/indra/newview/llfloateractivespeakers.h
+    modified:   linden/indra/newview/llfloateravatarinfo.cpp
+    modified:   linden/indra/newview/llfloateravatarinfo.h    
+    modified:   linden/indra/newview/llfloaterchatterbox.cpp
+    modified:   linden/indra/newview/llfloaterfriends.cpp
+    modified:   linden/indra/newview/llfloatergroups.cpp
+    modified:   linden/indra/newview/llfloaternewim.cpp    
+    modified:   linden/indra/newview/llfloatertools.cpp
+    modified:   linden/indra/newview/llfloatertools.h
+    modified:   linden/indra/newview/llhoverview.cpp
+    modified:   linden/indra/newview/llimpanel.cpp
+    modified:   linden/indra/newview/llimpanel.h
+    modified:   linden/indra/newview/llnamebox.cpp
+    modified:   linden/indra/newview/llnameeditor.cpp
+    modified:   linden/indra/newview/llnamelistctrl.cpp
+    modified:   linden/indra/newview/llnamelistctrl.h
+    modified:   linden/indra/newview/llpanelavatar.cpp
+    modified:   linden/indra/newview/llpanelavatar.h
+    modified:   linden/indra/newview/llstartup.cpp
+    modified:   linden/indra/newview/llstartup.h
+    modified:   linden/indra/newview/llviewercontrol.cpp
+    modified:   linden/indra/newview/llviewermenu.cpp
+    modified:   linden/indra/newview/llviewermessage.cpp
+    modified:   linden/indra/newview/llviewerregion.cpp
+    modified:   linden/indra/newview/llviewerregion.h
+    modified:   linden/indra/newview/llvoavatar.cpp
+    modified:   linden/indra/newview/llvoavatar.h
+    modified:   linden/indra/newview/llvoiceclient.cpp
+    modified:   linden/indra/newview/llvoiceclient.h
+    modified:   linden/indra/newview/qtoolalign.cpp
+    modified:   linden/indra/newview/qtoolalign.h    
+    modified:   linden/indra/newview/skins/default/xui/en-us/alerts.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_new_im.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_tools.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/menu_viewer.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/notify.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/panel_avatar.xml
+    modified:   linden/indra/newview/skins/silver/xui/en-us/panel_avatar.xml
+    new file:   linden/indra/llcommon/llavatarname.cpp
+    new file:   linden/indra/llcommon/llavatarname.h    
+    new file:   linden/indra/llmessage/llavatarnamecache.cpp
+    new file:   linden/indra/llmessage/llavatarnamecache.h
+    new file:   linden/indra/newview/llfloaterdisplayname.cpp
+    new file:   linden/indra/newview/llfloaterdisplayname.h
+    new file:   linden/indra/newview/llviewerdisplayname.cpp
+    new file:   linden/indra/newview/llviewerdisplayname.h
+    new file:   linden/indra/newview/skins/default/xui/en-us/floater_display_name.xml
+
+2011-03-30 Boy Lane <boy.lane@yahoo.com>
+
     * Boost hack to compile display names (added signals2)
 
     modified:   ChangeLog.txt

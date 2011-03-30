@@ -217,6 +217,11 @@
 			<on_click function="ShowFloater" userdata="appearance" />
 			<on_enable function="Edit.EnableCustomizeAvatar" />
 		</menu_item_call>
+        <menu_item_call bottom="-362" enabled="true" height="19" label="Display Name..." left="0"
+		     mouse_opaque="true" name="Display Name..." width="153">
+            <on_click function="ShowFloater" userdata="displayname" />
+			<on_enable function="Edit.EnableDisplayName" />
+        </menu_item_call>
 		<menu_item_separator bottom="-370" enabled="true" height="8" label="-----------" left="0"
 		     mouse_opaque="true" name="separator7" width="153" />
 		<menu_item_check bottom="-389" enabled="true" height="19" label="Friends..." left="0"

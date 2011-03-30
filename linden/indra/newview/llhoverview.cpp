@@ -248,14 +248,35 @@ void LLHoverView::updateText()
 			LLNameValue* lastname =  hit_object->getNVPair("LastName");
 			if (firstname && lastname)
 			{
+				std::string complete_name = firstname->getString();
+				std::string last = lastname->getString();
+				if (!LLAvatarName::sOmitResidentAsLastName || last != "Resident")
+				{
+					complete_name += " " + last;
+				}
+
+				if (LLAvatarNameCache::useDisplayNames())
+				{
+					LLAvatarName avatar_name;
+					if (LLAvatarNameCache::get(hit_object->getID(), &avatar_name))
+					{
+						if (LLAvatarNameCache::useDisplayNames() == 2)
+						{
+							complete_name = avatar_name.mDisplayName;
+						}
+						else
+						{
+							complete_name = avatar_name.getNames();
+						}
+					}
+				}
+
 				if (title)
 				{
 					line.append(title->getString());
 					line.append(1, ' ');
 				}
-				line.append(firstname->getString());
-				line.append(1, ' ');
-				line.append(lastname->getString());
+				line += complete_name;
 			}
 			else
 			{

@@ -4838,6 +4838,11 @@ bool LLVoiceClient::participantState::updateMuteState()
 	return result;
 }
 
+bool LLVoiceClient::participantState::isAvatar()
+{
+	return mAvatarIDValid;
+}
+
 void LLVoiceClient::sessionState::removeParticipant(LLVoiceClient::participantState *participant)
 {
 	if(participant)
@@ -5238,6 +5243,35 @@ bool LLVoiceClient::isOnlineSIP(const LLUUID &id)
 				LL_DEBUGS("Voice") << "Open session with " << id << " found, returning SIP online state" << LL_ENDL;
 				// we have a p2p text session open with this user, so by definition they're online.
 				result = true;
+			}
+		}
+	}
+	
+	return result;
+}
+
+// Returns true if the indicated participant in the current audio session is really an SL avatar.
+// Currently this will be false only for PSTN callers into group chats, and PSTN p2p calls.
+bool LLVoiceClient::isParticipantAvatar(const LLUUID &id)
+{
+	bool result = true; 
+	sessionState *session = findSession(id);
+	
+	if(session != NULL)
+	{
+		// this is a p2p session with the indicated caller, or the session with the specified UUID.
+		if(session->mSynthesizedCallerID)
+			result = false;
+	}
+	else
+	{
+		// Didn't find a matching session -- check the current audio session for a matching participant
+		if(mAudioSession != NULL)
+		{
+			participantState *participant = findParticipantByID(id);
+			if(participant != NULL)
+			{
+				result = participant->isAvatar();
 			}
 		}
 	}

@@ -2514,6 +2514,23 @@ void process_chat_from_simulator(LLMessageSystem *msg, void **user_data)
 		msg->getStringFast(_PREHASH_ChatData, _PREHASH_Message, mesg);
 
 		BOOL ircstyle = FALSE;
+
+		if (LLAvatarNameCache::useDisplayNames())
+		{
+			LLAvatarName avatar_name;
+			if (LLAvatarNameCache::get(from_id, &avatar_name))
+			{
+				if (LLAvatarNameCache::useDisplayNames() == 2)
+				{
+					from_name = avatar_name.mDisplayName;
+				}
+				else
+				{
+					from_name = avatar_name.getNames();
+				}
+			}
+			chat.mFromName = from_name;
+		}
 //MK
 		if (RRenabled && chat.mChatType != CHAT_TYPE_OWNER)
 		{
@@ -2553,7 +2570,8 @@ void process_chat_from_simulator(LLMessageSystem *msg, void **user_data)
 				}
 			}
 		}
-//mk
+//mk		
+
 		// Look for IRC-style emotes here so chatbubbles work
 		std::string prefix = mesg.substr(0, 4);
 		if (prefix == "/me " || prefix == "/me'")
