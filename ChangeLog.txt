@@ -1,5 +1,11 @@
 2011-03-30 Boy Lane <boy.lane@yahoo.com>
 
+    * Correct spaces in NSIS call from VWR-20742
+
+    modified:   viewer_manifest.py
+
+2011-03-30 Boy Lane <boy.lane@yahoo.com>
+
     * Backport of Display Names to 1.22 code base
 
     modified:   linden/etc/message.xml

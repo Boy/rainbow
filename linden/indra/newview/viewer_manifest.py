@@ -371,7 +371,18 @@ class WindowsManifest(ViewerManifest):
                 "%%INSTALL_FILES%%":self.nsi_file_commands(True),
                 "%%DELETE_FILES%%":self.nsi_file_commands(False)})
 
-        NSIS_path = 'C:\\Program Files\\NSIS\\Unicode\\makensis.exe'
+        # We use the Unicode version of NSIS, available from
+        # http://www.scratchpaper.com/
+        try:
+          import _winreg as reg
+          NSIS_path = reg.QueryValue(reg.HKEY_LOCAL_MACHINE, r"SOFTWARE\NSIS\Unicode") + '\\makensis.exe'
+          self.run_command('"' + proper_windows_path(NSIS_path) + '" ' + self.dst_path_of(tempfile))
+        except:
+          try:
+            NSIS_path = os.environ['ProgramFiles'] + '\\NSIS\\Unicode\\makensis.exe'
+            self.run_command('"' + proper_windows_path(NSIS_path) + '" ' + self.dst_path_of(tempfile))
+          except:
+            NSIS_path = os.environ['ProgramFiles(X86)'] + '\\NSIS\\Unicode\\makensis.exe'
         self.run_command('"' + proper_windows_path(NSIS_path) + '" ' + self.dst_path_of(tempfile))
         # self.remove(self.dst_path_of(tempfile))
         self.created_path(self.dst_path_of(installer_file))
