@@ -1531,16 +1531,23 @@ void LLPanelAvatar::completeNameCallback(const LLUUID& agent_id,
 										 const LLAvatarName& avatar_name,
 										 void *userdata)
 {
-	LLPanelAvatar* self = (LLPanelAvatar*)userdata;
-	if (!LLAvatarNameCache::useDisplayNames() || agent_id != self->mAvatarID)
+	if (!LLAvatarNameCache::useDisplayNames())
 	{
 		return;
 	}
-	LLLineEditor* complete_name_edit = self->getChild<LLLineEditor>("complete_name");
-	if (complete_name_edit)
+	// look up all panels which have this avatar
+	for (panel_list_t::iterator iter = sAllPanels.begin(); iter != sAllPanels.end(); ++iter)
 	{
-		// Always show "Display Name [Legacy Name]" for security reasons
-		complete_name_edit->setText(avatar_name.getNames());
+		LLPanelAvatar* self = *iter;
+		if (self->mAvatarID == agent_id)
+		{
+			LLLineEditor* complete_name_edit = self->getChild<LLLineEditor>("complete_name");
+			if (complete_name_edit)
+			{
+				// Always show "Display Name [Legacy Name]" for security reasons
+				complete_name_edit->setText(avatar_name.getNames());
+			}
+		}
 	}
 }
 

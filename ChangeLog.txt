@@ -1,3 +1,9 @@
+2011-04-01 Boy Lane <boy.lane@yahoo.com>
+
+    * minor fix for Display Names from CoolVL
+
+    modified:   linden/indra/newview/llpanelavatar.cpp
+
 2011-03-30 Boy Lane <boy.lane@yahoo.com>
 
     * Correct spaces in NSIS call from VWR-20742
