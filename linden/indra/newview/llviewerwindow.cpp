@@ -245,12 +245,7 @@ std::string	LLViewerWindow::sSnapshotDir;
 
 std::string	LLViewerWindow::sMovieBaseName;
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 extern void toggle_debug_menus(void*);
-
 
 ////////////////////////////////////////////////////////////////////////////
 //
@@ -3294,7 +3289,7 @@ void LLViewerWindow::renderSelections( BOOL for_gl_pick, BOOL pick_parcel_walls,
 							// can't edit objects that someone is sitting on,
 							// when prevented from sit-tping
 							LLVOAvatar* avatar = gAgent.getAvatarObject();
-							if (RRenabled && (gAgent.mRRInterface.contains ("sittp")
+							if (gRRenabled && (gAgent.mRRInterface.contains ("sittp")
 									|| (gAgent.mRRInterface.mContainsUnsit && avatar && avatar->mIsSitting)))
 							{
 								if (object->isSeat())
@@ -3660,7 +3655,7 @@ LLViewerObject* LLViewerWindow::cursorIntersect(S32 mouse_x, S32 mouse_y, F32 de
 													face_hit, intersection, uv, normal, binormal);
 //MK
 		// HACK : don't allow focusing on HUDs unless we are in Mouselook mode
-		if (RRenabled && gAgent.getCameraMode() != CAMERA_MODE_MOUSELOOK)
+		if (gRRenabled && gAgent.getCameraMode() != CAMERA_MODE_MOUSELOOK)
 		{
 			MASK mask = gKeyboard->currentMask(TRUE);
 			if (mask & MASK_ALT)
@@ -4061,7 +4056,7 @@ BOOL LLViewerWindow::thumbnailSnapshot(LLImageRaw *raw, S32 preview_width, S32 p
 	}
 
 //MK
-	if (RRenabled && gAgent.mRRInterface.mHasLockedHuds)
+	if (gRRenabled && gAgent.mRRInterface.mHasLockedHuds)
 	{
 		LLPipeline::sShowHUDAttachments = TRUE;
 	}
@@ -4206,7 +4201,7 @@ BOOL LLViewerWindow::rawSnapshot(LLImageRaw *raw, S32 image_width, S32 image_hei
 	}
 
 //MK
-	if (RRenabled && gAgent.mRRInterface.mHasLockedHuds)
+	if (gRRenabled && gAgent.mRRInterface.mHasLockedHuds)
 	{
 		LLPipeline::sShowHUDAttachments = TRUE;
 	}

@@ -85,10 +85,6 @@
 
 #include "llassetuploadresponders.h"
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 const U32 INCLUDE_SCREENSHOT  = 0x01 << 0;
 
 //-----------------------------------------------------------------------------
@@ -137,11 +133,11 @@ LLFloaterReporter::LLFloaterReporter(
 
 	childSetText("abuse_location_edit", gAgent.getSLURL() );
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	if (gRRenabled && gAgent.mRRInterface.mContainsShowloc)
 	{
 		childSetVisible("abuse_location_edit", false);
 	}
-	if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+	if (gRRenabled && gAgent.mRRInterface.mContainsShownames)
 	{
 		childSetVisible("owner_name", false);
 		childSetVisible("abuser_name_edit", false);
@@ -314,7 +310,7 @@ void LLFloaterReporter::getObjectInfo(const LLUUID& object_id)
 			if (regionp)
 			{
 //MK
-				if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+				if (gRRenabled && gAgent.mRRInterface.mContainsShowloc)
 				{
 					childSetText("sim_field", std::string ("(Region hidden)"));
 				}
@@ -1019,7 +1015,7 @@ void LLFloaterReporter::setPosBox(const LLVector3d &pos)
 		mPosition.mV[VY],
 		mPosition.mV[VZ]);
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	if (gRRenabled && gAgent.mRRInterface.mContainsShowloc)
 	{
 		pos_string = "";
 	}

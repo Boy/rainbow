@@ -58,10 +58,6 @@
 
 #include "lluictrlfactory.h"
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Class LLPropertiesObserver
 //
@@ -359,7 +355,7 @@ void LLFloaterProperties::refreshFromItem(LLInventoryItem* item)
 		{
 			gCacheName->getFullName(perm.getOwner(), name);
 //MK
-			if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+			if (gRRenabled && gAgent.mRRInterface.mContainsShownames)
 			{
 				name = gAgent.mRRInterface.getDummyName (name);
 			}
@@ -605,7 +601,7 @@ void LLFloaterProperties::onClickCreator(void* data)
 void LLFloaterProperties::onClickOwner(void* data)
 {
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+	if (gRRenabled && gAgent.mRRInterface.mContainsShownames)
 	{
 		return;
 	}

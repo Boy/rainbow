@@ -89,10 +89,6 @@
 LLStatusBar *gStatusBar = NULL;
 S32 STATUS_BAR_HEIGHT = 0;
 extern S32 MENU_BAR_HEIGHT;
-//MK
-extern BOOL RRenabled;
-//mk
-
 
 // TODO: these values ought to be in the XML too
 const S32 MENU_PARCEL_SPACING = 1;	// Distance from right of menu item to parcel information
@@ -557,7 +553,7 @@ void LLStatusBar::refresh()
 	}
 //MK
 	gAgent.mRRInterface.setParcelName (mRegionDetails.mParcelName);
-	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	if (gRRenabled && gAgent.mRRInterface.mContainsShowloc)
 	{
 		location_name = "(Hidden) (" + region->getSimAccessString() + ")";
 	}
@@ -748,7 +744,7 @@ static void onClickParcelInfo(void* data)
 	LLViewerParcelMgr::getInstance()->selectParcelAt(gAgent.getPositionGlobal());
 
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	if (gRRenabled && gAgent.mRRInterface.mContainsShowloc)
 	{
 		return;
 	}
@@ -816,7 +812,7 @@ static void onClickScripts(void*)
 static void onClickBuyLand(void*)
 {
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	if (gRRenabled && gAgent.mRRInterface.mContainsShowloc)
 	{
 		return;
 	}

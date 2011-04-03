@@ -86,10 +86,6 @@
 
 static LLRegisterWidget<LLInventoryPanel> r("inventory_panel");
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 LLDynamicArray<LLInventoryView*> LLInventoryView::sActiveViews;
 
 //BOOL LLInventoryView::sOpenNextNewItem = FALSE;
@@ -810,7 +806,8 @@ LLInventoryView* LLInventoryView::showAgentInventory(BOOL take_keyboard_focus)
 	}
 
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsShowinv) {
+	if (gRRenabled && gAgent.mRRInterface.mContainsShowinv)
+	{
 		return NULL;
 	}
 //mk
@@ -878,7 +875,8 @@ LLInventoryView* LLInventoryView::getActiveInventory()
 void LLInventoryView::toggleVisibility()
 {
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsShowinv) {
+	if (gRRenabled && gAgent.mRRInterface.mContainsShowinv)
+	{
 		return;
 	}
 //mk

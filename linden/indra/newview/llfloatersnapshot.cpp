@@ -74,10 +74,6 @@
 #include "llvfile.h"
 #include "llvfs.h"
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 ///----------------------------------------------------------------------------
 /// Local function declarations, constants, enums, and typedefs
 ///----------------------------------------------------------------------------
@@ -954,7 +950,7 @@ void LLSnapshotLivePreview::saveTexture()
 		std::string pos_string;
 		gAgent.buildLocationString(pos_string);
 //MK
-		if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+		if (gRRenabled && gAgent.mRRInterface.mContainsShowloc)
 		{
 			pos_string = "(Region hidden)";
 		}
@@ -1285,7 +1281,7 @@ void LLFloaterSnapshot::Impl::updateControls(LLFloaterSnapshot* floater)
 		&& previewp->getDataSize() > MAX_POSTCARD_DATASIZE ? LLColor4::red : gColors.getColor( "LabelTextColor" ));
 
 //MK
-	if (RRenabled && gAgent.mRRInterface.mHasLockedHuds)
+	if (gRRenabled && gAgent.mRRInterface.mHasLockedHuds)
 	{
 		floater->childSetValue("hud_check", TRUE);
 		gSavedSettings.setBOOL( "RenderHUDInSnapshot", TRUE );
@@ -1501,7 +1497,7 @@ void LLFloaterSnapshot::Impl::onClickHUDCheck(LLUICtrl *ctrl, void* data)
 	LLCheckBoxCtrl *check = (LLCheckBoxCtrl *)ctrl;
 	gSavedSettings.setBOOL( "RenderHUDInSnapshot", check->get() );
 //MK
-	if (RRenabled && gAgent.mRRInterface.mHasLockedHuds)
+	if (gRRenabled && gAgent.mRRInterface.mHasLockedHuds)
 	{
 		gSavedSettings.setBOOL( "RenderHUDInSnapshot", TRUE );
 	}
@@ -2011,7 +2007,7 @@ BOOL LLFloaterSnapshot::postBuild()
 	childSetCommitCallback("hud_check", Impl::onClickHUDCheck, this);
 	childSetValue("hud_check", gSavedSettings.getBOOL("RenderHUDInSnapshot"));
 //MK
-	if (RRenabled && gAgent.mRRInterface.mHasLockedHuds)
+	if (gRRenabled && gAgent.mRRInterface.mHasLockedHuds)
 	{
 		childSetValue("hud_check", TRUE);
 		gSavedSettings.setBOOL( "RenderHUDInSnapshot", TRUE );

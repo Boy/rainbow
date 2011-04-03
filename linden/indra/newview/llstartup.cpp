@@ -194,11 +194,6 @@
 
 #include "floaterao.h"
 
-//MK
-BOOL RRenabled = TRUE;
-BOOL RRNoSetEnv = FALSE;
-//mk
-
 //
 // exported globals
 //
@@ -369,8 +364,9 @@ bool idle_startup()
 	static bool samename = false;
 
 //MK
-	RRenabled = gSavedSettings.getBOOL("RestrainedLove");
-	RRNoSetEnv = gSavedSettings.getBOOL("RestrainedLoveNoSetEnv");
+	gRRenabled = gSavedSettings.getBOOL("RestrainedLove");
+	RRInterface::sRRNoSetEnv = gSavedSettings.getBOOL("RestrainedLoveNoSetEnv");
+	RRInterface::sRestrainedLoveDebug = gSavedSettings.getBOOL("RestrainedLoveDebug");
 //mk
 	// HACK: These are things from the main loop that usually aren't done
 	// until initialization is complete, but need to be done here for things
@@ -959,9 +955,8 @@ bool idle_startup()
 			agent_location_id = START_LOCATION_ID_HOME;	// home
 			location_which = START_LOCATION_ID_HOME;
 		}
-
 //MK
-		if (RRenabled)
+		if (gRRenabled && !gSavedPerAccountSettings.getBOOL("RestrainedLoveTPOK"))
 		{
 			gSavedSettings.setBOOL("LoginLastLocation", TRUE);
 			agent_location_id = START_LOCATION_ID_LAST;	// always last location (actually ignore list)
@@ -1069,8 +1064,14 @@ bool idle_startup()
 		
 		std::stringstream start;
 //MK
-		if (!RRenabled && LLURLSimString::parse())
+		BOOL force_last_location = (gRRenabled && !gSavedPerAccountSettings.getBOOL("RestrainedLoveTPOK"));
+		if (force_last_location)
+		{
+			gSavedSettings.setBOOL("LoginLastLocation", TRUE);
+		}
+		if (!force_last_location &&
 //mk
+		LLURLSimString::parse())
 		{
 			// a startup URL was specified
 			std::stringstream unescaped_start;
@@ -2317,7 +2318,7 @@ bool idle_startup()
 		gRenderStartTime.reset();
 		gForegroundTime.reset();
 
-		if (RRenabled || gSavedSettings.getBOOL("FetchInventoryOnLogin"))
+		if (gSavedSettings.getBOOL("FetchInventoryOnLogin")	|| gRRenabled)
 		{
 			// Fetch inventory in the background
 			gInventory.startBackgroundFetch();
@@ -2551,7 +2552,7 @@ bool idle_startup()
 
 		// If we've got a startup URL, dispatch it
 //MK
-		if (!RRenabled)
+		if (!gRRenabled)
 		{
 			LLStartUp::dispatchURL();
 		}
@@ -2987,7 +2988,7 @@ void update_dialog_callback(S32 option, void *userdata)
 
 	// if a sim name was passed in via command line parameter (typically through a SLURL)
 //MK
-	if (!RRenabled && LLURLSimString::sInstance.mSimString.length())
+	if (!gRRenabled && LLURLSimString::sInstance.mSimString.length())
 //mk
 	{
 		// record the location to start at next time

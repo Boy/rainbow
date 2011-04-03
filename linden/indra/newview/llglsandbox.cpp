@@ -68,10 +68,6 @@
 #include "pipeline.h"
 #include "llspatialpartition.h"
  
-//MK
-extern BOOL RRenabled;
-//mk
-
 BOOL LLAgent::setLookAt(ELookAtType target_type, LLViewerObject *object, LLVector3 position)
 {
 	if (object && target_type != LOOKAT_TARGET_NONE && gSavedSettings.getBOOL("PrivateLookAt"))
@@ -255,7 +251,8 @@ void LLToolSelectRect::handleRectangleSelection(S32 x, S32 y, MASK mask)
 		LLViewerCamera::getInstance()->setNear(new_near);
 	}
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsFartouch) {
+	if (gRRenabled && gAgent.mRRInterface.mContainsFartouch)
+	{
 		// don't allow select by rectangle while under fartouch
 		LLViewerCamera::getInstance()->setFar(0.0f);
 		LLViewerCamera::getInstance()->setNear(0.0f);
@@ -272,10 +269,20 @@ void LLToolSelectRect::handleRectangleSelection(S32 x, S32 y, MASK mask)
 			virtual bool apply(LLViewerObject* vobjp)
 			{
 				LLDrawable* drawable = vobjp->mDrawable;
-				if (!drawable || vobjp->getPCode() != LL_PCODE_VOLUME || vobjp->isAttachment())
+				if (!drawable ||
+					((vobjp->getPCode() != LL_PCODE_VOLUME) &&
+					 (vobjp->getPCode() != LL_PCODE_LEGACY_TREE) &&
+					 (vobjp->getPCode() != LL_PCODE_LEGACY_GRASS) )||
+					vobjp->isAttachment())
 				{
 					return true;
 				}
+//MK
+				if (gRRenabled && !gAgent.mRRInterface.canEdit(vobjp))
+				{
+					return true;
+				}
+//mk
 				S32 result = LLViewerCamera::getInstance()->sphereInFrustum(drawable->getPositionAgent(), drawable->getRadius());
 				switch (result)
 				{
@@ -323,13 +330,20 @@ void LLToolSelectRect::handleRectangleSelection(S32 x, S32 y, MASK mask)
 			LLViewerObject* vobjp = drawable->getVObj();
 
 			if (!drawable || !vobjp ||
-				vobjp->getPCode() != LL_PCODE_VOLUME || 
+				((vobjp->getPCode() != LL_PCODE_VOLUME) &&
+				 (vobjp->getPCode() != LL_PCODE_LEGACY_TREE) &&
+				 (vobjp->getPCode() != LL_PCODE_LEGACY_GRASS) )||
 				vobjp->isAttachment() ||
 				(deselect && !vobjp->isSelected()))
 			{
 				continue;
 			}
-
+//MK
+			if (gRRenabled && !gAgent.mRRInterface.canEdit(vobjp))
+			{
+				continue;
+			}
+//mk
 			if (limit_select_distance && dist_vec_squared(drawable->getWorldPosition(), av_pos) > select_dist_squared)
 			{
 				continue;

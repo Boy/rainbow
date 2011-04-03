@@ -67,8 +67,6 @@
 
 //MK
 #include "llagent.h"
-
-extern BOOL RRenabled;
 //mk
 
 const S32 MIN_QUIET_FRAMES_COALESCE = 30;
@@ -2105,7 +2103,7 @@ void LLVolumeGeometryManager::registerFace(LLSpatialGroup* group, LLFace* facep,
 
 	if (facep->getViewerObject()->isSelected()
 //MK
-		&& (!RRenabled || !gAgent.mRRInterface.mContainsEdit)
+		&& (!gRRenabled || !gAgent.mRRInterface.mContainsEdit)
 //mk
 		&& gHideSelectedObjects)
 	{

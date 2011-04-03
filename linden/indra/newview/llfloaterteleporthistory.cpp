@@ -49,10 +49,6 @@
 
 #include "apr_time.h"
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 // globals
 LLFloaterTeleportHistory* gFloaterTeleportHistory;
 
@@ -107,7 +103,7 @@ BOOL LLFloaterTeleportHistory::postBuild()
 void LLFloaterTeleportHistory::addEntry(std::string regionName, S16 x, S16 y, S16 z)
 {
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	if (gRRenabled && gAgent.mRRInterface.mContainsShowloc)
 	{
 		return;
 	}

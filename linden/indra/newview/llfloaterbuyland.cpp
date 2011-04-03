@@ -71,9 +71,6 @@ const F64 CURRENCY_ESTIMATE_FREQUENCY = 0.5;
 	// how long of a pause in typing a currency buy amount before an
 	// esimate is fetched from the server
 
-//MK
-extern BOOL RRenabled;
-//mk
 class LLFloaterBuyLandUI
 :	public LLFloater
 {
@@ -830,7 +827,7 @@ void LLFloaterBuyLandUI::updateNames()
 		gCacheName->getFullName(parcelp->getOwnerID(), mParcelSellerName);
 	}
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+	if (gRRenabled && gAgent.mRRInterface.mContainsShownames)
 	{
 		mParcelSellerName = gAgent.mRRInterface.getDummyName (mParcelSellerName);
 	}

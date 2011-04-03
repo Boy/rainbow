@@ -53,7 +53,6 @@
 //MK
 #include "llinventoryview.h"
 #include "llagent.h"
-extern BOOL RRenabled;
 //mk
 
 extern LLPipeline gPipeline;
@@ -209,7 +208,7 @@ BOOL LLViewerJointAttachment::addObject(LLViewerObject* object)
 	mUpdateXform = TRUE;
 
 //MK
-	if (RRenabled)
+	if (gRRenabled)
 	{
 		LLInventoryItem* inv_item = gAgent.mRRInterface.getItem (object->getID());
 		LLUUID item_id = object->getAttachmentItemID();
@@ -221,8 +220,8 @@ BOOL LLViewerJointAttachment::addObject(LLViewerObject* object)
 			if (!gAgent.mRRInterface.canAttach(object, name, true))
 			{
 				bool just_reattaching = false;
-				std::deque<AssetAndTarget>::iterator it = gAgent.mRRInterface.sAssetsToReattach.begin();
-				for (; it != gAgent.mRRInterface.sAssetsToReattach.end(); ++it)
+				std::deque<AssetAndTarget>::iterator it = gAgent.mRRInterface.mAssetsToReattach.begin();
+				for (; it != gAgent.mRRInterface.mAssetsToReattach.end(); ++it)
 				{
 					if (it->uuid == item_id)
 					{
@@ -241,33 +240,43 @@ BOOL LLViewerJointAttachment::addObject(LLViewerObject* object)
 					gMessageSystem->addU32Fast(_PREHASH_ObjectLocalID, object->getLocalID());
 					gMessageSystem->sendReliable( gAgent.getRegionHost() );
 
-					gAgent.mRRInterface.sJustDetached.uuid = item_id;
-					gAgent.mRRInterface.sJustDetached.attachpt = getName();
+					gAgent.mRRInterface.mJustDetached.uuid = item_id;
+					gAgent.mRRInterface.mJustDetached.attachpt = getName();
+
+					// Now notify that this object has been attached and will be detached right away
+					gAgent.mRRInterface.notify(LLUUID::null, "attached illegally " + getName(), "");
+				}
+				else
+				{
+					// Notify that this object has just been reattached
+					gAgent.mRRInterface.notify(LLUUID::null, "reattached legally " + getName(), "");
+				}
+			}
+			else
+			{
+				// Notify that this object has been attached
+				if (inv_item)
+				{
+					gAgent.mRRInterface.notify(LLUUID::null, "attached legally " + getName(), "");
 				}
 			}
 		}
 
 		// If the UUID of the attached item is contained into the list of things waiting to reattach,
-		// signal it and remove it from the list (and if the list is not empty, restart the timer for the next).
-		std::deque<AssetAndTarget>::iterator it = gAgent.mRRInterface.sAssetsToReattach.begin();
-		for (; it != gAgent.mRRInterface.sAssetsToReattach.end(); ++it)
+		// signal it and remove it from the list.
+		std::deque<AssetAndTarget>::iterator it = gAgent.mRRInterface.mAssetsToReattach.begin();
+		for (; it != gAgent.mRRInterface.mAssetsToReattach.end(); ++it)
 		{
 			if (it->uuid == item_id)
 			{
 				llinfos << "Reattached asset " << item_id << " automatically" << llendl;
-				gAgent.mRRInterface.sAssetsToReattach.erase(it);
-//				gAgent.mRRInterface.sJustReattached.uuid = item_id;
-//				gAgent.mRRInterface.sJustReattached.attachpt = getName();
+				gAgent.mRRInterface.mReattaching = FALSE;
+				gAgent.mRRInterface.mReattachTimeout = FALSE;
+				gAgent.mRRInterface.mAssetsToReattach.erase(it);
+//				gAgent.mRRInterface.mJustReattached.uuid = item_id;
+//				gAgent.mRRInterface.mJustReattached.attachpt = getName();
 				// Replace the previously stored asset id with the new viewer id in the list of restrictions
 				gAgent.mRRInterface.replace(item_id, object->getRootEdit()->getID());
-				if (!gAgent.mRRInterface.sAssetsToReattach.empty())
-				{
-					gAgent.mRRInterface.sTimeBeforeReattaching = 50; // let's wait a little before reattaching the next item
-				}
-				else
-				{
-					gAgent.mRRInterface.sTimeBeforeReattaching = 0;
-				}
 				break;
 			}
 		}
@@ -299,7 +308,7 @@ void LLViewerJointAttachment::removeObject(LLViewerObject *object)
 		return;
 	}
 //MK
-	if (RRenabled)
+	if (gRRenabled)
 	{
 		// We first need to check whether the object is locked, as some techniques (like llAttachToAvatar)
 		// can kick even a locked attachment off.
@@ -311,16 +320,20 @@ void LLViewerJointAttachment::removeObject(LLViewerObject *object)
 		if (inv_item) inv_item_id = inv_item->getUUID();
 		std::string target_attachpt = "";
 		if (avatarp) target_attachpt = avatarp->getAttachedPointName(inv_item_id);
-		if (!gAgent.mRRInterface.canDetach(object)
-			&& gAgent.mRRInterface.sJustDetached.attachpt != target_attachpt	// we didn't just detach something from this attach pt automatically
-			&& gAgent.mRRInterface.sJustReattached.attachpt != target_attachpt)	// we didn't just reattach something to this attach pt automatically
+		inv_item_id = object->getAttachmentItemID();
+ 		if (!gAgent.mRRInterface.canDetach(object)
+			&& gAgent.mRRInterface.mJustDetached.attachpt != target_attachpt	// we didn't just detach something from this attach pt automatically
+			&& gAgent.mRRInterface.mJustReattached.attachpt != target_attachpt)	// we didn't just reattach something to this attach pt automatically
 		{
 			llinfos << "Detached a locked object : " << inv_item_id << " from " << target_attachpt << llendl;
 
-			std::deque<AssetAndTarget>::iterator it = gAgent.mRRInterface.sAssetsToReattach.begin();
+			// Now notify that this object has been detached and will be reattached right away
+			gAgent.mRRInterface.notify (LLUUID::null, "detached illegally " + getName(), "");
+
+			std::deque<AssetAndTarget>::iterator it = gAgent.mRRInterface.mAssetsToReattach.begin();
 			bool found = false;
 			bool found_for_this_point = false;
-			for (; it != gAgent.mRRInterface.sAssetsToReattach.end(); ++it)
+			for (; it != gAgent.mRRInterface.mAssetsToReattach.end(); ++it)
 			{
 				if (it->uuid == inv_item_id) found = true;
 				if (it->attachpt == target_attachpt) found_for_this_point = true;
@@ -331,16 +344,24 @@ void LLViewerJointAttachment::removeObject(LLViewerObject *object)
 				AssetAndTarget at;
 				at.uuid = inv_item_id;
 				at.attachpt = target_attachpt;
-				gAgent.mRRInterface.sTimeBeforeReattaching = 50; // number of cycles before triggering the reattach (approx 5 seconds)
-				gAgent.mRRInterface.sAssetsToReattach.push_back(at);
+				gAgent.mRRInterface.mReattachTimer.reset();
+				gAgent.mRRInterface.mAssetsToReattach.push_back(at);
 				// Little hack : store this item's asset id into the list of restrictions so they are automatically reapplied when it is reattached
 				gAgent.mRRInterface.replace(object->getRootEdit()->getID(), inv_item_id);
 			}
 		}
-		gAgent.mRRInterface.sJustDetached.uuid.setNull();
-		gAgent.mRRInterface.sJustDetached.attachpt = "";
-		gAgent.mRRInterface.sJustReattached.uuid.setNull();
-		gAgent.mRRInterface.sJustReattached.attachpt = "";
+		else
+		{
+			if (inv_item)
+			{
+				// Notify that this object has been detached
+				gAgent.mRRInterface.notify (LLUUID::null, "detached legally " + getName(), "");
+			}
+		}
+		gAgent.mRRInterface.mJustDetached.uuid.setNull();
+		gAgent.mRRInterface.mJustDetached.attachpt = "";
+		gAgent.mRRInterface.mJustReattached.uuid.setNull();
+		gAgent.mRRInterface.mJustReattached.attachpt = "";
 	}
 //mk
 	// force object visibile

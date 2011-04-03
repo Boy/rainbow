@@ -39,8 +39,6 @@
 
 //MK
 #include "llagent.h"
-
-extern BOOL RRenabled;
 //mk
 
 LLFloaterBeacons::LLFloaterBeacons(const LLSD& seed)
@@ -78,7 +76,7 @@ BOOL LLFloaterBeacons::postBuild()
 void LLFloaterBeacons::open()
 {
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsEdit)
+	if (gRRenabled && gAgent.mRRInterface.mContainsEdit)
 	{
 		return;
 	}
@@ -104,7 +102,7 @@ void LLFloaterBeacons::onClickUICheck(LLUICtrl *ctrl, void* data)
 	std::string name = check->getName();
 	LLFloaterBeacons* view = (LLFloaterBeacons*)data;
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsEdit)
+	if (gRRenabled && gAgent.mRRInterface.mContainsEdit)
 	{
 		LLPipeline::setRenderScriptedBeacons(FALSE);
 		LLPipeline::setRenderScriptedTouchBeacons(FALSE);

@@ -77,10 +77,6 @@
 const char* DEFAULT_DESC = "(No Description)";
 const F32 DELAY_BEFORE_SHOW_TIP = 0.35f;
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 //
 // Local globals
 //
@@ -283,7 +279,7 @@ void LLHoverView::updateText()
 				line.append(LLTrans::getString("TooltipPerson"));
 			}
 //MK
-			if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+			if (gRRenabled && gAgent.mRRInterface.mContainsShownames)
 			{
 				line.clear();
 				line.append(firstname->getString());
@@ -343,7 +339,7 @@ void LLHoverView::updateText()
 						else if(gCacheName->getFullName(owner, name))
 						{
 //MK
-							if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+							if (gRRenabled && gAgent.mRRInterface.mContainsShownames)
 							{
 								name = gAgent.mRRInterface.getDummyName (name);
 							}

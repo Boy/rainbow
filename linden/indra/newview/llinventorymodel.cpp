@@ -67,8 +67,6 @@
 
 //MK
 #include "llviewercontrol.h"
-
-extern BOOL RRenabled;
 //mk
 
 BOOL LLInventoryModel::sBackgroundFetchActive = FALSE;
@@ -2905,7 +2903,7 @@ void LLInventoryModel::processUpdateInventoryFolder(LLMessageSystem* msg,
 		tfolder->setPreferredType(LLAssetType::AT_NONE);
 		folders.push_back(tfolder);
 //MK
-		if (RRenabled && gAgent.mRRInterface.getRlvShare() &&
+		if (gRRenabled && gAgent.mRRInterface.getRlvShare() &&
 			!gSavedSettings.getBOOL("RestrainedLoveForbidGiveToRLV"))
 		{
 			std::string folder_name = tfolder->getName();
@@ -3063,7 +3061,7 @@ void LLInventoryModel::processBulkUpdateInventory(LLMessageSystem* msg, void**)
 		if(tfolder->getUUID().notNull())
 		{
 //MK
-			if (RRenabled && gAgent.mRRInterface.getRlvShare() &&
+			if (gRRenabled && gAgent.mRRInterface.getRlvShare() &&
 				!gSavedSettings.getBOOL("RestrainedLoveForbidGiveToRLV"))
 			{
 				std::string folder_name = tfolder->getName();

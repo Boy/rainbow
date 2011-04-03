@@ -67,10 +67,6 @@
 
 #include "llglheaders.h"
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 //
 // Constants
 //
@@ -222,7 +218,7 @@ void LLFloaterMap::toggle(void*)
 //MK
 void LLFloaterMap::open()
 {
-	if (RRenabled && gAgent.mRRInterface.mContainsShowminimap)
+	if (gRRenabled && gAgent.mRRInterface.mContainsShowminimap)
 	{
 		return;
 	}

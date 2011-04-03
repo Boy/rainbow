@@ -63,9 +63,6 @@
 extern LLCPUInfo gSysCPU;
 extern LLMemoryInfo gSysMemory;
 extern U32 gPacketsIn;
-//MK
-extern BOOL RRenabled;
-//mk
 
 ///----------------------------------------------------------------------------
 /// Local function declarations, constants, enums, and typedefs
@@ -119,7 +116,7 @@ LLFloaterAbout::LLFloaterAbout()
 				   __DATE__, __TIME__,
 				   gSavedSettings.getString("VersionChannelName").c_str());
 //MK
-	if (RRenabled)
+	if (gRRenabled)
 	{
 		version += gAgent.mRRInterface.getVersion2 () + "\n";
 	}
@@ -153,7 +150,7 @@ LLFloaterAbout::LLFloaterAbout()
 		pos_text.setArg("[POSITION]",
 						llformat("%.1f, %.1f, %.1f ", pos.mdV[VX], pos.mdV[VY], pos.mdV[VZ]));
 //MK
-		if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+		if (gRRenabled && gAgent.mRRInterface.mContainsShowloc)
 		{
 			pos_text = "(Position hidden)\n";
 		}
@@ -163,7 +160,7 @@ LLFloaterAbout::LLFloaterAbout()
 		std::string region_text = llformat("in %s located at ",
 										gAgent.getRegion()->getName().c_str());
 //MK
-		if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+		if (gRRenabled && gAgent.mRRInterface.mContainsShowloc)
 		{
 			region_text = "(Region hidden)\n";
 		}
@@ -171,7 +168,7 @@ LLFloaterAbout::LLFloaterAbout()
 		support.append(region_text);
 
 //MK
-		if (!RRenabled || !gAgent.mRRInterface.mContainsShowloc)
+		if (!gRRenabled || !gAgent.mRRInterface.mContainsShowloc)
 		{
 //mk
 			std::string buffer;
@@ -308,6 +305,10 @@ static std::string get_viewer_release_notes_url()
 		<< LL_VERSION_MINOR << "."
 		<< LL_VERSION_PATCH << "."
 		<< LL_VERSION_BUILD;
+
+	LLSD query;
+	query["channel"] = gSavedSettings.getString("VersionChannelName");
+	query["version"] = version.str();
 
 	std::ostringstream url;
 	url << RELEASE_NOTES_BASE_URL;

@@ -96,10 +96,6 @@ const S32 MAX_ACTION_QUEUE_SIZE = 20;
 const S32 MAX_SILS_PER_FRAME = 50;
 const S32 MAX_OBJECTS_PER_PACKET = 254;
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 //
 // Globals
 //
@@ -2678,7 +2674,7 @@ void LLSelectMgr::selectDelete()
 		}
 		
 //MK
-		if (RRenabled && obj->isSeat ()  && gAgent.mRRInterface.mContainsUnsit)
+		if (gRRenabled && obj->isSeat ()  && gAgent.mRRInterface.mContainsUnsit)
 		{
 			continue;
 		}

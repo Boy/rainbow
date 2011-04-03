@@ -318,6 +318,12 @@ void LLPanelGroups::create()
 
 void LLPanelGroups::activate()
 {
+//MK
+	if (gRRenabled && gAgent.mRRInterface.contains ("setgroup"))
+	{
+		return;
+	}
+//mk
 	llinfos << "LLPanelGroups::activate" << llendl;
 	LLCtrlListInterface *group_list = childGetListInterface("group list");
 	LLUUID group_id;

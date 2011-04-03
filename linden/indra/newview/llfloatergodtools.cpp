@@ -78,10 +78,6 @@
 
 const F32 SECONDS_BETWEEN_UPDATE_REQUESTS = 5.0f;
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 static LLFloaterGodTools* sGodTools = NULL;
 
 //*****************************************************************************
@@ -714,7 +710,7 @@ S32 LLPanelRegionTools::getPricePerMeter() const
 void LLPanelRegionTools::setSimName(const std::string& name)
 {
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	if (gRRenabled && gAgent.mRRInterface.mContainsShowloc)
 	{
 		childSetVisible("region name", false);
 	}
@@ -1079,7 +1075,7 @@ void LLPanelObjectTools::setTargetAvatar(const LLUUID &target_id)
 void LLPanelObjectTools::refresh()
 {
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	if (gRRenabled && gAgent.mRRInterface.mContainsShowloc)
 	{
 		childSetVisible("region name", false);
 	}
@@ -1374,7 +1370,7 @@ void LLPanelRequestTools::refresh()
 		LLViewerRegion* regionp = *iter;
 		std::string name = regionp->getName();
 //MK
-		if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+		if (gRRenabled && gAgent.mRRInterface.mContainsShowloc)
 		{
 			name = "(Hidden)";
 		}

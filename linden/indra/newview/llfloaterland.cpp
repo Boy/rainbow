@@ -87,10 +87,6 @@ S32 LLFloaterLand::sLastTab = 0;
 
 LLHandle<LLFloater> LLPanelLandGeneral::sBuyPassDialogHandle;
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 // Local classes
 class LLParcelSelectionObserver : public LLParcelObserver
 {
@@ -811,7 +807,7 @@ void LLPanelLandGeneral::onClickBuyLand(void* data)
 {
 	BOOL* for_group = (BOOL*)data;
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	if (gRRenabled && gAgent.mRRInterface.mContainsShowloc)
 	{
 		return;
 	}

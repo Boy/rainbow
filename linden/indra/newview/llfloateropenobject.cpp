@@ -53,10 +53,6 @@
 #include "lluictrlfactory.h"
 #include "llviewerwindow.h"
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 LLFloaterOpenObject* LLFloaterOpenObject::sInstance = NULL;
 
 LLFloaterOpenObject::LLFloaterOpenObject()
@@ -115,7 +111,12 @@ void LLFloaterOpenObject::show()
 		gViewerWindow->alertXml("UnableToViewContentsMoreThanOne");
 		return;
 	}
-
+//MK
+	if (gRRenabled && gAgent.mRRInterface.mContainsEdit)
+	{
+		return;
+	}
+//mk
 	// Create a new instance only if needed
 	if (!sInstance)
 	{
@@ -211,7 +212,8 @@ void LLFloaterOpenObject::onClickMoveAndWear(void* data)
 {
 	LLFloaterOpenObject* self = (LLFloaterOpenObject*)data;
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsDetach) {
+	if (gRRenabled && gAgent.mRRInterface.mContainsDetach)
+	{
 		self->moveToInventory(false);
 	} else {
 		self->moveToInventory(true);

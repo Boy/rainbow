@@ -83,8 +83,6 @@
 
 //MK
 #include "llvoavatar.h"
-
-extern BOOL RRenabled;
 //mk
 
 ///----------------------------------------------------------------------------
@@ -375,7 +373,7 @@ BOOL LLTaskInvFVBridge::isItemRenameable() const
 	if(object)
 	{
 //MK
-		if (RRenabled && !gAgent.mRRInterface.canDetach(object))
+		if (gRRenabled && !gAgent.mRRInterface.canDetach(object))
 		{
 			return FALSE;
 		}
@@ -427,7 +425,7 @@ BOOL LLTaskInvFVBridge::isItemRemovable()
 {
 	LLViewerObject* object = gObjectList.findObject(mPanel->getTaskUUID());
 //MK
-	if (RRenabled)
+	if (gRRenabled)
 	{
 		// can't edit objects that someone is sitting on,
 		// when prevented from sit-tping
@@ -939,7 +937,7 @@ LLUIImagePtr LLTaskTextureBridge::getIcon() const
 void LLTaskTextureBridge::openItem()
 {
 //MK
-	if (RRenabled && gAgent.mRRInterface.contains ("viewtexture"))
+	if (gRRenabled && gAgent.mRRInterface.contains ("viewtexture"))
 	{
 		return;
 	}
@@ -1230,7 +1228,7 @@ LLTaskLSLBridge::LLTaskLSLBridge(
 void LLTaskLSLBridge::openItem()
 {
 //MK
-	if (RRenabled && gAgent.mRRInterface.contains ("viewscript"))
+	if (gRRenabled && gAgent.mRRInterface.contains ("viewscript"))
 	{
 		return;
 	}
@@ -1352,7 +1350,7 @@ void LLTaskNotecardBridge::openItem()
 	}
 	LLViewerObject* object = gObjectList.findObject(mPanel->getTaskUUID());
 //MK
-	if (RRenabled)
+	if (gRRenabled)
 	{
 		if (!gAgent.mRRInterface.canDetach(object))
 		{

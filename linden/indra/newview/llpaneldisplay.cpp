@@ -84,10 +84,6 @@
 
 #include <boost/regex.hpp>
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 const F32 MAX_USER_FAR_CLIP = 512.f;
 const F32 MIN_USER_FAR_CLIP = 64.f;
 
@@ -424,7 +420,7 @@ void LLPanelDisplay::refresh()
 //MK
 	// If unable to change windlight settings, make sure the Basic & Advanced
 	// Shaders checkboxes are ticked and disabled
-	if (RRenabled && gAgent.mRRInterface.mContainsSetenv)
+	if (gRRenabled && gAgent.mRRInterface.mContainsSetenv)
 	{
 		mShaderEnable = TRUE;
 		mWindLight = TRUE;

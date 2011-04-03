@@ -74,10 +74,6 @@
 #include "llweb.h"
 #include "llstylemap.h"
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 // Used for LCD display
 extern void AddNewIMToLCD(const std::string &newLine);
 extern void AddNewChatToLCD(const std::string &newLine);
@@ -210,14 +206,39 @@ void add_timestamped_line(LLViewerTextEditor* edit, const LLChat &chat, const LL
 		(line.length() > chat.mFromName.length() && line.find(chat.mFromName,0) == 0))
 	{
 //MK
-		if (!RRenabled || !gAgent.mRRInterface.mContainsShownames)
+		if (!gRRenabled || !gAgent.mRRInterface.mContainsShownames)
 		{
 //mk
-		std::string start_line = line.substr(0, chat.mFromName.length() + 1);
-		line = line.substr(chat.mFromName.length() + 1);
-		const LLStyleSP &sourceStyle = LLStyleMap::instance().lookup(chat.mFromID);
-		edit->appendStyledText(start_line, false, prepend_newline, &sourceStyle);
-		prepend_newline = false;
+			size_t pos;
+			if (chat.mFromName.empty() || chat.mFromName.find_first_not_of(' ') == std::string::npos)
+			{
+				// Name is empty... Set the link on the first word instead (skipping leading spaces)...
+				pos = line.find_first_not_of(' ');
+				if (pos == std::string::npos)
+				{
+					// Only spaces !... Normally not possible, but...
+					pos = 1;
+				}
+				else
+				{
+					pos = line.find(' ', pos);
+					if (pos == std::string::npos)
+					{
+						// Only one word in the line...
+						pos = line.length();
+						line += " ";
+					}
+				}
+			}
+			else
+			{
+				pos = chat.mFromName.length() + 1;
+			}
+			std::string start_line = line.substr(0, pos);
+			line = line.substr(pos);
+			const LLStyleSP &sourceStyle = LLStyleMap::instance().lookup(chat.mFromID);
+			edit->appendStyledText(start_line, false, prepend_newline, &sourceStyle);
+			prepend_newline = false;
 //MK
 		}
 //mk
@@ -521,7 +542,7 @@ void LLFloaterChat::onClickToggleActiveSpeakers(void* userdata)
 {
 	LLFloaterChat* self = (LLFloaterChat*)userdata;
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+	if (gRRenabled && gAgent.mRRInterface.mContainsShownames)
 	{
 		if (!self->childIsVisible("active_speakers_panel")) return;
 	}

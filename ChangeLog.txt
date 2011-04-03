@@ -1,6 +1,89 @@
-2011-04-01 Boy Lane <boy.lane@yahoo.com>
+2011-04-03 Boy Lane <boy.lane@yahoo.com>
 
-    * Multiple Attachments and Linked Items from v2/CoolVL - not fully working, need RLV update
+    * RLV 2.5.1 backport from Marine Kelley/CoolVL to 1.22 with working Display Names, Multiple Attachments and Linked Items
+
+    modified:   ChangeLog.txt
+    modified:   linden/indra/llcommon/llchat.h
+    modified:   linden/indra/newview/RRInterface.cpp
+    modified:   linden/indra/newview/RRInterface.h
+    modified:   linden/indra/newview/app_settings/settings.xml
+    modified:   linden/indra/newview/app_settings/settings_per_account.xml
+    modified:   linden/indra/newview/llagent.cpp
+    modified:   linden/indra/newview/llappviewer.cpp
+    modified:   linden/indra/newview/llchatbar.cpp
+    modified:   linden/indra/newview/llfloaterabout.cpp
+    modified:   linden/indra/newview/llfloateravatarlist.cpp
+    modified:   linden/indra/newview/llfloateravatarlist.h
+    modified:   linden/indra/newview/llfloaterbeacons.cpp
+    modified:   linden/indra/newview/llfloaterbuyland.cpp
+    modified:   linden/indra/newview/llfloaterchat.cpp
+    modified:   linden/indra/newview/llfloatergodtools.cpp
+    modified:   linden/indra/newview/llfloatergroups.cpp
+    modified:   linden/indra/newview/llfloaterland.cpp
+    modified:   linden/indra/newview/llfloatermap.cpp
+    modified:   linden/indra/newview/llfloateropenobject.cpp
+    modified:   linden/indra/newview/llfloaterproperties.cpp
+    modified:   linden/indra/newview/llfloaterreporter.cpp
+    modified:   linden/indra/newview/llfloatersettingsdebug.cpp
+    modified:   linden/indra/newview/llfloatersnapshot.cpp
+    modified:   linden/indra/newview/llfloaterteleporthistory.cpp
+    modified:   linden/indra/newview/llfloaterworldmap.cpp
+    modified:   linden/indra/newview/llgesturemgr.cpp
+    modified:   linden/indra/newview/llglsandbox.cpp
+    modified:   linden/indra/newview/llhoverview.cpp
+    modified:   linden/indra/newview/llhudtext.cpp
+    modified:   linden/indra/newview/llimpanel.cpp
+    modified:   linden/indra/newview/llimview.cpp
+    modified:   linden/indra/newview/llinventorybridge.cpp
+    modified:   linden/indra/newview/llinventorybridge.h
+    modified:   linden/indra/newview/llinventorymodel.cpp
+    modified:   linden/indra/newview/llinventoryview.cpp
+    modified:   linden/indra/newview/llmaniptranslate.cpp
+    modified:   linden/indra/newview/llnetmap.cpp
+    modified:   linden/indra/newview/llnotify.cpp
+    modified:   linden/indra/newview/lloverlaybar.cpp
+    modified:   linden/indra/newview/llpanelavatar.cpp
+    modified:   linden/indra/newview/llpanelcontents.cpp
+    modified:   linden/indra/newview/llpaneldirfind.cpp
+    modified:   linden/indra/newview/llpaneldisplay.cpp
+    modified:   linden/indra/newview/llpanelinventory.cpp
+    modified:   linden/indra/newview/llpanelland.cpp
+    modified:   linden/indra/newview/llpanelobject.cpp
+    modified:   linden/indra/newview/llpanelpermissions.cpp
+    modified:   linden/indra/newview/llpanelpick.cpp
+    modified:   linden/indra/newview/llprefsim.cpp
+    modified:   linden/indra/newview/llpreviewscript.cpp
+    modified:   linden/indra/newview/llselectmgr.cpp
+    modified:   linden/indra/newview/llstartup.cpp
+    modified:   linden/indra/newview/llstatusbar.cpp
+    modified:   linden/indra/newview/lltexturectrl.cpp
+    modified:   linden/indra/newview/lltoolbar.cpp
+    modified:   linden/indra/newview/lltooldraganddrop.cpp
+    modified:   linden/indra/newview/lltoolface.cpp
+    modified:   linden/indra/newview/lltoolgrab.cpp
+    modified:   linden/indra/newview/lltoolpie.cpp
+    modified:   linden/indra/newview/lltoolplacer.cpp
+    modified:   linden/indra/newview/lltoolselect.cpp
+    modified:   linden/indra/newview/lltracker.cpp
+    modified:   linden/indra/newview/llviewercontrol.cpp
+    modified:   linden/indra/newview/llviewerdisplay.cpp
+    modified:   linden/indra/newview/llviewergesture.cpp
+    modified:   linden/indra/newview/llviewerjointattachment.cpp
+    modified:   linden/indra/newview/llviewermenu.cpp
+    modified:   linden/indra/newview/llviewermessage.cpp
+    modified:   linden/indra/newview/llviewermessage.h
+    modified:   linden/indra/newview/llviewerwindow.cpp
+    modified:   linden/indra/newview/llvoavatar.cpp
+    modified:   linden/indra/newview/llvovolume.cpp
+    modified:   linden/indra/newview/llwlparammanager.cpp
+    modified:   linden/indra/newview/pipeline.cpp
+    new file:   linden/indra/newview/skins/default/textures/inv_link_Item.tga
+    new file:   linden/indra/newview/skins/default/textures/inv_link_Item_broken.tga
+    new file:   linden/indra/newview/skins/default/textures/inv_link_folder.tga
+    
+2011-04-03 Boy Lane <boy.lane@yahoo.com>
+
+    * Multiple Attachments and Linked Items from v2/CoolVL - not fully working, needs RLV update
 
     modified:   linden/indra/llcommon/indra_constants.h
     modified:   linden/indra/llcommon/llassettype.cpp

@@ -59,8 +59,6 @@
 
 //MK
 #include "llviewerregion.h"
-
-extern BOOL RRenabled;
 //mk
 
 const F32 SPRING_STRENGTH = 0.7f;
@@ -578,7 +576,7 @@ void LLHUDText::setString(const LLWString &wtext)
 {
 	mTextSegments.clear();
 //MK
-	if (RRenabled)
+	if (gRRenabled)
 	{
 		LLWString local_wtext = wtext;
 		if (gAgent.mRRInterface.mContainsShowhovertextall)

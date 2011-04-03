@@ -94,6 +94,14 @@ extern BOOL gDebugGL;
 ////////////////////////////////////////////////////////////////////////////
 // Listeners
 
+//MK
+static bool handleRestrainedLoveDebugChanged(const LLSD& newvalue)
+{
+	RRInterface::sRestrainedLoveDebug = newvalue.asBoolean();
+	return true;
+}
+//mk
+
 static bool handleRenderAvatarMouselookChanged(const LLSD& newvalue)
 {
 	LLVOAvatar::sVisibleInFirstPerson = newvalue.asBoolean();

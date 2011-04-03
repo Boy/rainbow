@@ -64,10 +64,6 @@
 #include "lluictrlfactory.h"
 #include "roles_constants.h"
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 ///----------------------------------------------------------------------------
 /// Class llpanelpermissions
 ///----------------------------------------------------------------------------
@@ -336,7 +332,7 @@ void LLPanelPermissions::refresh()
 	}
 
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+	if (gRRenabled && gAgent.mRRInterface.mContainsShownames)
 	{
 		owner_name = gAgent.mRRInterface.getDummyName (owner_name);
 	}
@@ -346,7 +342,7 @@ void LLPanelPermissions::refresh()
 	childSetEnabled("button owner profile",owners_identical && (mOwnerID.notNull() || LLSelectMgr::getInstance()->selectIsGroupOwned()));
 
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+	if (gRRenabled && gAgent.mRRInterface.mContainsShownames)
 	{
 		last_owner_name = gAgent.mRRInterface.getDummyName (last_owner_name);
 	}
@@ -893,7 +889,7 @@ void LLPanelPermissions::onClickOwner(void *data)
 	else
 	{
 //MK
-		if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+		if (gRRenabled && gAgent.mRRInterface.mContainsShownames)
 		{
 			return;
 		}
@@ -909,7 +905,7 @@ void LLPanelPermissions::onClickLastOwner(void *data)
 	if ( self->mLastOwnerID.notNull() )
 	{
 //MK
-		if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+		if (gRRenabled && gAgent.mRRInterface.mContainsShownames)
 		{
 			return;
 		}

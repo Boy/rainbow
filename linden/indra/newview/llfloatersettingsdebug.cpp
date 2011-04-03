@@ -41,8 +41,6 @@
 
 //MK
 #include "llagent.h"
-
-extern BOOL RRenabled;
 //mk
 
 LLFloaterSettingsDebug* LLFloaterSettingsDebug::sInstance = NULL;
@@ -151,8 +149,8 @@ void LLFloaterSettingsDebug::onCommitSettings(LLUICtrl* ctrl, void* user_data)
 	  case TYPE_U32:
 //MK
 		// If this debug setting can be changed through RLV and a setdebug restriction is active, ignore the change
-		if (RRenabled && gAgent.mRRInterface.contains ("setdebug")
-			&& gAgent.mRRInterface.sAllowedU32.find (","+controlp->getName()+",") != -1)
+		if (gRRenabled && gAgent.mRRInterface.mContainsSetdebug
+			&& gAgent.mRRInterface.mAllowedU32.find (","+controlp->getName()+",") != -1)
 		{
 			return;
 		}
@@ -162,8 +160,8 @@ void LLFloaterSettingsDebug::onCommitSettings(LLUICtrl* ctrl, void* user_data)
 	  case TYPE_S32:
 //MK
 		// If this debug setting can be changed through RLV and a setdebug restriction is active, ignore the change
-		if (RRenabled && gAgent.mRRInterface.contains ("setdebug")
-			&& gAgent.mRRInterface.sAllowedS32.find (","+controlp->getName()+",") != -1)
+		if (gRRenabled && gAgent.mRRInterface.mContainsSetdebug
+			&& gAgent.mRRInterface.mAllowedS32.find (","+controlp->getName()+",") != -1)
 		{
 			return;
 		}
@@ -173,8 +171,8 @@ void LLFloaterSettingsDebug::onCommitSettings(LLUICtrl* ctrl, void* user_data)
 	  case TYPE_F32:
 //MK
 		// If this debug setting can be changed through RLV and a setdebug restriction is active, ignore the change
-		if (RRenabled && gAgent.mRRInterface.contains ("setdebug")
-			&& gAgent.mRRInterface.sAllowedF32.find (","+controlp->getName()+",") != -1)
+		if (gRRenabled && gAgent.mRRInterface.mContainsSetdebug
+			&& gAgent.mRRInterface.mAllowedF32.find (","+controlp->getName()+",") != -1)
 		{
 			return;
 		}
@@ -184,13 +182,13 @@ void LLFloaterSettingsDebug::onCommitSettings(LLUICtrl* ctrl, void* user_data)
 	  case TYPE_BOOLEAN:
 //MK
 		// If this debug setting can be changed through RLV and a setdebug restriction is active, ignore the change
-		if (RRenabled && gAgent.mRRInterface.contains ("setdebug")
-			&& gAgent.mRRInterface.sAllowedBOOLEAN.find (","+controlp->getName()+",") != -1)
+		if (gRRenabled && gAgent.mRRInterface.mContainsSetdebug
+			&& gAgent.mRRInterface.mAllowedBOOLEAN.find (","+controlp->getName()+",") != -1)
 		{
 			return;
 		}
 		// Special case : don't allow changing VertexShaderEnable nor WindLightUseAtmosShaders if setenv is on
-		if (RRenabled && gAgent.mRRInterface.mContainsSetenv)
+		if (gRRenabled && gAgent.mRRInterface.mContainsSetenv)
 		{
 			if (controlp->getName() == "VertexShaderEnable"
 			|| controlp->getName() == "WindLightUseAtmosShaders"
@@ -204,8 +202,8 @@ void LLFloaterSettingsDebug::onCommitSettings(LLUICtrl* ctrl, void* user_data)
 	  case TYPE_STRING:
 //MK
 		// If this debug setting can be changed through RLV and a setdebug restriction is active, ignore the change
-		if (RRenabled && gAgent.mRRInterface.contains ("setdebug")
-			&& gAgent.mRRInterface.sAllowedSTRING.find (","+controlp->getName()+",") != -1)
+		if (gRRenabled && gAgent.mRRInterface.mContainsSetdebug
+			&& gAgent.mRRInterface.mAllowedSTRING.find (","+controlp->getName()+",") != -1)
 		{
 			return;
 		}
@@ -215,8 +213,8 @@ void LLFloaterSettingsDebug::onCommitSettings(LLUICtrl* ctrl, void* user_data)
 	  case TYPE_VEC3:
 //MK
 		// If this debug setting can be changed through RLV and a setdebug restriction is active, ignore the change
-		if (RRenabled && gAgent.mRRInterface.contains ("setdebug")
-			&& gAgent.mRRInterface.sAllowedVEC3.find (","+controlp->getName()+",") != -1)
+		if (gRRenabled && gAgent.mRRInterface.mContainsSetdebug
+			&& gAgent.mRRInterface.mAllowedVEC3.find (","+controlp->getName()+",") != -1)
 		{
 			return;
 		}
@@ -229,8 +227,8 @@ void LLFloaterSettingsDebug::onCommitSettings(LLUICtrl* ctrl, void* user_data)
 	  case TYPE_VEC3D:
 //MK
 		// If this debug setting can be changed through RLV and a setdebug restriction is active, ignore the change
-		if (RRenabled && gAgent.mRRInterface.contains ("setdebug")
-			&& gAgent.mRRInterface.sAllowedVEC3D.find (","+controlp->getName()+",") != -1)
+		if (gRRenabled && gAgent.mRRInterface.mContainsSetdebug
+			&& gAgent.mRRInterface.mAllowedVEC3D.find (","+controlp->getName()+",") != -1)
 		{
 			return;
 		}
@@ -243,8 +241,8 @@ void LLFloaterSettingsDebug::onCommitSettings(LLUICtrl* ctrl, void* user_data)
 	  case TYPE_RECT:
 //MK
 		// If this debug setting can be changed through RLV and a setdebug restriction is active, ignore the change
-		if (RRenabled && gAgent.mRRInterface.contains ("setdebug")
-			&& gAgent.mRRInterface.sAllowedRECT.find (","+controlp->getName()+",") != -1)
+		if (gRRenabled && gAgent.mRRInterface.mContainsSetdebug
+			&& gAgent.mRRInterface.mAllowedRECT.find (","+controlp->getName()+",") != -1)
 		{
 			return;
 		}
@@ -258,8 +256,8 @@ void LLFloaterSettingsDebug::onCommitSettings(LLUICtrl* ctrl, void* user_data)
 	  case TYPE_COL4:
 //MK
 		// If this debug setting can be changed through RLV and a setdebug restriction is active, ignore the change
-		if (RRenabled && gAgent.mRRInterface.contains ("setdebug")
-			&& gAgent.mRRInterface.sAllowedCOL4.find (","+controlp->getName()+",") != -1)
+		if (gRRenabled && gAgent.mRRInterface.mContainsSetdebug
+			&& gAgent.mRRInterface.mAllowedCOL4.find (","+controlp->getName()+",") != -1)
 		{
 			return;
 		}
@@ -271,8 +269,8 @@ void LLFloaterSettingsDebug::onCommitSettings(LLUICtrl* ctrl, void* user_data)
 	  case TYPE_COL3:
 //MK
 		// If this debug setting can be changed through RLV and a setdebug restriction is active, ignore the change
-		if (RRenabled && gAgent.mRRInterface.contains ("setdebug")
-			&& gAgent.mRRInterface.sAllowedCOL3.find (","+controlp->getName()+",") != -1)
+		if (gRRenabled && gAgent.mRRInterface.mContainsSetdebug
+			&& gAgent.mRRInterface.mAllowedCOL3.find (","+controlp->getName()+",") != -1)
 		{
 			return;
 		}
@@ -286,8 +284,8 @@ void LLFloaterSettingsDebug::onCommitSettings(LLUICtrl* ctrl, void* user_data)
 	  case TYPE_COL4U:
 //MK
 		// If this debug setting can be changed through RLV and a setdebug restriction is active, ignore the change
-		if (RRenabled && gAgent.mRRInterface.contains ("setdebug")
-			&& gAgent.mRRInterface.sAllowedCOL4U.find (","+controlp->getName()+",") != -1)
+		if (gRRenabled && gAgent.mRRInterface.mContainsSetdebug
+			&& gAgent.mRRInterface.mAllowedCOL4U.find (","+controlp->getName()+",") != -1)
 		{
 			return;
 		}
@@ -307,7 +305,7 @@ void LLFloaterSettingsDebug::onClickDefault(void* user_data)
 {
 //MK
 	// Don't allow Reset To Default when under @setdebug (that could give funny results)
-	if (RRenabled && gAgent.mRRInterface.contains ("setdebug"))
+	if (gRRenabled && gAgent.mRRInterface.mContainsSetdebug)
 	{
 		return;
 	}
@@ -319,7 +317,7 @@ void LLFloaterSettingsDebug::onClickDefault(void* user_data)
 
 	if (controlp)
 	{
-		controlp->resetToDefault();
+		controlp->resetToDefault(true);
 		floaterp->updateControl(controlp);
 	}
 }

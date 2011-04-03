@@ -57,10 +57,6 @@
 #include "llvoavatar.h"
 #include "llviewerstats.h"
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 LLGestureManager gGestureManager;
 
 // Longest time, in seconds, to wait for all animations to stop playing
@@ -885,7 +881,7 @@ void LLGestureManager::runStep(LLMultiGesture* gesture, LLGestureStep* step)
 			// other playing animations.
 			const BOOL animate = FALSE;
 //MK
-			if (RRenabled && gAgent.mRRInterface.contains ("sendchat") 
+			if (gRRenabled && gAgent.mRRInterface.contains ("sendchat") 
 				&& chat_text.find ("/me ") != 0 && chat_text.find ("/me'") != 0)
 			{
 				chat_text = gAgent.mRRInterface.crunchEmote (chat_text, 20);

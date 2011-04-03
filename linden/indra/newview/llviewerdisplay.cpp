@@ -83,9 +83,6 @@
 #include "llpostprocess.h"
 
 extern LLPointer<LLImageGL> gStartImageGL;
-//MK
-extern BOOL RRenabled;
-//mk
 
 LLPointer<LLImageGL> gDisconnectedImagep = NULL;
 
@@ -585,7 +582,7 @@ void display(BOOL rebuild, F32 zoom_factor, int subfield, BOOL for_snapshot)
 		LLPipeline::sUseOcclusion = 
 				((!gUseWireframe
 //MK
-				|| (RRenabled && gAgent.mRRInterface.mContainsDetach))
+				|| (gRRenabled && gAgent.mRRInterface.mContainsDetach))
 //mk
 				&& LLFeatureManager::getInstance()->isFeatureAvailable("UseOcclusion") 
 				&& gSavedSettings.getBOOL("UseOcclusion") 
@@ -730,7 +727,7 @@ void display(BOOL rebuild, F32 zoom_factor, int subfield, BOOL for_snapshot)
 		}
 
 //MK
-		if(gUseWireframe && (!RRenabled || !gAgent.mRRInterface.mContainsDetach))
+		if(gUseWireframe && (!gRRenabled || !gAgent.mRRInterface.mContainsDetach))
 //mk
 		{
 			glClearColor(0.5f, 0.5f, 0.5f, 0.f);
@@ -859,7 +856,7 @@ void render_hud_attachments()
 
 	// clamp target zoom level to reasonable values
 //MK
-	if (RRenabled && gAgent.mRRInterface.mHasLockedHuds)
+	if (gRRenabled && gAgent.mRRInterface.mHasLockedHuds)
 	{
 		gAgent.mHUDTargetZoom = llclamp(gAgent.mHUDTargetZoom, 0.85f, 1.f);
 	}

@@ -35,6 +35,7 @@
 #include "llinstantmessage.h"
 #include "lltransactiontypes.h"
 #include "lluuid.h"
+#include "llchat.h"
 #include "stdenums.h"
 
 //

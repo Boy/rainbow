@@ -73,9 +73,6 @@
 //
 // Imported globals
 //
-//MK
-extern BOOL RRenabled;
-//mk
 
 //
 // Globals
@@ -167,7 +164,7 @@ void LLPanelContents::onClickNewScript(void *userdata)
 	if(object)
 	{
 //MK
-		if (RRenabled)
+		if (gRRenabled)
 		{
 			// can't edit objects that someone is sitting on,
 			// when prevented from sit-tping

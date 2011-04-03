@@ -71,10 +71,6 @@
 
 #include "llglheaders.h"
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 //---------------------------------------------------------------------------
 // Constants
 //---------------------------------------------------------------------------
@@ -285,7 +281,7 @@ void LLFloaterWorldMap::onClose(bool app_quitting)
 void LLFloaterWorldMap::show(void*, BOOL center_on_target)
 {
 //MK
-	if (RRenabled && (
+	if (gRRenabled && (
 		gAgent.mRRInterface.mContainsShowworldmap
 		|| gAgent.mRRInterface.mContainsShowloc))
 	{
@@ -1694,7 +1690,7 @@ void LLFloaterWorldMap::onCommitSearchResult(LLUICtrl*, void* userdata)
 //MK
 void LLFloaterWorldMap::open()
 {
-	if (RRenabled && (
+	if (gRRenabled && (
 		gAgent.mRRInterface.mContainsShowworldmap
 		|| gAgent.mRRInterface.mContainsShowloc))
 	{

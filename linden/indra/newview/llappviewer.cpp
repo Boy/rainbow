@@ -201,10 +201,6 @@ extern BOOL gRandomizeFramerate;
 extern BOOL gPeriodicSlowFrame;
 extern BOOL gDebugGL;
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 ////////////////////////////////////////////////////////////
 // All from the last globals push...
 const F32 DEFAULT_AFK_TIMEOUT = 5.f * 60.f; // time with no input before user flagged as Away From Keyboard
@@ -927,7 +923,7 @@ bool LLAppViewer::mainLoop()
 
 //MK
 				// Do some RLV maintenance (garbage collector etc)
-				if (RRenabled && LLStartUp::getStartupState() == STATE_STARTED
+				if (gRRenabled && LLStartUp::getStartupState() == STATE_STARTED
 					&& !gViewerWindow->getShowProgress()
 					&& !gFocusMgr.focusLocked())
 				{
@@ -935,7 +931,7 @@ bool LLAppViewer::mainLoop()
 					gAgent.mRRInterface.fetchInventory ();
 					
 					// perform some maintenance only if no object is waiting to be reattached
-					if (gAgent.mRRInterface.sAssetsToReattach.empty())
+					if (gAgent.mRRInterface.mAssetsToReattach.empty())
 					{
 						// fire all the stored commands that we received while initializing
 						gAgent.mRRInterface.fireCommands ();
@@ -947,23 +943,38 @@ bool LLAppViewer::mainLoop()
 						}
 						
 					}
-					
-					// Decrease the automatic reattach timer, and reattach the object when it expires
-					if (gAgent.mRRInterface.sTimeBeforeReattaching > 0)
+
+					// We must check whether there is an object waiting to be reattached after
+					// having been kicked off while locked.
+					if (!gAgent.mRRInterface.mAssetsToReattach.empty())
 					{
-						if (--gAgent.mRRInterface.sTimeBeforeReattaching <= 0)
+						// Get the elapsed time since detached, and the delay before reattach.
+						U32 elapsed = (U32)gAgent.mRRInterface.mReattachTimer.getElapsedTimeF32();
+						U32 delay = gSavedSettings.getU32("RestrainedLoveReattachDelay");
+						// Timeout flag.
+						BOOL timeout = (gAgent.mRRInterface.mReattaching && elapsed > 4 * delay);
+						if (timeout)
 						{
-							// We must check whether there is an object waiting to be reattached after having been kicked off while locked.
-							// If there is one, let's reattach it here, to its default attach point.
-							if (!gAgent.mRRInterface.sAssetsToReattach.empty())
+							// If we timed out, reset the timer and tell the interface...
+							gAgent.mRRInterface.mReattachTimer.reset();
+							gAgent.mRRInterface.mReattachTimeout = TRUE;
+							llwarns << "Timeout reattaching an asset, retrying." << llendl;
+						}
+						if (!gAgent.mRRInterface.mReattaching || timeout)
+						{
+							// We are not reattaching an object (or we timed out), so
+							// let's see if the delay before auto-reattach has elapsed.
+							if (elapsed >= delay)
 							{
-								AssetAndTarget& at = gAgent.mRRInterface.sAssetsToReattach.front();
+								// Let's reattach the object to its default attach point.
+								AssetAndTarget& at = gAgent.mRRInterface.mAssetsToReattach.front();
 								LLUUID tmp_uuid = at.uuid;
 								std::string tmp_attachpt = at.attachpt;
 								int tmp_attachpt_nb = 0;
 								LLViewerJointAttachment* attachpt = gAgent.mRRInterface.findAttachmentPointFromName(tmp_attachpt, true);
 								if (attachpt) tmp_attachpt_nb = gAgent.mRRInterface.findAttachmentPointNumber(attachpt);
-								llinfos << "Reattaching asset : " << tmp_uuid << " to point " << tmp_attachpt_nb << llendl;
+								llinfos << "Reattaching asset " << tmp_uuid << " to point " << tmp_attachpt_nb << llendl;
+								gAgent.mRRInterface.mReattaching = TRUE;
 								gAgent.mRRInterface.attachObjectByUUID (tmp_uuid, tmp_attachpt_nb);
 							}
 						}
@@ -1343,6 +1354,12 @@ bool LLAppViewer::cleanup()
 	LLVFile::cleanupClass();
 	llinfos << "VFS cleaned up" << llendflush;
 
+//MK
+	if (gRRenabled)
+	{
+		gAgent.mRRInterface.refreshTPflag(false);
+	}
+//mk
 	// Store the time of our current logoff
 	gSavedPerAccountSettings.setU32("LastLogoff", time_corrected());
 

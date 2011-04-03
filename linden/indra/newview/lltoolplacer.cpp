@@ -71,10 +71,6 @@
 
 const LLVector3 DEFAULT_OBJECT_SCALE(0.5f, 0.5f, 0.5f);
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 //static 
 LLPCode	LLToolPlacer::sObjectType = LL_PCODE_CUBE;
 
@@ -532,7 +528,7 @@ BOOL LLToolPlacer::placeObject(S32 x, S32 y, MASK mask)
 	BOOL added = TRUE;
 
 //MK
-	if (RRenabled && (gAgent.mRRInterface.mContainsEdit || gAgent.mRRInterface.mContainsRez))
+	if (gRRenabled && (gAgent.mRRInterface.mContainsEdit || gAgent.mRRInterface.mContainsRez))
 	{
 		return TRUE;
 	}

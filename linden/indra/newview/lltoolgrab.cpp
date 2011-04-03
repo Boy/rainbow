@@ -71,10 +71,6 @@ BOOL gGrabBtnSpin = FALSE;
 LLTool* gGrabTransientTool = NULL;
 extern BOOL gDebugClicks;
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 //
 // Methods
 //
@@ -178,22 +174,15 @@ BOOL LLToolGrab::handleObjectHit(const LLPickInfo& info)
 	mGrabPick = info;
 	LLViewerObject* objectp = mGrabPick.getObject();
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsFartouch
-		&& !objectp->isHUDAttachment())
+	if (gRRenabled && !gAgent.mRRInterface.canTouch(objectp, mGrabPick.mIntersection))
 	{
-//		LLVector3 pos = objectp->getPositionRegion ();
-		LLVector3 pos = mGrabPick.mIntersection;
-		pos -= gAgent.getPositionAgent ();
-		if (pos.magVec () >= 1.5)
+		// hide grab tool immediately
+		if (gGrabTransientTool)
 		{
-			// hide grab tool immediately
-			if (gGrabTransientTool)
-			{
-				gBasicToolset->selectTool( gGrabTransientTool );
-				gGrabTransientTool = NULL;
-			}
-			return TRUE;
+			gBasicToolset->selectTool(gGrabTransientTool);
+			gGrabTransientTool = NULL;
 		}
+		return TRUE;
 	}
 //mk
 
@@ -325,16 +314,9 @@ void LLToolGrab::startSpin()
 	LLViewerObject *root = (LLViewerObject *)objectp->getRoot();
 	mSpinRotation = root->getRotation();
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsFartouch
-		&& !objectp->isHUDAttachment())
+	if (gRRenabled && !gAgent.mRRInterface.canTouch(objectp, mGrabPick.mIntersection))
 	{
-//		LLVector3 pos = objectp->getPositionRegion ();
-		LLVector3 pos = mGrabPick.mIntersection;
-		pos -= gAgent.getPositionAgent ();
-		if (pos.magVec () >= 1.5)
-		{
-			return;
-		}
+		return;
 	}
 //mk
 
@@ -399,16 +381,9 @@ void LLToolGrab::startGrab()
 	LLVector3d grab_start_global = root->getPositionGlobal();
 
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsFartouch
-		&& !objectp->isHUDAttachment())
+	if (gRRenabled && !gAgent.mRRInterface.canTouch(objectp, mGrabPick.mIntersection))
 	{
-//		LLVector3 pos = objectp->getPositionRegion ();
-		LLVector3 pos = mGrabPick.mIntersection;
-		pos -= gAgent.getPositionAgent ();
-		if (pos.magVec () >= 1.5)
-		{
-			return;
-		}
+		return;
 	}
 //mk
 
@@ -517,18 +492,9 @@ void LLToolGrab::handleHoverActive(S32 x, S32 y, MASK mask)
 	}
 
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsFartouch)
+	if (gRRenabled && !gAgent.mRRInterface.canTouch(objectp, mGrabPick.mIntersection))
 	{
-		if (objectp && !objectp->isHUDAttachment())
-		{
-//			LLVector3 pos = objectp->getPositionRegion ();
-			LLVector3 pos = mGrabPick.mIntersection;
-			pos -= gAgent.getPositionAgent ();
-			if (pos.magVec () >= 1.5)
-			{
-				return;
-			}
-		}
+		return;
 	}
 //mk
 
@@ -1104,18 +1070,9 @@ void LLToolGrab::stopGrab()
 	}
 
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsFartouch)
+	if (gRRenabled && !gAgent.mRRInterface.canTouch(objectp, mGrabPick.mIntersection))
 	{
-		if (objectp && !objectp->isHUDAttachment())
-		{
-//			LLVector3 pos = objectp->getPositionRegion ();
-			LLVector3 pos = mGrabPick.mIntersection;
-			pos -= gAgent.getPositionAgent ();
-			if (pos.magVec () >= 1.5)
-			{
-				return;
-			}
-		}
+		return;
 	}
 //mk
 

@@ -76,10 +76,6 @@ const F32 MAP_SCALE_INCREMENT = 16;
 
 const S32 TRACKING_RADIUS = 3;
 
-//MK
-extern BOOL RRenabled;
-//mk
- 
 //static
 BOOL LLNetMap::sRotateMap = FALSE;
 LLNetMap* LLNetMap::sInstance = NULL;
@@ -415,7 +411,7 @@ void LLNetMap::draw()
 //MK
 					// Don't show as friend under @shownames, since it can give away an
 					// information about the avatars who are around
-					if (RRenabled && gAgent.mRRInterface.mContainsShownames) 
+			if (gRRenabled && gAgent.mRRInterface.mContainsShownames) 
 					{
 						show_as_friend = FALSE;
 					}
@@ -604,7 +600,7 @@ BOOL LLNetMap::handleToolTip( S32 x, S32 y, std::string& msg, LLRect* sticky_rec
 	{
 		msg.assign( region->getName() );
 //MK
-		if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+		if (gRRenabled && gAgent.mRRInterface.mContainsShowloc)
 		{
 			msg.assign ("(Region hidden)");
 		}
@@ -620,6 +616,12 @@ BOOL LLNetMap::handleToolTip( S32 x, S32 y, std::string& msg, LLRect* sticky_rec
 #endif
 		// *TODO: put this under the control of XUI so it can be
 		// translated.
+//MK
+		if (gRRenabled && gAgent.mRRInterface.mContainsShowloc)
+		{
+			msg.assign ("(Region hidden)");
+		}
+//mk
 		msg.append("\n(Double-click to open Map)");
 
 		S32 SLOP = 4;

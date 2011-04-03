@@ -67,10 +67,6 @@
 #include "llui.h"
 #include "llweb.h"
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 extern void handle_buy(void*);
 
 extern BOOL gDebugClicks;
@@ -110,7 +106,7 @@ BOOL LLToolPie::handleRightMouseDown(S32 x, S32 y, MASK mask)
 	// HACK : if alt-right-clicking and not in mouselook, HUDs are passed through and we risk
 	// right-clicking in-world
 	// => discard this click
-	if (RRenabled && (mask & MASK_ALT) && gAgent.getCameraMode() != CAMERA_MODE_MOUSELOOK)
+	if (gRRenabled && (mask & MASK_ALT) && gAgent.getCameraMode() != CAMERA_MODE_MOUSELOOK)
 	{
 		handleMouseDown (x, y, mask);
 		return TRUE;
@@ -152,7 +148,7 @@ BOOL LLToolPie::pickAndShowMenu(BOOL always_show)
 			else
 			{
 //MK
-				if (!RRenabled || !gAgent.mRRInterface.mContainsShowloc)
+				if (!gRRenabled || !gAgent.mRRInterface.mContainsShowloc)
 				{
 //mk
 					// not selling passes, get info
@@ -185,14 +181,9 @@ BOOL LLToolPie::pickAndShowMenu(BOOL always_show)
 	if (useClickAction(always_show, mask, object, parent))
 	{
 //MK
-		if (RRenabled && gAgent.mRRInterface.mContainsFartouch)
+		if (gRRenabled && !gAgent.mRRInterface.canTouch(object, mPick.mIntersection))
 		{
-			LLVector3 pos = mPick.mIntersection;
-			pos -= gAgent.getPositionAgent ();
-			if (pos.magVec () >= 1.5)
-			{
-				return true;
-			}
+			return TRUE;
 		}
 //mk
 
@@ -537,6 +528,17 @@ void LLToolPie::selectionPropertiesReceived()
 				handle_give_money_dialog();
 				break;
 			case CLICK_ACTION_OPEN:
+//MK
+				if (gRRenabled && !gAgent.mRRInterface.canEdit(LLSelectMgr::getInstance()->getSelection()->getPrimaryObject()))
+				{
+					return;
+				}
+
+				if (gRRenabled && !gAgent.mRRInterface.canTouchFar(selected_object, LLToolPie::getInstance()->getPick().mIntersection))
+				{
+					return;
+				}
+//mk
 				handle_object_open();
 				break;
 			default:

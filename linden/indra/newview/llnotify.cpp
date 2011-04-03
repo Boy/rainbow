@@ -57,7 +57,6 @@
 //MK
 #include "llviewerregion.h"
 #include "llagent.h"
-extern BOOL RRenabled;
 //mk
 
 // Globals
@@ -217,7 +216,7 @@ LLNotifyBox::LLNotifyBox(LLPointer<LLNotifyBoxTemplate> xml_template, const LLSt
 	options.insert(options.end(), extra_options.begin(), extra_options.end());
 
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	if (gRRenabled && gAgent.mRRInterface.mContainsShowloc)
 	{
 		// hide every occurrence of the Parcel name if the location restriction is active
 		mMessage = gAgent.mRRInterface.stringReplace (mMessage, gAgent.mRRInterface.getParcelName(), "(Parcel hidden)");
@@ -225,7 +224,7 @@ LLNotifyBox::LLNotifyBox(LLPointer<LLNotifyBoxTemplate> xml_template, const LLSt
 		mMessage = gAgent.mRRInterface.stringReplace (mMessage, gAgent.getRegion()->getName(), "(Region hidden)");
 	}
 	
-	if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+	if (gRRenabled && gAgent.mRRInterface.mContainsShownames)
 	{
 		mMessage = gAgent.mRRInterface.getCensoredMessage(mMessage);
 	}

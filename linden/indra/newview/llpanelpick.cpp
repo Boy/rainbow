@@ -62,10 +62,6 @@
 //static
 std::list<LLPanelPick*> LLPanelPick::sAllPanels;
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 LLPanelPick::LLPanelPick(BOOL top_pick)
 :	LLPanel(std::string("Top Picks Panel")),
 	mTopPick(top_pick),
@@ -174,7 +170,7 @@ BOOL LLPanelPick::postBuild()
 void LLPanelPick::initNewPick()
 {
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	if (gRRenabled && gAgent.mRRInterface.mContainsShowloc)
 	{
 		return;
 	}
@@ -466,7 +462,7 @@ void LLPanelPick::onClickLandmark(void* data)
 void LLPanelPick::onClickSet(void* data)
 {
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsShowloc)
+	if (gRRenabled && gAgent.mRRInterface.mContainsShowloc)
 	{
 		// don't allow to set the location while under @showloc, or it appears on the window
 		return;

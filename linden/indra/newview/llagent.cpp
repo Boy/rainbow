@@ -133,9 +133,6 @@
 #include "llfollowcam.h"
 
 extern LLMenuBarGL* gMenuBarView;
-//MK
-extern BOOL RRenabled;
-//mk
 
 //drone wandering constants
 const F32 MAX_WANDER_TIME = 20.f;						// seconds
@@ -571,7 +568,7 @@ void LLAgent::resetView(BOOL reset_camera, BOOL change_camera)
 void LLAgent::onAppFocusGained()
 {
 //MK
-	if (RRenabled)
+	if (gRRenabled)
 	{
 		return;
 	}
@@ -769,7 +766,7 @@ void LLAgent::movePitch(S32 direction)
 BOOL LLAgent::canFly()
 {
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsFly)
+	if (gRRenabled && gAgent.mRRInterface.mContainsFly)
 	{
 		return FALSE;
 	}
@@ -814,7 +811,7 @@ void LLAgent::setFlying(BOOL fly)
 	if (fly)
 	{
 //MK
-		if (RRenabled && gAgent.mRRInterface.mContainsFly)
+		if (gRRenabled && gAgent.mRRInterface.mContainsFly)
 		{
 			return;
 		}
@@ -870,7 +867,7 @@ void LLAgent::setRegion(LLViewerRegion *regionp)
 
 		std::string ip = regionp->getHost().getString();
 //MK
-		if (!RRenabled || !gAgent.mRRInterface.mContainsShowloc)
+		if (!gRRenabled || !gAgent.mRRInterface.mContainsShowloc)
 		{
 //mk
 			llinfos << "Moving agent into region: " << regionp->getName()
@@ -4246,7 +4243,7 @@ void LLAgent::changeCameraToThirdPerson(BOOL animate)
 void LLAgent::changeCameraToCustomizeAvatar(BOOL avatar_animate, BOOL camera_animate)
 {
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsUnsit)
+	if (gRRenabled && gAgent.mRRInterface.mContainsUnsit)
 	{
 		return;
 	}
@@ -4257,6 +4254,13 @@ void LLAgent::changeCameraToCustomizeAvatar(BOOL avatar_animate, BOOL camera_ani
 	}
 
 	setControlFlags(AGENT_CONTROL_STAND_UP); // force stand up
+//MK
+	if (gRRenabled && gAgent.mRRInterface.contains ("standtp"))
+	{
+		gAgent.mRRInterface.mSnappingBackToLastStandingLocation = TRUE;
+		gAgent.mRRInterface.mSnappingBackToLastStandingLocation = FALSE;
+	}
+//mk
 	gViewerWindow->getWindow()->resetBusyCount();
 
 	if (gFaceEditToolset)
@@ -6177,7 +6181,7 @@ void LLAgent::teleportViaLandmark(const LLUUID& landmark_asset_id)
 {
 //MK
 	LLVOAvatar* avatar = gAgent.getAvatarObject();
-	if (RRenabled && (LLStartUp::getStartupState() != STATE_STARTED || gViewerWindow->getShowProgress() 
+	if (gRRenabled && (LLStartUp::getStartupState() != STATE_STARTED || gViewerWindow->getShowProgress() 
 					  || gFocusMgr.focusLocked() || gAgent.mRRInterface.contains ("tplm") 
 					  || (gAgent.mRRInterface.mContainsUnsit && avatar && avatar->mIsSitting)))
 	{
@@ -6203,7 +6207,7 @@ void LLAgent::teleportViaLure(const LLUUID& lure_id, BOOL godlike)
 {
 //MK
 	//// eliminate all restrictions issued from objects the avatar is not wearing
-	//if (RRenabled)
+	//if (gRRenabled)
 	//{
 	//	gAgent.mRRInterface.garbageCollector ();
 	//}
@@ -6259,7 +6263,7 @@ void LLAgent::teleportViaLocation(const LLVector3d& pos_global)
 {
 //MK
 	LLVOAvatar* avatar = gAgent.getAvatarObject();
-	if (RRenabled && (LLStartUp::getStartupState() != STATE_STARTED || gViewerWindow->getShowProgress() 
+	if (gRRenabled && (LLStartUp::getStartupState() != STATE_STARTED || gViewerWindow->getShowProgress() 
 					  || gFocusMgr.focusLocked() || gAgent.mRRInterface.contains ("tploc") 
 					  || (gAgent.mRRInterface.mContainsUnsit && avatar && avatar->mIsSitting)))
 	{
@@ -7491,17 +7495,13 @@ void LLAgent::sendAgentDataUpdateRequest()
 
 void LLAgent::removeWearable( EWearableType type )
 {
-	LLWearable* old_wearable = mWearableEntry[ type ].mWearable;
 //MK
-	if (RRenabled)
+	if (gRRenabled && !gAgent.mRRInterface.canUnwear(type))
 	{
-		if (gAgent.mRRInterface.contains ("remoutfit")
-			|| gAgent.mRRInterface.contains ("remoutfit:"+gAgent.mRRInterface.getOutfitLayerAsString (type)))
-		{
-			return;
-		}
+		return;
 	}
 //mk
+	LLWearable* old_wearable = mWearableEntry[ type ].mWearable;
 	if ( (gAgent.isTeen())
 		 && (type == WT_UNDERSHIRT || type == WT_UNDERPANTS))
 	{
@@ -7733,7 +7733,7 @@ void LLAgent::setWearable( LLInventoryItem* new_item, LLWearable* new_wearable )
 	EWearableType type = new_wearable->getType();
 
 //MK
-	if (RRenabled)
+	if (gRRenabled)
 	{
 		if (gAgent.mRRInterface.contains ("addoutfit")
 			|| gAgent.mRRInterface.contains ("addoutfit:"+gAgent.mRRInterface.getOutfitLayerAsString (type)))
@@ -7747,14 +7747,10 @@ void LLAgent::setWearable( LLInventoryItem* new_item, LLWearable* new_wearable )
 	if( old_wearable )
 	{
 //MK
-		if (RRenabled)
+		if (gRRenabled && !gAgent.mRRInterface.canUnwear(type))
 		{
-			if (gAgent.mRRInterface.contains ("remoutfit")
-				|| gAgent.mRRInterface.contains ("remoutfit:"+gAgent.mRRInterface.getOutfitLayerAsString (type)))
-			{
-				// cannot remove this outfit, so cannot replace it either
-				return;
-			}
+			// cannot remove this outfit, so cannot replace it either
+			return;
 		}
 //mk
 		const LLUUID& old_item_id = mWearableEntry[ type ].mItemID;

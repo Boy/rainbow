@@ -67,10 +67,6 @@
 #include "llscrolllistctrl.h"
 #include "llfloateravatarlist.h"
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 #if LL_DARWIN
 
 	#include "llresizehandle.h"
@@ -305,7 +301,7 @@ void LLToolBar::refresh()
 	childSetEnabled("fly_btn", (gAgent.canFly() || gAgent.getFlying()) && !sitting );
 
 //MK
-	if (RRenabled)
+	if (gRRenabled)
 	{
 		childSetEnabled("build_btn", LLViewerParcelMgr::getInstance()->agentCanBuild() && !gAgent.mRRInterface.mContainsRez && !gAgent.mRRInterface.mContainsEdit);
 		childSetEnabled("avatar_list_btn", !gAgent.mRRInterface.mContainsShownames);
@@ -501,11 +497,20 @@ void LLToolBar::onClickSit(void*)
 		// stand up
 		gAgent.setFlying(FALSE);
 //MK
-		if (RRenabled && gAgent.mRRInterface.mContainsUnsit) {
+		if (gRRenabled && gAgent.mRRInterface.mContainsUnsit)
+		{
 			return;
 		}
 //mk
 		gAgent.setControlFlags(AGENT_CONTROL_STAND_UP);
+//MK
+		if (gRRenabled && gAgent.mRRInterface.contains ("standtp"))
+		{
+			gAgent.mRRInterface.mSnappingBackToLastStandingLocation = TRUE;
+//			gAgent.teleportViaLocationLookAt (gAgent.mRRInterface.mLastStandingLocation);
+			gAgent.mRRInterface.mSnappingBackToLastStandingLocation = FALSE;
+		}
+//mk
 	}
 }
 

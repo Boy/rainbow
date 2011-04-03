@@ -65,10 +65,6 @@
 #include "llui.h"
 #include "pipeline.h"
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 const S32 NUM_AXES = 3;
 const S32 MOUSE_DRAG_SLOP = 2;       // pixels
 const F32 HANDLE_HIDE_ANGLE = 0.15f; // radians
@@ -468,7 +464,7 @@ BOOL LLManipTranslate::handleHover(S32 x, S32 y, MASK mask)
 			{
 				// ...we're trying to make a copy
 //MK
-				if (!RRenabled || !gAgent.mRRInterface.mContainsRez)
+				if (!gRRenabled || !gAgent.mRRInterface.mContainsRez)
 				{
 //mk
 					LLSelectMgr::getInstance()->selectDuplicate(LLVector3::zero, FALSE);

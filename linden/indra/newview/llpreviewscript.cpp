@@ -90,8 +90,6 @@
 
 //MK
 #include "llvoavatar.h"
-
-extern BOOL RRenabled;
 //mk
 
 const std::string HELLO_LSL =
@@ -1796,7 +1794,7 @@ void LLLiveLSLEditor::onRunningCheckboxClicked( LLUICtrl*, void* userdata )
 	BOOL running =  runningCheckbox->get();
 	//self->mRunningCheckbox->get();
 //MK
-	if (RRenabled && !gAgent.mRRInterface.canDetach(object))
+	if (gRRenabled && !gAgent.mRRInterface.canDetach(object))
 	{
 		runningCheckbox->set(!running);
 		return;
@@ -1828,7 +1826,7 @@ void LLLiveLSLEditor::onReset(void *userdata)
 
 	LLViewerObject* object = gObjectList.findObject( self->mObjectID );
 //MK
-	if (RRenabled && !gAgent.mRRInterface.canDetach(object))
+	if (gRRenabled && !gAgent.mRRInterface.canDetach(object))
 	{
 		return;
 	}
@@ -2258,7 +2256,7 @@ void LLLiveLSLEditor::onSave(void* userdata, BOOL close_after_save)
 {
 	LLLiveLSLEditor* self = (LLLiveLSLEditor*) userdata;
 //MK
-	if (RRenabled)
+	if (gRRenabled)
 	{
 		LLViewerObject* object = gObjectList.findObject(self->mObjectID);
 		if (!gAgent.mRRInterface.canDetach(object))

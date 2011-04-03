@@ -71,9 +71,6 @@
 LLOverlayBar *gOverlayBar = NULL;
 
 extern S32 MENU_BAR_HEIGHT;
-//MK
-extern BOOL RRenabled;
-//mk
 
 //
 // Functions
@@ -239,7 +236,7 @@ void LLOverlayBar::refresh()
 	if (gAgent.getAvatarObject())
 	{
 //MK
-		if (RRenabled && gAgent.mRRInterface.mContainsUnsit)
+		if (gRRenabled && gAgent.mRRInterface.mContainsUnsit)
 		{
 			sitting=FALSE;
 		} else // sitting = true if agent is sitting
@@ -320,9 +317,10 @@ void LLOverlayBar::onClickMouselook(void*)
 void LLOverlayBar::onClickStandUp(void*)
 {
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsUnsit) {
-		if (gAgent.getAvatarObject() &&
-			gAgent.getAvatarObject()->mIsSitting) {
+	if (gRRenabled && gAgent.mRRInterface.mContainsUnsit)
+	{
+		if (gAgent.getAvatarObject() &&	gAgent.getAvatarObject()->mIsSitting)
+		{
 			return;
 		}
 	}

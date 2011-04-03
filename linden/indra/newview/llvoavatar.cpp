@@ -130,10 +130,6 @@
 #include "llvoicevisualizer.h" 
 #include "llvoiceclient.h"
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 LLXmlTree LLVOAvatar::sXMLTree;
 LLXmlTree LLVOAvatar::sSkeletonXMLTree;
 LLVOAvatarSkeletonInfo* LLVOAvatar::sSkeletonInfo = NULL;
@@ -3408,7 +3404,7 @@ void LLVOAvatar::idleUpdateNameTag(const LLVector3& root_pos_last)
 	}
 //MK
 	// hide the names above the heads
-	if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+	if (gRRenabled && gAgent.mRRInterface.mContainsShownames)
 	{
 		render_name = FALSE;
 	}
@@ -6869,7 +6865,7 @@ BOOL LLVOAvatar::attachObject(LLViewerObject *viewer_object)
 	}
 
 //MK
-	if (RRenabled)
+	if (gRRenabled && mIsSelf)
 	{
 		// if this inventory item is shared and does not contain any attachment info in its name, rename it for later (truncate the name first if needed)
 		LLViewerInventoryItem* item = gInventory.getItem (viewer_object->getAttachmentItemID());
@@ -7091,7 +7087,7 @@ void LLVOAvatar::sitOnObject(LLViewerObject *sit_object)
 	gPipeline.markMoved(mDrawable, TRUE);
 	LLFloaterAO::ChangeStand();
 //MK
-	if (RRenabled)
+	if (gRRenabled && mIsSelf)
 	{
 		gAgent.mRRInterface.setSitTargetId (sit_object->getID());
 	}
@@ -7134,7 +7130,7 @@ void LLVOAvatar::getOffObject()
 	if (sit_object) 
 	{
 //MK
-		if (RRenabled)
+		if (gRRenabled && mIsSelf)
 		{
 			gAgent.mRRInterface.setSitTargetId (LLUUID::null);
 		}

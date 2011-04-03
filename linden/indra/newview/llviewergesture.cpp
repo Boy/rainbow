@@ -47,10 +47,6 @@
 #include "llviewernetwork.h"
 #include "llagent.h"
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 // Globals
 LLViewerGestureList gGestureList;
 
@@ -140,7 +136,7 @@ void LLViewerGesture::doTrigger( BOOL send_chat )
 		// Don't play nodding animation, since that might not blend
 		// with the gesture animation.
 //MK
-		if (!RRenabled || !gAgent.mRRInterface.contains ("sendchat"))
+		if (!gRRenabled || !gAgent.mRRInterface.contains ("sendchat"))
 		{
 //mk
 			gChatBar->sendChatFromViewer(mOutputString, CHAT_TYPE_NORMAL, FALSE);

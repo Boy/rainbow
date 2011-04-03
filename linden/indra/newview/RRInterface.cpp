@@ -1,29 +1,30 @@
 /** 
-* @file RRInterface.cpp
-* @author Marine Kelley
-* @brief Implementation of the RLV features
-*
-* RLV Source Code
-* The source code in this file ("Source Code") is provided by Marine Kelley
-* to you under the terms of the GNU General Public License, version 2.0
-* ("GPL"), unless you have obtained a separate licensing agreement
-* ("Other License"), formally executed by you and Marine Kelley.  Terms of
-* the GPL can be found in doc/GPL-license.txt in the distribution of the
-* original source of the Second Life Viewer, or online at 
-* http://secondlifegrid.net/programs/open_source/licensing/gplv2
-* 
-* By copying, modifying or distributing this software, you acknowledge
-* that you have read and understood your obligations described above,
-* and agree to abide by those obligations.
-* 
-* ALL SOURCE CODE FROM MARINE KELLEY IS PROVIDED "AS IS." MARINE KELLEY 
-* MAKES NO WARRANTIES, EXPRESS, IMPLIED OR OTHERWISE, REGARDING 
-* ITS ACCURACY, COMPLETENESS OR PERFORMANCE.
-*/
+ * @file RRInterface.cpp
+ * @author Marine Kelley
+ * @brief Implementation of the RLV features
+ *
+ * RLV Source Code
+ * The source code in this file ("Source Code") is provided by Marine Kelley
+ * to you under the terms of the GNU General Public License, version 2.0
+ * ("GPL"), unless you have obtained a separate licensing agreement
+ * ("Other License"), formally executed by you and Marine Kelley.  Terms of
+ * the GPL can be found in doc/GPL-license.txt in the distribution of the
+ * original source of the Second Life Viewer, or online at 
+ * http://secondlifegrid.net/programs/open_source/licensing/gplv2
+ * 
+ * By copying, modifying or distributing this software, you acknowledge
+ * that you have read and understood your obligations described above,
+ * and agree to abide by those obligations.
+ * 
+ * ALL SOURCE CODE FROM MARINE KELLEY IS PROVIDED "AS IS." MARINE KELLEY 
+ * MAKES NO WARRANTIES, EXPRESS, IMPLIED OR OTHERWISE, REGARDING 
+ * ITS ACCURACY, COMPLETENESS OR PERFORMANCE.
+ */
 
 #include "llviewerprecompiledheaders.h"
 
 #include "llagent.h"
+#include "llcachename.h"
 #include "lldrawpoolalpha.h"
 #include "llfloaterchat.h"
 #include "llfloaterdaycycle.h"
@@ -51,10 +52,15 @@
 #include "llvoavatar.h"
 #include "llwaterparammanager.h"
 #include "llwlparammanager.h"
+#include "llworld.h"
 #include "pipeline.h"
+
 #include "RRInterface.h"
 
-extern BOOL RRNoSetEnv;
+// Global and static variables initialization.
+BOOL gRRenabled = TRUE;
+BOOL RRInterface::sRRNoSetEnv = FALSE;
+BOOL RRInterface::sRestrainedLoveDebug = FALSE;
 
 #if !defined(max)
 #define max(a, b)	((a) > (b) ? (a) : (b))
@@ -75,19 +81,27 @@ std::string dumpList2String (std::deque<std::string> list, std::string sep, int 
 	return res;
 }
 
-int match (std::deque<std::string> list, std::string str)
+int match (std::deque<std::string> list, std::string str, bool& exact_match)
 {
 	// does str contain list[0]/list[1]/.../list[n] ?
 	// yes => return the size of the list
 	// no  => try again after removing the last element
 	// return 0 if never found
 	// Exception : if str starts with a "~" character, the match must be exact
+	// exact_match is set to true for strict matching, false otherwise.
 	unsigned int size = list.size();
 	std::string dump;
+	exact_match = false;
 	while (size > 0) {
 		dump = dumpList2String (list, "/", (int)size);
-		if (str != "" && str[0] == '~' && str != dump) return 0;
-		if (str.find (dump) != -1) return (int)size;
+		if (str == dump) {
+			exact_match = true;
+			return (int)size;
+		} else if (str != "" && str[0] == '~') {
+			return 0;
+		} else if (str.find (dump) != -1) {
+			return (int)size;
+		}
 		size--;
 	}
 	return 0;
@@ -118,6 +132,9 @@ void refreshCachedVariable (std::string var)
 {
 	// Call this function when adding/removing a restriction only, i.e. in this file
 	// Test the cached variables in the code of the viewer itself
+	LLVOAvatar* avatar = gAgent.getAvatarObject();
+	if (!avatar) return;
+
 	BOOL contained = gAgent.mRRInterface.contains (var);
 	if (var == "detach" || var.find ("detach:") == 0 || var.find ("addattach") == 0 || var.find ("remattach") == 0) {
 		contained = gAgent.mRRInterface.contains("detach")
@@ -134,19 +151,23 @@ void refreshCachedVariable (std::string var)
 	else if (var == "showinv")				gAgent.mRRInterface.mContainsShowinv = contained;
 	else if (var == "unsit")				gAgent.mRRInterface.mContainsUnsit = contained;
 	else if (var == "fartouch")				gAgent.mRRInterface.mContainsFartouch = contained;
+	else if (var == "touchfar")				gAgent.mRRInterface.mContainsFartouch = contained;
 	else if (var == "showworldmap")			gAgent.mRRInterface.mContainsShowworldmap = contained;
 	else if (var == "showminimap")			gAgent.mRRInterface.mContainsShowminimap = contained;
 	else if (var == "showloc")				gAgent.mRRInterface.mContainsShowloc = contained;
 	else if (var == "shownames")			gAgent.mRRInterface.mContainsShownames = contained;
 	else if (var == "setenv")				gAgent.mRRInterface.mContainsSetenv = contained;
+	else if (var == "setdebug")				gAgent.mRRInterface.mContainsSetdebug = contained;
 	else if (var == "fly")					gAgent.mRRInterface.mContainsFly = contained;
-	else if (var == "edit")					gAgent.mRRInterface.mContainsEdit = contained;
+	else if (var == "edit")					gAgent.mRRInterface.mContainsEdit = (gAgent.mRRInterface.containsWithoutException ("edit")); // || gAgent.mRRInterface.containsSubstr ("editobj"));
 	else if (var == "rez")					gAgent.mRRInterface.mContainsRez = contained;
 	else if (var == "showhovertextall")		gAgent.mRRInterface.mContainsShowhovertextall = contained;
 	else if (var == "showhovertexthud")		gAgent.mRRInterface.mContainsShowhovertexthud = contained;
 	else if (var == "showhovertextworld")	gAgent.mRRInterface.mContainsShowhovertextworld = contained;
 	else if (var == "defaultwear")			gAgent.mRRInterface.mContainsDefaultwear = contained;
 	else if (var == "permissive")			gAgent.mRRInterface.mContainsPermissive = contained;
+
+	gAgent.mRRInterface.refreshTPflag(true);
 }
 
 std::string getFirstName (std::string fullName)
@@ -201,39 +222,61 @@ void updateOneHudText (LLUUID uuid)
 
 
 RRInterface::RRInterface():
-	sInventoryFetched(FALSE),
-	sAllowCancelTp(TRUE),
-	sSitTargetId(),
-	sLastLoadedPreset(),
-	sTimeBeforeReattaching(0)
+	mInventoryFetched(FALSE),
+	mAllowCancelTp(TRUE),
+	mSitTargetId(),
+	mLastLoadedPreset(),
+	mReattaching(FALSE),
+	mReattachTimeout(FALSE),
+	mSnappingBackToLastStandingLocation(FALSE)
 {
-	sAllowedS32 = ",";
+	mAllowedS32 = ",";
 
-	sAllowedU32 = 
+	mAllowedU32 = 
 	",AvatarSex"			// 0 female, 1 male
 	",RenderResolutionDivisor"	// simulate blur, default is 1
 	",";
 
-	sAllowedF32 = ",";
-	sAllowedBOOLEAN = ",";
-	sAllowedSTRING = ",";
-	sAllowedVEC3 = ",";
-	sAllowedVEC3D = ",";
-	sAllowedRECT = ",";
-	sAllowedCOL4 = ",";
-	sAllowedCOL3 = ",";
-	sAllowedCOL4U = ",";
+	mAllowedF32 = ",";
+	mAllowedBOOLEAN = ",";
+	mAllowedSTRING = ",";
+	mAllowedVEC3 = ",";
+	mAllowedVEC3D = ",";
+	mAllowedRECT = ",";
+	mAllowedCOL4 = ",";
+	mAllowedCOL3 = ",";
+	mAllowedCOL4U = ",";
 
-	sAssetsToReattach.clear();
+	mAssetsToReattach.clear();
 
-	sJustDetached.uuid.setNull();
-	sJustDetached.attachpt = "";
-	sJustReattached.uuid.setNull();
-	sJustReattached.attachpt = "";
+	mJustDetached.uuid.setNull();
+	mJustDetached.attachpt = "";
+	mJustReattached.uuid.setNull();
+	mJustReattached.attachpt = "";
+
+	// Calling gSavedSettings here crashes the viewer when compiled with VS2005.
+	// OK under Linux. Moved this initialization to llstartup.cpp as a consequence.
+	// sRestrainedLoveDebug = gSavedSettings.getBOOL("RestrainedLoveDebug");
 }
 
 RRInterface::~RRInterface()
 {
+}
+
+void RRInterface::refreshTPflag(bool save)
+{
+	static BOOL last_value = gSavedPerAccountSettings.getBOOL("RestrainedLoveTPOK");
+	BOOL new_value = TRUE;
+	if (gAgent.mRRInterface.mContainsUnsit || gAgent.mRRInterface.contains("tplm") || gAgent.mRRInterface.contains("tploc")) {
+		new_value = FALSE;
+	}
+	if (new_value != last_value) {
+		last_value = new_value;
+		gSavedPerAccountSettings.setBOOL("RestrainedLoveTPOK", new_value);
+		if (save) {
+			gSavedPerAccountSettings.saveToFile(gSavedSettings.getString("PerAccountSettingsFile"), TRUE);
+		}
+	}
 }
 
 std::string RRInterface::getVersion ()
@@ -248,13 +291,13 @@ std::string RRInterface::getVersion2 ()
 
 BOOL RRInterface::isAllowed (LLUUID object_uuid, std::string action, BOOL log_it)
 {
-	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug") && log_it;
+	BOOL debug = sRestrainedLoveDebug && log_it;
 	if (debug) {
 		llinfos << object_uuid.asString() << "      " << action << llendl;
 	}
-	RRMAP::iterator it = sSpecialObjectBehaviours.find (object_uuid.asString());
-	while (it != sSpecialObjectBehaviours.end() &&
-			it != sSpecialObjectBehaviours.upper_bound(object_uuid.asString()))
+	RRMAP::iterator it = mSpecialObjectBehaviours.find (object_uuid.asString());
+	while (it != mSpecialObjectBehaviours.end() &&
+			it != mSpecialObjectBehaviours.upper_bound(object_uuid.asString()))
 	{
 		if (debug) {
 			llinfos << "  checking " << it->second << llendl;
@@ -275,10 +318,10 @@ BOOL RRInterface::isAllowed (LLUUID object_uuid, std::string action, BOOL log_it
 
 BOOL RRInterface::contains (std::string action)
 {
-	RRMAP::iterator it = sSpecialObjectBehaviours.begin ();
+	RRMAP::iterator it = mSpecialObjectBehaviours.begin ();
 	LLStringUtil::toLower(action);
 //	llinfos << "looking for " << action << llendl;
-	while (it != sSpecialObjectBehaviours.end()) {
+	while (it != mSpecialObjectBehaviours.end()) {
 		if (it->second == action) {
 //			llinfos << "found " << it->second << llendl;
 			return TRUE;
@@ -290,10 +333,10 @@ BOOL RRInterface::contains (std::string action)
 
 BOOL RRInterface::containsSubstr (std::string action)
 {
-	RRMAP::iterator it = sSpecialObjectBehaviours.begin ();
+	RRMAP::iterator it = mSpecialObjectBehaviours.begin ();
 	LLStringUtil::toLower(action);
 //	llinfos << "looking for " << action << llendl;
-	while (it != sSpecialObjectBehaviours.end()) {
+	while (it != mSpecialObjectBehaviours.end()) {
 		if (it->second.find (action) != -1) {
 //			llinfos << "found " << it->second << llendl;
 			return TRUE;
@@ -320,12 +363,11 @@ BOOL RRInterface::containsWithoutException (std::string action, std::string exce
 	// 2. For each action_sec, if we don't find an exception tied to the same object, return TRUE
 	// if @permissive is set, then even action needs the exception to be tied to the same object, not just action_sec
 	// (@permissive restrains the scope of all the exceptions to their own objects)
-	RRMAP::iterator it = sSpecialObjectBehaviours.begin ();
-	while (it != sSpecialObjectBehaviours.end()) {
-		if (it->second == action_sec 
-		|| it->second == action && mContainsPermissive) {
+	RRMAP::iterator it = mSpecialObjectBehaviours.begin ();
+	while (it != mSpecialObjectBehaviours.end()) {
+		if ((it->second == action_sec || it->second == action) && mContainsPermissive) {
 			uuid.set (it->first);
-			if (isAllowed (uuid, action+":"+except, FALSE) && isAllowed (uuid, action_sec+":"+except, FALSE)) { // we use isAllowed because we need to check the object, but it really means "does not contain"
+			if (isAllowed (uuid, action + ":" + except, FALSE) && isAllowed (uuid, action_sec + ":" + except, FALSE)) { // we use isAllowed because we need to check the object, but it really means "does not contain"
 				return TRUE;
 			}
 		}
@@ -334,7 +376,7 @@ BOOL RRInterface::containsWithoutException (std::string action, std::string exce
 	
 	// 3. If we didn't return yet, but the map contains action, just look for except_uuid without regard to its object, if none is found return TRUE
 	if (contains (action)) {
-		if (!contains (action+":"+except) && !contains (action_sec+":"+except)) {
+		if (!contains (action + ":" + except) && !contains (action_sec + ":" + except)) {
 			return TRUE;
 		}
 	}
@@ -343,19 +385,182 @@ BOOL RRInterface::containsWithoutException (std::string action, std::string exce
 	return FALSE;
 }
 
+FolderLock RRInterface::isFolderLockedWithoutException (LLInventoryCategory* cat, std::string attach_or_detach)
+{
+	if (cat == NULL) return FolderLock_unlocked;
+
+	if (sRestrainedLoveDebug) {
+		llinfos << "isFolderLockedWithoutException(" << cat->getName() << ", " << attach_or_detach << ")" << llendl;
+	}
+	// For each object that is locking this folder, check whether it also issues exceptions to this lock
+	std::deque<std::string> commands_list;
+	std::string command;
+	std::string behav;
+	std::string option;
+	std::string param;
+	std::string this_command;
+	std::string this_behav;
+	std::string this_option;
+	std::string this_param;
+	bool this_object_locks;
+	FolderLock current_lock = FolderLock_unlocked;
+	for (RRMAP::iterator it = mSpecialObjectBehaviours.begin (); it != mSpecialObjectBehaviours.end(); ++it) {
+		LLUUID uuid = LLUUID(it->first);
+		command = it->second;
+		if (sRestrainedLoveDebug) {
+			llinfos << "command = " << command << llendl;
+		}
+		// param will always be equal to "n" in this case since we added it to command, but we don't care about this here
+		if (parseCommand (command+"=n", behav, option, param)) // detach=n, recvchat=n, recvim=n, unsit=n, recvim:<uuid>=add, clear=tplure:
+		{
+			// find whether this object has issued a "{attach/detach}[all]this" command on a folder that is either this one, or a parent
+			this_object_locks = false;
+			if (behav == attach_or_detach+"this") {
+				if (getCategoryUnderRlvShare(option) == cat) {
+					this_object_locks = true;
+				}
+			}
+			else if (behav == attach_or_detach+"allthis") {
+				if (isUnderFolder(getCategoryUnderRlvShare(option), cat)) {
+					this_object_locks = true;
+				}
+			}
+
+			// This object has issued such a command, check whether it has issued an exception to it as well
+			if (this_object_locks) {
+				commands_list = getListOfRestrictions(uuid);
+				FolderLock this_lock = isFolderLockedWithoutExceptionAux(cat, attach_or_detach, commands_list);
+				if (this_lock == FolderLock_locked_without_except) return FolderLock_locked_without_except;
+				else current_lock = this_lock;
+				if (sRestrainedLoveDebug) {
+					llinfos << "this_lock=" << this_lock << llendl;
+				}
+				//for (unsigned int i = 0; i < commands_list.size(); ++i)
+				//{
+				//	this_command = commands_list[i];
+				//	// this_param will always be equal to "n" in this case since we added it to this_command, but we don't care about this here
+				//	if (parseCommand (this_command+"=n", this_behav, this_option, this_param)) // detach=n, recvchat=n, recvim=n, unsit=n, recvim:<uuid>=add, clear=tplure:
+				//	{
+				//		if (this_behav == attach_or_detach+"this_except") {
+				//			if (getCategoryUnderRlvShare(this_option) == cat) {
+				//				return FolderLock_locked_with_except;
+				//			}
+				//		}
+				//		else if (this_behav == attach_or_detach+"allthis_except") {
+				//			if (isUnderFolder(getCategoryUnderRlvShare(this_option), cat)) {
+				//				return FolderLock_locked_with_except;
+				//			}
+				//		}
+				//	}
+				//}
+				// Return locked since the folder is locked and we didn't find any exception
+				//return FolderLock_locked_without_except;
+			}
+		}
+	}
+
+	// Finally, return unlocked since we didn't find any lock on this folder
+//	return FolderLock_unlocked;
+	return current_lock;
+}
+
+FolderLock RRInterface::isFolderLockedWithoutExceptionAux (LLInventoryCategory* cat, std::string attach_or_detach, std::deque<std::string> list_of_restrictions)
+{
+	// list_of_restrictions contains the list of restrictions issued by one particular object, at least one is supposed to be a "{attach|detach}[all]this"
+	// For each folder from cat up to the root folder, check :
+	// - if we are on cat and we find "{attach|detach}this_except", there is an exception, keep looking up
+	// - if we are on cat and we find "{attach|detach}this", there is no exception, return FolderLock_locked_without_except
+	// - if we are on a parent and we find "{attach|detach}allthis_except", there is an exception, keep looking up
+	// - if we are on a parent and we find "{attach|detach}allthis", if we found an exception return FolderLock_locked_with_except, else return FolderLock_locked_without_except
+	// - finally, if we are on the root, return FolderLocked_unlocked (whether there was an exception or not)
+	if (cat == NULL) {
+		return FolderLock_unlocked;
+	}
+
+	if (sRestrainedLoveDebug) {
+		llinfos << "isFolderLockedWithoutExceptionAux(" << cat->getName() << ", " << attach_or_detach << ", [" << dumpList2String(list_of_restrictions, ",") << "])" << llendl;
+	}
+
+	FolderLock current_lock = FolderLock_unlocked;
+	std::string command;
+	std::string behav;
+	std::string option;
+	std::string param;
+
+	LLInventoryCategory* it = NULL;
+	LLInventoryCategory* cat_option = NULL;
+	LLUUID root_id = gInventory.findCategoryUUIDForType(LLAssetType::AT_CATEGORY);
+
+	const LLUUID& cat_id = cat->getUUID();
+	it = gInventory.getCategory (cat_id);
+	
+	do {
+		if (sRestrainedLoveDebug) {
+			llinfos << "it=" << it->getName() << llendl;
+		}
+
+		for (unsigned int i = 0; i < list_of_restrictions.size(); ++i)
+		{
+			command = list_of_restrictions[i];
+			if (sRestrainedLoveDebug) {
+				llinfos << "command2=" << command << llendl;
+			}
+
+			// param will always be equal to "n" in this case since we added it to command, but we don't care about this here
+			if (parseCommand (command+"=n", behav, option, param)) // detach=n, recvchat=n, recvim=n, unsit=n, recvim:<uuid>=add, clear=tplure:
+			{
+				cat_option = getCategoryUnderRlvShare(option);
+				if (cat_option == it) {
+					if (it == cat) {
+						if (behav == attach_or_detach+"this_except" || behav == attach_or_detach+"allthis_except") {
+							current_lock = FolderLock_locked_with_except;
+						}
+						else if (behav == attach_or_detach+"this"|| behav == attach_or_detach+"allthis") {
+							return FolderLock_locked_without_except;
+						}
+					}
+					else {
+						if (behav == attach_or_detach+"allthis_except") {
+							current_lock = FolderLock_locked_with_except;
+						}
+						else if (behav == attach_or_detach+"allthis") {
+							if (current_lock == FolderLock_locked_with_except) return FolderLock_locked_with_except;
+							else return FolderLock_locked_without_except;
+						}
+					}
+				}
+			}
+		}
+
+		const LLUUID& parent_id = it->getParentUUID();
+		it = gInventory.getCategory (parent_id);
+	} while (it && it->getUUID() != root_id);
+	return FolderLock_unlocked; // this should never happen since list_of_commands is supposed to contain at least one "{attach|detach}[all]this" restriction
+}
+
 BOOL RRInterface::add (LLUUID object_uuid, std::string action, std::string option)
 {
-	if (gSavedSettings.getBOOL("RestrainedLoveDebug")) {
+	if (sRestrainedLoveDebug) {
 		llinfos << object_uuid.asString() << "       " << action << "      " << option << llendl;
 	}
-	
+
 	std::string canon_action = action;
-	if (option!="") action+=":"+option;
-    
+	if (!option.empty()) action += ":" + option;
+
 	if (isAllowed (object_uuid, action)) {
 		// Notify if needed
 		notify (object_uuid, action, "=n");
-		
+
+		if (gSavedSettings.controlExists("RestrainedLoveBlacklist")) {
+			// Check the action against the blacklist
+			std::string blacklist = "," + gSavedSettings.getString("RestrainedLoveBlacklist") + ",";
+			if (blacklist.find("," + canon_action + ",") != std::string::npos)
+			{
+				llinfos << "Blacklisted RestrainedLove command: " << action << " for object " << object_uuid.asString() << llendl;
+				return TRUE;
+			}
+		}
+
 		// Actions to do BEFORE inserting the new behav
 		if (action=="showinv") {
 			//LLInventoryView::cleanup ();
@@ -390,7 +595,7 @@ BOOL RRInterface::add (LLUUID object_uuid, std::string action, std::string optio
 			LLDrawPoolAlpha::sShowDebugAlpha = FALSE;
 		}
 		else if (action=="setenv") {
-			if (RRNoSetEnv) {
+			if (sRRNoSetEnv) {
 				return TRUE;
 			}
 			LLFloaterEnvSettings::instance()->close();
@@ -402,14 +607,14 @@ BOOL RRInterface::add (LLUUID object_uuid, std::string action, std::string optio
 			gSavedSettings.setBOOL("WindLightUseAtmosShaders", TRUE);
 		}
 		else if (action=="setdebug") {
-			if (!RRNoSetEnv) {
+			if (!sRRNoSetEnv) {
 				gSavedSettings.setBOOL("VertexShaderEnable", TRUE);
 				gSavedSettings.setBOOL("WindLightUseAtmosShaders", TRUE);
 			}
 		}
-		
+
 		// Insert the new behav
-		sSpecialObjectBehaviours.insert(std::pair<std::string, std::string>(object_uuid.asString(), action));
+		mSpecialObjectBehaviours.insert(std::pair<std::string, std::string>(object_uuid.asString(), action));
 		refreshCachedVariable(action);
 
 		// Actions to do AFTER inserting the new behav
@@ -420,6 +625,14 @@ BOOL RRInterface::add (LLUUID object_uuid, std::string action, std::string optio
 		if (canon_action == "showhovertext") {
 			updateOneHudText(LLUUID(option));
 		}
+
+		// Update the stored last standing location, to allow grabbers to transport a victim inside a cage while sitting, and restrict them
+		// before standing up. If we didn't do this, the avatar would snap back to a safe location when being unsitted by the grabber,
+		// which would be rather silly.
+		if (action == "standtp") {
+			gAgent.mRRInterface.mLastStandingLocation = LLVector3d(gAgent.getPositionGlobal());
+		}
+
 		return TRUE;
 	}
 	return FALSE;
@@ -427,13 +640,12 @@ BOOL RRInterface::add (LLUUID object_uuid, std::string action, std::string optio
 
 BOOL RRInterface::remove (LLUUID object_uuid, std::string action, std::string option)
 {
-	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug");
-	if (debug) {
+	if (sRestrainedLoveDebug) {
 		llinfos << object_uuid.asString() << "       " << action << "      " << option << llendl;
 	}
 
 	std::string canon_action = action;
-	if (option!="") action+=":"+option;
+	if (option!="") action += ":" + option;
 	
 	// Notify if needed
 	notify (object_uuid, action, "=y");
@@ -441,16 +653,16 @@ BOOL RRInterface::remove (LLUUID object_uuid, std::string action, std::string op
 	// Actions to do BEFORE removing the behav
 
 	// Remove the behav
-	RRMAP::iterator it = sSpecialObjectBehaviours.find (object_uuid.asString());
-	while (it != sSpecialObjectBehaviours.end() &&
-			it != sSpecialObjectBehaviours.upper_bound(object_uuid.asString()))
+	RRMAP::iterator it = mSpecialObjectBehaviours.find (object_uuid.asString());
+	while (it != mSpecialObjectBehaviours.end() &&
+			it != mSpecialObjectBehaviours.upper_bound(object_uuid.asString()))
 	{
-		if (debug) {
+		if (sRestrainedLoveDebug) {
 			llinfos << "  checking " << it->second << llendl;
 		}
 		if (it->second == action) {
-			sSpecialObjectBehaviours.erase(it);
-			if (debug) {
+			mSpecialObjectBehaviours.erase(it);
+			if (sRestrainedLoveDebug) {
 				llinfos << "  => removed. " << llendl;
 			}
 			refreshCachedVariable(action);
@@ -474,28 +686,27 @@ BOOL RRInterface::remove (LLUUID object_uuid, std::string action, std::string op
 
 BOOL RRInterface::clear (LLUUID object_uuid, std::string command)
 {
-	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug");
-	if (debug) {
+	if (sRestrainedLoveDebug) {
 		llinfos << object_uuid.asString() << "   /   " << command << llendl;
 	}
 
 	// Notify if needed
-	notify (object_uuid, "clear" + (command!=""? ":"+command : ""), "");
+	notify (object_uuid, "clear" + (command!="" ? ":" + command : ""), "");
 	
 	RRMAP::iterator it;
-	it = sSpecialObjectBehaviours.begin ();
-	while (it != sSpecialObjectBehaviours.end()) {
-		if (debug) {
+	it = mSpecialObjectBehaviours.begin ();
+	while (it != mSpecialObjectBehaviours.end()) {
+		if (sRestrainedLoveDebug) {
 			llinfos << "  checking " << it->second << llendl;
 		}
 		if (it->first==object_uuid.asString() && (command=="" || it->second.find (command)!=-1)) {
-			if (debug) {
+			if (sRestrainedLoveDebug) {
 				llinfos << it->second << " => removed. " << llendl;
 			}
 			std::string tmp = it->second;
-			sSpecialObjectBehaviours.erase(it);
+			mSpecialObjectBehaviours.erase(it);
 			refreshCachedVariable(tmp);
-			it = sSpecialObjectBehaviours.begin ();
+			it = mSpecialObjectBehaviours.begin ();
 		}
 		else {
 			it++;
@@ -509,12 +720,12 @@ void RRInterface::replace (LLUUID what, LLUUID by)
 {
 	RRMAP::iterator it;
 	LLUUID uuid;
-	it = sSpecialObjectBehaviours.begin ();
-	while (it != sSpecialObjectBehaviours.end()) {
+	it = mSpecialObjectBehaviours.begin ();
+	while (it != mSpecialObjectBehaviours.end()) {
 		uuid.set (it->first);
 		if (uuid == what) {
 			// found the UUID to replace => add a copy of the command with the new UUID
-			sSpecialObjectBehaviours.insert(std::pair<std::string, std::string>(by.asString(), it->second));
+			mSpecialObjectBehaviours.insert(std::pair<std::string, std::string>(by.asString(), it->second));
 		}
 		it++;
 	}
@@ -524,31 +735,30 @@ void RRInterface::replace (LLUUID what, LLUUID by)
 
 
 BOOL RRInterface::garbageCollector (BOOL all) {
-	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug");
 	RRMAP::iterator it;
 	BOOL res=FALSE;
 	LLUUID uuid;
 	LLViewerObject *objp=NULL;
-	it = sSpecialObjectBehaviours.begin ();
-	while (it != sSpecialObjectBehaviours.end()) {
+	it = mSpecialObjectBehaviours.begin ();
+	while (it != mSpecialObjectBehaviours.end()) {
 		uuid.set (it->first);
 		if (all || !uuid.isNull ()) {
-//			if (debug) {
+//			if (sRestrainedLoveDebug) {
 //				llinfos << "testing " << it->first << llendl;
 //			}
 			objp = gObjectList.findObject(uuid);
 			if (!objp) {
-				if (debug) {
+				if (sRestrainedLoveDebug) {
 					llinfos << it->first << " not found => cleaning... " << llendl;
 				}
 				clear (uuid);
 				res=TRUE;
-				it=sSpecialObjectBehaviours.begin ();
+				it=mSpecialObjectBehaviours.begin ();
 			} else {
 				it++;
 			}
 		} else {
-			if (debug) {
+			if (sRestrainedLoveDebug) {
 				llinfos << "ignoring " << it->second << llendl;
 			}
 			it++;
@@ -587,9 +797,9 @@ void RRInterface::notify (LLUUID object_uuid, std::string action, std::string su
 	std::deque<std::string> tokens;
 	LLUUID uuid;
 	std::string rule;
-	it = sSpecialObjectBehaviours.begin ();
+	it = mSpecialObjectBehaviours.begin ();
 	
-	while (it != sSpecialObjectBehaviours.end()) {
+	while (it != mSpecialObjectBehaviours.end()) {
 		uuid.set (it->first);
 		rule = it->second; // we are looking for rules like "notify:2222;tp", if action contains "tp" then notify the scripts on channel 2222
 		if (rule.find("notify:") == 0) {
@@ -597,7 +807,7 @@ void RRInterface::notify (LLUUID object_uuid, std::string action, std::string su
 			rule = rule.substr(length); // keep right part only (here "2222;tp")
 			tokens = parse (rule, ";");
 			size = tokens.size();
-			if (size == 1 || size > 1 && action.find(tokens[1]) != -1) {
+			if (size == 1 || (size > 1 && action.find(tokens[1]) != -1)) {
 				answerOnChat(tokens[0], "/" + action + suffix); // suffix can be "=n", "=y" or whatever else we want, "/" is needed to avoid some clever griefing
 			}
 		}
@@ -627,7 +837,6 @@ BOOL RRInterface::parseCommand (std::string command, std::string& behaviour, std
 
 BOOL RRInterface::handleCommand (LLUUID uuid, std::string command)
 {
-	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug");
 	// 1. check the command is actually a single one or a list of commands separated by ","
 	if (command.find (",")!=-1) {
 		BOOL res=TRUE;
@@ -646,14 +855,14 @@ BOOL RRInterface::handleCommand (LLUUID uuid, std::string command)
 	// This is valid as the object that would possibly be kicked off by the one to reattach, will have
 	// its restrictions wiped out by the garbage collector
 	if (LLStartUp::getStartupState() != STATE_STARTED
-		|| (!sAssetsToReattach.empty() && sTimeBeforeReattaching > 0)) {
+		|| (!mAssetsToReattach.empty() && !mReattachTimeout)) {
 		Command cmd;
 		cmd.uuid=uuid;
 		cmd.command=command;
-		if (debug) {
+		if (sRestrainedLoveDebug) {
 			llinfos << "Retaining command : " << command << llendl;
 		}
-		sRetainedCommands.push_back (cmd);
+		mRetainedCommands.push_back (cmd);
 		return TRUE;
 	}
 	
@@ -666,7 +875,7 @@ BOOL RRInterface::handleCommand (LLUUID uuid, std::string command)
 	LLStringUtil::toLower(command);
 	if (parseCommand (command, behav, option, param)) // detach=n, recvchat=n, recvim=n, unsit=n, recvim:<uuid>=add, clear=tplure:
 	{
-		if (debug) {
+		if (sRestrainedLoveDebug) {
 			llinfos << "[" << uuid.asString() << "]  [" << behav << "]  [" << option << "] [" << param << "]" << llendl;
 		}
 		if (behav=="version") return answerOnChat (param, getVersion ());
@@ -682,10 +891,19 @@ BOOL RRInterface::handleCommand (LLUUID uuid, std::string command)
 		else if (behav=="getinv") return answerOnChat (param, getInventoryList (option));
 		else if (behav=="getinvworn") return answerOnChat (param, getInventoryList (option, TRUE));
 		else if (behav=="getsitid") return answerOnChat (param, getSitTargetId ().asString());
-		else if (behav=="getpath") return answerOnChat (param, getFullPath (getItem(uuid), option)); // option can be empty (=> find path to object) or the name of an attach pt or the name of a clothing layer
+		else if (behav=="getpath") return answerOnChat (param, getFullPath (getItem(uuid), option, false)); // option can be empty (=> find path to object) or the name of an attach pt or the name of a clothing layer
+		else if (behav=="getpathnew") return answerOnChat (param, getFullPath (getItem(uuid), option)); // option can be empty (=> find path to object) or the name of an attach pt or the name of a clothing layer
 		else if (behav=="findfolder") return answerOnChat (param, getFullPath (findCategoryUnderRlvShare (option)));
 		else if (behav.find ("getenv_") == 0) return answerOnChat (param, getEnvironment (behav));
 		else if (behav.find ("getdebug_") == 0) return answerOnChat (param, getDebugSetting (behav));
+		else if (behav=="getgroup") {
+			LLUUID group_id = gAgent.getGroupID();
+			std::string group_name = "none";
+			if (group_id.notNull()) {
+				gCacheName->getGroupName(group_id, group_name);
+			}
+			return answerOnChat (param, group_name);
+		}
 		else {
 			if (param=="n" || param=="add") add (uuid, behav, option);
 			else if (param=="y" || param=="rem") remove (uuid, behav, option);
@@ -696,7 +914,7 @@ BOOL RRInterface::handleCommand (LLUUID uuid, std::string command)
 	}
 	else // clear
 	{
-		if (debug) {
+		if (sRestrainedLoveDebug) {
 			llinfos << uuid.asString() << "       " << behav << llendl;
 		}
 		if (behav=="clear") clear (uuid);
@@ -708,15 +926,15 @@ BOOL RRInterface::handleCommand (LLUUID uuid, std::string command)
 BOOL RRInterface::fireCommands ()
 {
 	BOOL ok=TRUE;
-	if (sRetainedCommands.size ()) {
-		if (gSavedSettings.getBOOL("RestrainedLoveDebug")) {
-			llinfos << "Firing commands : " << sRetainedCommands.size () << llendl;
+	if (mRetainedCommands.size ()) {
+		if (sRestrainedLoveDebug) {
+			llinfos << "Firing commands : " << mRetainedCommands.size () << llendl;
 		}
 		Command cmd;
-		while (!sRetainedCommands.empty ()) {
-			cmd=sRetainedCommands[0];
+		while (!mRetainedCommands.empty ()) {
+			cmd=mRetainedCommands[0];
 			ok=ok & handleCommand (cmd.uuid, cmd.command);
-			sRetainedCommands.pop_front ();
+			mRetainedCommands.pop_front ();
 		}
 	}
 	return ok;
@@ -747,6 +965,11 @@ static void force_sit(LLUUID object_uuid)
 				return;
 			}
 		}
+		if (gAgent.getAvatarObject() && !gAgent.getAvatarObject()->mIsSitting)
+		{
+			// We are now standing, and we want to sit down => store our current location so that we can snap back here when we stand up, if under @standtp
+			gAgent.mRRInterface.mLastStandingLocation = LLVector3d(gAgent.getPositionGlobal());
+		}
 		gMessageSystem->newMessageFast(_PREHASH_AgentRequestSit);
 		gMessageSystem->nextBlockFast(_PREHASH_AgentData);
 		gMessageSystem->addUUIDFast(_PREHASH_AgentID, gAgent.getID());
@@ -762,8 +985,7 @@ static void force_sit(LLUUID object_uuid)
 
 BOOL RRInterface::force (LLUUID object_uuid, std::string command, std::string option)
 {
-	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug");
-	if (debug) {
+	if (sRestrainedLoveDebug) {
 		llinfos << command << "     " << option << llendl;
 	}
 	if (command=="sit") { // sit:UUID
@@ -777,21 +999,21 @@ BOOL RRInterface::force (LLUUID object_uuid, std::string command, std::string op
 		if (!allowed_to_sittp) add (object_uuid, "sittp", "");
 	}
 	else if (command=="unsit") { // unsit
-		if (debug) {
+		if (sRestrainedLoveDebug) {
 			llinfos << "trying to unsit" << llendl;
 		}
 		if (gAgent.getAvatarObject() &&
 			gAgent.getAvatarObject()->mIsSitting) {
-			if (debug) {
+			if (sRestrainedLoveDebug) {
 				llinfos << "found avatar object" << llendl;
 			}
 			if (gAgent.mRRInterface.mContainsUnsit) {
-				if (debug) {
+				if (sRestrainedLoveDebug) {
 					llinfos << "prevented from unsitting" << llendl;
 				}
 				return TRUE;
 			}
-			if (debug) {
+			if (sRestrainedLoveDebug) {
 				llinfos << "unsitting agent" << llendl;
 			}
 			LLOverlayBar::onClickStandUp(NULL);
@@ -800,47 +1022,62 @@ BOOL RRInterface::force (LLUUID object_uuid, std::string command, std::string op
 	}
 	else if (command=="remoutfit") { // remoutfit:shoes
 		if (option=="") {
-			gAgent.removeWearable (WT_GLOVES);
-			gAgent.removeWearable (WT_JACKET);
-			gAgent.removeWearable (WT_PANTS);
-			gAgent.removeWearable (WT_SHIRT);
-			gAgent.removeWearable (WT_SHOES);
-			gAgent.removeWearable (WT_SKIRT);
-			gAgent.removeWearable (WT_SOCKS);
-			gAgent.removeWearable (WT_UNDERPANTS);
-			gAgent.removeWearable (WT_UNDERSHIRT);
+			removeWearableFromAvatar (WT_GLOVES);
+			removeWearableFromAvatar (WT_JACKET);
+			removeWearableFromAvatar (WT_PANTS);
+			removeWearableFromAvatar (WT_SHIRT);
+			removeWearableFromAvatar (WT_SHOES);
+			removeWearableFromAvatar (WT_SKIRT);
+			removeWearableFromAvatar (WT_SOCKS);
+			removeWearableFromAvatar (WT_UNDERPANTS);
+			removeWearableFromAvatar (WT_UNDERSHIRT);
+			removeWearableFromAvatar (WT_ALPHA);
+			removeWearableFromAvatar (WT_TATTOO);
 		}
 		else {
 			EWearableType type = getOutfitLayerAsType (option);
 			if (type != WT_INVALID) {
-				 // clothes only, not hair, skin, eyes, or shape
+				 // clothes only, not skin, eyes, hair or shape
 				if (LLWearable::typeToAssetType(type) == LLAssetType::AT_CLOTHING) {
-					gAgent.removeWearable (type); // remove by layer
+					removeWearableFromAvatar (type); // remove by layer
 				}
 			}
-			else forceDetachByName (option); // remove by category (in RLV share)
+			else forceDetachByName (option, FALSE, TRUE); // remove by category (in RLV share)
 		}
 	}
 	else if (command=="detach" || command=="remattach") { // detach:chest=force OR detach:restraints/cuffs=force (@remattach is a synonym)
 		LLViewerJointAttachment* attachpt = findAttachmentPointFromName (option, TRUE); // exact name
 		if (attachpt != NULL || option == "") return forceDetach (option); // remove by attach pt
-		else forceDetachByName (option);
+		else forceDetachByName (option, FALSE, TRUE);
 	}
 	else if (command=="detachme") { // detachme=force to detach this object specifically
 		return forceDetachByUuid (object_uuid.asString()); // remove by uuid
 	}
 	else if (command=="detachthis") { // detachthis=force to detach the folder containing this object
-		return forceDetachByName (getFullPath (getItem(object_uuid), option), FALSE);
+		std::string pathes_str = getFullPath (getItem(object_uuid), option);
+		std::deque<std::string> pathes = parse (pathes_str, ",");
+		BOOL res = TRUE;
+		for (unsigned int i = 0; i < pathes.size(); ++i) {
+			res &= forceDetachByName (pathes.at(i), FALSE, TRUE);
+		}
+		return res;
 	}
 	else if (command=="detachall") { // detachall:cuffs=force to detach a folder and its subfolders
-		return forceDetachByName (option, TRUE);
+		return forceDetachByName (option, TRUE, TRUE);
 	}
 	else if (command=="detachallthis") { // detachallthis=force to detach the folder containing this object and also its subfolders
-		return forceDetachByName (getFullPath (getItem(object_uuid), option), TRUE);
+		std::string pathes_str = getFullPath (getItem(object_uuid), option);
+		std::deque<std::string> pathes = parse (pathes_str, ",");
+		BOOL res = TRUE;
+		for (unsigned int i = 0; i < pathes.size(); ++i) {
+			res &= forceDetachByName (pathes.at(i), TRUE, TRUE);
+		}
+		return res;
 	}
 	else if (command=="tpto") { // tpto:X/Y/Z=force (X, Y, Z are GLOBAL coordinates)
 		BOOL allowed_to_tploc=TRUE;
 		BOOL allowed_to_unsit=TRUE;
+		BOOL allowed_to_sittp=TRUE;
 		BOOL res;
 		if (!isAllowed (object_uuid, "tploc")) {
 			allowed_to_tploc=FALSE;
@@ -850,27 +1087,104 @@ BOOL RRInterface::force (LLUUID object_uuid, std::string command, std::string op
 			allowed_to_unsit=FALSE;
 			remove (object_uuid, "unsit", "");
 		}
+		if (!isAllowed (object_uuid, "sittp")) {
+			allowed_to_sittp=FALSE;
+			remove (object_uuid, "sittp", "");
+		}
 		res = forceTeleport (option);
 		if (!allowed_to_tploc) add (object_uuid, "tploc", "");
 		if (!allowed_to_unsit) add (object_uuid, "unsit", "");
+		if (!allowed_to_sittp) add (object_uuid, "sittp", "");
 		return res;
 	}
 	else if (command=="attach" || command == "addoutfit") { // attach:cuffs=force
-		return forceAttach (option);
+		return forceAttach (option, FALSE, AttachHow_over_or_replace); // Will have to be changed back to AttachHow_replace eventually, but not before a clear and early communication
 	}
-	else if (command=="attachthis") { // attachthis=force to attach the folder containing this object
-		return forceAttach (getFullPath (getItem(object_uuid), option), FALSE);
+	else if (command=="attachover" || command == "addoutfitover") { // attachover:cuffs=force
+		return forceAttach (option, FALSE, AttachHow_over);
 	}
-	else if (command=="attachall") { // attachall:cuffs=force to attach a folder and its subfolders
-		return forceAttach (option, TRUE);
+	else if (command=="attachoverorreplace" || command == "addoutfitoverorreplace") { // attachoverorreplace:cuffs=force
+		return forceAttach (option, FALSE, AttachHow_over_or_replace);
 	}
-	else if (command=="attachallthis") { // attachallthis=force to attach the folder containing this object and its subfolders
-		return forceAttach (getFullPath (getItem(object_uuid), option), TRUE);
+	else if (command=="attachthis" || command == "addoutfitthis") { // attachthis=force to attach the folder containing this object
+		BOOL res = TRUE;
+		std::string pathes_str = getFullPath (getItem(object_uuid), option);
+		if (pathes_str != "") {
+			std::deque<std::string> pathes = parse (pathes_str, ",");
+			for (unsigned int i = 0; i < pathes.size(); ++i) {
+				res &= forceAttach (pathes.at(i), FALSE, AttachHow_over_or_replace); // Will have to be changed back to AttachHow_replace eventually, but not before a clear and early communication
+			}
+		}
+		return res;
+	}
+	else if (command=="attachthisover" || command == "addoutfitthisover") { // attachthisover=force to attach the folder containing this object
+		BOOL res = TRUE;
+		std::string pathes_str = getFullPath (getItem(object_uuid), option);
+		if (pathes_str != "") {
+			std::deque<std::string> pathes = parse (pathes_str, ",");
+			for (unsigned int i = 0; i < pathes.size(); ++i) {
+				res &= forceAttach (pathes.at(i), FALSE, AttachHow_over);
+			}
+		}
+		return res;
+	}
+	else if (command=="attachthisoverorreplace" || command == "addoutfitthisoverorreplace") { // attachthisoverorreplace=force to attach the folder containing this object
+		BOOL res = TRUE;
+		std::string pathes_str = getFullPath (getItem(object_uuid), option);
+		if (pathes_str != "") {
+			std::deque<std::string> pathes = parse (pathes_str, ",");
+			for (unsigned int i = 0; i < pathes.size(); ++i) {
+				res &= forceAttach (pathes.at(i), FALSE, AttachHow_over_or_replace);
+			}
+		}
+		return res;
+	}
+	else if (command=="attachall" || command == "addoutfitall") { // attachall:cuffs=force to attach a folder and its subfolders
+		return forceAttach (option, TRUE, AttachHow_over_or_replace); // Will have to be changed back to AttachHow_replace eventually, but not before a clear and early communication
+	}
+	else if (command=="attachallover" || command == "addoutfitallover") { // attachallover:cuffs=force to attach a folder and its subfolders
+		return forceAttach (option, TRUE, AttachHow_over);
+	}
+	else if (command=="attachalloverorreplace" || command == "addoutfitalloverorreplace") { // attachalloverorreplace:cuffs=force to attach a folder and its subfolders
+		return forceAttach (option, TRUE, AttachHow_over_or_replace);
+	}
+	else if (command=="attachallthis" || command == "addoutfitallthis") { // attachallthis=force to attach the folder containing this object and its subfolders
+		BOOL res = TRUE;
+		std::string pathes_str = getFullPath (getItem(object_uuid), option);
+		if (pathes_str != "") {
+			std::deque<std::string> pathes = parse (pathes_str, ",");
+			for (unsigned int i = 0; i < pathes.size(); ++i) {
+				res &= forceAttach (pathes.at(i), TRUE, AttachHow_over_or_replace); // Will have to be changed back to AttachHow_replace eventually, but not before a clear and early communication
+			}
+		}
+		return res;
+	}
+	else if (command=="attachallthisover" || command == "addoutfitallthisover") { // attachallthisover=force to attach the folder containing this object and its subfolders
+		BOOL res = TRUE;
+		std::string pathes_str = getFullPath (getItem(object_uuid), option);
+		if (pathes_str != "") {
+			std::deque<std::string> pathes = parse (pathes_str, ",");
+			for (unsigned int i = 0; i < pathes.size(); ++i) {
+				res &= forceAttach (pathes.at(i), TRUE, AttachHow_over);
+			}
+		}
+		return res;
+	}
+	else if (command=="attachallthisoverorreplace" || command == "addoutfitallthisoverorreplace") { // attachallthisoverorreplace=force to attach the folder containing this object and its subfolders
+		BOOL res = TRUE;
+		std::string pathes_str = getFullPath (getItem(object_uuid), option);
+		if (pathes_str != "") {
+			std::deque<std::string> pathes = parse (pathes_str, ",");
+			for (unsigned int i = 0; i < pathes.size(); ++i) {
+				res &= forceAttach (pathes.at(i), TRUE, AttachHow_over_or_replace);
+			}
+		}
+		return res;
 	}
 	else if (command.find ("setenv_") == 0) {
 		BOOL res = TRUE;
 		BOOL allowed = TRUE;
-		if (!RRNoSetEnv) {
+		if (!sRRNoSetEnv) {
 			if (!isAllowed (object_uuid, "setenv")) {
 				allowed=FALSE;
 				remove (object_uuid, "setenv", "");
@@ -892,7 +1206,6 @@ BOOL RRInterface::force (LLUUID object_uuid, std::string command, std::string op
 		return res;
 	}
 	else if (command=="setrot") { // setrot:angle_radians=force
-		BOOL res = TRUE;
 		LLVOAvatar* avatar = gAgent.getAvatarObject();
 		if (!avatar) return FALSE;
 		F32 val = atof (option.c_str());
@@ -901,9 +1214,80 @@ BOOL RRInterface::force (LLUUID object_uuid, std::string command, std::string op
 		rot = rot.rotVec(-val, LLVector3::z_axis);
 		rot.normalize();
 		gAgent.resetAxes(rot);
-		return res;
+	}
+	else if (command == "adjustheight") { // adjustheight:adjustment_centimeters=force or adjustheight:ref_pelvis_to_foot;scalar[;delta]=force
+		if (!gSavedSettings.controlExists(AVATARHEIGHTOFFSET)) {
+			return FALSE;
+		}
+		LLVOAvatar* avatar = gAgent.getAvatarObject();
+		if (avatar) {
+			F32 val = (F32)atoi(option.c_str()) / 100.0f;
+			size_t i = option.find(";");
+			if (i != std::string::npos && i + 1 < option.length()) {
+				F32 scalar = (F32)atof(option.substr(i + 1).c_str());
+				if (scalar != 0.0f) {
+					if (sRestrainedLoveDebug) {
+						llinfos << "Pelvis to foot = " << avatar->getPelvisToFoot() << "m" << llendl;
+					}
+					val = (atof(option.c_str()) - avatar->getPelvisToFoot()) * scalar;
+					option = option.substr(i + 1);
+					i = option.find(";");
+					if (i != std::string::npos && i + 1 < option.length()) {
+						val += (F32)atof(option.substr(i + 1).c_str());
+					}
+				}
+			}
+			if (val > 1.0f) {
+				val = 1.0f;
+			} else if (val < -1.0f) {
+				val = -1.0f;
+			}
+			gSavedSettings.setF32(AVATARHEIGHTOFFSET, val);
+		}
+	}
+	else if (command == "setgroup") {
+		std::string target_group_name = option;
+		LLStringUtil::toLower(target_group_name);
+		if (target_group_name != "none") { // "none" is not localized here because a script should not have to bother about viewer language
+			S32 nb = gAgent.mGroups.count();
+			for (S32 i=0; i<nb; ++i) {
+				LLGroupData group = gAgent.mGroups.get(i);
+				std::string this_group_name = group.mName;
+				LLStringUtil::toLower(this_group_name);
+				if (this_group_name == target_group_name) {
+					LLMessageSystem* msg = gMessageSystem;
+					msg->newMessageFast(_PREHASH_ActivateGroup);
+					msg->nextBlockFast(_PREHASH_AgentData);
+					msg->addUUIDFast(_PREHASH_AgentID, gAgent.getID());
+					msg->addUUIDFast(_PREHASH_SessionID, gAgent.getSessionID());
+					msg->addUUIDFast(_PREHASH_GroupID, group.mID);
+					gAgent.sendReliableMessage();
+					break;
+				}
+			}
+		}
+		else {
+			LLMessageSystem* msg = gMessageSystem;
+			msg->newMessageFast(_PREHASH_ActivateGroup);
+			msg->nextBlockFast(_PREHASH_AgentData);
+			msg->addUUIDFast(_PREHASH_AgentID, gAgent.getID());
+			msg->addUUIDFast(_PREHASH_SessionID, gAgent.getSessionID());
+			msg->addUUIDFast(_PREHASH_GroupID, LLUUID::null);
+			gAgent.sendReliableMessage();
+		}
+		// not found => do nothing
 	}
 	return TRUE;
+}
+
+void RRInterface::removeWearableFromAvatar (EWearableType type)
+{
+	LLViewerInventoryItem* item = gInventory.getItem(gAgent.getWearableItem(type));
+	if (!item) return;
+	std::string name = item->getName();
+	LLStringUtil::toLower(name);
+	if (name.find ("nostrip") != -1) return;
+	gAgent.removeWearable (type);
 }
 
 BOOL RRInterface::answerOnChat (std::string channel, std::string msg)
@@ -914,8 +1298,8 @@ BOOL RRInterface::answerOnChat (std::string channel, std::string msg)
 		return FALSE;
 	}
 	if (msg.length() > (size_t)(chan > 0 ? 1023 : 255)) {
-		llwarns << "Too large an answer: maximum is " << (chan > 0 ? "1023 characters" : "255 characters for a negative channel") << ". Aborted command." << llendl;
-		return FALSE;
+		llwarns << "Too large an answer: maximum is " << (chan > 0 ? "1023 characters" : "255 characters for a negative channel") << ". Truncated reply." << llendl;
+		msg = msg.substr(0, (size_t)(chan > 0 ? 1022 : 254));
 	}
 	if (chan > 0) {
 		std::ostringstream temp;
@@ -933,7 +1317,7 @@ BOOL RRInterface::answerOnChat (std::string channel, std::string msg)
 		gMessageSystem->addString("ButtonLabel", msg);
 		gAgent.sendReliableMessage();
 	}
-	if (gSavedSettings.getBOOL("RestrainedLoveDebug")) {
+	if (sRestrainedLoveDebug) {
 		llinfos << "/" << chan << " " << msg << llendl;
 	}
 	return TRUE;
@@ -954,7 +1338,7 @@ std::string RRInterface::crunchEmote (std::string msg, unsigned int truncateTo) 
 		{
 			crunched = "...";
 		}
-		else if (!contains ("emote")) {
+		else if (truncateTo > 0 && !contains ("emote")) {
 			// Only allow short emotes.
 			int i = msg.find (".");
 			if (i != -1) {
@@ -991,6 +1375,8 @@ std::string RRInterface::getOutfitLayerAsString (EWearableType layer)
 		case WT_SOCKS: return WS_SOCKS;
 		case WT_UNDERPANTS: return WS_UNDERPANTS;
 		case WT_UNDERSHIRT: return WS_UNDERSHIRT;
+		case WT_ALPHA: return WS_ALPHA;
+		case WT_TATTOO: return WS_TATTOO;
 		case WT_EYES: return WS_EYES;
 		case WT_HAIR: return WS_HAIR;
 		case WT_SHAPE: return WS_SHAPE;
@@ -1010,6 +1396,8 @@ EWearableType RRInterface::getOutfitLayerAsType (std::string layer)
 	if (layer==WS_SOCKS) return WT_SOCKS;
 	if (layer==WS_UNDERPANTS) return WT_UNDERPANTS;
 	if (layer==WS_UNDERSHIRT) return WT_UNDERSHIRT;
+	if (layer==WS_ALPHA) return WT_ALPHA;
+	if (layer==WS_TATTOO) return WT_TATTOO;
 	if (layer==WS_EYES) return WT_EYES;
 	if (layer==WS_HAIR) return WT_HAIR;
 	if (layer==WS_SHAPE) return WT_SHAPE;
@@ -1018,28 +1406,31 @@ EWearableType RRInterface::getOutfitLayerAsType (std::string layer)
 
 std::string RRInterface::getOutfit (std::string layer)
 {
-	if (layer==WS_SKIN) return (gAgent.getWearable (WT_SKIN) != NULL? "1" : "0");
-	if (layer==WS_GLOVES) return (gAgent.getWearable (WT_GLOVES) != NULL? "1" : "0");
-	if (layer==WS_JACKET) return (gAgent.getWearable (WT_JACKET) != NULL? "1" : "0");
-	if (layer==WS_PANTS) return (gAgent.getWearable (WT_PANTS) != NULL? "1" : "0");
-	if (layer==WS_SHIRT)return (gAgent.getWearable (WT_SHIRT) != NULL? "1" : "0");
-	if (layer==WS_SHOES) return (gAgent.getWearable (WT_SHOES) != NULL? "1" : "0");
-	if (layer==WS_SKIRT) return (gAgent.getWearable (WT_SKIRT) != NULL? "1" : "0");
-	if (layer==WS_SOCKS) return (gAgent.getWearable (WT_SOCKS) != NULL? "1" : "0");
-	if (layer==WS_UNDERPANTS) return (gAgent.getWearable (WT_UNDERPANTS) != NULL? "1" : "0");
-	if (layer==WS_UNDERSHIRT) return (gAgent.getWearable (WT_UNDERSHIRT) != NULL? "1" : "0");
-	if (layer==WS_EYES) return (gAgent.getWearable (WT_EYES) != NULL? "1" : "0");
-	if (layer==WS_HAIR) return (gAgent.getWearable (WT_HAIR) != NULL? "1" : "0");
-	if (layer==WS_SHAPE) return (gAgent.getWearable (WT_SHAPE) != NULL? "1" : "0");
+	if (layer==WS_SKIN) return (gAgent.getWearable (WT_SKIN) != NULL ? "1" : "0");
+	if (layer==WS_GLOVES) return (gAgent.getWearable (WT_GLOVES) != NULL ? "1" : "0");
+	if (layer==WS_JACKET) return (gAgent.getWearable (WT_JACKET) != NULL ? "1" : "0");
+	if (layer==WS_PANTS) return (gAgent.getWearable (WT_PANTS) != NULL ? "1" : "0");
+	if (layer==WS_SHIRT)return (gAgent.getWearable (WT_SHIRT) != NULL ? "1" : "0");
+	if (layer==WS_SHOES) return (gAgent.getWearable (WT_SHOES) != NULL ? "1" : "0");
+	if (layer==WS_SKIRT) return (gAgent.getWearable (WT_SKIRT) != NULL ? "1" : "0");
+	if (layer==WS_SOCKS) return (gAgent.getWearable (WT_SOCKS) != NULL ? "1" : "0");
+	if (layer==WS_UNDERPANTS) return (gAgent.getWearable (WT_UNDERPANTS) != NULL ? "1" : "0");
+	if (layer==WS_UNDERSHIRT) return (gAgent.getWearable (WT_UNDERSHIRT) != NULL ? "1" : "0");
+	if (layer==WS_ALPHA) return (gAgent.getWearable (WT_ALPHA) != NULL ? "1" : "0");
+	if (layer==WS_TATTOO) return (gAgent.getWearable (WT_TATTOO) != NULL ? "1" : "0");
+	if (layer==WS_EYES) return (gAgent.getWearable (WT_EYES) != NULL ? "1" : "0");
+	if (layer==WS_HAIR) return (gAgent.getWearable (WT_HAIR) != NULL ? "1" : "0");
+	if (layer==WS_SHAPE) return (gAgent.getWearable (WT_SHAPE) != NULL ? "1" : "0");
 	return getOutfit (WS_GLOVES)+getOutfit (WS_JACKET)+getOutfit (WS_PANTS)
 			+getOutfit (WS_SHIRT)+getOutfit (WS_SHOES)+getOutfit (WS_SKIRT)
 			+getOutfit (WS_SOCKS)+getOutfit (WS_UNDERPANTS)+getOutfit (WS_UNDERSHIRT)
-			+getOutfit (WS_SKIN)+getOutfit (WS_EYES)+getOutfit (WS_HAIR)+getOutfit (WS_SHAPE);
+			+getOutfit (WS_SKIN)+getOutfit (WS_EYES)+getOutfit (WS_HAIR)+getOutfit (WS_SHAPE)
+			+getOutfit (WS_ALPHA)+getOutfit (WS_TATTOO)
+			;
 }
 
 std::string RRInterface::getAttachments (std::string attachpt)
 {
-	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug");
 	std::string res="";
 	std::string name;
 	LLVOAvatar* avatar = gAgent.getAvatarObject();
@@ -1047,7 +1438,7 @@ std::string RRInterface::getAttachments (std::string attachpt)
 		llwarns << "NULL avatar pointer. Aborting." << llendl;
 		return res;
 	}
-	if (attachpt=="") res+="0"; // to match the LSL macros
+	if (attachpt=="") res += "0"; // to match the LSL macros
 	for (LLVOAvatar::attachment_map_t::iterator iter = avatar->mAttachmentPoints.begin(); 
 		iter != avatar->mAttachmentPoints.end(); iter++)
 	{
@@ -1055,12 +1446,13 @@ std::string RRInterface::getAttachments (std::string attachpt)
 		LLViewerJointAttachment* attachment = curiter->second;
 		name=attachment->getName ();
 		LLStringUtil::toLower(name);
-		if (debug) {
+		if (sRestrainedLoveDebug) {
 			llinfos << "trying <" << name << ">" << llendl;
 		}
-		if (attachpt=="" || attachpt==name) {
-			if (!attachment->getItemID().isNull()) res+="1"; //attachment->getName ();
-			else res+="0";
+		if (attachpt=="" || attachpt==name)
+		{
+			if (attachment->getNumObjects() > 0) res+="1"; //attachment->getName ();
+			else res += "0";
 		}
 	}
 	return res;
@@ -1072,20 +1464,20 @@ std::string RRInterface::getStatus (LLUUID object_uuid, std::string rule)
 	std::string name;
 	RRMAP::iterator it;
 	if (object_uuid.isNull()) {
-		it = sSpecialObjectBehaviours.begin();
+		it = mSpecialObjectBehaviours.begin();
 	}
 	else {
-		it = sSpecialObjectBehaviours.find (object_uuid.asString());
+		it = mSpecialObjectBehaviours.find (object_uuid.asString());
 	}
 	bool is_first=true;
-	while (it != sSpecialObjectBehaviours.end() &&
-			(object_uuid.isNull() || it != sSpecialObjectBehaviours.upper_bound(object_uuid.asString()))
+	while (it != mSpecialObjectBehaviours.end() &&
+			(object_uuid.isNull() || it != mSpecialObjectBehaviours.upper_bound(object_uuid.asString()))
 	)
 	{
 		if (rule=="" || it->second.find (rule)!=-1) {
 			//if (!is_first) 
-			res+="/";
-			res+=it->second;
+			res += "/";
+			res += it->second;
 			is_first=false;
 		}
 		it++;
@@ -1095,7 +1487,6 @@ std::string RRInterface::getStatus (LLUUID object_uuid, std::string rule)
 
 BOOL RRInterface::forceDetach (std::string attachpt)
 {
-	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug");
 	std::string name;
 	BOOL res=FALSE;
 	LLVOAvatar* avatar = gAgent.getAvatarObject();
@@ -1107,17 +1498,15 @@ BOOL RRInterface::forceDetach (std::string attachpt)
 		LLViewerJointAttachment* attachment = curiter->second;
 		name=attachment->getName ();
 		LLStringUtil::toLower(name);
-		if (debug) {
+		if (sRestrainedLoveDebug) {
 			llinfos << "trying <" << name << ">" << llendl;
 		}
 		if (attachpt=="" || attachpt==name) {
-			if (debug) {
+			if (sRestrainedLoveDebug) {
 				llinfos << "found => detaching" << llendl;
 			}
-			if (attachment->getObject()) {
-				handle_detach_from_avatar ((void*)attachment);
-				res=TRUE;
-			}
+			detachAllObjectsFromAttachment (attachment);
+			res=TRUE;
 		}
 	}
 	return res;
@@ -1135,8 +1524,8 @@ BOOL RRInterface::forceDetachByUuid (std::string object_uuid)
 		{
 			LLVOAvatar::attachment_map_t::iterator curiter = iter;
 			LLViewerJointAttachment* attachment = curiter->second;
-			if (attachment && attachment->getObject() == object) {
-				handle_detach_from_avatar ((void*)attachment);
+			if (attachment && attachment->isObjectAttached (object)) {
+				detachObject (object);
 				res=TRUE;
 			}
 		}
@@ -1154,9 +1543,10 @@ BOOL RRInterface::hasLockedHuds ()
 		LLVOAvatar::attachment_map_t::iterator curiter = iter;
 		LLViewerJointAttachment* attachment = curiter->second;
 		LLViewerObject* obj;
-		if (attachment && (obj=attachment->getObject()) != NULL) {
-			if (obj->isHUDAttachment()) {
-				if (!canDetach(obj)) return TRUE;
+		if (attachment) {
+			for (unsigned int i = 0; i < attachment->mAttachedObjects.size(); ++i) {
+				obj = attachment->mAttachedObjects.at(i);
+				if (obj && obj->isHUDAttachment() && !canDetach(obj)) return TRUE;
 			}
 		}
 	}
@@ -1166,7 +1556,6 @@ BOOL RRInterface::hasLockedHuds ()
 
 std::deque<LLInventoryItem*> RRInterface::getListOfLockedItems (LLInventoryCategory* root)
 {
-	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug");
 	LLVOAvatar* avatar = gAgent.getAvatarObject();
 	std::deque<LLInventoryItem*> res;
 	std::deque<LLInventoryItem*> tmp;
@@ -1194,9 +1583,9 @@ std::deque<LLInventoryItem*> RRInterface::getListOfLockedItems (LLInventoryCateg
 			if (item && item->getType() == LLAssetType::AT_OBJECT) {
 				LLViewerObject* attached_object = avatar->getWornAttachment (item->getUUID());
 				if (attached_object) {
-					attach_point_name = avatar->getAttachedPointName (item->getUUID());
+					attach_point_name = avatar->getAttachedPointName (item->getLinkedUUID());
 					if (!gAgent.mRRInterface.canDetach(attached_object)) {
-						if (debug) {
+						if (sRestrainedLoveDebug) {
 							llinfos << "found a locked object : " << item->getName() << " on " << attach_point_name << llendl;
 						}
 						res.push_back (item);
@@ -1208,7 +1597,7 @@ std::deque<LLInventoryItem*> RRInterface::getListOfLockedItems (LLInventoryCateg
 				if (gAgent.mRRInterface.contains ("remoutfit")
 					|| gAgent.mRRInterface.containsSubstr ("remoutfit:")
 					) {
-					if (debug) {
+					if (sRestrainedLoveDebug) {
 						llinfos << "found a locked clothing : " << item->getName() << llendl;
 					}
 					res.push_back (item);
@@ -1228,11 +1617,35 @@ std::deque<LLInventoryItem*> RRInterface::getListOfLockedItems (LLInventoryCateg
 			}
 		}
 		
-		if (debug) {
+		if (sRestrainedLoveDebug) {
 			llinfos << "number of locked objects under " << root->getName() << " =  " << res.size() << llendl;
 		}
 	}
 	
+	return res;
+}
+
+
+std::deque<std::string> RRInterface::getListOfRestrictions (LLUUID object_uuid, std::string rule /*= ""*/)
+{
+	std::deque<std::string> res;
+	std::string name;
+	RRMAP::iterator it;
+	if (object_uuid.isNull()) {
+		it = mSpecialObjectBehaviours.begin();
+	}
+	else {
+		it = mSpecialObjectBehaviours.find (object_uuid.asString());
+	}
+	while (it != mSpecialObjectBehaviours.end() &&
+			(object_uuid.isNull() || it != mSpecialObjectBehaviours.upper_bound(object_uuid.asString()))
+	)
+	{
+		if (rule=="" || it->second.find (rule)!=-1) {
+			res.push_back(it->second);
+		}
+		it++;
+	}
 	return res;
 }
 
@@ -1314,7 +1727,7 @@ std::string RRInterface::getWornItems (LLInventoryCategory* cat)
 					) {
 						nbItems++;
 					}
-					if( avatar && avatar->isWearingAttachment( item->getUUID() ) 
+					if ((avatar && avatar->isWearingAttachment(item->getUUID()))
 						|| gAgent.isWearingItem (item->getUUID())) nbWorn++;
 
 					// special case : this item is no-mod, hence we need to check its parent folder
@@ -1403,7 +1816,6 @@ std::string RRInterface::getWornItems (LLInventoryCategory* cat)
 
 LLInventoryCategory* RRInterface::getRlvShare ()
 {
-//	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug");
 	LLInventoryModel::cat_array_t* cats;
 	LLInventoryModel::item_array_t* items;
 	gInventory.getDirectDescendentsOf (
@@ -1416,9 +1828,6 @@ LLInventoryCategory* RRInterface::getRlvShare ()
 			LLInventoryCategory* cat = cats->get(i);
 			std::string name = cat->getName();
 			if (name == RR_SHARED_FOLDER) {
-//				if (debug) {
-//					llinfos << "found " << name << llendl;
-//				}
 				return cat;
 			}
 		}
@@ -1428,40 +1837,37 @@ LLInventoryCategory* RRInterface::getRlvShare ()
 
 BOOL RRInterface::isUnderRlvShare (LLInventoryItem* item)
 {
-	if (item == NULL) return FALSE;
-	LLInventoryCategory* res = NULL;
-	LLInventoryCategory* rlv = getRlvShare();
-	if (rlv == NULL) return FALSE;
-	LLUUID root_id = gInventory.findCategoryUUIDForType(LLAssetType::AT_CATEGORY);
-	
 	const LLUUID& cat_id = item->getParentUUID();
+	return isUnderFolder(getRlvShare(), gInventory.getCategory(cat_id));
+}
+
+BOOL RRInterface::isUnderRlvShare (LLInventoryCategory* cat)
+{
+	return isUnderFolder (getRlvShare(), cat);
+}
+
+BOOL RRInterface::isUnderFolder (LLInventoryCategory* cat_parent, LLInventoryCategory* cat_child)
+{
+	if (cat_parent == NULL || cat_child == NULL) {
+		return FALSE;
+	}
+	if (cat_child == cat_parent) {
+		return TRUE;
+	}
+	LLInventoryCategory* res = NULL;
+	LLUUID root_id = gInventory.findCategoryUUIDForType(LLAssetType::AT_CATEGORY);
+
+	const LLUUID& cat_id = cat_child->getParentUUID();
 	res = gInventory.getCategory (cat_id);
-	
+
 	while (res && res->getUUID() != root_id) {
-		if (res == rlv) return TRUE;
+		if (res == cat_parent) {
+			return TRUE;
+		}
 		const LLUUID& parent_id = res->getParentUUID();
 		res = gInventory.getCategory (parent_id);
 	}
 	return FALSE;
-}
-
-void RRInterface::renameAttachment (LLInventoryItem* item, LLViewerJointAttachment* attachment)
-{
-  // DEPRECATED : done directly in the viewer code
-	// if item is worn and shared, check its name
-	// if it doesn't contain the name of attachment, append it
-	// (but truncate the name first if it's too long)
-	if (!item || !attachment) return;
-	LLVOAvatar* avatar = gAgent.getAvatarObject();
-	
-	if( avatar && avatar->isWearingAttachment( item->getUUID() ) ) {
-		if (isUnderRlvShare (item)) {
-			LLViewerJointAttachment* attachpt = findAttachmentPointFromName (item->getName());
-			if (attachpt == NULL) {
-				
-			}
-		}
-	}
 }
 
 LLInventoryCategory* RRInterface::getCategoryUnderRlvShare (std::string catName, LLInventoryCategory* root)
@@ -1485,7 +1891,7 @@ LLInventoryCategory* RRInterface::getCategoryUnderRlvShare (std::string catName,
 	}
 	
 	if (root) {
-
+		bool exact_match = false;
 		LLInventoryModel::cat_array_t* cats;
 		LLInventoryModel::item_array_t* items;
 		gInventory.getDirectDescendentsOf (root->getUUID(), cats, items);
@@ -1504,8 +1910,8 @@ LLInventoryCategory* RRInterface::getCategoryUnderRlvShare (std::string catName,
 				if (name != "" && name[0] !=  '.') { // ignore invisible folders
 					LLStringUtil::toLower (name);
 					
-					int size = match (tokens, name);
-					if (size > max_size) {
+					int size = match (tokens, name, exact_match);
+					if (size > max_size || (exact_match && size == max_size)) {
 						max_size = size;
 						max_size_index = i;
 					}
@@ -1515,17 +1921,16 @@ LLInventoryCategory* RRInterface::getCategoryUnderRlvShare (std::string catName,
 			// only now we can grab the best match and either continue deeper or return it
 			if (max_size > 0) {
 				cat = cats->get(max_size_index);
-				if (max_size == tokens.size()) return cat;
-				else return getCategoryUnderRlvShare (
-									dumpList2String (
-										getSubList (tokens, max_size)
-									, "/")
-								, cat);
+				if (max_size == tokens.size()) {
+					return cat;
+				} else {
+					return getCategoryUnderRlvShare(dumpList2String(getSubList(tokens, max_size), "/"), cat);
+				}
 			}
 		}
 	}
 
-	if (gSavedSettings.getBOOL("RestrainedLoveDebug")) {
+	if (sRestrainedLoveDebug) {
 		llinfos << "category not found" << llendl;
 	}
 	return NULL;
@@ -1586,7 +1991,6 @@ typedef struct
 
 LLViewerJointAttachment* RRInterface::findAttachmentPointFromName (std::string objectName, BOOL exactName)
 {
-	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug");
 	// for each possible attachment point, check whether its name appears in the name of
 	// the item.
 	// We are going to scan the whole list of attachments, but we won't decide which one to take right away.
@@ -1614,9 +2018,6 @@ LLViewerJointAttachment* RRInterface::findAttachmentPointFromName (std::string o
 		if (attachment) {
 			attachName = attachment->getName();
 			LLStringUtil::toLower(attachName);
-//			if (debug) {
-//				llinfos << "trying attachment " << attachName << llendl;
-//			}
 			if (exactName && objectName == attachName) return attachment;
 			else if (!exactName && (ind = objectName.rfind (attachName)) != -1)
 			{
@@ -1626,14 +2027,14 @@ LLViewerJointAttachment* RRInterface::findAttachmentPointFromName (std::string o
 				new_candidate.attachment = attachment;
 				candidates.push_back (new_candidate);
 				found_one = true;
-				if (debug) {
+				if (sRestrainedLoveDebug) {
 					llinfos << "new candidate '" << attachName << "' : index=" << new_candidate.index << "   length=" << new_candidate.length << llendl;
 				}
 			}
 		}
 	}
 	if (!found_one) {
-		if (debug) {
+		if (sRestrainedLoveDebug) {
 			llinfos << "no attachment found" << llendl;
 		}
 		return NULL;
@@ -1664,7 +2065,7 @@ LLViewerJointAttachment* RRInterface::findAttachmentPointFromName (std::string o
 	if (ind_res > -1) {
 		candidate = candidates[ind_res];
 		res = candidate.attachment;
-		if (debug && res) {
+		if (sRestrainedLoveDebug && res) {
 			llinfos << "returning '" << res->getName() << "'" << llendl;
 		}
 	}
@@ -1699,11 +2100,55 @@ S32 RRInterface::findAttachmentPointNumber (LLViewerJointAttachment* attachment)
 	return -1;
 }
 
+void RRInterface::detachObject(LLViewerObject* object)
+{
+	// Handle the detach message to the sim here, after a check
+	if (!object) return;
+	if (gRRenabled && !gAgent.mRRInterface.canDetach(object)) return;
+
+	gMessageSystem->newMessage("ObjectDetach");
+	gMessageSystem->nextBlockFast(_PREHASH_AgentData);
+	gMessageSystem->addUUIDFast(_PREHASH_AgentID, gAgent.getID() );
+	gMessageSystem->addUUIDFast(_PREHASH_SessionID, gAgent.getSessionID());
+	gMessageSystem->nextBlockFast(_PREHASH_ObjectData);
+	gMessageSystem->addU32Fast(_PREHASH_ObjectLocalID, object->getLocalID());
+	gMessageSystem->sendReliable( gAgent.getRegionHost() );
+}
+
+void RRInterface::detachAllObjectsFromAttachment(LLViewerJointAttachment* attachment)
+{
+	if (!attachment) return;
+	LLViewerObject* object;
+
+	// We need to remove all the objects from attachment->mAttachedObjects, one by one.
+	// To do this, and in order to avoid any race condition, we are going to copy the list and 
+	// iterate on the copy instead of the original which changes everytime something is
+	// attached and detached, asynchronously.
+	LLViewerJointAttachment::attachedobjs_vec_t attachedObjectsCopy = attachment ->mAttachedObjects;
+
+	for (unsigned int i = 0; i < attachedObjectsCopy.size(); ++i) {
+		object = attachedObjectsCopy.at(i);
+		detachObject (object);
+	}
+}
+
+bool RRInterface::canDetachAllObjectsFromAttachment(LLViewerJointAttachment* attachment, BOOL handle_nostrip /* = TRUE */)
+{
+	if (!attachment) return false;
+	LLViewerObject* object;
+
+	for (unsigned int i = 0; i <  attachment ->mAttachedObjects.size(); ++i) {
+		object =  attachment ->mAttachedObjects.at(i);
+		if (!gAgent.mRRInterface.canDetach(object, handle_nostrip)) return false;
+	}
+
+	return true;
+}
 void RRInterface::fetchInventory (LLInventoryCategory* root)
 {
 	// do this only once on login
 
-	if (sInventoryFetched) return;
+	if (mInventoryFetched) return;
 	
 	bool last_step = false;
 	
@@ -1731,21 +2176,28 @@ void RRInterface::fetchInventory (LLInventoryCategory* root)
 
 	}
 	
-	if (last_step) sInventoryFetched = TRUE;
+	if (last_step) mInventoryFetched = TRUE;
 }
 
 void confirm_replace_attachment_rez(S32 option, void* user_data);
 
-BOOL RRInterface::forceAttach (std::string category, BOOL recursive /* = FALSE */)
+BOOL RRInterface::forceAttach (std::string category, BOOL recursive, AttachHow how)
 {
-	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug");
+	// recursive is TRUE in the case of an attachall command
 	// find the category under RLV shared folder
+	if (category == "") return TRUE; // just a safety
 	LLInventoryCategory* cat = getCategoryUnderRlvShare (category);
 	BOOL isRoot = (getRlvShare() == cat);
-	
+	BOOL replacing = (how == AttachHow_replace || how == AttachHow_over_or_replace); // we're replacing for now, but the name of the category could decide otherwise
 	// if exists, wear all the items inside it
 	if (cat) {
 	
+		// If the name of the category begins with a "+", then we force to stack instead of replacing
+		if (how == AttachHow_over_or_replace) {
+			if (cat->getName().find (RR_ADD_FOLDER_PREFIX) == 0) {
+				replacing = FALSE;
+			}
+		}
 		LLInventoryModel::cat_array_t* cats;
 		LLInventoryModel::item_array_t* items;
 		
@@ -1758,7 +2210,7 @@ BOOL RRInterface::forceAttach (std::string category, BOOL recursive /* = FALSE *
 			for(S32 i = 0; i < count; ++i) {
 				if (!isRoot) {
 					LLViewerInventoryItem* item = (LLViewerInventoryItem*)items->get(i);
-					if (debug) {
+					if (sRestrainedLoveDebug) {
 						llinfos << "trying to attach " << item->getName() << llendl;
 					}
 					
@@ -1767,17 +2219,24 @@ BOOL RRInterface::forceAttach (std::string category, BOOL recursive /* = FALSE *
 						LLViewerJointAttachment* attachpt = findAttachmentPointFromName (item->getName());
 						
 						if (attachpt) {
-							if (debug) {
+							if (sRestrainedLoveDebug) {
 								llinfos << "attaching item to " << attachpt->getName() << llendl;
 							}
-							// mimick rez_attachment without displaying an Xml alert to confirm
-							S32 number = findAttachmentPointNumber (attachpt);
-							if (canAttach(NULL, attachpt->getName()))
+							if (replacing)
 							{
-								LLAttachmentRezAction* rez_action = new LLAttachmentRezAction;
-								rez_action->mItemID = item->getUUID();
-								rez_action->mAttachPt = number;
-								confirm_replace_attachment_rez(0/*YES*/, (void*)rez_action);
+								// mimick rez_attachment without displaying an Xml alert to confirm
+								S32 number = findAttachmentPointNumber (attachpt);
+								if (canDetach(attachpt->getName()) && canAttach(item))
+								{
+									LLAttachmentRezAction* rez_action = new LLAttachmentRezAction;
+									rez_action->mItemID = item->getLinkedUUID();
+									rez_action->mAttachPt = number;
+									confirm_replace_attachment_rez(0/*YES*/, (void*)rez_action);
+								}
+							}
+							else {
+								// we're stacking => call rez_attachment directly
+								rez_attachment (item, attachpt, false);
 							}
 						}
 					}
@@ -1815,23 +2274,28 @@ BOOL RRInterface::forceAttach (std::string category, BOOL recursive /* = FALSE *
 								&& !item_grandchild->getPermissions().allowModifyBy(gAgent.getID())
 								&& findAttachmentPointFromParentName (item_grandchild) != NULL) { // it is no-mod and its parent is named correctly
 								// we use the attach point from the name of the folder, not the no-mod item
-								// mimick rez_attachment without displaying an Xml alert to confirm
-								S32 number = findAttachmentPointNumber (attachpt);
-								if (canAttach(NULL, attachpt->getName()))
-								{
-								LLAttachmentRezAction* rez_action = new LLAttachmentRezAction;
-								rez_action->mItemID = item_grandchild->getUUID();
-								rez_action->mAttachPt = number;
-								confirm_replace_attachment_rez(0/*YES*/, (void*)rez_action);
+								if (replacing) {
+									// mimick rez_attachment without displaying an Xml alert to confirm
+									S32 number = findAttachmentPointNumber (attachpt);
+									if (canDetach(attachpt->getName()) && canAttach(item_grandchild))
+									{
+									LLAttachmentRezAction* rez_action = new LLAttachmentRezAction;
+									rez_action->mItemID = item_grandchild->getLinkedUUID();
+									rez_action->mAttachPt = number;
+									confirm_replace_attachment_rez(0/*YES*/, (void*)rez_action);
+									}
 								}
-								
+								else {
+									// we're stacking => call rez_attachment directly
+									rez_attachment (item_grandchild, attachpt, false);
+								}
 							}
 						}
 					}
 				}
 
 				if (recursive && cat_child->getName().find (".") != 0) { // attachall and not invisible)
-					forceAttach (getFullPath (cat_child), recursive);
+					forceAttach (getFullPath (cat_child), recursive, how);
 				}
 			}
 		}
@@ -1839,10 +2303,10 @@ BOOL RRInterface::forceAttach (std::string category, BOOL recursive /* = FALSE *
 	return TRUE;
 }
 
-BOOL RRInterface::forceDetachByName (std::string category, BOOL recursive /* = FALSE */)
+BOOL RRInterface::forceDetachByName (std::string category, BOOL recursive, BOOL handle_nostrip)
 {
-	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug");
 	// find the category under RLV shared folder
+	if (category == "") return TRUE; // just a safety
 	LLInventoryCategory* cat = getCategoryUnderRlvShare (category);
 	LLVOAvatar* avatar = gAgent.getAvatarObject();
 	if (!avatar) return FALSE;
@@ -1850,7 +2314,12 @@ BOOL RRInterface::forceDetachByName (std::string category, BOOL recursive /* = F
 	
 	// if exists, detach/unwear all the items inside it
 	if (cat) {
-	
+		if (handle_nostrip) {
+			std::string name = cat->getName();
+			LLStringUtil::toLower(name);
+			if (name.find ("nostrip") != -1) return false;
+		}
+
 		LLInventoryModel::cat_array_t* cats;
 		LLInventoryModel::item_array_t* items;
 		
@@ -1863,7 +2332,7 @@ BOOL RRInterface::forceDetachByName (std::string category, BOOL recursive /* = F
 			for(S32 i = 0; i < count; ++i) {
 				if (!isRoot) {
 					LLViewerInventoryItem* item = (LLViewerInventoryItem*)items->get(i);
-					if (debug) {
+					if (sRestrainedLoveDebug) {
 						llinfos << "trying to detach " << item->getName() << llendl;
 					}
 					
@@ -1875,20 +2344,20 @@ BOOL RRInterface::forceDetachByName (std::string category, BOOL recursive /* = F
 						{
 							LLVOAvatar::attachment_map_t::iterator curiter = iter++;
 							LLViewerJointAttachment* attachment = curiter->second;
-							
-							if (attachment->getObject()) {
-								if (attachment->getItemID() == item->getUUID()) {
-									handle_detach_from_avatar ((void*)attachment);
-									break;
-								}
+							LLViewerObject* object = avatar->getWornAttachment(item->getUUID());
+							if (object && attachment && attachment->isObjectAttached(object))
+							{
+								detachObject (object);
+								break;
 							}
-						}
-						
+							handle_detach_from_avatar ((void*)attachment);
+							break;
+						}					
 					}
 					// piece of clothing
 					else if (item->getType() == LLAssetType::AT_CLOTHING) {
-						LLWearable* layer = gAgent.getWearableFromWearableItem (item->getUUID());
-						if (layer != NULL) gAgent.removeWearable (layer->getType());
+						LLWearable* layer = gAgent.getWearableFromWearableItem (item->getLinkedUUID());
+						if (layer && canDetach (item)) removeWearableFromAvatar (layer->getType());
 						
 					}
 				}
@@ -1900,6 +2369,12 @@ BOOL RRInterface::forceDetachByName (std::string category, BOOL recursive /* = F
 			S32 count = cats->count();
 			for(S32 i = 0; i < count; ++i) {
 				LLViewerInventoryCategory* cat_child = (LLViewerInventoryCategory*)cats->get(i);
+				if (handle_nostrip) {
+					std::string name = cat_child->getName();
+					LLStringUtil::toLower(name);
+					if (name.find ("nostrip") != -1) continue;
+				}
+
 				LLInventoryModel::cat_array_t* cats_grandchildren; // won't be used here
 				LLInventoryModel::item_array_t* items_grandchildren; // actual no-mod item(s)
 				gInventory.getDirectDescendentsOf (cat_child->getUUID(), 
@@ -1919,19 +2394,20 @@ BOOL RRInterface::forceDetachByName (std::string category, BOOL recursive /* = F
 						{
 							LLVOAvatar::attachment_map_t::iterator curiter = iter++;
 							LLViewerJointAttachment* attachment = curiter->second;
-							
-							if (attachment->getObject()) {
-								if (attachment->getItemID() == item_grandchild->getUUID()) {
-									handle_detach_from_avatar ((void*)attachment);
-									break;
-								}
+							LLViewerObject* object = avatar->getWornAttachment(item_grandchild->getUUID());
+							if (object && attachment && attachment->isObjectAttached(object))
+							{
+								detachObject (object);
+								break;
 							}
+							handle_detach_from_avatar ((void*)attachment);
+							break;
 						}
 					}
 				}
 
 				if (recursive && cat_child->getName().find (".") != 0) { // detachall and not invisible)
-					forceDetachByName (getFullPath (cat_child), recursive);
+					forceDetachByName (getFullPath (cat_child), recursive, handle_nostrip);
 				}
 			}
 		}
@@ -1941,7 +2417,6 @@ BOOL RRInterface::forceDetachByName (std::string category, BOOL recursive /* = F
 
 BOOL RRInterface::forceTeleport (std::string location)
 {
-	BOOL debug = gSavedSettings.getBOOL("RestrainedLoveDebug");
 	// location must be X/Y/Z where X, Y and Z are ABSOLUTE coordinates => use a script in-world to translate from local to global
 	std::string loc (location);
 	std::string region_name;
@@ -1958,7 +2433,7 @@ BOOL RRInterface::forceTeleport (std::string location)
 		return FALSE;
 	}
 
-	if (debug) {
+	if (sRestrainedLoveDebug) {
 		llinfos << tokens.at(0) << "," << tokens.at(1) << "," << tokens.at(2) << "     " << x << "," << y << "," << z << llendl;
 	}
 	LLVector3d pos_global;
@@ -1966,7 +2441,7 @@ BOOL RRInterface::forceTeleport (std::string location)
 	pos_global.mdV[VY] = (F32)y;
 	pos_global.mdV[VZ] = (F32)z;
 	
-	sAllowCancelTp = FALSE; // will be checked once receiving the tp order from the sim, then set to TRUE again
+	mAllowCancelTp = FALSE; // will be checked once receiving the tp order from the sim, then set to TRUE again
 
 	gAgent.teleportViaLocation (pos_global);
 	return TRUE;
@@ -2049,26 +2524,28 @@ std::string RRInterface::getDummyName (std::string name, EChatAudible audible /*
 std::string RRInterface::getCensoredMessage (std::string str)
 {
 	// Hide every occurrence of the name of anybody around (found in cache, so not completely accurate nor completely immediate)
-	S32 i;
-	for (i=0; i<gObjectList.getNumObjects(); ++i) {
-		LLViewerObject* object = gObjectList.getObject(i);
-		if (object) {
-			std::string name;
-			std::string dummy_name;
-			
-			if (object->isAvatar()) {
-				if (gCacheName->getFullName (object->getID(), name)) {
-					dummy_name = getDummyName (name);
-					str = stringReplace (str,
-						name, dummy_name); // full name first
-//					str = stringReplace (str,
-//						 getFirstName (name), dummy_name); // first name
-//					str = stringReplace (str,
-//						 getLastName (name), dummy_name); // last name
+	std::vector<LLUUID> avatar_ids;
+	LLUUID avatar_id;
+	std::string name, dummy_name;
+	LLAvatarName avatar_name;
+	U32 i;
+
+	LLWorld::getInstance()->getAvatars(&avatar_ids, NULL);
+
+	for (i = 0; i < avatar_ids.size(); i++) {
+		avatar_id = avatar_ids[i];
+		if (gCacheName->getFullName(avatar_id, name)) {
+			dummy_name = getDummyName(name);
+			str = stringReplace(str, name, dummy_name); // legacy name
+			if (LLAvatarNameCache::get(avatar_id, &avatar_name)) {
+				if (!avatar_name.mIsDisplayNameDefault) {
+					name = avatar_name.mDisplayName;
+					str = stringReplace(str, name, dummy_name); // display name
 				}
 			}
 		}
 	}
+
 	return str;
 }
 
@@ -2405,10 +2882,10 @@ BOOL RRInterface::forceDebugSetting (std::string command, std::string option)
 	std::string tmp;
 	int ind;
 	
-	allowed = sAllowedU32;
+	allowed = mAllowedU32;
 	tmp = allowed;
 	LLStringUtil::toLower(tmp);
-	if ((ind = tmp.find (","+command+",")) != -1) {
+	if ((ind = tmp.find ("," + command + ",")) != -1) {
 		gSavedSettings.setU32 (allowed.substr(++ind, command.length()), atoi(option.c_str()));
 		return TRUE;
 	}
@@ -2426,10 +2903,10 @@ std::string RRInterface::getDebugSetting (std::string command)
 	std::string tmp;
 	int ind;
 	
-	allowed = sAllowedU32;
+	allowed = mAllowedU32;
 	tmp = allowed;
 	LLStringUtil::toLower(tmp);
-	if ((ind = tmp.find (","+command+",")) != -1) {
+	if ((ind = tmp.find ("," + command + ",")) != -1) {
 		res << gSavedSettings.getU32 (allowed.substr(++ind, command.length()));
 	}
 	
@@ -2452,8 +2929,11 @@ std::string RRInterface::getFullPath (LLInventoryCategory* cat)
 	return dumpList2String (tokens, "/");
 }
 
-std::string RRInterface::getFullPath (LLInventoryItem* item, std::string option)
+std::string RRInterface::getFullPath (LLInventoryItem* item, std::string option, bool full_list /*= true*/)
 {
+	if (sRestrainedLoveDebug) {
+		llinfos << "getFullPath(" << (item? item->getName(): "NULL") << ", " << option << ", " << full_list << ")" << llendl;
+	}
 	// Returns the path from the shared root to this object, or to the object worn at the attach point or clothing layer pointed by option if any
 	if (option != "") {
 		item = NULL; // an option is specified => we don't want to check the item that issued the command, but something else that is currently worn (object or clothing)
@@ -2467,9 +2947,24 @@ std::string RRInterface::getFullPath (LLInventoryItem* item, std::string option)
 		else { // this is not a clothing layer => it has to be an attachment point
 			LLViewerJointAttachment* attach_point = gAgent.mRRInterface.findAttachmentPointFromName (option, TRUE);
 			if (attach_point) {
-				LLViewerObject* attached_object = attach_point->getObject();
-				item = getItemAux (attached_object, gAgent.mRRInterface.getRlvShare());
-				if (item != NULL && !gAgent.mRRInterface.isUnderRlvShare(item)) item = NULL; // security : we would return the path even if the item was not shared otherwise
+				std::deque<std::string> res;
+				for (unsigned int i = 0; i < attach_point->mAttachedObjects.size(); ++i) {
+					LLViewerObject* attached_object = attach_point->mAttachedObjects.at(i);
+					if (attached_object) {
+						item = getItemAux (attached_object, gAgent.mRRInterface.getRlvShare());
+						if (item != NULL && !gAgent.mRRInterface.isUnderRlvShare(item)) item = NULL; // security : we would return the path even if the item was not shared otherwise
+						else {
+							// We have found the inventory item => add its path to the list
+							// it appears to be a recursive call but the level of recursivity is only 2, we won't execute this instruction again in the called method since option will be empty
+							res.push_back (getFullPath (item, ""));
+							if (sRestrainedLoveDebug) {
+								llinfos << "res=" << dumpList2String(res, ", ") << llendl;
+							}
+							if (!full_list) break; // old behaviour : we only return the first folder, not a full list
+						}
+					}
+				}
+				return dumpList2String (res, ",");
 			}
 		}
 	}
@@ -2511,10 +3006,9 @@ LLInventoryItem* RRInterface::getItemAux (LLViewerObject* attached_object, LLInv
 		count = items->count();
 		for(i = 0; i < count; ++i) {
 			item = items->get(i);
-			if (item 
-				&& (item->getType() == LLAssetType::AT_OBJECT || item->getType() == LLAssetType::AT_CLOTHING)
-				&& avatar->getWornAttachment (item->getUUID()) == attached_object
-				) {
+			if (item && (item->getType() == LLAssetType::AT_OBJECT || item->getType() == LLAssetType::AT_CLOTHING) &&
+				avatar->getWornAttachment (item->getUUID()) == attached_object)
+			{
 				// found the item in the current category
 				return item;
 			}
@@ -2539,7 +3033,7 @@ LLInventoryItem* RRInterface::getItem (LLUUID wornObjectUuidInWorld)
 	if (object != NULL) {
 		object = object->getRootEdit();
 		if (object->isAttachment()) {
-			return getItemAux (object, gInventory.getCategory(gInventory.findCategoryUUIDForType(LLAssetType::AT_CATEGORY))); //gAgent.mRRInterface.getRlvShare());
+			return gInventory.getItem(object->getAttachmentItemID());
 		}
 	}
 	// This object is not worn => it has nothing to do with any inventory item
@@ -2589,43 +3083,437 @@ bool RRInterface::isSittingOnAnySelectedObject()
 	return false;
 }
 
-bool RRInterface::canDetach(LLViewerObject* attached_object)
+bool RRInterface::canAttachCategory(LLInventoryCategory* folder, bool with_exceptions /*= true*/)
+{
+	// return false if :
+	// - at least one object issued a @attachthis:folder restriction
+	// - at least one item in this folder is to be worn on a @attachthis:attachpt restriction
+	// - at least one piece of clothing in this folder is to be worn on a @attachthis:layer restriction
+	// - any parent folder returns false with @attachallthis
+	if (!folder) return true;
+	LLVOAvatar* avatar = gAgent.getAvatarObject();
+	if (!avatar) return true;
+	LLInventoryCategory* rlvShare = getRlvShare();
+	if (!rlvShare || !isUnderRlvShare(folder)) {
+		if (contains ("unsharedwear")) return false;
+		else return true;
+	}
+	return canAttachCategoryAux(folder, false, false, with_exceptions);
+}
+
+bool RRInterface::canAttachCategoryAux(LLInventoryCategory* folder, bool in_parent, bool in_no_mod, bool with_exceptions /*= true*/)
+{
+	LLVOAvatar* avatar = gAgent.getAvatarObject();
+	if (!avatar) return true;
+	FolderLock folder_lock = FolderLock_unlocked;
+	if (folder) {
+		// check @attachthis:folder in all restrictions
+		RRMAP::iterator it = mSpecialObjectBehaviours.begin ();
+		//LLInventoryCategory* restricted_cat;
+		std::string path_to_check;
+		std::string restriction = "attachthis";
+		if (in_parent) restriction = "attachallthis";
+		folder_lock = isFolderLockedWithoutException(folder, "attach");
+		if (folder_lock == FolderLock_locked_without_except) {
+			return false;
+		}
+
+		if (!with_exceptions && folder_lock == FolderLock_locked_with_except) {
+			return false;
+		}
+
+		//while (it != mSpecialObjectBehaviours.end()) {
+		//	if (it->second.find (restriction+":") == 0) {
+		//		path_to_check = it->second.substr (restriction.length()+1); // remove ":" as well
+		//		restricted_cat = getCategoryUnderRlvShare(path_to_check);
+		//		if (restricted_cat == folder) return false;
+		//	}
+		//	it++;
+		//}
+
+		LLInventoryModel::cat_array_t* cats;
+		LLInventoryModel::item_array_t* items;
+		gInventory.getDirectDescendentsOf (folder->getUUID(), cats, items);
+		S32 count;
+		S32 i;
+		LLInventoryItem* item = NULL;
+		LLInventoryCategory* cat = NULL;
+		
+		// Try to find the item in the current category
+		count = items->count();
+		for(i = 0; i < count; ++i) {
+			item = items->get(i);
+			if (item) {
+				if (item->getType() == LLAssetType::AT_OBJECT) {
+					LLViewerJointAttachment* attachpt = NULL;
+					if (in_no_mod) {
+						if (item->getPermissions().allowModifyBy(gAgent.getID()) || count > 1) return true;
+						LLInventoryCategory* parent = gInventory.getCategory (folder->getParentUUID());
+						attachpt = findAttachmentPointFromName(parent->getName());
+					}
+					else {
+						attachpt = findAttachmentPointFromName(item->getName());
+					}
+					if (attachpt && contains (restriction + ":" + attachpt->getName())) return false;
+				}
+				else if (item->getType() == LLAssetType::AT_CLOTHING || item->getType() == LLAssetType::AT_BODYPART) {
+					LLWearable* wearable = gAgent.getWearableFromWearableItem (item->getLinkedUUID());
+					if (wearable) {
+						if (contains(restriction + ":" + getOutfitLayerAsString(wearable->getType()))) return false;
+					}
+				}
+			}
+		}
+
+		// now check all no-mod items => look at the sub-categories and return false if any of them returns false on a call to canAttachCategoryAux()
+		count = cats->count();
+		for(i = 0; i < count; ++i) {
+			cat = cats->get(i);
+			if (cat) {
+				std::string name = cat->getName();
+				if (name != "" && name[0] ==  '.' && findAttachmentPointFromName(name) != NULL) {
+					if (!canAttachCategoryAux(cat, false, true, with_exceptions)) return false;
+				}
+			}
+		}
+	}
+	if (folder == getRlvShare()) return true;
+	if (!in_no_mod && folder_lock == FolderLock_unlocked) {
+		return canAttachCategoryAux(gInventory.getCategory (folder->getParentUUID()), true, false, with_exceptions); // check for @attachallthis in the parent
+	}
+	return true;
+}
+
+bool RRInterface::canDetachCategory(LLInventoryCategory* folder, bool with_exceptions /*= true*/)
+{
+	// return false if :
+	// - at least one object contained in this folder issued a @detachthis restriction
+	// - at least one object issued a @detachthis:folder restriction
+	// - at least one worn attachment in this folder is worn on a @detachthis:attachpt restriction
+	// - at least one worn piece of clothing in this folder is worn on a @detachthis:layer restriction
+	// - any parent folder returns false with @detachallthis
+	if (!folder) return true;
+	LLVOAvatar* avatar = gAgent.getAvatarObject();
+	if (!avatar) return true;
+	LLInventoryCategory* rlvShare = getRlvShare();
+	if (!rlvShare || !isUnderRlvShare(folder)) {
+		if (contains ("unsharedunwear")) return false;
+		else return true;
+	}
+	return canDetachCategoryAux(folder, false, false, with_exceptions);
+}
+
+bool RRInterface::canDetachCategoryAux(LLInventoryCategory* folder, bool in_parent, bool in_no_mod, bool with_exceptions /*= true*/)
+{
+	LLVOAvatar* avatar = gAgent.getAvatarObject();
+	if (!avatar) return true;
+	FolderLock folder_lock = FolderLock_unlocked;
+	if (folder) {
+		// check @detachthis:folder in all restrictions
+		RRMAP::iterator it = mSpecialObjectBehaviours.begin ();
+		//LLInventoryCategory* restricted_cat;
+		std::string path_to_check;
+		std::string restriction = "detachthis";
+		if (in_parent) restriction = "detachallthis";
+		folder_lock = isFolderLockedWithoutException(folder, "detach");
+		if (folder_lock == FolderLock_locked_without_except) {
+			return false;
+		}
+
+		if (!with_exceptions && folder_lock == FolderLock_locked_with_except) {
+			return false;
+		}
+
+		//while (it != mSpecialObjectBehaviours.end()) {
+		//	if (it->second.find (restriction+":") == 0) {
+		//		path_to_check = it->second.substr (restriction.length()+1); // remove ":" as well
+		//		restricted_cat = getCategoryUnderRlvShare(path_to_check);
+		//		if (restricted_cat == folder) return false;
+		//	}
+		//	it++;
+		//}
+
+		LLInventoryModel::cat_array_t* cats;
+		LLInventoryModel::item_array_t* items;
+		gInventory.getDirectDescendentsOf (folder->getUUID(), cats, items);
+		S32 count;
+		S32 i;
+		LLInventoryItem* item = NULL;
+		LLInventoryCategory* cat = NULL;
+		
+		// Try to find the item in the current category
+		count = items->count();
+		for(i = 0; i < count; ++i) {
+			item = items->get(i);
+			if (item) {
+				if (item->getType() == LLAssetType::AT_OBJECT) {
+					if (in_no_mod) {
+						if (item->getPermissions().allowModifyBy(gAgent.getID()) || count > 1) return true;
+					}
+					LLViewerObject* attached_object = avatar->getWornAttachment (item->getLinkedUUID());
+					if (attached_object) {
+						if (!isAllowed(attached_object->getRootEdit()->getID(), restriction)) return false;
+						if (contains (restriction + ":" + avatar->getAttachedPointName(item->getLinkedUUID()))) return false;
+					}
+				}
+				else if (item->getType() == LLAssetType::AT_CLOTHING || item->getType() == LLAssetType::AT_BODYPART) {
+					LLWearable* wearable = gAgent.getWearableFromWearableItem (item->getLinkedUUID());
+					if (wearable) {
+						if (contains(restriction + ":" + getOutfitLayerAsString(wearable->getType()))) return false;
+					}
+				}
+			}
+		}
+
+		// now check all no-mod items => look at the sub-categories and return false if any of them returns false on a call to canDetachCategoryAux()
+		count = cats->count();
+		for(i = 0; i < count; ++i) {
+			cat = cats->get(i);
+			if (cat) {
+				std::string name = cat->getName();
+				if (name != "" && name[0] ==  '.' && findAttachmentPointFromName(name) != NULL) {
+					if (!canDetachCategoryAux(cat, false, true)) return false;
+				}
+			}
+		}
+	}
+	if (folder == getRlvShare()) return true;
+	if (!in_no_mod && folder_lock == FolderLock_unlocked) {
+		return canDetachCategoryAux(gInventory.getCategory (folder->getParentUUID()), true, false, with_exceptions); // check for @detachallthis in the parent
+	}
+	return true;
+}
+
+bool RRInterface::canUnwear(LLViewerInventoryItem* item, BOOL handle_nostrip /* = TRUE */)
+{
+	if (item) {
+		if (item->getType() ==  LLAssetType::AT_OBJECT) {
+			return canDetach (item, handle_nostrip);
+		}
+		else if (item->getType() == LLAssetType::AT_CLOTHING || item->getType() == LLAssetType::AT_BODYPART) {
+			EWearableType type = (EWearableType)(item->getFlags() & LLInventoryItem::II_FLAGS_WEARABLES_MASK);
+			return canUnwear (type);
+		}
+	}
+	return true;
+}
+
+bool RRInterface::canUnwear(EWearableType type, BOOL handle_nostrip /* = TRUE */)
+{
+	if (contains ("remoutfit")) {
+		return false;
+	}
+	else if (contains ("remoutfit:" + getOutfitLayerAsString (type))) {
+		return false;
+	}
+	LLInventoryItem* item = gAgent.getWearableInventoryItem(type);
+	if (item) {
+		LLInventoryCategory* cat_parent = gInventory.getCategory(item->getParentUUID());
+		if (cat_parent && !canDetachCategory(cat_parent)) return false;
+	}
+	return true;
+}
+
+bool RRInterface::canWear(LLViewerInventoryItem* item, BOOL handle_nostrip /* = TRUE */)
+{
+	if (item) {
+		LLInventoryCategory* parent = gInventory.getCategory (item->getParentUUID());
+		if (item->getType() ==  LLAssetType::AT_OBJECT) {
+			LLViewerJointAttachment* attachpt = findAttachmentPointFromName(item->getName());
+			if (attachpt) {
+				if (!canAttach (NULL, attachpt->getName())) return false;
+			}
+			return canAttachCategory (parent);
+		}
+		else if (item->getType() == LLAssetType::AT_CLOTHING || item->getType() == LLAssetType::AT_BODYPART) {
+			EWearableType type = (EWearableType)(item->getFlags() & LLInventoryItem::II_FLAGS_WEARABLES_MASK);
+			if (!canWear (type)) return false;
+			if (!canAttachCategory (parent)) return false;
+		}
+	}
+	return true;
+}
+
+bool is_cloud()
+{
+	LLVOAvatar* avatarp = gAgent.getAvatarObject();
+	if (!avatarp) return true;
+	if (avatarp->visualParamWeightsAreDefault()) return true;
+	if (!avatarp->isTextureDefined(LLVOAvatar::TEX_HAIR) ||
+		!avatarp->isTextureDefined(LLVOAvatar::TEX_LOWER_BAKED) ||
+		!avatarp->isTextureDefined(LLVOAvatar::TEX_UPPER_BAKED) ||
+		!avatarp->isTextureDefined(LLVOAvatar::TEX_HEAD_BAKED)) {
+		return true;
+	}
+	return false;
+}
+
+bool RRInterface::canWear(EWearableType type, bool from_server /*= false*/)
+{
+	// If we are still a cloud, we can always wear bodyparts because we are still logging on
+	if (is_cloud())
+	{
+		if (type == WT_SHAPE || type == WT_HAIR || type == WT_EYES || type == WT_SKIN) {
+			return true;
+		}
+	}
+	// If from_server is true, return true because we are probably trying to wear our bodyparts while logging on
+	else if (from_server) {
+		return true;
+	}
+	else if (contains ("addoutfit")) {
+		return false;
+	}
+	else if (contains ("addoutfit:"+getOutfitLayerAsString (type))) {
+		return false;
+	}
+	return true;
+}
+
+bool RRInterface::canDetach(LLViewerInventoryItem* item, BOOL handle_nostrip /* = TRUE */)
+{
+	if (item == NULL) return true;
+	LLVOAvatar* avatarp = gAgent.getAvatarObject();
+	if (!avatarp) return true;
+
+	if (handle_nostrip) {
+		std::string name = item->getName();
+		LLStringUtil::toLower(name);
+		if (name.find ("nostrip") != -1) return false;
+	}
+
+	if (item->getType() == LLAssetType::AT_OBJECT) {
+		// we'll check canDetachCategory() inside this function
+		return canDetach (avatarp->getWornAttachment(item->getLinkedUUID()), handle_nostrip);
+	}
+	else if (item->getType() == LLAssetType::AT_CLOTHING) {
+		LLWearable* wearable = gAgent.getWearableFromWearableItem (item->getLinkedUUID());
+		if (wearable) return canUnwear (wearable->getType());
+		return true;
+	}
+	return true;
+}
+
+bool RRInterface::canDetach(LLViewerObject* attached_object, BOOL handle_nostrip /* = TRUE */)
 {
 	if (attached_object == NULL) return true;
 	if (attached_object->getRootEdit() == NULL) return true;
 	
 	if (!isAllowed (attached_object->getRootEdit()->getID(), "detach", FALSE)) return false;
 
-	LLVOAvatar* avatarp = gAgent.getAvatarObject();
-	if (avatarp) {
-		LLInventoryItem* inv_item = getItem(attached_object->getRootEdit()->getID());
-		if (inv_item) {
-			std::string attachpt = avatarp->getAttachedPointName(inv_item->getUUID());
-			if (!canDetach(attachpt)) return false;
+	LLInventoryItem* item = getItem (attached_object->getRootEdit()->getID());
+	if (item) {
+		LLInventoryCategory* cat_parent = gInventory.getCategory (item->getParentUUID());
+		if (cat_parent && !canDetachCategory(cat_parent)) return false;
+
+		if (handle_nostrip) {
+			std::string name = item->getName();
+			LLStringUtil::toLower(name);
+			if (name.find ("nostrip") != -1) return false;
+		}
+
+		LLVOAvatar* avatarp = gAgent.getAvatarObject();
+		if (avatarp) {
+			std::string attachpt = avatarp->getAttachedPointName(item->getLinkedUUID());
+			if (contains("detach:" + attachpt)) return false;
+			if (contains("remattach")) return false;
+			if (contains("remattach:" + attachpt)) return false;
 		}
 	}
 	return true;
 }
 
-bool RRInterface::canDetach(std::string attachpt)
+bool RRInterface::canDetach(std::string attachpt, BOOL handle_nostrip /* = TRUE */)
 {
 	LLStringUtil::toLower(attachpt);
-	if (contains("detach:"+attachpt)) return false;
+	if (contains("detach:" + attachpt)) return false;
 	if (contains("remattach")) return false;
-	if (contains("remattach:"+attachpt)) return false;
+	if (contains("remattach:" + attachpt)) return false;
+	LLViewerJointAttachment* attachment = findAttachmentPointFromName (attachpt, TRUE);
+	if (!canDetachAllObjectsFromAttachment (attachment, handle_nostrip)) return false;
 	return true;
 }
 
-bool RRInterface::canAttach(LLViewerObject* object_to_attach, std::string attachpt)
+bool RRInterface::canAttach(LLViewerObject* object_to_attach, std::string attachpt, bool from_server /* = false */)
 {
 	LLStringUtil::toLower(attachpt);
-	if (contains("detach:"+attachpt)) return false;
 	if (contains("addattach")) return false;
-	if (contains("addattach:"+attachpt)) return false;
-	
-	LLViewerJointAttachment* attachment = findAttachmentPointFromName(attachpt, TRUE);
-	if (attachment && object_to_attach != attachment->getObject()) {
-		if (!canDetach(attachment->getObject())) return false;
+	if (contains("addattach:" + attachpt)) return false;
+	if (object_to_attach) {
+		LLInventoryItem* item = getItem(object_to_attach->getRootEdit()->getID());
+		if (item) {
+			LLInventoryCategory* cat_parent = gInventory.getCategory (item->getParentUUID());
+			if (cat_parent && !canAttachCategory(cat_parent)) return false;
+		}
 	}
+
+	return true;
+}
+
+bool RRInterface::canAttach(LLViewerInventoryItem* item)
+{
+	if (contains("addattach")) return false;
+	if (!item) return true;
+	LLViewerJointAttachment* attachpt = findAttachmentPointFromName (item->getName());
+	if (attachpt && contains("addattach:" + attachpt->getName())) return false;
+	LLInventoryCategory* cat_parent = gInventory.getCategory (item->getParentUUID());
+	if (cat_parent && !canAttachCategory(cat_parent)) return false;
+	return true;
+}
+
+bool RRInterface::canEdit(LLViewerObject* object)
+{
+	if (!object || !object->getRootEdit()) return false;
+	if (containsWithoutException ("edit", object->getRootEdit()->getID().asString())) return false;
+	if (contains ("editobj:" + object->getRootEdit()->getID().asString())) return false;
+	return true;
+}
+
+bool RRInterface::canTouch(LLViewerObject* object, LLVector3 pick_intersection /* = LLVector3::zero */)
+{
+	if (!object) return true;
+
+	LLViewerObject* root = object->getRootEdit();
+	if (!root) return true;
+
+	if (!root->isHUDAttachment() && contains ("touchall")) return false;
+	if (contains ("touchthis:"+object->getRootEdit()->getID().asString())) return false;
+
+	if (!canTouchFar (object, pick_intersection)) return false;
+
+	if (root->isAttachment()) {
+		if (!root->isHUDAttachment()) {
+			if (contains ("touchattach")) return false;
+
+			LLInventoryItem* inv_item = getItem (root->getID());
+			if (inv_item) { // this attachment is in my inv => it belongs to me
+				if (contains ("touchattachself")) {
+					return false;
+				}
+			}
+			else { // this attachment is not in my inv => it does not belong to me
+				if (contains ("touchattachother")) {
+					return false;
+				}
+			}
+		}
+	}
+	else {
+		if (containsWithoutException ("touchworld", object->getRootEdit()->getID().asString())) return false;
+	}
+	return true;
+}
+
+bool RRInterface::canTouchFar(LLViewerObject* object, LLVector3 pick_intersection /* = LLVector3::zero */)
+{
+	if (!object) return true;
+	if (object->isHUDAttachment()) return true;
+
+	LLVector3 pos = object->getPositionRegion ();
+	if (pick_intersection != LLVector3::zero) pos = pick_intersection;
+	pos -= gAgent.getPositionAgent ();
+	F32 dist = pos.magVec();
+	if (mContainsFartouch && dist >= 1.5) return false;
+
 	return true;
 }

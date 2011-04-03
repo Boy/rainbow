@@ -69,10 +69,6 @@
 
 #include "llfirstuse.h"
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 //
 // Globals
 //
@@ -1547,7 +1543,8 @@ public:
 				return;
 			}
 //MK            
-			if (RRenabled && gAgent.mRRInterface.containsWithoutException ("recvim"))
+			if (gRRenabled && (gAgent.mRRInterface.containsWithoutException("recvim", from_id.asString())
+				|| gAgent.mRRInterface.contains ("recvimfrom:" + from_id.asString())))
 			{
 				return;
 			}

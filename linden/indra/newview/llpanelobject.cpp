@@ -77,10 +77,6 @@
 
 #include "lldrawpool.h"
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 //
 // Constants
 //
@@ -385,7 +381,7 @@ void LLPanelObject::getState( )
 
 //MK
 	LLVOAvatar* avatar = gAgent.getAvatarObject();
-	if (RRenabled && 
+	if (gRRenabled && 
 		(gAgent.mRRInterface.contains ("sittp") || (gAgent.mRRInterface.mContainsUnsit && avatar && avatar->mIsSitting)))
 	{
 		// don't allow modification if someone is sitting on this object and avatar

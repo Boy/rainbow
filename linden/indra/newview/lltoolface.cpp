@@ -47,10 +47,6 @@
 #include "llviewerwindow.h"
 #include "llfloatertools.h"
 
-//MK
-extern BOOL RRenabled;
-//mk
-
 //
 // Member functions
 //
@@ -96,16 +92,9 @@ void LLToolFace::pickCallback(const LLPickInfo& pick_info)
 	if (hit_obj)
 	{
 //MK
-		if (RRenabled && gAgent.mRRInterface.mContainsFartouch
-			&& !hit_obj->isHUDAttachment())
+		if (gRRenabled && !gAgent.mRRInterface.canTouch(hit_obj))
 		{
-			LLVector3 pos = hit_obj->getPositionRegion ();
-//			LLVector3 pos = pick_info.mIntersection; // for some reason using mIntersection doesn't work in this case...
-			pos -= gAgent.getPositionAgent ();
-			if (pos.magVec () >= 1.5)
-			{
-				return;
-			}
+			return;
 		}
 //mk
 		S32 hit_face = pick_info.mObjectFace;

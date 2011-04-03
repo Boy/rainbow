@@ -67,6 +67,16 @@ public:
 	std::string getName() { return mName; }
 
 	/**
+	 * @brief Sets the display name of the avatar
+	 */
+	void setDisplayName(std::string name) { mDisplayName = name; }
+
+	/**
+	 * @brief Returns the display name of the avatar
+	 */
+	std::string getDisplayName() { return mDisplayName; }
+
+	/**
 	 * @brief Returns the ID of the avatar
 	 */
 	LLUUID getID() { return mID; }
@@ -97,6 +107,7 @@ private:
 
 	LLUUID mID;
 	std::string mName;
+	std::string mDisplayName;
 	LLVector3d mPosition;
 	LLVector3d mDrawPosition;
 	BOOL mMarked;
@@ -291,6 +302,7 @@ private:
 	 */
 	U32 mUpdateRate;
 	
+	void stopTracker();
 	void refreshTracker();
 
 	// tracking data

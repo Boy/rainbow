@@ -70,9 +70,6 @@
 #include "llworld.h"
 #include "object_flags.h"
 
-//MK
-extern BOOL RRenabled;
-//mk
 
 // MAX ITEMS is based on (sizeof(uuid)+2) * count must be < MTUBYTES
 // or 18 * count < 1200 => count < 1200/18 => 66. I've cut it down a
@@ -1232,7 +1229,7 @@ void LLToolDragAndDrop::dropScript(LLViewerObject* hit_obj,
 	if(hit_obj && item)
 	{
 //MK
-		if (RRenabled)
+		if (gRRenabled)
 		{
 			// can't edit objects that someone is sitting on,
 			// when prevented from sit-tping
@@ -1302,7 +1299,7 @@ void LLToolDragAndDrop::dropObject(LLViewerObject* raycast_target,
 	}
 
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsRez)
+	if (gRRenabled && gAgent.mRRInterface.mContainsRez)
 	{
 		return;
 	}
@@ -1998,7 +1995,7 @@ EAcceptance LLToolDragAndDrop::willObjectAcceptInventory(LLViewerObject* obj, LL
 	BOOL attached = obj->isAttachment();
 	BOOL unrestricted = ((perm.getMaskBase() & PERM_ITEM_UNRESTRICTED) == PERM_ITEM_UNRESTRICTED) ? TRUE : FALSE;
 //MK
-	if (RRenabled)
+	if (gRRenabled)
 	{
 		// can't edit objects that someone is sitting on,
 		// when prevented from sit-tping
@@ -2047,7 +2044,7 @@ EAcceptance LLToolDragAndDrop::dad3dRezAttachmentFromInv(
 {
 	lldebugs << "LLToolDragAndDrop::dad3dRezAttachmentFromInv()" << llendl;
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsDetach)
+	if (gRRenabled && gAgent.mRRInterface.mContainsDetach)
 	{
 		return ACCEPT_NO;
 	}
@@ -2466,7 +2463,7 @@ EAcceptance LLToolDragAndDrop::dad3dWearCategory(
 	if(!category) return ACCEPT_NO;
 
 //MK
-	if (RRenabled && (gAgent.mRRInterface.mContainsDetach
+	if (gRRenabled && (gAgent.mRRInterface.mContainsDetach
 		|| gAgent.mRRInterface.contains ("addoutfit")
 		|| gAgent.mRRInterface.contains ("remoutfit")))
 	{
@@ -2668,7 +2665,7 @@ EAcceptance LLToolDragAndDrop::dad3dGiveInventoryObject(
 	// item has to be in agent inventory.
 	if(mSource != SOURCE_AGENT) return ACCEPT_NO;
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+	if (gRRenabled && gAgent.mRRInterface.mContainsShownames)
 	{
 		// to avoid having "so-and-so accepted/declined your inventory offer." messages
 		return ACCEPT_NO;
@@ -2711,7 +2708,7 @@ EAcceptance LLToolDragAndDrop::dad3dGiveInventory(
 	// item has to be in agent inventory.
 	if(mSource != SOURCE_AGENT) return ACCEPT_NO;
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+	if (gRRenabled && gAgent.mRRInterface.mContainsShownames)
 	{
 		// to avoid having "so-and-so accepted/declined your inventory offer." messages
 		return ACCEPT_NO;
@@ -2739,7 +2736,7 @@ EAcceptance LLToolDragAndDrop::dad3dGiveInventoryCategory(
 {
 	lldebugs << "LLToolDragAndDrop::dad3dGiveInventoryCategory()" << llendl;
 //MK
-	if (RRenabled && gAgent.mRRInterface.mContainsShownames)
+	if (gRRenabled && gAgent.mRRInterface.mContainsShownames)
 	{
 		// to avoid having "so-and-so accepted/declined your inventory offer." messages
 		return ACCEPT_NO;
