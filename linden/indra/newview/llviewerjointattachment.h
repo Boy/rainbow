@@ -60,7 +60,7 @@ public:
 
 	// Draws the shape attached to a joint.
 	// Called by render().
-	/*virtual*/ U32 drawShape( F32 pixelArea, BOOL first_pass );
+	/*virtual*/ U32 drawShape( F32 pixelArea, BOOL first_pass, BOOL is_dummy );
 	
 	/*virtual*/ BOOL updateLOD(F32 pixel_area, BOOL activate);
 
@@ -81,9 +81,7 @@ public:
 
 	S32 getGroup() { return mGroup; }
 	S32 getPieSlice() { return mPieSlice; }
-	LLViewerObject *getObject() { return mAttachedObject; }
-	S32	getNumObjects() { return (mAttachedObject ? 1 : 0); }
-	const LLUUID& getItemID() { return mItemID; }
+	S32	getNumObjects() { return mAttachedObjects.size(); }
 
 	//
 	// unique methods
@@ -91,21 +89,29 @@ public:
 	BOOL addObject(LLViewerObject* object);
 	void removeObject(LLViewerObject *object);
 
-	void setupDrawable(LLDrawable* drawable);
 	void clampObjectPosition();
+
+	// 
+	// attachments operations
+	//
+	BOOL isObjectAttached(const LLViewerObject *viewer_object) const;
+	const LLViewerObject *getAttachedObject(const LLUUID &object_id) const;
+	LLViewerObject *getAttachedObject(const LLUUID &object_id);
+
+	// list of attachments for this joint
+	typedef std::vector<LLViewerObject *> attachedobjs_vec_t;
+	attachedobjs_vec_t mAttachedObjects;
 
 protected:
 	void calcLOD();
+	void setupDrawable(LLViewerObject *object);
 	
 protected:
-	// Backlink only; don't make this an LLPointer.
-	LLViewerObject*	mAttachedObject;
 	BOOL			mVisibleInFirst;
 	LLVector3		mOriginalPos;
 	S32				mGroup;
 	BOOL			mIsHUDAttachment;
 	S32				mPieSlice;
-	LLUUID			mItemID;			// Inventory item id of the attached item (null if not in inventory)
 };
 
 #endif // LL_LLVIEWERJOINTATTACHMENT_H

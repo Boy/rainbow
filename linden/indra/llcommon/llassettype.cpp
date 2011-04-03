@@ -69,6 +69,8 @@ asset_info_t asset_types[] =
 	{ LLAssetType::AT_ANIMATION, "ANIMATION" },
 	{ LLAssetType::AT_GESTURE, "GESTURE" },
 	{ LLAssetType::AT_SIMSTATE, "SIMSTATE" },
+	{ LLAssetType::AT_LINK, "LINK" },
+	{ LLAssetType::AT_LINK_FOLDER, "FOLDER_LINK" },
 	{ LLAssetType::AT_NONE, "NONE" },
 };
 
@@ -128,7 +130,10 @@ const char* LLAssetType::mAssetTypeNames[LLAssetType::AT_COUNT] =
 	"jpeg",
 	"animatn",
 	"gesture",
-	"simstate"
+	"simstate",
+	"",
+	"link",
+	"link_f"
 };
 
 // This table is meant for decoding to human readable form. Put any
@@ -158,7 +163,10 @@ const char* LLAssetType::mAssetTypeHumanNames[LLAssetType::AT_COUNT] =
 	"jpeg image",
 	"animation",
 	"gesture",
-	"simstate"
+	"simstate",
+	"",
+	"symbolic link",
+	"symbolic folder link"
 };
 
 ///----------------------------------------------------------------------------
@@ -247,6 +255,7 @@ EDragAndDropType LLAssetType::lookupDragAndDropType( EType asset )
 	case AT_BODYPART:		return DAD_BODYPART;
 	case AT_ANIMATION:		return DAD_ANIMATION;
 	case AT_GESTURE:		return DAD_GESTURE;
+	case AT_LINK:			return DAD_LINK;
 	default: 				return DAD_NONE;
 	};
 }
@@ -263,4 +272,18 @@ void LLAssetType::generateDescriptionFor(LLAssetType::EType type,
 	strftime(time_str, BUF_SIZE - 1, "%Y-%m-%d %H:%M:%S ", localtime(&now));
 	desc.assign(time_str);
 	desc.append(LLAssetType::lookupHumanReadable(type));
+}
+
+// static
+bool LLAssetType::lookupCanLink(EType asset_type)
+{
+	return (asset_type == AT_CLOTHING || asset_type == AT_OBJECT || asset_type == AT_CATEGORY ||
+			asset_type == AT_BODYPART || asset_type == AT_GESTURE);
+}
+
+// static
+// Not adding this to dictionary since we probably will only have these two types
+bool LLAssetType::lookupIsLinkType(EType asset_type)
+{
+	return (asset_type == AT_LINK || asset_type == AT_LINK_FOLDER);
 }

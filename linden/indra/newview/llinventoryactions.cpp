@@ -652,8 +652,6 @@ class LLBeginIMSession : public inventory_panel_listener_t
 	}
 };
 
-void rez_attachment(LLViewerInventoryItem* item, LLViewerJointAttachment* attachment);
-
 class LLAttachObject : public inventory_panel_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)

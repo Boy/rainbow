@@ -168,6 +168,7 @@
 #include "llresmgr.h"
 #include "llselectmgr.h"
 #include "llsky.h"
+#include "llstartup.h"			// gIsInSecondLife
 #include "llstatusbar.h"
 #include "llstatview.h"
 #include "llstring.h"
@@ -2110,7 +2111,7 @@ class LLSelfEnableRemoveAllAttachments : public view_listener_t
 			{
 				LLVOAvatar::attachment_map_t::iterator curiter = iter++;
 				LLViewerJointAttachment* attachment = curiter->second;
-				if (attachment->getObject())
+				if (attachment->getNumObjects() > 0)
 				{
 					new_value = true;
 					break;
@@ -6213,14 +6214,12 @@ class LLAttachmentDrop : public view_listener_t
 // called from avatar pie menu
 void handle_detach_from_avatar(void* user_data)
 {
-	LLViewerJointAttachment *attachment = (LLViewerJointAttachment *)user_data;
+	LLViewerJointAttachment *attachment = (LLViewerJointAttachment*)user_data;
 	
-	LLViewerObject* attached_object = attachment->getObject();
-
-	if (attached_object)
+	if (attachment->getNumObjects() > 0)
 	{
 //MK
-		if (RRenabled && !gAgent.mRRInterface.canDetach(attached_object))
+		if (RRenabled && !gAgent.mRRInterface.canDetachAllObjectsFromAttachment(attachment))
 		{
 			return;
 		}
@@ -6230,24 +6229,37 @@ void handle_detach_from_avatar(void* user_data)
 		gMessageSystem->addUUIDFast(_PREHASH_AgentID, gAgent.getID() );
 		gMessageSystem->addUUIDFast(_PREHASH_SessionID, gAgent.getSessionID());
 
-		gMessageSystem->nextBlockFast(_PREHASH_ObjectData);
-		gMessageSystem->addU32Fast(_PREHASH_ObjectLocalID, attached_object->getLocalID());
+		for (LLViewerJointAttachment::attachedobjs_vec_t::const_iterator iter = attachment->mAttachedObjects.begin();
+			 iter != attachment->mAttachedObjects.end();
+			 iter++)
+		{
+			LLViewerObject *attached_object = (*iter);
+			gMessageSystem->nextBlockFast(_PREHASH_ObjectData);
+			gMessageSystem->addU32Fast(_PREHASH_ObjectLocalID, attached_object->getLocalID());
+		}
 		gMessageSystem->sendReliable( gAgent.getRegionHost() );
 	}
 }
 
 void attach_label(std::string& label, void* user_data)
 {
-	LLViewerJointAttachment* attachmentp = (LLViewerJointAttachment*)user_data;
-	if (attachmentp)
+	LLViewerJointAttachment *attachment = (LLViewerJointAttachment*)user_data;
+	if (attachment)
 	{
-		label = attachmentp->getName();
-		if (attachmentp->getObject())
+		label = attachment->getName();
+		for (LLViewerJointAttachment::attachedobjs_vec_t::const_iterator attachment_iter = attachment->mAttachedObjects.begin();
+			 attachment_iter != attachment->mAttachedObjects.end();
+			 ++attachment_iter)
 		{
-			LLViewerInventoryItem* itemp = gInventory.getItem(attachmentp->getItemID());
-			if (itemp)
+			const LLViewerObject* attached_object = (*attachment_iter);
+			if (attached_object)
 			{
-				label += std::string(" (") + itemp->getName() + std::string(")");
+				LLViewerInventoryItem* itemp = gInventory.getItem(attached_object->getAttachmentItemID());
+				if (itemp)
+				{
+					label += std::string(" (") + itemp->getName() + std::string(")");
+					break;
+				}
 			}
 		}
 	}
@@ -6255,16 +6267,23 @@ void attach_label(std::string& label, void* user_data)
 
 void detach_label(std::string& label, void* user_data)
 {
-	LLViewerJointAttachment* attachmentp = (LLViewerJointAttachment*)user_data;
-	if (attachmentp)
+	LLViewerJointAttachment *attachment = (LLViewerJointAttachment*)user_data;
+	if (attachment)
 	{
-		label = attachmentp->getName();
-		if (attachmentp->getObject())
+		label = attachment->getName();
+		for (LLViewerJointAttachment::attachedobjs_vec_t::const_iterator attachment_iter = attachment->mAttachedObjects.begin();
+			 attachment_iter != attachment->mAttachedObjects.end();
+			 ++attachment_iter)
 		{
-			LLViewerInventoryItem* itemp = gInventory.getItem(attachmentp->getItemID());
-			if (itemp)
+			const LLViewerObject* attached_object = (*attachment_iter);
+			if (attached_object)
 			{
-				label += std::string(" (") + itemp->getName() + std::string(")");
+				LLViewerInventoryItem* itemp = gInventory.getItem(attached_object->getAttachmentItemID());
+				if (itemp)
+				{
+					label += std::string(" (") + itemp->getName() + std::string(")");
+					break;
+				}
 			}
 		}
 	}
@@ -6375,27 +6394,31 @@ class LLAttachmentEnableDrop : public view_listener_t
 
 			if ( attachment_pt )
 			{
-				// make sure item is in your inventory (it could be a delayed attach message being sent from the sim)
-				// so check to see if the item is in the inventory already
-				item = gInventory.getItem(attachment_pt->getItemID());
-				
-				if ( !item )
+				for (LLViewerJointAttachment::attachedobjs_vec_t::iterator attachment_iter = attachment_pt->mAttachedObjects.begin();
+					 attachment_iter != attachment_pt->mAttachedObjects.end();
+					 ++attachment_iter)
 				{
-					// Item does not exist, make an observer to enable the pie menu 
-					// when the item finishes fetching worst case scenario 
-					// if a fetch is already out there (being sent from a slow sim)
-					// we refetch and there are 2 fetches
-					LLWornItemFetchedObserver* wornItemFetched = new LLWornItemFetchedObserver();
-					LLInventoryFetchObserver::item_ref_t items; //add item to the inventory item to be fetched
+					// make sure item is in your inventory (it could be a delayed attach message being sent from the sim)
+					// so check to see if the item is in the inventory already
+					item = gInventory.getItem((*attachment_iter)->getAttachmentItemID());
+					if (!item)
+					{
+						// Item does not exist, make an observer to enable the pie menu 
+						// when the item finishes fetching worst case scenario 
+						// if a fetch is already out there (being sent from a slow sim)
+						// we refetch and there are 2 fetches
+						LLWornItemFetchedObserver* wornItemFetched = new LLWornItemFetchedObserver();
+						LLInventoryFetchObserver::item_ref_t items; //add item to the inventory item to be fetched
 
-					items.push_back(attachment_pt->getItemID());
-				
-					wornItemFetched->fetchItems(items);
-					gInventory.addObserver(wornItemFetched);
+						items.push_back((*attachment_iter)->getAttachmentItemID());
+
+						wornItemFetched->fetchItems(items);
+						gInventory.addObserver(wornItemFetched);
+					}
 				}
 			}
 		}
-		
+
 		//now check to make sure that the item is actually in the inventory before we enable dropping it
 		bool new_value = enable_detach(NULL) && can_build && item;
 
@@ -6534,7 +6557,7 @@ BOOL object_attached(void *user_data)
 {
 	LLViewerJointAttachment *attachment = (LLViewerJointAttachment *)user_data;
 
-	return attachment->getObject() != NULL;
+	return attachment->getNumObjects() > 0;
 }
 
 class LLAvatarSendIM : public view_listener_t
@@ -6835,17 +6858,23 @@ void handle_dump_attachments(void*)
 		LLVOAvatar::attachment_map_t::iterator curiter = iter++;
 		LLViewerJointAttachment* attachment = curiter->second;
 		S32 key = curiter->first;
-		BOOL visible = (attachment->getObject() != NULL &&
-						attachment->getObject()->mDrawable.notNull() && 
-						!attachment->getObject()->mDrawable->isRenderType(0));
-		LLVector3 pos;
-		if (visible) pos = attachment->getObject()->mDrawable->getPosition();
-		llinfos << "ATTACHMENT " << key << ": item_id=" << attachment->getItemID()
-				<< (attachment->getObject() ? " present " : " absent ")
-				<< (visible ? "visible " : "invisible ")
-				<<  " at " << pos
-				<< " and " << (visible ? attachment->getObject()->getPosition() : LLVector3::zero)
-				<< llendl;
+		for (LLViewerJointAttachment::attachedobjs_vec_t::iterator attachment_iter = attachment->mAttachedObjects.begin();
+			 attachment_iter != attachment->mAttachedObjects.end();
+			 ++attachment_iter)
+		{
+			LLViewerObject *attached_object = (*attachment_iter);
+			BOOL visible = (attached_object != NULL &&
+							attached_object->mDrawable.notNull() && 
+							!attached_object->mDrawable->isRenderType(0));
+			LLVector3 pos;
+			if (visible) pos = attached_object->mDrawable->getPosition();
+			llinfos << "ATTACHMENT " << key << ": item_id=" << attached_object->getAttachmentItemID()
+					<< (attached_object ? " present " : " absent ")
+					<< (visible ? "visible " : "invisible ")
+					<<  " at " << pos
+					<< " and " << (visible ? attached_object->getPosition() : LLVector3::zero)
+					<< llendl;
+		}
 	}
 }
 

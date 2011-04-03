@@ -52,7 +52,7 @@
 #include "lltimer.h"
 #include "timing.h"
 
-#include "llagent.h"			//  Get state values from here
+#include "llagent.h" //  Get state values from here
 #include "llviewercontrol.h"
 #include "llcriticaldamp.h"
 #include "lldir.h"
@@ -77,6 +77,7 @@
 #include "llhudeffecttrail.h"
 #include "llhudmanager.h"
 #include "llhudtext.h"
+#include "llinventorybridge.h"
 #include "llinventorymodel.h"
 #include "llinventoryview.h"
 #include "llkeyframefallmotion.h"
@@ -91,9 +92,11 @@
 #include "llquantize.h"
 #include "llregionhandle.h"
 #include "llresmgr.h"
+#include "llsdserialize.h"
 #include "llselectmgr.h"
 #include "llsky.h"
 #include "llsprite.h"
+#include "llstartup.h"	// for gIsInSecondLife
 #include "llstatusbar.h"
 #include "lltargetingmotion.h"
 #include "lltexlayer.h"
@@ -299,6 +302,10 @@ F32 LLVOAvatar::sUnbakedTime = 0.f;
 F32 LLVOAvatar::sUnbakedUpdateTime = 0.f;
 F32 LLVOAvatar::sGreyTime = 0.f;
 F32 LLVOAvatar::sGreyUpdateTime = 0.f;
+
+// Globals
+LLFrameTimer gAttachmentsTimer;
+bool gAttachmentsListDirty = true;
 
 struct LLAvatarTexData
 {
@@ -750,6 +757,7 @@ LLVOAvatar::LLVOAvatar(
 	{
 		mIsSelf = TRUE;
 		gAgent.setAvatarObject(this);
+		gAttachmentsTimer.reset();
 		lldebugs << "Marking avatar as self " << id << llendl;
 	}
 	else
@@ -1590,6 +1598,7 @@ void LLVOAvatar::getSpatialExtents(LLVector3& newMin, LLVector3& newMax)
 	LLVector3 pos = getRenderPosition();
 	newMin = pos - buffer;
 	newMax = pos + buffer;
+	float max_attachment_span = DEFAULT_MAX_PRIM_SCALE * 5.0f;
 	
 	//stretch bounding box by joint positions
 	for (mesh_map_t::iterator i = mMeshes.begin(); i != mMeshes.end(); ++i)
@@ -1616,18 +1625,33 @@ void LLVOAvatar::getSpatialExtents(LLVector3& newMin, LLVector3& newMax)
 			continue ;
 		}
 
-		LLViewerObject* object = attachment->getObject();
-		if (object && !object->isHUDAttachment())
+		for (LLViewerJointAttachment::attachedobjs_vec_t::iterator attachment_iter = attachment->mAttachedObjects.begin();
+			 attachment_iter != attachment->mAttachedObjects.end();
+			 ++attachment_iter)
 		{
-			LLDrawable* drawable = object->mDrawable;
-			if (drawable)
+			const LLViewerObject* attached_object = (*attachment_iter);
+			if (attached_object && !attached_object->isHUDAttachment())
 			{
-				LLSpatialBridge* bridge = drawable->getSpatialBridge();
-				if (bridge)
+				LLDrawable* drawable = attached_object->mDrawable;
+				if (drawable)
 				{
-					const LLVector3* ext = bridge->getSpatialExtents();
-					update_min_max(newMin,newMax,ext[0]);
-					update_min_max(newMin,newMax,ext[1]);
+					LLSpatialBridge* bridge = drawable->getSpatialBridge();
+					if (bridge)
+					{
+						const LLVector3* ext = bridge->getSpatialExtents();
+						LLVector3 distance = (ext[1] - ext[0]);
+						
+						// Only add the prim to spatial extents calculations if it isn't a megaprim.
+						// max_attachment_span calculated at the start of the function 
+						// (currently 5 times our max prim size) 
+						if (distance.mV[0] < max_attachment_span 
+							&& distance.mV[1] < max_attachment_span
+							&& distance.mV[2] < max_attachment_span)
+						{
+							update_min_max(newMin,newMax,ext[0]);
+							update_min_max(newMin,newMax,ext[1]);
+						}
+					}
 				}
 			}
 		}
@@ -2694,6 +2718,10 @@ BOOL LLVOAvatar::idleUpdate(LLAgent &agent, LLWorld &world, const F64 &time)
 
 	// attach objects that were waiting for a drawable
 	lazyAttach();
+	if (mIsSelf)
+	{
+		checkAttachments();
+	}
 	
 	// animate the character
 	// store off last frame's root position to be consistent with camera position
@@ -2718,6 +2746,134 @@ BOOL LLVOAvatar::idleUpdate(LLAgent &agent, LLWorld &world, const F64 &time)
 	idleUpdateRenderCost();
 	idleUpdateTractorBeam();
 	return TRUE;
+}
+
+// Check attachments
+void LLVOAvatar::checkAttachments()
+{
+	const F32 LAZY_ATTACH_DELAY = 10.0f;
+	static bool first_run = true;
+
+	if (!mIsSelf)
+	{
+		return;
+	}
+
+	if (mPendingAttachment.size() == 0)
+	{
+		if (first_run)
+		{
+			if (gAttachmentsTimer.getElapsedTimeF32() > LAZY_ATTACH_DELAY)
+			{
+				first_run = false;
+				LLVOAvatar* avatarp = gAgent.getAvatarObject();
+				if (!avatarp) return;
+				std::set<LLUUID> worn;
+				for (LLVOAvatar::attachment_map_t::iterator iter = avatarp->mAttachmentPoints.begin(); 
+					 iter != avatarp->mAttachmentPoints.end(); )
+				{
+					LLVOAvatar::attachment_map_t::iterator curiter = iter++;
+					LLViewerJointAttachment* attachment = curiter->second;
+					for (LLViewerJointAttachment::attachedobjs_vec_t::iterator attachment_iter = attachment->mAttachedObjects.begin();
+						 attachment_iter != attachment->mAttachedObjects.end();
+						 ++attachment_iter)
+					{
+						LLViewerObject *attached_object = (*attachment_iter);
+						if (attached_object)
+						{
+							worn.insert(attached_object->getAttachmentItemID());
+						}
+					}
+				}
+				std::string filename = gDirUtilp->getExpandedFilename(LL_PATH_PER_SL_ACCOUNT, "attachments.xml");
+				//llinfos << "Reading the saved worn attachments list from: " << filename << llendl;
+				LLSD list;
+				llifstream llsd_xml;
+				llsd_xml.open(filename.c_str(), std::ios::in | std::ios::binary);
+				if (llsd_xml.is_open())
+				{
+					LLSDSerialize::fromXML(list, llsd_xml);
+					for (LLSD::map_iterator iter = list.beginMap(); iter != list.endMap(); iter++)
+					{
+						LLSD array = iter->second;
+						if (array.isArray())
+						{
+							for (int i = 0; i < array.size(); i++)
+							{
+								LLSD map = array[i];
+								if (map.has("inv_item_id"))
+								{
+									LLUUID item_id = map.get("inv_item_id");
+									if (worn.find(item_id) == worn.end())
+									{
+										LLViewerInventoryItem* item = gInventory.getItem(item_id);
+										if (item)
+										{
+											rez_attachment(item, NULL, false);
+										}
+										else
+										{
+											llwarns << item_id.asString() << " not found in inventory, could not reattach." << llendl;
+										}
+									}
+								}
+								else
+								{
+									llwarns << "Malformed attachments list file (no \"inv_item_id\" key). Aborting." << llendl;
+									llsd_xml.close();
+									return;
+								}
+							}
+						}
+						else
+						{
+							llwarns << "Malformed attachments list file (not an array). Aborting." << llendl;
+							llsd_xml.close();
+							return;
+						}
+					}
+					llsd_xml.close();
+				}
+			}
+		}
+		else if (gAttachmentsListDirty)
+		{
+			gAttachmentsListDirty = false;
+			LLSD list;
+			LLSD array = list.emptyArray();
+			LLVOAvatar* avatarp = gAgent.getAvatarObject();
+			if (!avatarp) return;
+			for (LLVOAvatar::attachment_map_t::iterator iter = avatarp->mAttachmentPoints.begin(); 
+				 iter != avatarp->mAttachmentPoints.end(); )
+			{
+				LLVOAvatar::attachment_map_t::iterator curiter = iter++;
+				LLViewerJointAttachment* attachment = curiter->second;
+				for (LLViewerJointAttachment::attachedobjs_vec_t::iterator attachment_iter = attachment->mAttachedObjects.begin();
+					 attachment_iter != attachment->mAttachedObjects.end();
+					 ++attachment_iter)
+				{
+					LLViewerObject *attached_object = (*attachment_iter);
+					if (attached_object)
+					{
+						LLSD entry = list.emptyMap();
+						entry.insert("inv_item_id", attached_object->getAttachmentItemID());
+						array.append(entry);
+					}
+				}
+			}
+			list.insert("attachments", array);
+			std::string filename = gDirUtilp->getExpandedFilename(LL_PATH_PER_SL_ACCOUNT, "attachments.xml");
+			llofstream list_file(filename);
+			LLSDSerialize::toPrettyXML(list, list_file);
+			list_file.close();
+			//llinfos << "Worn attachments list saved to: " << filename << llendl;
+		}
+	}
+	else
+	{
+		gAttachmentsListDirty = true;
+		gAttachmentsTimer.reset();
+	}
 }
 
 void LLVOAvatar::idleUpdateVoiceVisualizer(bool voice_enabled)
@@ -2835,30 +2991,35 @@ void LLVOAvatar::idleUpdateMisc(bool detailed_update)
 		{
 			attachment_map_t::iterator curiter = iter++;
 			LLViewerJointAttachment* attachment = curiter->second;
-			LLViewerObject *attached_object = attachment->getObject();
 
-			BOOL visibleAttachment = visible || (attached_object && 
-												!(attached_object->mDrawable->getSpatialBridge() &&
-												  attached_object->mDrawable->getSpatialBridge()->getRadius() < 2.0));
-
-			if (visibleAttachment && attached_object && !attached_object->isDead() && attachment->getValid())
+			for (LLViewerJointAttachment::attachedobjs_vec_t::iterator attachment_iter = attachment->mAttachedObjects.begin();
+				 attachment_iter != attachment->mAttachedObjects.end();
+				 ++attachment_iter)
 			{
-				// if selecting any attachments, update all of them as non-damped
-				if (LLSelectMgr::getInstance()->getSelection()->getObjectCount() && LLSelectMgr::getInstance()->getSelection()->isAttachment())
-				{
-					gPipeline.updateMoveNormalAsync(attached_object->mDrawable);
-				}
-				else
-				{
-					gPipeline.updateMoveDampedAsync(attached_object->mDrawable);
-				}
+				LLViewerObject* attached_object = (*attachment_iter);
+				BOOL visibleAttachment = visible || (attached_object && 
+													!(attached_object->mDrawable->getSpatialBridge() &&
+													  attached_object->mDrawable->getSpatialBridge()->getRadius() < 2.0));
 
-				LLSpatialBridge* bridge = attached_object->mDrawable->getSpatialBridge();
-				if (bridge)
+				if (visibleAttachment && attached_object && !attached_object->isDead() && attachment->getValid())
 				{
-					gPipeline.updateMoveNormalAsync(bridge);
+					// if selecting any attachments, update all of them as non-damped
+					if (LLSelectMgr::getInstance()->getSelection()->getObjectCount() && LLSelectMgr::getInstance()->getSelection()->isAttachment())
+					{
+						gPipeline.updateMoveNormalAsync(attached_object->mDrawable);
+					}
+					else
+					{
+						gPipeline.updateMoveDampedAsync(attached_object->mDrawable);
+					}
+
+					LLSpatialBridge* bridge = attached_object->mDrawable->getSpatialBridge();
+					if (bridge)
+					{
+						gPipeline.updateMoveNormalAsync(bridge);
+					}
+					attached_object->updateText();
 				}
-				attached_object->updateText();	
 			}
 		}
 	}
@@ -4302,19 +4463,24 @@ void LLVOAvatar::updateVisibility()
 			/*llinfos << "SPA: " << sel_pos_agent << llendl;
 			llinfos << "WPA: " << wrist_right_pos_agent << llendl;*/
 			for (attachment_map_t::iterator iter = mAttachmentPoints.begin(); 
-				 iter != mAttachmentPoints.end(); )
+				 iter != mAttachmentPoints.end(); iter++)
 			{
-				attachment_map_t::iterator curiter = iter++;
-				LLViewerJointAttachment* attachment = curiter->second;
-				if (attachment->getObject())
+				LLViewerJointAttachment* attachment = iter->second;
+
+				for (LLViewerJointAttachment::attachedobjs_vec_t::iterator attachment_iter = attachment->mAttachedObjects.begin();
+					 attachment_iter != attachment->mAttachedObjects.end();
+					 ++attachment_iter)
 				{
-					if(attachment->getObject()->mDrawable->isVisible())
+					if (LLViewerObject *attached_object = (*attachment_iter))
 					{
-						llinfos << attachment->getName() << " visible" << llendl;
-					}
-					else
-					{
-						llinfos << attachment->getName() << " not visible at " << mDrawable->getWorldPosition() << " and radius " << mDrawable->getRadius() << llendl;
+						if (attached_object->mDrawable->isVisible())
+						{
+							llinfos << attachment->getName() << " visible" << llendl;
+						}
+						else
+						{
+							llinfos << attachment->getName() << " not visible at " << mDrawable->getWorldPosition() << " and radius " << mDrawable->getRadius() << llendl;
+						}
 					}
 				}
 			}
@@ -6606,12 +6772,13 @@ void LLVOAvatar::requestLayerSetUpdate( LLVOAvatar::ELocTexIndex i )
 
 }
 
-void LLVOAvatar::setParent(LLViewerObject* parent)
+BOOL LLVOAvatar::setParent(LLViewerObject* parent)
 {
+	BOOL ret ;
 	if (parent == NULL)
 	{
 		getOffObject();
-		LLViewerObject::setParent(parent);
+		ret = LLViewerObject::setParent(parent);
 		if (isSelf())
 		{
 			gAgent.resetCamera();
@@ -6619,13 +6786,18 @@ void LLVOAvatar::setParent(LLViewerObject* parent)
 	}
 	else
 	{
-		LLViewerObject::setParent(parent);
-		sitOnObject(parent);
+		ret = LLViewerObject::setParent(parent);
+		if (ret)
+		{
+			sitOnObject(parent);
+		}
 	}
+	return ret ;
 }
 
 void LLVOAvatar::addChild(LLViewerObject *childp)
 {
+	childp->extractAttachmentItemID(); // find the inventory item this object is associated with.
 	LLViewerObject::addChild(childp);
 	if (childp->mDrawable)
 	{
@@ -6635,23 +6807,50 @@ void LLVOAvatar::addChild(LLViewerObject *childp)
 	{
 		mPendingAttachment.push_back(childp);
 	}
+	if (mIsSelf)
+	{
+		gAttachmentsListDirty = true;
+		gAttachmentsTimer.reset();
+	}
 }
 
 void LLVOAvatar::removeChild(LLViewerObject *childp)
 {
 	LLViewerObject::removeChild(childp);
 	detachObject(childp);
+	if (mIsSelf)
+	{
+		gAttachmentsListDirty = true;
+		gAttachmentsTimer.reset();
+	}
+}
+
+bool LLVOAvatar::allowMultipleAttachments() const
+{
+	return gIsInSecondLife || (gSavedSettings.getBOOL("OSAllowMultipleAttachments") == TRUE);
 }
 
 LLViewerJointAttachment* LLVOAvatar::getTargetAttachmentPoint(LLViewerObject* viewer_object)
 {
 	S32 attachmentID = ATTACHMENT_ID_FROM_STATE(viewer_object->getState());
 
+	// This should never happen unless the server didn't process the attachment point
+	// correctly, but putting this check in here to be safe.
+	if (allowMultipleAttachments() && (attachmentID & ATTACHMENT_ADD))
+	{
+		llwarns << "Got an attachment with ATTACHMENT_ADD mask. Removing mask (attach pt:" << attachmentID << ")" << llendl;
+		attachmentID &= ~ATTACHMENT_ADD;
+	}
+
 	LLViewerJointAttachment* attachment = get_if_there(mAttachmentPoints, attachmentID, (LLViewerJointAttachment*)NULL);
 
 	if (!attachment)
 	{
 		llwarns << "Object attachment point invalid: " << attachmentID << llendl;
+		if (allowMultipleAttachments())
+		{
+			attachment = get_if_there(mAttachmentPoints, 1, (LLViewerJointAttachment*)NULL); // Arbitrary using 1 (chest)
+		}
 	}
 
 	return attachment;
@@ -6673,7 +6872,7 @@ BOOL LLVOAvatar::attachObject(LLViewerObject *viewer_object)
 	if (RRenabled)
 	{
 		// if this inventory item is shared and does not contain any attachment info in its name, rename it for later (truncate the name first if needed)
-		LLViewerInventoryItem* item = gInventory.getItem (attachment->getItemID());
+		LLViewerInventoryItem* item = gInventory.getItem (viewer_object->getAttachmentItemID());
 		if (item && gAgent.mRRInterface.isUnderRlvShare (item))
 		{
 			if (gAgent.mRRInterface.findAttachmentPointFromName (item->getName()) == NULL)
@@ -6737,11 +6936,32 @@ BOOL LLVOAvatar::attachObject(LLViewerObject *viewer_object)
 		updateAttachmentVisibility(gAgent.getCameraMode());
 		
 		// Then make sure the inventory is in sync with the avatar.
-		gInventory.addChangedMask( LLInventoryObserver::LABEL, attachment->getItemID() );
+		gInventory.addChangedMask(LLInventoryObserver::LABEL, viewer_object->getAttachmentItemID());
 		gInventory.notifyObservers();
 	}
 
 	return TRUE;
+}
+
+U32 LLVOAvatar::getNumAttachments() const
+{
+	U32 num_attachments = 0;
+	for (attachment_map_t::const_iterator iter = mAttachmentPoints.begin();
+		 iter != mAttachmentPoints.end();
+		 ++iter)
+	{
+		LLViewerJointAttachment *attachment_pt = (*iter).second;
+		num_attachments += attachment_pt->getNumObjects();
+	}
+	return num_attachments;
+}
+
+//-----------------------------------------------------------------------------
+// canAttachMoreObjects()
+//-----------------------------------------------------------------------------
+BOOL LLVOAvatar::canAttachMoreObjects() const
+{
+	return (getNumAttachments() < MAX_AGENT_ATTACHMENTS);
 }
 
 //-----------------------------------------------------------------------------
@@ -6749,30 +6969,51 @@ BOOL LLVOAvatar::attachObject(LLViewerObject *viewer_object)
 //-----------------------------------------------------------------------------
 void LLVOAvatar::lazyAttach()
 {
+	std::vector<LLPointer<LLViewerObject> > still_pending;
+	
 	for (U32 i = 0; i < mPendingAttachment.size(); i++)
 	{
 		if (mPendingAttachment[i]->mDrawable)
 		{
 			attachObject(mPendingAttachment[i]);
+			if (mIsSelf)
+			{
+				gAttachmentsListDirty = true;
+				gAttachmentsTimer.reset();
+			}
+		}
+		else
+		{
+			still_pending.push_back(mPendingAttachment[i]);
 		}
 	}
 
-	mPendingAttachment.clear();
+	mPendingAttachment = still_pending;
+
+	if (mIsSelf && still_pending.size() > 0)
+	{
+		gAttachmentsListDirty = true;
+		gAttachmentsTimer.reset();
+	}
 }
 
 void LLVOAvatar::resetHUDAttachments()
 {
 	for (attachment_map_t::iterator iter = mAttachmentPoints.begin(); 
-		 iter != mAttachmentPoints.end(); )
+		 iter != mAttachmentPoints.end(); iter++)
 	{
-		attachment_map_t::iterator curiter = iter++;
-		LLViewerJointAttachment* attachment = curiter->second;
+		LLViewerJointAttachment* attachment = iter->second;
 		if (attachment->getIsHUDAttachment())
 		{
-			LLViewerObject* obj = attachment->getObject();
-			if (obj && obj->mDrawable.notNull())
+			for (LLViewerJointAttachment::attachedobjs_vec_t::iterator attachment_iter = attachment->mAttachedObjects.begin();
+				 attachment_iter != attachment->mAttachedObjects.end();
+				 ++attachment_iter)
 			{
-				gPipeline.markMoved(obj->mDrawable);
+				const LLViewerObject* attached_object = (*attachment_iter);
+				if (attached_object && attached_object->mDrawable.notNull())
+				{
+					gPipeline.markMoved(attached_object->mDrawable);
+				}
 			}
 		}
 	}
@@ -6789,9 +7030,9 @@ BOOL LLVOAvatar::detachObject(LLViewerObject *viewer_object)
 		attachment_map_t::iterator curiter = iter++;
 		LLViewerJointAttachment* attachment = curiter->second;
 		// only one object per attachment point for now
-		if (attachment->getObject() == viewer_object)
+		if (attachment->isObjectAttached(viewer_object))
 		{
-			LLUUID item_id = attachment->getItemID();
+			LLUUID item_id = viewer_object->getAttachmentItemID();
 			attachment->removeObject(viewer_object);
 			if (mIsSelf)
 			{
@@ -6974,14 +7215,15 @@ LLVOAvatar* LLVOAvatar::findAvatarFromAttachment( LLViewerObject* obj )
 //-----------------------------------------------------------------------------
 // isWearingAttachment()
 //-----------------------------------------------------------------------------
-BOOL LLVOAvatar::isWearingAttachment( const LLUUID& inv_item_id )
+BOOL LLVOAvatar::isWearingAttachment(const LLUUID& inv_item_id)
 {
+	const LLUUID& base_inv_item_id = gInventory.getLinkedItemID(inv_item_id);
 	for (attachment_map_t::iterator iter = mAttachmentPoints.begin(); 
 		 iter != mAttachmentPoints.end(); )
 	{
 		attachment_map_t::iterator curiter = iter++;
 		LLViewerJointAttachment* attachment = curiter->second;
-		if( attachment->getItemID() == inv_item_id )
+		if(attachment->getAttachedObject(base_inv_item_id))
 		{
 			return TRUE;
 		}
@@ -6992,16 +7234,17 @@ BOOL LLVOAvatar::isWearingAttachment( const LLUUID& inv_item_id )
 //-----------------------------------------------------------------------------
 // getWornAttachment()
 //-----------------------------------------------------------------------------
-LLViewerObject* LLVOAvatar::getWornAttachment( const LLUUID& inv_item_id )
+LLViewerObject* LLVOAvatar::getWornAttachment(const LLUUID& inv_item_id)
 {
+	const LLUUID& base_inv_item_id = gInventory.getLinkedItemID(inv_item_id);
 	for (attachment_map_t::iterator iter = mAttachmentPoints.begin(); 
 		 iter != mAttachmentPoints.end(); )
 	{
 		attachment_map_t::iterator curiter = iter++;
 		LLViewerJointAttachment* attachment = curiter->second;
-		if( attachment->getItemID() == inv_item_id )
+ 		if (LLViewerObject *attached_object = attachment->getAttachedObject(base_inv_item_id))
 		{
-			return attachment->getObject();
+			return attached_object;
 		}
 	}
 	return NULL;
@@ -7009,12 +7252,13 @@ LLViewerObject* LLVOAvatar::getWornAttachment( const LLUUID& inv_item_id )
 
 const std::string LLVOAvatar::getAttachedPointName(const LLUUID& inv_item_id)
 {
+	const LLUUID& base_inv_item_id = gInventory.getLinkedItemID(inv_item_id);
 	for (attachment_map_t::iterator iter = mAttachmentPoints.begin(); 
 		 iter != mAttachmentPoints.end(); )
 	{
 		attachment_map_t::iterator curiter = iter++;
 		LLViewerJointAttachment* attachment = curiter->second;
-		if( attachment->getItemID() == inv_item_id )
+		if (attachment->getAttachedObject(base_inv_item_id))
 		{
 			return attachment->getName();
 		}
@@ -9033,14 +9277,13 @@ void LLVOAvatar::clampAttachmentPositions()
 	}
 }
 
-BOOL LLVOAvatar::hasHUDAttachment()
+BOOL LLVOAvatar::hasHUDAttachment() const
 {
-	for (attachment_map_t::iterator iter = mAttachmentPoints.begin(); 
-		 iter != mAttachmentPoints.end(); )
+	for (attachment_map_t::const_iterator iter = mAttachmentPoints.begin(); 
+		 iter != mAttachmentPoints.end(); ++iter)
 	{
-		attachment_map_t::iterator curiter = iter++;
-		LLViewerJointAttachment* attachment = curiter->second;
-		if (attachment->getIsHUDAttachment() && attachment->getObject())
+		LLViewerJointAttachment* attachment = iter->second;
+		if (attachment->getIsHUDAttachment() && attachment->getNumObjects() > 0)
 		{
 			return TRUE;
 		}
@@ -9048,28 +9291,37 @@ BOOL LLVOAvatar::hasHUDAttachment()
 	return FALSE;
 }
 
-LLBBox LLVOAvatar::getHUDBBox()
+LLBBox LLVOAvatar::getHUDBBox() const
 {
 	LLBBox bbox;
-	for (attachment_map_t::iterator iter = mAttachmentPoints.begin(); 
-		 iter != mAttachmentPoints.end(); )
+	for (attachment_map_t::const_iterator iter = mAttachmentPoints.begin(); 
+		 iter != mAttachmentPoints.end(); ++iter)
 	{
-		attachment_map_t::iterator curiter = iter++;
-		LLViewerJointAttachment* attachment = curiter->second;
-		if (attachment->getIsHUDAttachment() && attachment->getObject())
+		LLViewerJointAttachment* attachment = iter->second;
+		if (attachment->getIsHUDAttachment())
 		{
-			LLViewerObject* hud_object = attachment->getObject();
-
-			// initialize bounding box to contain identity orientation and center point for attached object
-			bbox.addPointLocal(hud_object->getPosition());
-			// add rotated bounding box for attached object
-			bbox.addBBoxAgent(hud_object->getBoundingBoxAgent());
-			LLViewerObject::const_child_list_t& child_list = hud_object->getChildren();
-			for (LLViewerObject::child_list_t::const_iterator iter = child_list.begin();
-				 iter != child_list.end(); iter++)
+			for (LLViewerJointAttachment::attachedobjs_vec_t::iterator attachment_iter = attachment->mAttachedObjects.begin();
+				 attachment_iter != attachment->mAttachedObjects.end();
+				 ++attachment_iter)
 			{
-				LLViewerObject* child_objectp = *iter;
-				bbox.addBBoxAgent(child_objectp->getBoundingBoxAgent());
+				const LLViewerObject* attached_object = (*attachment_iter);
+				if (attached_object == NULL)
+				{
+					llwarns << "HUD attached object is NULL!" << llendl;
+					continue;
+				}
+				// initialize bounding box to contain identity orientation and center point for attached object
+				bbox.addPointLocal(attached_object->getPosition());
+				// add rotated bounding box for attached object
+				bbox.addBBoxAgent(attached_object->getBoundingBoxAgent());
+				LLViewerObject::const_child_list_t& child_list = attached_object->getChildren();
+				for (LLViewerObject::child_list_t::const_iterator iter = child_list.begin();
+					 iter != child_list.end(); 
+					 ++iter)
+				{
+					const LLViewerObject* child_objectp = *iter;
+					bbox.addBBoxAgent(child_objectp->getBoundingBoxAgent());
+				}
 			}
 		}
 	}
@@ -10901,21 +11153,26 @@ void LLVOAvatar::idleUpdateRenderCost()
 		++iter)
 	{
 		LLViewerJointAttachment* attachment = iter->second;
-		LLViewerObject* object = attachment->getObject();
-		if (object && !object->isHUDAttachment())
+		for (LLViewerJointAttachment::attachedobjs_vec_t::iterator attachment_iter = attachment->mAttachedObjects.begin();
+			 attachment_iter != attachment->mAttachedObjects.end();
+			 ++attachment_iter)
 		{
-			LLDrawable* drawable = object->mDrawable;
-			if (drawable)
+			const LLViewerObject* attached_object = (*attachment_iter);
+			if (attached_object && !attached_object->isHUDAttachment())
 			{
-				shame += 10;
-				LLVOVolume* volume = drawable->getVOVolume();
-				if (volume)
+				const LLDrawable* drawable = attached_object->mDrawable;
+				if (drawable)
 				{
-					shame += calc_shame(volume, textures);
+					shame += 10;
+					LLVOVolume* volume = drawable->getVOVolume();
+					if (volume)
+					{
+						shame += calc_shame(volume, textures);
+					}
 				}
 			}
 		}
-	}	
+	}
 
 	shame += textures.size() * 5;
 
@@ -10924,5 +11181,4 @@ void LLVOAvatar::idleUpdateRenderCost()
 	F32 red = llmin((F32) shame/1024.f, 1.f);
 	mText->setColor(LLColor4(red,green,0,1));
 }
-
 

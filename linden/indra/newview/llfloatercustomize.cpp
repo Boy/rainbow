@@ -62,6 +62,7 @@
 #include "imageids.h"
 #include "llmodaldialog.h"
 #include "llassetstorage.h"
+#include "llstartup.h"	// for gIsInSecondLife
 #include "lltexturectrl.h"
 #include "lltextureentry.h"
 #include "llwearablelist.h"
@@ -240,7 +241,14 @@ public:
 				std::string name = std::string("checkbox_") + attachment->getName();
 				mCheckBoxList.push_back(std::make_pair(name,attachment_pt));
 				childSetEnabled(name, object_attached);
+				childSetValue(name, object_attached);
 			}
+		}
+
+		if (!gIsInSecondLife && (gSavedSettings.getBOOL("OSAllowInventoryLinks") == FALSE))
+		{
+			childSetEnabled("checkbox_use_links", FALSE);
+			childSetValue("checkbox_use_links", FALSE);
 		}
 
 		childSetAction("Save", onSave, this ); 

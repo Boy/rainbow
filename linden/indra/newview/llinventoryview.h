@@ -368,8 +368,6 @@ BOOL move_inv_category_world_to_agent(const LLUUID& object_id,
 const BOOL TAKE_FOCUS_YES = TRUE;
 const BOOL TAKE_FOCUS_NO  = FALSE;
 
-void rez_attachment(LLViewerInventoryItem* item, LLViewerJointAttachment* attachment);
-
 #endif // LL_LLINVENTORYVIEW_H
 
 

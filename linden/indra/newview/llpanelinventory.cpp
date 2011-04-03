@@ -147,6 +147,7 @@ public:
 	virtual void cutToClipboard();
 	virtual BOOL isClipboardPasteable() const;
 	virtual void pasteFromClipboard();
+	virtual void pasteLinkFromClipboard();
 	virtual void buildContextMenu(LLMenuGL& menu, U32 flags);
 	virtual void performAction(LLFolderView* folder, LLInventoryModel* model, std::string action);
 	virtual BOOL isUpToDate() const { return TRUE; }
@@ -571,6 +572,10 @@ BOOL LLTaskInvFVBridge::isClipboardPasteable() const
 }
 
 void LLTaskInvFVBridge::pasteFromClipboard()
+{
+}
+
+void LLTaskInvFVBridge::pasteLinkFromClipboard()
 {
 }
 

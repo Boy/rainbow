@@ -3558,8 +3558,9 @@ void LLSelectMgr::selectionSetObjectSaleInfo(const LLSaleInfo& sale_info)
 void LLSelectMgr::sendAttach(U8 attachment_point)
 {
 	LLViewerObject* attach_object = mSelectedObjects->getFirstRootObject();
+	LLVOAvatar* avatar = gAgent.getAvatarObject();
 
-	if (!attach_object || !gAgent.getAvatarObject() || mSelectedObjects->mSelectType != SELECT_TYPE_WORLD)
+	if (!attach_object || !avatar || mSelectedObjects->mSelectType != SELECT_TYPE_WORLD)
 	{
 		return;
 	}
@@ -3567,8 +3568,15 @@ void LLSelectMgr::sendAttach(U8 attachment_point)
 	BOOL build_mode = LLToolMgr::getInstance()->inEdit();
 	// Special case: Attach to default location for this object.
 	if (0 == attachment_point ||
-		get_if_there(gAgent.getAvatarObject()->mAttachmentPoints, (S32)attachment_point, (LLViewerJointAttachment*)NULL))
+		get_if_there(avatar->mAttachmentPoints, (S32)attachment_point, (LLViewerJointAttachment*)NULL))
 	{
+		if (attachment_point != 0 && avatar->allowMultipleAttachments())
+		{
+			// If we know the attachment point then we got here by clicking an
+			// "Attach to..." context menu item, so we should add, not replace.
+			attachment_point |= ATTACHMENT_ADD;
+		}
+
 		sendListToRegions(
 			"ObjectAttach",
 			packAgentIDAndSessionAndAttachment, 

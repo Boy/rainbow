@@ -295,6 +295,7 @@ void LLFloaterProperties::refreshFromItem(LLInventoryItem* item)
 												GP_OBJECT_MANIPULATE);
 	BOOL can_agent_sell = gAgent.allowOperation(PERM_OWNER, perm, 
 												GP_OBJECT_SET_SALE);
+	BOOL is_link = i->getIsLinkType();
 
 	// You need permission to modify the object to modify an inventory
 	// item in it.
@@ -482,7 +483,7 @@ void LLFloaterProperties::refreshFromItem(LLInventoryItem* item)
 	/////////////
 
 	// Check for ability to change values.
-	if (is_obj_modify && can_agent_manipulate)
+	if (!is_link && is_obj_modify && can_agent_manipulate)
 	{
 		childSetEnabled("CheckShareWithGroup",TRUE);
 		childSetEnabled("CheckEveryoneCopy",(owner_mask & PERM_COPY) && (owner_mask & PERM_TRANSFER));

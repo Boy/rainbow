@@ -2811,41 +2811,45 @@ void LLPipeline::renderForSelect(std::set<LLViewerObject*>& objects, BOOL render
 			LLViewerJointAttachment* attachmentp = curiter->second;
 			if (attachmentp->getIsHUDAttachment())
 			{
-				LLViewerObject* objectp = attachmentp->getObject();
-				if (objectp)
+				for (LLViewerJointAttachment::attachedobjs_vec_t::iterator attachment_iter = attachmentp->mAttachedObjects.begin();
+					 attachment_iter != attachmentp->mAttachedObjects.end();
+					 ++attachment_iter)
 				{
-					LLDrawable* drawable = objectp->mDrawable;
-					if (drawable->isDead())
+					if (LLViewerObject* objectp = (*attachment_iter))
 					{
-						continue;
-					}
-
-					for (S32 j = 0; j < drawable->getNumFaces(); ++j)
-					{
-						LLFace* facep = drawable->getFace(j);
-						if (!facep->getPool())
+						LLDrawable* drawable = objectp->mDrawable;
+						if (drawable->isDead())
 						{
-							facep->renderForSelect(prim_mask);
+							continue;
 						}
-					}
 
-					//render child faces
-					LLViewerObject::const_child_list_t& child_list = objectp->getChildren();
-					for (LLViewerObject::child_list_t::const_iterator iter = child_list.begin();
-						 iter != child_list.end(); iter++)
-					{
-						LLViewerObject* child = *iter;
-						LLDrawable* child_drawable = child->mDrawable;
-						for (S32 l = 0; l < child_drawable->getNumFaces(); ++l)
+						for (S32 j = 0; j < drawable->getNumFaces(); ++j)
 						{
-							LLFace* facep = child_drawable->getFace(l);
+							LLFace* facep = drawable->getFace(j);
 							if (!facep->getPool())
 							{
 								facep->renderForSelect(prim_mask);
 							}
 						}
+
+						//render child faces
+						LLViewerObject::const_child_list_t& child_list = objectp->getChildren();
+						for (LLViewerObject::child_list_t::const_iterator iter = child_list.begin();
+							 iter != child_list.end(); iter++)
+						{
+							LLViewerObject* child = *iter;
+							LLDrawable* child_drawable = child->mDrawable;
+							for (S32 l = 0; l < child_drawable->getNumFaces(); ++l)
+							{
+								LLFace* facep = child_drawable->getFace(l);
+								if (!facep->getPool())
+								{
+									facep->renderForSelect(prim_mask);
+								}
+							}
+						}
 					}
-				}	
+				}
 			}
 		}
 
@@ -5351,10 +5355,15 @@ void LLPipeline::generateImpostor(LLVOAvatar* avatar)
 		iter != avatar->mAttachmentPoints.end();
 		++iter)
 	{
-		LLViewerObject* object = iter->second->getObject();
-		if (object)
+		LLViewerJointAttachment *attachment = iter->second;
+		for (LLViewerJointAttachment::attachedobjs_vec_t::iterator attachment_iter = attachment->mAttachedObjects.begin();
+			 attachment_iter != attachment->mAttachedObjects.end();
+			 ++attachment_iter)
 		{
-			markVisible(object->mDrawable->getSpatialBridge(), *LLViewerCamera::getInstance());
+			if (LLViewerObject* attached_object = (*attachment_iter))
+			{
+				markVisible(attached_object->mDrawable->getSpatialBridge(), *LLViewerCamera::getInstance());
+			}
 		}
 	}
 

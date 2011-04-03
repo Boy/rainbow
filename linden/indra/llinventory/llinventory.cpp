@@ -125,6 +125,25 @@ const std::string& LLInventoryObject::getName() const
 	return mName;
 }
 
+// To bypass linked items, since llviewerinventory's getType
+// will return the linked-to item's type instead of this object's type.
+LLAssetType::EType LLInventoryObject::getActualType() const
+{
+	return mType;
+}
+
+BOOL LLInventoryObject::getIsLinkType() const
+{
+	return LLAssetType::lookupIsLinkType(mType);
+}
+
+// See LLInventoryItem override.
+// virtual
+const LLUUID& LLInventoryObject::getLinkedUUID() const
+{
+	return mUUID;
+}
+
 LLAssetType::EType LLInventoryObject::getType() const
 {
 	return mType;
@@ -339,6 +358,19 @@ void LLInventoryItem::cloneItem(LLPointer<LLInventoryItem>& newitem) const
 	newitem = new LLInventoryItem;
 	newitem->copyItem(this);
 	newitem->mUUID.generate();
+}
+
+// If this is a linked item, then the UUID of the base object is
+// this item's assetID.
+// virtual
+const LLUUID& LLInventoryItem::getLinkedUUID() const
+{
+	if (LLAssetType::lookupIsLinkType(getActualType()))
+	{
+		return mAssetUUID;
+	}
+
+	return LLInventoryObject::getLinkedUUID();
 }
 
 const LLPermissions& LLInventoryItem::getPermissions() const

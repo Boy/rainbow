@@ -8854,3 +8854,23 @@ version 2.0
 	}
 }
 
+// Link inventory
+{
+	LinkInventoryItem	Low	426 NotTrusted	Zerocoded
+	{
+		AgentData		Single
+		{	AgentID		LLUUID	}
+		{	SessionID	LLUUID	}
+	}
+	{
+		InventoryBlock		Single
+		{	CallbackID	U32			} // Async Response
+		{	FolderID		LLUUID	}
+		{	TransactionID			LLUUID	} // Going to become TransactionID
+		{	OldItemID		LLUUID	}
+		{	Type			S8	}
+		{	InvType			S8	}
+		{	Name			Variable	1	}
+		{	Description		Variable	1	}
+	}
+}

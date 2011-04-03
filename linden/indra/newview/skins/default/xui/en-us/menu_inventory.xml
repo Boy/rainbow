@@ -129,6 +129,10 @@
 	     name="Sound Open" width="128">
 		<on_click filter="" function="Inventory.DoToSelected" userdata="open" />
 	</menu_item_call>
+	<menu_item_call bottom_delta="-18" height="18" label="Find Original" left="0"
+	     mouse_opaque="true" name="Find Original" width="128">
+		<on_click filter="" function="Inventory.DoToSelected" userdata="goto" />
+	</menu_item_call>
 	<menu_item_call bottom_delta="-18" height="18" label="Purge Item" left="0" mouse_opaque="true"
 	     name="Purge Item" width="128">
 		<on_click filter="" function="Inventory.DoToSelected" userdata="purge" />
@@ -162,6 +166,10 @@
 	     name="Paste" width="128">
 		<on_click filter="" function="Inventory.DoToSelected" userdata="paste" />
 	</menu_item_call>
+	<menu_item_call bottom_delta="-18" height="18" label="Paste As Link" left="0" mouse_opaque="true"
+	     name="Paste As Link" width="128">
+		<on_click filter="" function="Inventory.DoToSelected" userdata="paste_link" />
+	</menu_item_call>
 	<menu_item_separator name="Paste Separator" />
 	<menu_item_call bottom_delta="-18" height="18" label="Delete" left="0" mouse_opaque="true"
 	     name="Delete" width="128">
@@ -175,6 +183,10 @@
 	<menu_item_call bottom_delta="-18" height="18" label="Add To Outfit" left="0"
 	     mouse_opaque="true" name="Add To Outfit" width="128">
 		<on_click filter="" function="Inventory.DoToSelected" userdata="addtooutfit" />
+	</menu_item_call>
+	<menu_item_call bottom_delta="-18" height="18" label="Wear Items" left="0"
+	     mouse_opaque="true" name="Wear Items" width="128">
+		<on_click filter="" function="Inventory.DoToSelected" userdata="wearitems" />
 	</menu_item_call>
 	<menu_item_call bottom_delta="-18" height="18" label="Replace Outfit" left="0"
 	     mouse_opaque="true" name="Replace Outfit" width="128">
@@ -227,19 +239,23 @@
 		<on_click filter="" function="Inventory.DoToSelected" userdata="deactivate" />
 	</menu_item_call>
 	<menu_item_separator name="Attach Separator" />
-	<menu_item_call bottom_delta="-18" height="18" label="Detach From Yourself" left="0"
-	     mouse_opaque="true" name="Detach From Yourself" width="128">
-		<on_click filter="" function="Inventory.DoToSelected" userdata="detach" />
-	</menu_item_call>
 	<menu_item_call bottom_delta="-18" height="18" label="Wear" left="0" mouse_opaque="true"
 	     name="Object Wear" width="128">
 		<on_click filter="" function="Inventory.DoToSelected" userdata="attach" />
+	</menu_item_call>
+	<menu_item_call bottom_delta="-18" height="18" label="Add" left="0" mouse_opaque="true"
+	     name="Object Add" width="128">
+		<on_click filter="" function="Inventory.DoToSelected" userdata="wear_add" />
 	</menu_item_call>
 	<menu bottom_delta="-18" height="18" label="Attach To" left="0" mouse_opaque="true"
 	     name="Attach To" opaque="true" tear_off="false" width="128" />
 	<menu bottom_delta="-18" height="18" label="Attach To HUD" left="0"
 	     mouse_opaque="true" name="Attach To HUD" opaque="true" tear_off="false"
 	     width="128" />
+	<menu_item_call bottom_delta="-18" height="18" label="Detach From Yourself" left="0"
+	     mouse_opaque="true" name="Detach From Yourself" width="128">
+		<on_click filter="" function="Inventory.DoToSelected" userdata="detach" />
+	</menu_item_call>
 	<menu_item_call bottom_delta="-18" height="18" label="Edit" left="0" mouse_opaque="true"
 	     name="Wearable Edit" width="128">
 		<on_click filter="" function="Inventory.DoToSelected" userdata="edit" />

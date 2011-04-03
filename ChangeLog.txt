@@ -1,5 +1,55 @@
 2011-04-01 Boy Lane <boy.lane@yahoo.com>
 
+    * Multiple Attachments and Linked Items from v2/CoolVL - not fully working, need RLV update
+
+    modified:   linden/indra/llcommon/indra_constants.h
+    modified:   linden/indra/llcommon/llassettype.cpp
+    modified:   linden/indra/llcommon/llassettype.h
+    modified:   linden/indra/llcommon/stdenums.h
+    modified:   linden/indra/llinventory/llinventory.cpp
+    modified:   linden/indra/llinventory/llinventory.h
+    modified:   linden/indra/llinventory/llinventorytype.cpp
+    modified:   linden/indra/llmessage/lltransfersourceasset.cpp
+    modified:   linden/indra/llmessage/message_prehash.cpp
+    modified:   linden/indra/llmessage/message_prehash.h
+    modified:   linden/indra/newview/RRInterface.cpp
+    modified:   linden/indra/newview/app_settings/settings.xml
+    modified:   linden/indra/newview/llagent.cpp
+    modified:   linden/indra/newview/llfloatercustomize.cpp
+    modified:   linden/indra/newview/llfloaterproperties.cpp
+    modified:   linden/indra/newview/llfolderview.cpp
+    modified:   linden/indra/newview/llfolderview.h
+    modified:   linden/indra/newview/llgesturemgr.cpp
+    modified:   linden/indra/newview/llinventoryactions.cpp
+    modified:   linden/indra/newview/llinventorybridge.cpp
+    modified:   linden/indra/newview/llinventorybridge.h
+    modified:   linden/indra/newview/llinventorymodel.cpp
+    modified:   linden/indra/newview/llinventorymodel.h
+    modified:   linden/indra/newview/llinventoryview.cpp
+    modified:   linden/indra/newview/llinventoryview.h
+    modified:   linden/indra/newview/llpanelinventory.cpp
+    modified:   linden/indra/newview/llselectmgr.cpp
+    modified:   linden/indra/newview/lltooldraganddrop.cpp
+    modified:   linden/indra/newview/llviewerinventory.cpp
+    modified:   linden/indra/newview/llviewerinventory.h
+    modified:   linden/indra/newview/llviewerjointattachment.cpp
+    modified:   linden/indra/newview/llviewerjointattachment.h
+    modified:   linden/indra/newview/llviewermenu.cpp
+    modified:   linden/indra/newview/llviewerobject.cpp
+    modified:   linden/indra/newview/llviewerobject.h
+    modified:   linden/indra/newview/llviewerobjectlist.cpp
+    modified:   linden/indra/newview/llvoavatar.cpp
+    modified:   linden/indra/newview/llvoavatar.h
+    modified:   linden/indra/newview/llvovolume.cpp
+    modified:   linden/indra/newview/llvovolume.h
+    modified:   linden/indra/newview/pipeline.cpp
+    modified:   linden/indra/newview/skins/default/xui/en-us/alerts.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_new_outfit_dialog.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/menu_inventory.xml
+    modified:   linden/scripts/messages/message_template.msg
+
+2011-04-01 Boy Lane <boy.lane@yahoo.com>
+
     * minor fix for Display Names from CoolVL
 
     modified:   linden/indra/newview/llpanelavatar.cpp

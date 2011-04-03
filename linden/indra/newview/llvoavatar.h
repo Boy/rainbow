@@ -336,11 +336,13 @@ public:
 	void updateVisibility();
 	void updateAttachmentVisibility(U32 camera_mode);
 	void clampAttachmentPositions();
-	S32 getAttachmentCount();	// Warning: order(N) not order(1)
+	S32 getAttachmentCount(); // Warning: order(N) not order(1)
+	BOOL canAttachMoreObjects() const;
+	bool allowMultipleAttachments() const;
 
-	BOOL hasHUDAttachment();
-	LLBBox getHUDBBox();
-// 	void renderHUD(BOOL for_select); // old
+	// HUD functions
+	BOOL hasHUDAttachment() const;
+	LLBBox getHUDBBox() const;
 	void rebuildHUD();
 
 	/*virtual*/ LLDrawable* createDrawable(LLPipeline *pipeline);
@@ -530,7 +532,7 @@ public:
 	void updateSexDependentLayerSets( BOOL set_by_user );
 	void dirtyMesh(); // Dirty the avatar mesh
 
-	virtual void setParent(LLViewerObject* parent);
+	virtual BOOL setParent(LLViewerObject* parent);
 	virtual void addChild(LLViewerObject *childp);
 	virtual void removeChild(LLViewerObject *childp);
 
@@ -538,6 +540,7 @@ public:
 	BOOL attachObject(LLViewerObject *viewer_object);
 	BOOL detachObject(LLViewerObject *viewer_object);
 	void lazyAttach();
+	void checkAttachments();
 
 	void sitOnObject(LLViewerObject *sit_object);
 	void getOffObject();
@@ -939,6 +942,7 @@ public:
 	//--------------------------------------------------------------------
 	bool					mLipSyncActive;
 
+
 	//--------------------------------------------------------------------
 	// cached pointers morphs for lip sync
 	//--------------------------------------------------------------------
@@ -970,6 +974,10 @@ public:
 	static S32		sNumVisibleChatBubbles;
 	static BOOL		sDebugInvisible;
 	static BOOL		sShowAttachmentPoints;
+	static F32		sLODFactor; // user-settable LOD factor
+	static BOOL		sJointDebug; // output total number of joints being touched for each avatar
+
+	static ETextureIndex sBakedTextureIndices[BAKED_TEXTURE_COUNT];
 
 	// Number of instances of this class
 	static S32		sNumVisibleAvatars;
@@ -982,26 +990,16 @@ public:
 	// map of attachment points, by ID
 	typedef std::map<S32, LLViewerJointAttachment*> attachment_map_t;
 	attachment_map_t mAttachmentPoints;
-
 	std::vector<LLPointer<LLViewerObject> > mPendingAttachment;
+
+protected:
+	U32					getNumAttachments() const; // O(N), not O(1)
 
 	// xml parse tree of avatar config file
 	static LLXmlTree sXMLTree;
 	// xml parse tree of avatar skeleton file
 	static LLXmlTree sSkeletonXMLTree;
 
-	// user-settable LOD factor
-	static F32		sLODFactor;
-
-	// output total number of joints being touched for each avatar
-	static BOOL		sJointDebug;
-	static ETextureIndex sBakedTextureIndices[BAKED_TEXTURE_COUNT];
-
-	static F32 		sUnbakedTime; // Total seconds with >=1 unbaked avatars
-	static F32 		sUnbakedUpdateTime; // Last time stats were updated (to prevent multiple updates per frame) 
-	static F32 		sGreyTime; // Total seconds with >=1 grey avatars
-	static F32 		sGreyUpdateTime; // Last time stats were updated (to prevent multiple updates per frame) 
-	
 	//--------------------------------------------------------------------
 	// Texture Layer Sets and Global Colors
 	//--------------------------------------------------------------------	
@@ -1137,6 +1135,10 @@ protected:
 private:
 	static  S32 sFreezeCounter ;
 public:
+	static F32 		sUnbakedTime; // Total seconds with >=1 unbaked avatars
+	static F32 		sUnbakedUpdateTime; // Last time stats were updated (to prevent multiple updates per frame) 
+	static F32 		sGreyTime; // Total seconds with >=1 grey avatars
+	static F32 		sGreyUpdateTime; // Last time stats were updated (to prevent multiple updates per frame) 
 	static void updateFreezeCounter(S32 counter = 0 ) ;
 };
 

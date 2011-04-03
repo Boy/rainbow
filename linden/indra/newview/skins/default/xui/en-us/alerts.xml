@@ -5059,5 +5059,11 @@ The display name you wish to set contains invalid characters.
 Your display name must contain letters other than punctuation.
 		</message>
 	</alert>
+	<alert modal="true" name="MaxAttachmentsOnOutfit">
+		<message name="message">
+Could not attach object.
+Exceeds the attachments limit of MAX_ATTACHMENTS objects. Please detach another object first.
+		</message>
+	</alert>
  </alerts>
 

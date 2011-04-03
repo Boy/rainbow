@@ -24,6 +24,10 @@
 	<check_box bottom="-456" enabled="true" follows="left|top" font="SansSerifSmall"
 	     height="16" initial_value="false" label="Rename Clothing To Folder Name"
 	     left="13" mouse_opaque="true" name="rename" radio_style="false" width="210" />
+	<check_box name="checkbox_use_links" control_name="UseInventoryLinks" initial_value="false"
+		 enabled="true" label="Use links for no-copy items" font="SansSerifSmall"
+	     bottom_delta="-20" left_delta="0" follows="left|top" height="16" width="300"
+	     mouse_opaque="true" radio_style="false" />
 	<check_box bottom="-216" enabled="true" follows="left|top" font="SansSerifSmall"
 	     height="16" initial_value="false" label="Shirt" left="113"
 	     mouse_opaque="true" name="checkbox_Shirt" radio_style="false" width="100" />

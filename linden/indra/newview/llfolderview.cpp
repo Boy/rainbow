@@ -4616,6 +4616,15 @@ LLInventoryFilter::~LLInventoryFilter()
 
 BOOL LLInventoryFilter::check(LLFolderViewItem* item) 
 {
+	LLFolderViewEventListener* listener = item->getListener();
+	const LLUUID& item_id = listener->getUUID();
+	const LLInventoryObject *obj = gInventory.getObject(item_id);
+	if (isActive() && obj && obj->getIsLinkType())
+	{
+		// When filtering is active, omit links.
+		return FALSE;
+	}
+
 	time_t earliest;
 
 	earliest = time_corrected() - mFilterOps.mHoursAgo * 3600;
@@ -4627,8 +4636,6 @@ BOOL LLInventoryFilter::check(LLFolderViewItem* item)
 	{
 		earliest = 0;
 	}
-	LLFolderViewEventListener* listener = item->getListener();
-	const LLUUID& item_id = listener->getUUID();
 	mSubStringMatchOffset = mFilterSubString.size() ? item->getSearchableLabel().find(mFilterSubString) : std::string::npos;
 	BOOL passed = (0x1 << listener->getInventoryType() & mFilterOps.mFilterTypes || listener->getInventoryType() == LLInventoryType::IT_NONE)
 					&& (mFilterSubString.size() == 0 || mSubStringMatchOffset != std::string::npos)

@@ -185,6 +185,9 @@ public:
 							  BOOL include_trash,
 							  LLInventoryCollectFunctor& add);
 
+	// Get the inventoryID that this item points to, else just return item_id
+	const LLUUID& getLinkedItemID(const LLUUID& object_id) const;
+
 	// This method will return false if this inventory model is in an usabel state.
 	// The inventory model usage is sensitive to the initial construction of the 
 	// model. 
@@ -400,7 +403,8 @@ public:
 	// file import/export.
 	static bool loadFromFile(const std::string& filename,
 							 cat_array_t& categories,
-							 item_array_t& items); 
+							 item_array_t& items,
+							 bool& is_cache_obsolete); 
 	static bool saveToFile(const std::string& filename,
 						   const cat_array_t& categories,
 						   const item_array_t& items); 
@@ -421,6 +425,9 @@ public:
 	static void processFetchInventoryReply(LLMessageSystem* msg, void**);
 	
 	bool messageUpdateCore(LLMessageSystem* msg, bool do_accounting);
+
+	// Updates all linked items pointing to this id.
+	void addChangedMaskForLinks(const LLUUID& object_id, U32 mask);
 
 protected:
 	cat_array_t* getUnlockedCatArray(const LLUUID& id);
@@ -473,6 +480,9 @@ public:
 	// This flag is used to handle an invalid inventory state.
 	bool mIsAgentInvUsable;
 
+private:
+	const static S32 sCurrentInvCacheVersion; // expected inventory cache version
+
 public:
 	// *NOTE: DEBUG functionality
 	void dumpInventory();
@@ -524,6 +534,23 @@ protected:
 	LLUUID mAssetID;
 };
 
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Class LLLinkedItemIDMatches
+//
+// This functor finds inventory items linked to the specific inventory id.
+// Assumes the inventory id is itself not a linked item.
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+class LLLinkedItemIDMatches : public LLInventoryCollectFunctor
+{
+public:
+	LLLinkedItemIDMatches(const LLUUID& item_id) : mBaseItemID(item_id) {}
+	virtual ~LLLinkedItemIDMatches() {}
+	bool operator()(LLInventoryCategory* cat, LLInventoryItem* item);
+	
+protected:
+	LLUUID mBaseItemID;
+};
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Class LLIsType
