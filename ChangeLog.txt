@@ -1,3 +1,10 @@
+2011-04-05 Boy Lane <boy.lane@yahoo.com>
+
+    * Jiggly butts and bellies...quite funny and easiest fix evahhh :) (uncomment related boobies code in llvoavatar.cpp/.h)
+
+    modified:   ChangeLog.txt
+    modified:   linden/indra/newview/llvoavatar.cpp
+
 2011-04-03 Boy Lane <boy.lane@yahoo.com>
 
     * RLV 2.5.1 backport from Marine Kelley/CoolVL to 1.22 with working Display Names, Multiple Attachments and Linked Items

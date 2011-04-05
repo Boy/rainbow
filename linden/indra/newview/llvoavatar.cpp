@@ -3178,7 +3178,7 @@ void LLVOAvatar::idleUpdateBoobEffect()
 
 		mBoobState = newBoobState;
 	}
-	/*
+
 	if(mFirstSetActualButtGravRan)
 	{
 		// BUTT
@@ -3236,10 +3236,7 @@ void LLVOAvatar::idleUpdateBoobEffect()
 
 		mFatState = newFatState;
 	}
-	*/
-	
 }
-
 
 void LLVOAvatar::idleUpdateLipSync(bool voice_enabled)
 {
