@@ -159,7 +159,8 @@ BOOL LLGLSLShader::createShader(vector<string> * attributes,
 
 BOOL LLGLSLShader::attachObject(std::string object)
 {
-	if (LLShaderMgr::instance()->mShaderObjects.count(object) > 0)
+	std::map<std::string, GLhandleARB> &ShaderObjects = LLShaderMgr::instance()->mShaderObjects;
+	if (ShaderObjects.find(object) != ShaderObjects.end())
 	{
 		stop_glerror();
 		glAttachObjectARB(mProgramObject, LLShaderMgr::instance()->mShaderObjects[object]);

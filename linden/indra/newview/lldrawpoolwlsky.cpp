@@ -283,10 +283,8 @@ void LLDrawPoolWLSky::render(S32 pass)
 		LLImageGL * tex  = gSky.mVOSkyp->mFace[LLVOSky::FACE_MOON]->getTexture();
 		gGL.getTexUnit(0)->bind(tex);
 
-		renderHeavenlyBodies();
-
 		renderStars();
-		
+		renderHeavenlyBodies();
 
 	glPopMatrix();
 

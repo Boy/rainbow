@@ -1,5 +1,12 @@
 2011-04-05 Boy Lane <boy.lane@yahoo.com>
 
+    * ATI rendering fix from Shyotl
+
+    modified:   linden/indra/llrender/llglslshader.cpp
+    modified:   linden/indra/newview/lldrawpoolwlsky.cpp    
+
+2011-04-05 Boy Lane <boy.lane@yahoo.com>
+
     * Jiggly butts and bellies...quite funny and easiest fix evahhh :) (uncomment related boobies code in llvoavatar.cpp/.h)
 
     modified:   ChangeLog.txt
