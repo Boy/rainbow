@@ -53,9 +53,10 @@ LLMap< const LLUUID, LLFloaterClassifiedInfo* > gClassifiedInfoInstances;
 class LLClassifiedHandler : public LLCommandHandler
 {
 public:
-	// don't allow from external browsers
-	LLClassifiedHandler() : LLCommandHandler("classified", false) { }
-	bool handle(const LLSD& tokens, const LLSD& queryMap)
+	// requires trusted browser to trigger
+	LLClassifiedHandler() : LLCommandHandler("classified", true) { }
+	bool handle(const LLSD& tokens, const LLSD& query_map,
+				LLWebBrowserCtrl* web)
 	{
 		if (tokens.size() < 2)
 		{

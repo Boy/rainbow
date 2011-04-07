@@ -33,11 +33,12 @@
 #ifndef LL_LLVIEWERNETWORK_H
 #define LL_LLVIEWERNETWORK_H
 
+#define DYNAMIC_GRIDS
+
 class LLHost;
 class LLSD;
 
-extern const int GRID_INFO_NONE;
-extern int GRID_INFO_OTHER;
+#define EGridInfo int
 
 /**
  * @brief A class to manage the viewer's login state.
@@ -48,28 +49,25 @@ class LLViewerLogin : public LLSingleton<LLViewerLogin>
 public:
 	LLViewerLogin();
 
-	void setGridChoice(const int grid);
+	void setGridChoice(const EGridInfo grid);
 	void setGridChoice(const std::string& grid_name);
 	void resetURIs();
 
 	/**
 	* @brief Get the enumeration of the grid choice.
-	* Should only return values > 0 && < GRID_INFO_COUNT
+	* Should only return values > 0 && <= GRID_INFO_OTHER
 	**/
-	int getGridChoice() const;
+	EGridInfo getGridChoice() const { return mGridChoice; }
 
-	int getGridCount() const { return mGridList.size(); }
-	
 	/**
 	* @brief Get a readable label for the grid choice.
 	* Returns the readable name for the grid choice. 
 	* If the grid is 'other', returns something
 	* the string used to specifiy the grid.
 	**/
-	std::string getGridLabel() const;
-	std::string getGridPage() const;
-
-	std::string getKnownGridLabel(const int grid_index) const;
+	std::string getGridLabel() const; 
+	std::string getKnownGridLabel(const EGridInfo grid_index) const;
+	std::string getLoginPageURI() const;
 
 	void getLoginURIs(std::vector<std::string>& uris) const;
 	std::string getHelperURI() const;
@@ -78,13 +76,16 @@ public:
 
 	void setMenuColor() const;
 	
-	void loadGridsLLSD( std::string filename );
+	void loadGridsLLSD(std::string filename);
 	
 private:
-	int mGridChoice;
+	EGridInfo mGridChoice;
 	std::string mGridName;
 	LLSD mGridList;
 };
+
+const EGridInfo GRID_INFO_NONE = 0;
+extern EGridInfo GRID_INFO_OTHER;
 
 const S32 MAC_ADDRESS_BYTES = 6;
 extern unsigned char gMACAddress[MAC_ADDRESS_BYTES];		/* Flawfinder: ignore */

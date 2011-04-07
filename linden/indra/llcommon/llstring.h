@@ -159,6 +159,8 @@ public:
 
 	static S32	collate(const char* a, const char* b) { return strcoll(a, b); }
 	static S32	collate(const llwchar* a, const llwchar* b);
+
+	static bool isHexString(const std::string& str);
 };
 
 /**

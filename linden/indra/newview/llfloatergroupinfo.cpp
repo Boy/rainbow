@@ -55,9 +55,10 @@ std::map<LLUUID, LLFloaterGroupInfo*> LLFloaterGroupInfo::sInstances;
 class LLGroupHandler : public LLCommandHandler
 {
 public:
-	// don't allow from external browsers
-	LLGroupHandler() : LLCommandHandler("group", false) { }
-	bool handle(const LLSD& tokens, const LLSD& queryMap)
+	// requires trusted browser to trigger
+	LLGroupHandler() : LLCommandHandler("group", true) { }
+	bool handle(const LLSD& tokens, const LLSD& query_map,
+				LLWebBrowserCtrl* web)
 	{
 		if (tokens.size() < 1)
 		{

@@ -217,7 +217,7 @@ class LLWebBrowserCtrl :
 		// Javascript or some other mechanism.  However, we need the search
 		// floater and login page to handle these URLs.  Those are safe
 		// because we control the page content.  See DEV-9530.  JC.
-		void setOpenAppSLURLs( bool valIn );
+		void setTrusted( bool valIn );
 
 		void setHomePageUrl( const std::string urlIn );
 		std::string getHomePageUrl();
@@ -282,7 +282,7 @@ class LLWebBrowserCtrl :
 		bool mForceUpdate;
 		bool mOpenLinksInExternalBrowser;
 		bool mOpenLinksInInternalBrowser;
-		bool mOpenAppSLURLs;
+		bool mTrusted;
 		std::string mHomePageUrl;
 		std::string mExternalUrl;
 		std::string mCurrentNavUrl;

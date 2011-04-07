@@ -457,28 +457,27 @@ void LLAppViewer::initGridChoice()
 	// Load	up the initial grid	choice from:
 	//	- hard coded defaults...
 	//	- command line settings...
-	//	- if dev build,	persisted settings...
+	//	- persisted settings...
 
-	// Set the "grid choice", this is specified	by command line.
+	// Get the grid choice specified via the command line.
 	std::string	grid_choice	= gSavedSettings.getString("CmdLineGridChoice");
-	LLViewerLogin::getInstance()->setGridChoice(grid_choice);
 
 	// Load last server choice by default 
 	// ignored if the command line grid	choice has been	set
-	if(grid_choice.empty())
+	if (grid_choice.empty())
 	{
-		S32	server = gSavedSettings.getS32("ServerChoice");
-		//server = llclamp(server, 0,	(S32)GRID_INFO_COUNT - 1);
-		if(server == GRID_INFO_OTHER)
+		EGridInfo server = (EGridInfo)gSavedSettings.getS32("ServerChoice");
+		if (server == GRID_INFO_OTHER)
 		{
-			std::string custom_server = gSavedSettings.getString("CustomServer");
-			LLViewerLogin::getInstance()->setGridChoice(custom_server);
+			grid_choice = gSavedSettings.getString("CustomServer");
 		}
-		else if(server != (S32)GRID_INFO_NONE)
+		else if (server != GRID_INFO_NONE)
 		{
 			LLViewerLogin::getInstance()->setGridChoice(server);
+			return;
 		}
 	}
+	LLViewerLogin::getInstance()->setGridChoice(grid_choice); // Note: this call is no op when string is empty.
 }
 
 //virtual

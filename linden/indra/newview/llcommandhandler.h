@@ -57,10 +57,12 @@ public:
 LLFooHandler gFooHandler;
 */
 
+class LLWebBrowserCtrl;
+
 class LLCommandHandler
 {
 public:
-	LLCommandHandler(const char* command, bool allow_from_external_browser);
+	LLCommandHandler(const char* command, bool allow_from_untrusted_browser);
 		// Automatically registers object to get called when 
 		// command is executed.  All commands can be processed
 		// in links from LLWebBrowserCtrl, but some (like teleport)
@@ -69,9 +71,12 @@ public:
 	virtual ~LLCommandHandler();
 
 	virtual bool handle(const LLSD& params,
-						const LLSD& queryMap) = 0;
-		// Execute the command with a provided (possibly empty)
-		// list of parameters.
+						const LLSD& query_map,
+						LLWebBrowserCtrl* web) = 0;
+		// For URL secondlife:///app/foo/bar/baz?cat=1&dog=2
+		// @params - array of "bar", "baz", possibly empty
+		// @query_map - map of "cat" -> 1, "dog" -> 2, possibly empty
+		// @web - pointer to web browser control, possibly NULL
 		// Return true if you did something, false if the parameters
 		// are invalid or on error.
 };
@@ -81,9 +86,10 @@ class LLCommandDispatcher
 {
 public:
 	static bool dispatch(const std::string& cmd,
-						 bool from_external_browser,
 						 const LLSD& params,
-						 const LLSD& queryMap);
+						 const LLSD& query_map,
+						 LLWebBrowserCtrl* web,
+						 bool trusted_browser);
 		// Execute a command registered via the above mechanism,
 		// passing string parameters.
 		// Returns true if command was found and executed correctly.

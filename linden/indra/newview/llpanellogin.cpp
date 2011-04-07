@@ -78,9 +78,6 @@
 
 #define USE_VIEWER_AUTH 0
 
-std::string load_password_from_disk(void);
-void save_password_to_disk(const char* hashed_password);
-
 const S32 BLACK_BORDER_HEIGHT = 160;
 const S32 MAX_PASSWORD = 16;
 
@@ -92,8 +89,8 @@ class LLLoginRefreshHandler : public LLCommandHandler
 {
 public:
 	// don't allow from external browsers
-	LLLoginRefreshHandler() : LLCommandHandler("login_refresh", false) { }
-	bool handle(const LLSD& tokens, const LLSD& queryMap)
+	LLLoginRefreshHandler() : LLCommandHandler("login_refresh", true) { }
+	bool handle(const LLSD& tokens, const LLSD& query_map, LLWebBrowserCtrl* web)
 	{	
 		if (LLStartUp::getStartupState() < STATE_LOGIN_CLEANUP)
 		{
@@ -106,104 +103,6 @@ public:
 LLLoginRefreshHandler gLoginRefreshHandler;
 
 
-//parses the input url and returns true if afterwards
-//a web-login-key, firstname and lastname  is set
-bool LLLoginHandler::parseDirectLogin(std::string url)
-{
-	LLURI uri(url);
-	parse(uri.queryMap());
-
-	if (mWebLoginKey.isNull() ||
-		mFirstName.empty() ||
-		mLastName.empty())
-	{
-		return false;
-	}
-	else
-	{
-		return true;
-	}
-}
-
-
-void LLLoginHandler::parse(const LLSD& queryMap)
-{
-	mWebLoginKey = queryMap["web_login_key"].asUUID();
-	mFirstName = queryMap["first_name"].asString();
-	mLastName = queryMap["last_name"].asString();
-	int grid_choice = GRID_INFO_NONE;
-
-	LLViewerLogin::getInstance()->setGridChoice(queryMap["grid"].asString());
-
-	if(grid_choice != GRID_INFO_NONE)
-	{
-		LLViewerLogin::getInstance()->setGridChoice(grid_choice);
-	}
-
-	std::string startLocation = queryMap["location"].asString();
-
-	if (startLocation == "specify")
-	{
-		LLURLSimString::setString(queryMap["region"].asString());
-	}
-	else if (startLocation == "home")
-	{
-		gSavedSettings.setBOOL("LoginLastLocation", FALSE);
-		LLURLSimString::setString(LLStringUtil::null);
-	}
-	else if (startLocation == "last")
-	{
-		gSavedSettings.setBOOL("LoginLastLocation", TRUE);
-		LLURLSimString::setString(LLStringUtil::null);
-	}
-}
-
-bool LLLoginHandler::handle(const LLSD& tokens,
-						  const LLSD& queryMap)
-{	
-	parse(queryMap);
-	
-	//if we haven't initialized stuff yet, this is 
-	//coming in from the GURL handler, just parse
-	if (STATE_FIRST == LLStartUp::getStartupState())
-	{
-		return true;
-	}
-	
-	std::string password = queryMap["password"].asString();
-
-	if (!password.empty())
-	{
-		gSavedSettings.setBOOL("RememberPassword", TRUE);
-
-		if (password.substr(0,3) != "$1$")
-		{
-			LLMD5 pass((unsigned char*)password.c_str());
-			char md5pass[33];		/* Flawfinder: ignore */
-			pass.hex_digest(md5pass);
-			password = ll_safe_string(md5pass, 32);
-			save_password_to_disk(password.c_str());
-		}
-	}
-	else
-	{
-		save_password_to_disk(NULL);
-		gSavedSettings.setBOOL("RememberPassword", FALSE);
-	}
-			
-
-	if  (LLStartUp::getStartupState() < STATE_LOGIN_CLEANUP)  //on splash page
-	{
-		if (mWebLoginKey.isNull()) {
-			LLPanelLogin::loadLoginPage();
-		} else {
-			LLStartUp::setStartupState( STATE_LOGIN_CLEANUP );
-		}
-	}
-	return true;
-}
-
-LLLoginHandler gLoginHandler;
 
 // helper class that trys to download a URL from a web site and calls a method 
 // on parent class indicating if the web server is working or not
@@ -378,7 +277,7 @@ LLPanelLogin::LLPanelLogin(const LLRect &rect,
 	// get the web browser control
 	LLWebBrowserCtrl* web_browser = getChild<LLWebBrowserCtrl>("login_html");
 	// Need to handle login secondlife:///app/ URLs
-	web_browser->setOpenAppSLURLs( true );
+	web_browser->setTrusted( true );
 
 	// observe browser events
 	web_browser->addObserver( this );
@@ -645,8 +544,9 @@ void LLPanelLogin::show(const LLRect &rect,
 }
 
 // static
-void LLPanelLogin::setFields(const std::string& firstname, const std::string& lastname, const std::string& password,
-							 BOOL remember)
+void LLPanelLogin::setFields(const std::string& firstname,
+			     const std::string& lastname,
+			     const std::string& password)
 {
 	if (!sInstance)
 	{
@@ -680,8 +580,6 @@ void LLPanelLogin::setFields(const std::string& firstname, const std::string& la
 		pass.hex_digest(munged_password);
 		sInstance->mMungedPassword = munged_password;
 	}
-
-	sInstance->childSetValue("remember_check", remember);
 }
 
 
@@ -700,8 +598,9 @@ void LLPanelLogin::addServer(const std::string& server, S32 domain_name)
 }
 
 // static
-void LLPanelLogin::getFields(std::string &firstname, std::string &lastname, std::string &password,
-							BOOL &remember)
+void LLPanelLogin::getFields(std::string *firstname,
+			     std::string *lastname,
+			     std::string *password)
 {
 	if (!sInstance)
 	{
@@ -709,14 +608,13 @@ void LLPanelLogin::getFields(std::string &firstname, std::string &lastname, std:
 		return;
 	}
 
-	firstname = sInstance->childGetText("first_name_edit");
-	LLStringUtil::trim(firstname);
+	*firstname = sInstance->childGetText("first_name_edit");
+	LLStringUtil::trim(*firstname);
 
-	lastname = sInstance->childGetText("last_name_edit");
-	LLStringUtil::trim(lastname);
+	*lastname = sInstance->childGetText("last_name_edit");
+	LLStringUtil::trim(*lastname);
 
-	password = sInstance->mMungedPassword;
-	remember = sInstance->childGetValue("remember_check");
+	*password = sInstance->mMungedPassword;
 }
 
 // static
@@ -825,7 +723,7 @@ void LLPanelLogin::loadLoginPage()
 	
 	std::ostringstream oStr;
 
-	std::string login_page = LLViewerLogin::getInstance()->getGridPage();
+	std::string login_page = LLViewerLogin::getInstance()->getLoginPageURI();
 	if (login_page.empty())
 	{
 		login_page = gSavedSettings.getString("LoginPage");
@@ -861,22 +759,27 @@ void LLPanelLogin::loadLoginPage()
 	char* curl_channel = curl_escape(gSavedSettings.getString("VersionChannelName").c_str(), 0);
 	char* curl_version = curl_escape(version.c_str(), 0);
 
-	//oStr << "&channel=" << curl_channel;
-	//oStr << "&version=" << curl_version;
+	oStr << "&channel=" << curl_channel;
+	oStr << "&version=" << curl_version;
 
 	curl_free(curl_channel);
 	curl_free(curl_version);
 
 	// Grid
-	char* curl_grid = curl_escape(LLViewerLogin::getInstance()->getGridLabel().c_str(), 0);
-	if (strcmp(curl_grid, "SecondLife") == 0)
+	std::string label = LLViewerLogin::getInstance()->getGridLabel();
+	LLStringUtil::toLower(label);
+	if (label.find("secondlife") != std::string::npos || label.find("second life") != std::string::npos)
 	{
-		strcpy(curl_grid, "agni");
+		if (label.find("beta") != std::string::npos)
+		{
+			label = "aditi";
+		}
+		else
+		{
+			label = "agni";
+		}
 	}
-	else if (strcmp(curl_grid, "SecondLife%20Beta") == 0)
-	{
-		strcpy(curl_grid, "aditi");
-	}
+	char* curl_grid = curl_escape(label.c_str(), 0);
 	oStr << "&grid=" << curl_grid;
 	curl_free(curl_grid);
 
@@ -1095,16 +998,16 @@ void LLPanelLogin::onSelectServer(LLUICtrl*, void*)
 	// The user twiddled with the grid choice ui.
 	// apply the selection to the grid setting.
 	std::string grid_label;
-	S32 grid_index;
+	EGridInfo grid_index;
 
 	LLComboBox* combo = sInstance->getChild<LLComboBox>("server_combo");
 	LLSD combo_val = combo->getValue();
 
 	if (LLSD::TypeInteger == combo_val.type())
 	{
-		grid_index = combo->getValue().asInteger();
+		grid_index = (EGridInfo)combo->getValue().asInteger();
 
-		if ((S32)GRID_INFO_OTHER == grid_index)
+		if (grid_index == GRID_INFO_OTHER)
 		{
 			// This happens if the user specifies a custom grid
 			// via command line.
@@ -1114,15 +1017,15 @@ void LLPanelLogin::onSelectServer(LLUICtrl*, void*)
 	else
 	{
 		// no valid selection, return other
-		grid_index = (S32)GRID_INFO_OTHER;
+		grid_index = GRID_INFO_OTHER;
 		grid_label = combo_val.asString();
 	}
 
-	// This new seelction will override preset uris
+	// This new selection will override preset uris
 	// from the command line.
 	LLViewerLogin* vl = LLViewerLogin::getInstance();
 	vl->resetURIs();
-	if(grid_index != GRID_INFO_OTHER)
+	if (grid_index != GRID_INFO_OTHER)
 	{
 		vl->setGridChoice(grid_index);
 	}
@@ -1146,10 +1049,6 @@ void LLPanelLogin::onSelectServer(LLUICtrl*, void*)
 
 void LLPanelLogin::onServerComboLostFocus(LLFocusableElement* fe, void*)
 {
-	if (!sInstance)
-	{
-		return;
-	}
 	LLComboBox* combo = sInstance->getChild<LLComboBox>("server_combo");
 	if(fe == combo)
 	{

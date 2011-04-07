@@ -1,3 +1,49 @@
+2011-04-07 Boy Lane <boy.lane@yahoo.com>
+
+    * Multiple dynamic grids from CoolVL and trusted webbrowser fix for 1.22 - still work in progress for login manager
+
+    modified:   ChangeLog.txt
+    modified:   linden/indra/llcommon/llstring.cpp
+    modified:   linden/indra/llcommon/llstring.h
+    modified:   linden/indra/llvfs/lldir.cpp
+    modified:   linden/indra/llvfs/lldir.h
+    modified:   linden/indra/newview/CMakeLists.txt
+    modified:   linden/indra/newview/app_settings/grids.xml
+    modified:   linden/indra/newview/app_settings/settings.xml    
+    modified:   linden/indra/newview/llappviewer.cpp
+    modified:   linden/indra/newview/llappviewerlinux.cpp
+    modified:   linden/indra/newview/llappviewermacosx.cpp
+    modified:   linden/indra/newview/llchatbar.cpp
+    modified:   linden/indra/newview/llcommandhandler.cpp    
+    modified:   linden/indra/newview/llcommandhandler.h
+    modified:   linden/indra/newview/llfloateravatarinfo.cpp
+    modified:   linden/indra/newview/llfloaterclassified.cpp
+    modified:   linden/indra/newview/llfloaterevent.cpp
+    modified:   linden/indra/newview/llfloatergroupinfo.cpp
+    modified:   linden/indra/newview/llfloaterhtml.cpp
+    modified:   linden/indra/newview/llfloaterhtml.h
+    modified:   linden/indra/newview/llfloaterparcel.cpp
+    modified:   linden/indra/newview/llfloaterpreference.cpp
+    modified:   linden/indra/newview/llfloaterteleporthistory.cpp
+    modified:   linden/indra/newview/llpanelclassified.cpp
+    modified:   linden/indra/newview/llpaneldirfind.cpp
+    modified:   linden/indra/newview/llpanellogin.cpp
+    modified:   linden/indra/newview/llpanellogin.h
+    modified:   linden/indra/newview/llprefsim.cpp
+    modified:   linden/indra/newview/llstartup.cpp
+    modified:   linden/indra/newview/llstartup.h
+    modified:   linden/indra/newview/llurldispatcher.cpp
+    modified:   linden/indra/newview/llurldispatcher.h
+    modified:   linden/indra/newview/llviewermenu.cpp
+    modified:   linden/indra/newview/llviewernetwork.cpp
+    modified:   linden/indra/newview/llviewernetwork.h
+    modified:   linden/indra/newview/llviewerwindow.cpp
+    modified:   linden/indra/newview/llwebbrowserctrl.cpp
+    modified:   linden/indra/newview/llwebbrowserctrl.h
+    modified:   linden/indra/newview/skins/default/xui/en-us/panel_login.xml
+    new file:   linden/indra/newview/llloginhandler.cpp
+    new file:   linden/indra/newview/llloginhandler.h
+
 2011-04-05 Boy Lane <boy.lane@yahoo.com>
 
     * ATI rendering fix from Shyotl

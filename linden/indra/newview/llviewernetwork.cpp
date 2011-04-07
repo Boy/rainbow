@@ -38,12 +38,10 @@
 #include "llsdserialize.h"
 #include "llviewermenu.h"
 
-const int DEFAULT_GRID_CHOICE = 1;
-
-const int GRID_INFO_NONE = 0;
-int GRID_INFO_OTHER;
-
 unsigned char gMACAddress[MAC_ADDRESS_BYTES];		/* Flawfinder: ignore */
+
+const EGridInfo DEFAULT_GRID_CHOICE = 1;
+EGridInfo GRID_INFO_OTHER;
 
 LLViewerLogin::LLViewerLogin() :
 	mGridChoice(DEFAULT_GRID_CHOICE)
@@ -56,21 +54,28 @@ LLViewerLogin::LLViewerLogin() :
 	entry.insert("helper_uri", "");
 	entry.insert("login_page", "");
 	array.append(entry);
-
+	// Add SecondLife servers (main and beta grid):
 	entry = mGridList.emptyMap();
 	entry.insert("label", "SecondLife");
-	entry.insert("name", "util.agni.lindenlab.com");
+	entry.insert("name", "agni.lindenlab.com");
 	entry.insert("login_uri", "https://login.agni.lindenlab.com/cgi-bin/login.cgi");
 	entry.insert("helper_uri", "https://secondlife.com/helpers/");
+	entry.insert("login_page", "http://secondlife.com/app/login/");
+	array.append(entry);
+	entry = mGridList.emptyMap();
+	entry.insert("label", "SecondLife Beta");
+	entry.insert("name", "aditi.lindenlab.com");
+	entry.insert("login_uri", "https://login.aditi.lindenlab.com/cgi-bin/login.cgi");
+	entry.insert("helper_uri", "http://aditi-secondlife.webdev.lindenlab.com/helpers/");
 	entry.insert("login_page", "http://secondlife.com/app/login/");
 	array.append(entry);
 
 	mGridList.insert("grids", array);
 
-	// load the linden grids if available
-	loadGridsLLSD(gDirUtilp->getExpandedFilename(LL_PATH_APP_SETTINGS,"grids.xml"));
-	// see if we have a grids.xml file in "user_settings" to append
-	loadGridsLLSD(gDirUtilp->getExpandedFilename(LL_PATH_USER_SETTINGS,"grids.xml"));
+	// load the alternate grids if available
+	loadGridsLLSD(gDirUtilp->getExpandedFilename(LL_PATH_APP_SETTINGS, "grids.xml"));
+	// see if we have a grids_custom.xml file to append
+	loadGridsLLSD(gDirUtilp->getExpandedFilename(LL_PATH_APP_SETTINGS, "grids_custom.xml"));
 
 	entry = mGridList.emptyMap();
 	entry.insert("label", "Other");
@@ -79,7 +84,7 @@ LLViewerLogin::LLViewerLogin() :
 	entry.insert("helper_uri", "");
 	mGridList["grids"].append(entry);
 
-	GRID_INFO_OTHER = mGridList.get("grids").size() - 1;
+	GRID_INFO_OTHER = (EGridInfo)mGridList.get("grids").size() - 1;
 }
 
 void LLViewerLogin::loadGridsLLSD(std::string xml_filename)
@@ -93,7 +98,7 @@ void LLViewerLogin::loadGridsLLSD(std::string xml_filename)
 		llinfos << "Reading grid info: " << xml_filename << llendl;
 		LLSDSerialize::fromXML(other_grids, llsd_xml);
 		for (LLSD::map_iterator grid_itr = other_grids.beginMap(); 
-			grid_itr != other_grids.endMap(); ++grid_itr)
+			 grid_itr != other_grids.endMap(); grid_itr++)
 		{
 			LLSD::String key_name = grid_itr->first;
 			LLSD grid_array = grid_itr->second;
@@ -145,77 +150,65 @@ void LLViewerLogin::setMenuColor() const
 	}
 }
 
-void LLViewerLogin::setGridChoice(int grid)
+void LLViewerLogin::setGridChoice(EGridInfo grid)
 {	
-	if (grid < 0 || grid >= mGridList.get("grids").size())
+	if (grid < 0 || grid > GRID_INFO_OTHER)
   	{
-		llwarns << "Invalid grid index specified." << llendl;
-		grid = DEFAULT_GRID_CHOICE;
+		llerrs << "Invalid grid index specified." << llendl;
   	}
 
-	if (mGridChoice != grid || gSavedSettings.getS32("ServerChoice") != grid)
+	mGridChoice = grid;
+	std::string name = mGridList.get("grids")[grid].get("label").asString();
+	LLStringUtil::toLower(name);
+	if (name.find("local") == 0)
 	{
-		mGridChoice = grid;
-		if (mGridList.get("grids")[mGridChoice].get("label").asString() == "Local")
-		{
-			mGridName = LOOPBACK_ADDRESS_STRING;
-		}
-		else if (mGridList.get("grids")[mGridChoice].get("label").asString() == "Other")
-		{
-			// *FIX:Mani - could this possibly be valid?
-			mGridName = "other";
-		}
-		else
-		{
-			mGridName = mGridList.get("grids")[mGridChoice].get("label").asString();
-		}
-
-  		gSavedSettings.setS32("ServerChoice", mGridChoice);
-		gSavedSettings.setString("CustomServer", mGridName);
+		mGridName = LOOPBACK_ADDRESS_STRING;
 	}
+	else if (name == "other")
+	{
+		// *FIX:Mani - could this possibly be valid?
+		mGridName = "other";
+	}
+	else
+	{
+		mGridName = mGridList.get("grids")[mGridChoice].get("label").asString();
+	}
+
+	gSavedSettings.setS32("ServerChoice", mGridChoice);
+	gSavedSettings.setString("CustomServer", mGridName);
 }
 
 void LLViewerLogin::setGridChoice(const std::string& grid_name)
 {
 	// Set the grid choice based on a string.
 	// The string can be:
-	// - a grid label from the gGridInfo table 
+	// - a grid label or a name from the known grids list
 	// - an ip address
 	if (!grid_name.empty())
 	{
 		// find the grid choice from the user setting.
-		int grid_index = GRID_INFO_NONE; 
-		for (;grid_index < mGridList["grids"].size(); ++grid_index)
+		std::string pattern(grid_name);
+		LLStringUtil::toLower(pattern);
+		for (EGridInfo grid_index = GRID_INFO_NONE; grid_index < GRID_INFO_OTHER; grid_index++)
 		{
-			if (mGridList["grids"][grid_index].get("label").asString() == grid_name.c_str())
+			std::string label = mGridList["grids"][grid_index].get("label").asString();
+			std::string name = mGridList["grids"][grid_index].get("name").asString();
+			LLStringUtil::toLower(label);
+			LLStringUtil::toLower(name);
+			if (label.find(pattern) == 0 || name.find(pattern) == 0)
 			{
-				// Founding a matching label in the list...
+				// Found a matching label in the list...
 				setGridChoice(grid_index);
-				break;
+				return;
 			}
 		}
 
-		if (GRID_INFO_OTHER == grid_index)
-		{
-			// *FIX:MEP Can and should we validate that this is an IP address?
-			mGridChoice = GRID_INFO_OTHER;
-			mGridName = grid_name;
-			gSavedSettings.setS32("ServerChoice", mGridChoice);
-			gSavedSettings.setString("CustomServer", mGridName);
-		}
+		// *FIX:MEP Can and should we validate that this is an IP address?
+		mGridChoice = GRID_INFO_OTHER;
+		mGridName = grid_name;
+		gSavedSettings.setS32("ServerChoice", mGridChoice);
+		gSavedSettings.setString("CustomServer", mGridName);
 	}
-}
-
-void LLViewerLogin::resetURIs()
-{
-    // Clear URIs when picking a new server
-	gSavedSettings.setValue("CmdLineLoginURI", LLSD::emptyArray());
-	gSavedSettings.setString("CmdLineHelperURI", "");
-}
-
-int LLViewerLogin::getGridChoice() const
-{
-	return mGridChoice;
 }
 
 std::string LLViewerLogin::getGridLabel() const
@@ -232,7 +225,7 @@ std::string LLViewerLogin::getGridLabel() const
 	return mGridName;
 }
 
-std::string LLViewerLogin::getGridPage() const
+std::string LLViewerLogin::getLoginPageURI() const
 {
 	if (mGridChoice == GRID_INFO_NONE)
 	{
@@ -246,13 +239,20 @@ std::string LLViewerLogin::getGridPage() const
 	return "";
 }
 
-std::string LLViewerLogin::getKnownGridLabel(int grid_index) const
+std::string LLViewerLogin::getKnownGridLabel(EGridInfo grid) const
 {
-	if(grid_index > GRID_INFO_NONE && grid_index < GRID_INFO_OTHER)
+	if( grid > GRID_INFO_NONE && grid < GRID_INFO_OTHER)
 	{
-		return mGridList.get("grids")[grid_index].get("label").asString();
+		return mGridList.get("grids")[grid].get("label").asString();
 	}
 	return mGridList.get("grids")[GRID_INFO_NONE].get("label").asString();
+}
+
+void LLViewerLogin::resetURIs()
+{
+    // Clear URIs when picking a new server
+	gSavedSettings.setValue("CmdLineLoginURI", LLSD::emptyArray());
+	gSavedSettings.setString("CmdLineHelperURI", "");
 }
 
 void LLViewerLogin::getLoginURIs(std::vector<std::string>& uris) const
@@ -315,6 +315,7 @@ std::string LLViewerLogin::getHelperURI() const
 		{
 			// what do we do with unnamed/miscellaneous grids?
 			// for now, operations that rely on the helper URI (currency/land purchasing) will fail
+			llwarns << "Missing Helper URI for this grid ! Currency/land purchasing) will fail..." << llendl;
 		}
 	}
 	return helper_uri;
@@ -325,10 +326,5 @@ bool LLViewerLogin::isInProductionGrid()
 	std::vector<std::string> uris;
 	getLoginURIs(uris);
 	LLStringUtil::toLower(uris[0]);
-	if((uris[0].find("aditi") == std::string::npos))
-	{
-		return true;
-	}
-
-	return false;
+	return ((uris[0].find("aditi") == std::string::npos));
 }

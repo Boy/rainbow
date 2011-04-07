@@ -58,10 +58,11 @@ LLMap< const LLUUID, LLFloaterAvatarInfo* > gAvatarInfoInstances;
 class LLAgentHandler : public LLCommandHandler
 {
 public:
-	// don't allow from external browsers
-	LLAgentHandler() : LLCommandHandler("agent", false) { }
+	// requires trusted browser to trigger
+	LLAgentHandler() : LLCommandHandler("agent", true) { }
 
-	bool handle(const LLSD& params, const LLSD& queryMap)
+	bool handle(const LLSD& params, const LLSD& query_map,
+				LLWebBrowserCtrl* web)
 	{
 		if (params.size() < 2) return false;
 		LLUUID agent_id;

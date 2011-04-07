@@ -114,6 +114,7 @@
 #include "llinventorymodel.h"
 #include "llinventoryview.h"
 #include "llkeyboard.h"
+#include "llloginhandler.h"			// gLoginHandler, SLURL support
 #include "llpanellogin.h"
 #include "llmutelist.h"
 #include "llnotify.h"
@@ -237,8 +238,6 @@ EStartupState LLStartUp::gStartupState = STATE_FIRST;
 
 void login_show();
 void login_callback(S32 option, void* userdata);
-std::string load_password_from_disk();
-void save_password_to_disk(const char* hashed_password);
 bool is_hex_string(U8* str, S32 len);
 void show_first_run_dialog();
 void first_run_dialog_callback(S32 option, void* userdata);
@@ -654,16 +653,23 @@ bool idle_startup()
 		//
 		// Log on to system
 		//
-		if ((!gLoginHandler.mFirstName.empty() &&
-			 !gLoginHandler.mLastName.empty() &&
-			 !gLoginHandler.mWebLoginKey.isNull())		
-			|| gLoginHandler.parseDirectLogin(LLStartUp::sSLURLCommand) )
+		if (!LLStartUp::sSLURLCommand.empty())
 		{
-			firstname = gLoginHandler.mFirstName;
-			lastname = gLoginHandler.mLastName;
-			web_login_key = gLoginHandler.mWebLoginKey;
+			// this might be a secondlife:///app/login URL
+			gLoginHandler.parseDirectLogin(LLStartUp::sSLURLCommand);
+		}
+		if (!gLoginHandler.getFirstName().empty()
+			|| !gLoginHandler.getLastName().empty()
+			|| !gLoginHandler.getWebLoginKey().isNull() )
+		{
+			// We have at least some login information on a SLURL
+			firstname = gLoginHandler.getFirstName();
+			lastname = gLoginHandler.getLastName();
+			web_login_key = gLoginHandler.getWebLoginKey();
 
-			show_connect_box = false;
+			// Show the login screen if we don't have everything
+			show_connect_box = 
+				firstname.empty() || lastname.empty() || web_login_key.isNull();
 		}
         else if(gSavedSettings.getLLSD("UserLoginInfo").size() == 3)
         {
@@ -675,7 +681,6 @@ bool idle_startup()
 			char md5pass[33];               /* Flawfinder: ignore */
 			pass.hex_digest(md5pass);
 			password = md5pass;
-			remember_password = gSavedSettings.getBOOL("RememberPassword");
 			
 #ifdef USE_VIEWER_AUTH
 			show_connect_box = true;
@@ -688,9 +693,8 @@ bool idle_startup()
 		{
 			firstname = gSavedSettings.getString("FirstName");
 			lastname = gSavedSettings.getString("LastName");
-			password = load_password_from_disk();
+			password = LLStartUp::loadPasswordFromDisk();
 			gSavedSettings.setBOOL("RememberPassword", TRUE);
-			remember_password = TRUE;
 			
 #ifdef USE_VIEWER_AUTH
 			show_connect_box = true;
@@ -704,8 +708,7 @@ bool idle_startup()
 			// a valid grid is selected
 			firstname = gSavedSettings.getString("FirstName");
 			lastname = gSavedSettings.getString("LastName");
-			password = load_password_from_disk();
-			remember_password = gSavedSettings.getBOOL("RememberPassword");
+			password = LLStartUp::loadPasswordFromDisk();
 			show_connect_box = true;
 		}
 
@@ -744,7 +747,7 @@ bool idle_startup()
 			// Load all the name information out of the login view
 			// NOTE: Hits "Attempted getFields with no login view shown" warning, since we don't
 			// show the login view until login_show() is called below.  
-			// LLPanelLogin::getFields(firstname, lastname, password, remember_password);
+			// LLPanelLogin::getFields(firstname, lastname, password);
 
 			if (gNoRender)
 			{
@@ -756,7 +759,7 @@ bool idle_startup()
 			// Show the login dialog
 			login_show();
 			// connect dialog is already shown, so fill in the names
-			LLPanelLogin::setFields( firstname, lastname, password, remember_password );
+			LLPanelLogin::setFields( firstname, lastname, password);
 
 			LLPanelLogin::giveFocus();
 
@@ -814,18 +817,18 @@ bool idle_startup()
 	if (STATE_LOGIN_CLEANUP == LLStartUp::getStartupState())
 	{
 		//reset the values that could have come in from a slurl
-		if (!gLoginHandler.mWebLoginKey.isNull())
+		if (!gLoginHandler.getWebLoginKey().isNull())
 		{
-			firstname = gLoginHandler.mFirstName;
-			lastname = gLoginHandler.mLastName;
-			web_login_key = gLoginHandler.mWebLoginKey;
+			firstname = gLoginHandler.getFirstName();
+			lastname = gLoginHandler.getLastName();
+			web_login_key = gLoginHandler.getWebLoginKey();
 		}
 				
 		if (show_connect_box)
 		{
 			// TODO if not use viewer auth
 			// Load all the name information out of the login view
-			LLPanelLogin::getFields(firstname, lastname, password, remember_password);
+			LLPanelLogin::getFields(&firstname, &lastname, &password);
 			// end TODO
 	 
 			// HACK: Try to make not jump on login
@@ -837,23 +840,13 @@ bool idle_startup()
 			gSavedSettings.setString("FirstName", firstname);
 			gSavedSettings.setString("LastName", lastname);
 
-			if (remember_password)
-			{
-				   save_password_to_disk(password.c_str());
-			}
-			else
-			{
-				   save_password_to_disk(NULL);
-			}
-			gSavedSettings.setBOOL("RememberPassword", remember_password);
-
 			LL_INFOS("AppInit") << "Attempting login as: " << firstname << " " << lastname << LL_ENDL;
 			gDebugInfo["LoginName"] = firstname + " " + lastname;	
 		}
 
 		// create necessary directories
 		// *FIX: these mkdir's should error check
-		gDirUtilp->setLindenUserDir(firstname, lastname);
+		gDirUtilp->setLindenUserDir(LLViewerLogin::getInstance()->getGridLabel(), firstname, lastname);
     	LLFile::mkdir(gDirUtilp->getLindenUserDir());
 
         // Set PerAccountSettingsFile to the default value.
@@ -884,7 +877,7 @@ bool idle_startup()
 			gDirUtilp->setChatLogsDir(gSavedPerAccountSettings.getString("InstantMessageLogPath"));		
 		}
 		
-		gDirUtilp->setPerAccountChatLogsDir(firstname, lastname);
+		gDirUtilp->setPerAccountChatLogsDir(LLViewerLogin::getInstance()->getGridLabel(), firstname, lastname);
 
 		LLFile::mkdir(gDirUtilp->getChatLogsDir());
 		LLFile::mkdir(gDirUtilp->getPerAccountChatLogsDir());
@@ -1376,15 +1369,17 @@ bool idle_startup()
 			gSavedSettings.setString("FirstName", firstname);
 			gSavedSettings.setString("LastName", lastname);
 
-			if (remember_password)
+			if (gSavedSettings.getBOOL("RememberPassword"))
 			{
-				   save_password_to_disk(password.c_str());
+				// Successful login means the password is valid, so save it.
+				LLStartUp::savePasswordToDisk(password);
 			}
 			else
 			{
-				   save_password_to_disk(NULL);
+				// Don't leave password from previous session sitting around
+				// during this login session.
+				LLStartUp::deletePasswordFromDisk();
 			}
-			gSavedSettings.setBOOL("RememberPassword", remember_password);
 
 			// this is their actual ability to access content
 			text = LLUserAuth::getInstance()->getResponse("agent_access_max");
@@ -1615,8 +1610,6 @@ bool idle_startup()
 			reset_login();
 			gSavedSettings.setBOOL("AutoLogin", FALSE);
 			show_connect_box = true;
-			// Don't save an incorrect password to disk.
-			save_password_to_disk(NULL);
 		}
 		return FALSE;
 	}
@@ -2622,9 +2615,9 @@ void login_show()
 	LLPanelLogin::addServer(LLViewerLogin::getInstance()->getGridLabel(), LLViewerLogin::getInstance()->getGridChoice());
 
 	LLViewerLogin* vl = LLViewerLogin::getInstance();
-	for (int grid_index = 1; grid_index < GRID_INFO_OTHER; ++grid_index)
+	for (EGridInfo grid_index = 1; grid_index < GRID_INFO_OTHER; ++grid_index)
 	{
-		LLPanelLogin::addServer(vl->getKnownGridLabel(grid_index).c_str(), grid_index);
+		LLPanelLogin::addServer(vl->getKnownGridLabel(grid_index), grid_index);
 	}
 }
 
@@ -2643,16 +2636,11 @@ void login_callback(S32 option, void *userdata)
 	{
 		// Make sure we don't save the password if the user is trying to clear it.
 		std::string first, last, password;
-		BOOL remember = TRUE;
-		LLPanelLogin::getFields(first, last, password, remember);
-		if (!remember)
+		LLPanelLogin::getFields(&first, &last, &password);
+		if (!gSavedSettings.getBOOL("RememberPassword"))
 		{
 			// turn off the setting and write out to disk
-			gSavedSettings.setBOOL("RememberPassword", FALSE);
 			gSavedSettings.saveToFile( gSavedSettings.getString("ClientSettingsFile") , TRUE );
-
-			// stomp the saved password on disk
-			save_password_to_disk(NULL);
 		}
 
 		// Next iteration through main loop should shut down the app cleanly.
@@ -2670,8 +2658,18 @@ void login_callback(S32 option, void *userdata)
 	}
 }
 
-std::string load_password_from_disk()
+
+// static
+std::string LLStartUp::loadPasswordFromDisk()
 {
+	// Only load password if we also intend to save it (otherwise the user
+	// wonders what we're doing behind his back).  JC
+	BOOL remember_password = gSavedSettings.getBOOL("RememberPassword");
+	if (!remember_password)
+	{
+		return std::string("");
+	}
+
 	std::string hashed_password("");
 
 	// Look for legacy "marker" password from settings.ini
@@ -2723,39 +2721,42 @@ std::string load_password_from_disk()
 	return hashed_password;
 }
 
-void save_password_to_disk(const char* hashed_password)
+
+// static
+void LLStartUp::savePasswordToDisk(const std::string& hashed_password)
 {
 	std::string filepath = gDirUtilp->getExpandedFilename(LL_PATH_USER_SETTINGS,
 													   "password.dat");
-	if (!hashed_password)
+	LLFILE* fp = LLFile::fopen(filepath, "wb");		/* Flawfinder: ignore */
+	if (!fp)
 	{
-		// No password, remove the file.
-		LLFile::remove(filepath);
+		return;
 	}
-	else
+
+	// Encipher with MAC address
+	const S32 HASHED_LENGTH = 32;
+	U8 buffer[HASHED_LENGTH+1];
+
+	LLStringUtil::copy((char*)buffer, hashed_password.c_str(), HASHED_LENGTH+1);
+
+	LLXORCipher cipher(gMACAddress, 6);
+	cipher.encrypt(buffer, HASHED_LENGTH);
+
+	if (fwrite(buffer, HASHED_LENGTH, 1, fp) != 1)
 	{
-		LLFILE* fp = LLFile::fopen(filepath, "wb");		/* Flawfinder: ignore */
-		if (!fp)
-		{
-			return;
-		}
-
-		// Encipher with MAC address
-		const S32 HASHED_LENGTH = 32;
-		U8 buffer[HASHED_LENGTH+1];
-
-		LLStringUtil::copy((char*)buffer, hashed_password, HASHED_LENGTH+1);
-
-		LLXORCipher cipher(gMACAddress, 6);
-		cipher.encrypt(buffer, HASHED_LENGTH);
-
-		if (fwrite(buffer, HASHED_LENGTH, 1, fp) != 1)
-		{
-			LL_WARNS("AppInit") << "Short write" << LL_ENDL;
-		}
-
-		fclose(fp);
+		LL_WARNS("AppInit") << "Short write" << LL_ENDL;
 	}
+
+	fclose(fp);
+}
+
+
+// static
+void LLStartUp::deletePasswordFromDisk()
+{
+	std::string filepath = gDirUtilp->getExpandedFilename(LL_PATH_USER_SETTINGS,
+														  "password.dat");
+	LLFile::remove(filepath);
 }
 
 bool is_hex_string(U8* str, S32 len)
@@ -4046,8 +4047,9 @@ bool LLStartUp::dispatchURL()
 	// ok, if we've gotten this far and have a startup URL
 	if (!sSLURLCommand.empty())
 	{
-		const bool from_external_browser = true;
-		LLURLDispatcher::dispatch(sSLURLCommand, from_external_browser);
+		LLWebBrowserCtrl* web = NULL;
+		const bool trusted_browser = false;
+		LLURLDispatcher::dispatch(sSLURLCommand, web, trusted_browser);
 	}
 	else if (LLURLSimString::parse())
 	{
@@ -4063,8 +4065,9 @@ bool LLStartUp::dispatchURL()
 			|| (dy*dy > SLOP*SLOP) )
 		{
 			std::string url = LLURLSimString::getURL();
-			const bool from_external_browser = true;
-			LLURLDispatcher::dispatch(url, from_external_browser);
+			LLWebBrowserCtrl* web = NULL;
+			const bool trusted_browser = false;
+			LLURLDispatcher::dispatch(url, web, trusted_browser);
 		}
 		return true;
 	}

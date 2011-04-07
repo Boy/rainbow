@@ -373,7 +373,7 @@ void run_vectorize_perf_test(void *)
 
 // Debug UI
 void handle_web_search_demo(void*);
-void handle_slurl_test(void*);
+void handle_web_browser_test(void*);
 void handle_save_to_xml(void*);
 void handle_load_from_xml(void*);
 
@@ -1049,7 +1049,7 @@ extern BOOL gDebugSelectMgr;
 
 void init_debug_ui_menu(LLMenuGL* menu)
 {
-	menu->append(new LLMenuItemCallGL("SLURL Test", &handle_slurl_test));
+	menu->append(new LLMenuItemCallGL("Web Browser Test", &handle_web_browser_test));
 	menu->append(new LLMenuItemCallGL("Editable UI", &edit_ui));
 	menu->append(new LLMenuItemCallGL( "Dump SelectMgr", &dump_select_mgr));
 	menu->append(new LLMenuItemCallGL( "Dump Inventory", &dump_inventory));
@@ -7805,13 +7805,13 @@ void handle_load_from_xml(void*)
 	}
 }
 
-void handle_slurl_test(void*)
+void handle_web_browser_test(void*)
 {
 	const bool open_links_externally = false;
 	const bool open_app_slurls = true;
 	LLFloaterHtml::getInstance()->show(
 		"http://secondlife.com/app/search/slurls.html",
-		"SLURL Test", 
+		"Web Browser Test", 
 		open_links_externally, 
 		open_app_slurls);
 }

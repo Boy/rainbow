@@ -2095,7 +2095,7 @@
     <key>CustomServer</key>
     <map>
       <key>Comment</key>
-      <string>Specifies IP address or hostname of grid to which you connect</string>
+      <string>Specifies the name of grid to which you connect</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>

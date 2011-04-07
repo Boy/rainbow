@@ -127,7 +127,7 @@ void LLFloaterHtml::show( std::string content_id, bool open_link_external, bool 
 
 ////////////////////////////////////////////////////////////////////////////////
 //
-void LLFloaterHtml::show( std::string start_url, std::string title, bool open_link_external, bool open_app_slurls )
+void LLFloaterHtml::show( std::string start_url, std::string title, bool open_link_external, bool trusted_browser )
 {
 	// set the title 
 	setTitle( title );
@@ -135,7 +135,7 @@ void LLFloaterHtml::show( std::string start_url, std::string title, bool open_li
 	// navigate to the URL
 	if ( mWebBrowser )
 	{
-		mWebBrowser->setOpenAppSLURLs( open_app_slurls );
+		mWebBrowser->setTrusted( trusted_browser );
 		mWebBrowser->setOpenInExternalBrowser( open_link_external );
 		mWebBrowser->navigateTo( start_url );
 	}

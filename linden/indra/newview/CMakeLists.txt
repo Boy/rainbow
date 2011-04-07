@@ -235,6 +235,7 @@ set(viewer_SOURCE_FILES
     lljoystickbutton.cpp
     lllandmarklist.cpp
     lllogchat.cpp
+    llloginhandler.cpp
     llmanip.cpp
     llmaniprotate.cpp
     llmanipscale.cpp
@@ -644,6 +645,7 @@ set(viewer_HEADER_FILES
     lllandmarklist.h
     lllightconstants.h
     lllogchat.h
+    llloginhandler.h
     llmanip.h
     llmaniprotate.h
     llmanipscale.h

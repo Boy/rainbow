@@ -520,7 +520,7 @@ std::string LLDir::getForbiddenFileChars()
 	return "\\/:*?\"<>|";
 }
 
-void LLDir::setLindenUserDir(const std::string &first, const std::string &last)
+void LLDir::setLindenUserDir(const std::string &grid, const std::string &first, const std::string &last)
 {
 	// if both first and last aren't set, assume we're grabbing the cached dir
 	if (!first.empty() && !last.empty())
@@ -531,11 +531,24 @@ void LLDir::setLindenUserDir(const std::string &first, const std::string &last)
 		LLStringUtil::toLower(firstlower);
 		std::string lastlower(last);
 		LLStringUtil::toLower(lastlower);
+		std::string gridlower(grid);
+		LLStringUtil::toLower(gridlower);
 		mLindenUserDir = getOSUserAppDir();
 		mLindenUserDir += mDirDelimiter;
 		mLindenUserDir += firstlower;
 		mLindenUserDir += "_";
 		mLindenUserDir += lastlower;
+		// Append the name of the grid, but only when not in SL to stay upward
+		// compatible with SL viewers.
+		if (!grid.empty() && gridlower.find("secondlife") == std::string::npos)
+		{
+			if (gridlower == "none" || gridlower == "other")
+			{
+				// Unknown grid name...
+				gridlower = "unknown";
+			}
+			mLindenUserDir += "@" + gridlower;
+		}
 	}
 	else
 	{
@@ -557,7 +570,7 @@ void LLDir::setChatLogsDir(const std::string &path)
 	}
 }
 
-void LLDir::setPerAccountChatLogsDir(const std::string &first, const std::string &last)
+void LLDir::setPerAccountChatLogsDir(const std::string &grid, const std::string &first, const std::string &last)
 {
 	// if both first and last aren't set, assume we're grabbing the cached dir
 	if (!first.empty() && !last.empty())
@@ -568,11 +581,24 @@ void LLDir::setPerAccountChatLogsDir(const std::string &first, const std::string
 		LLStringUtil::toLower(firstlower);
 		std::string lastlower(last);
 		LLStringUtil::toLower(lastlower);
+		std::string gridlower(grid);
+		LLStringUtil::toLower(gridlower);
 		mPerAccountChatLogsDir = getChatLogsDir();
 		mPerAccountChatLogsDir += mDirDelimiter;
 		mPerAccountChatLogsDir += firstlower;
 		mPerAccountChatLogsDir += "_";
 		mPerAccountChatLogsDir += lastlower;
+		// Append the name of the grid, but only when not in SL to stay upward
+		// compatible with SL viewers.
+		if (!grid.empty() && gridlower.find("secondlife") == std::string::npos)
+		{
+			if (gridlower == "none" || gridlower == "other")
+			{
+				// Unknown grid name...
+				gridlower = "unknown";
+			}
+			mPerAccountChatLogsDir += "@" + gridlower;
+		}
 	}
 	else
 	{

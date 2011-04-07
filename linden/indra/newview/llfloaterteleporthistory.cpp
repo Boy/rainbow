@@ -200,7 +200,8 @@ void LLFloaterTeleportHistory::onTeleport(void* data)
 
 	// build secondlife::/app link from simstring for instant teleport to destination
 	std::string slapp="secondlife:///app/teleport/" + self->mPlacesList->getFirstSelected()->getColumn(4)->getValue().asString();
-	LLURLDispatcher::dispatch(slapp, FALSE);
+	LLWebBrowserCtrl* web = NULL;
+	LLURLDispatcher::dispatch(slapp, web, TRUE);
 }
 
 // static

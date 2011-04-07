@@ -860,7 +860,8 @@ public:
 	LLChatHandler() : LLCommandHandler("chat", false) { }
 
     // Your code here
-	bool handle(const LLSD& tokens, const LLSD& queryMap)
+	bool handle(const LLSD& tokens, const LLSD& query_map,
+				LLWebBrowserCtrl* web)
 	{
 		if (tokens.size() < 2) return false;
 		S32 channel = tokens[0].asInteger();

@@ -181,8 +181,9 @@ void LLPrefsIMImpl::apply()
 
 		gDirUtilp->setChatLogsDir(gSavedPerAccountSettings.getString("InstantMessageLogPath"));
 
-		gDirUtilp->setPerAccountChatLogsDir(gSavedSettings.getString("FirstName"), 
-											gSavedSettings.getString("LastName") );
+		gDirUtilp->setPerAccountChatLogsDir(LLViewerLogin::getInstance()->getGridLabel(),
+											gSavedSettings.getString("FirstName"),
+											gSavedSettings.getString("LastName"));
 		LLFile::mkdir(gDirUtilp->getPerAccountChatLogsDir());
 		
 		bool new_im_via_email = childGetValue("send_im_to_email").asBoolean();
