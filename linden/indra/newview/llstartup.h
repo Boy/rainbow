@@ -52,6 +52,8 @@ typedef enum {
 	STATE_UPDATE_CHECK,				// Wait for user at a dialog box (updates, term-of-service, etc)
 	STATE_LOGIN_AUTH_INIT,			// Start login to SL servers
 	STATE_LOGIN_AUTHENTICATE,		// Do authentication voodoo
+	STATE_WAIT_LEGACY_LOGIN,        // Waiting for legacy login 
+	STATE_XMLRPC_LEGACY_LOGIN,      // XMLRPC for legacy login, OGPX maintain legacy XMLRPC
 	STATE_LOGIN_NO_DATA_YET,		// Waiting for authentication replies to start
 	STATE_LOGIN_DOWNLOADING,		// Waiting for authentication replies to download
 	STATE_LOGIN_PROCESS_RESPONSE,	// Check authentication reply

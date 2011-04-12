@@ -1759,6 +1759,17 @@ BOOL LLFloaterCustomize::postBuild()
 	childSetAction("Make Outfit", LLFloaterCustomize::onBtnMakeOutfit, (void*)this);
 	childSetAction("Save All", LLFloaterCustomize::onBtnSaveAll, (void*)this);
 	childSetAction("Close", LLFloater::onClickClose, (void*)this);
+	
+	// OGPX : if using agent domain, disable saving appearance until inventory and assets is working
+	// since it doesn't work in OGP right now, disable it, since enabling it hits an error case.
+	// OGPX TODO: test with it enabled with Agent Domain that manages Inventory and Assets
+    //    This was originally added as part of OGP9 svn branch because the viewer deeply deeply 
+	//    assumes that there *will* be an inventory there. If you never get an inventory, 
+	//    Make Outfit breaks badly. 
+	//if (!gSavedSettings.getString("CmdLineRegionURI").empty()) 
+	//{
+	//	childSetEnabled("Make Outfit", FALSE);
+	//}
 
     // reX
 	childSetAction("Import", LLFloaterCustomize::onBtnImport, (void*)this);
@@ -2763,6 +2774,14 @@ void LLFloaterCustomize::updateInventoryUI()
 			childSetVisible("panel_container", is_vis);
 		}
 	}
+
+	// OGPX : In place because Assets are not currently supported in OGPX. 
+	//    This was originally added as part of OGP9 svn branch because the viewer deeply deeply 
+	//     assumes that there *will* be an inventory there. If you never get an inventory, 
+	//     Make Outfit breaks badly. 
+	// OGPX TODO: When assets/inventory are supported, the check below can be removed.
+	// OGPX test if (!gSavedSettings.getString("CmdLineRegionURI").empty()) {all_complete = FALSE;}
+
 	childSetEnabled("Make Outfit", all_complete);
 }
 

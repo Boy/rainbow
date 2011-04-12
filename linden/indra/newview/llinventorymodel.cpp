@@ -1114,6 +1114,7 @@ void LLInventoryModel::mock(const LLUUID& root_id)
 //If we get back a normal response, handle it here
 void  LLInventoryModel::fetchInventoryResponder::result(const LLSD& content)
 {	
+	llinfos << "fetch http got " << ll_pretty_print_sd(content) << llendl; // OGPX
 	start_new_inventory_observer();
 
 	/*LLUUID agent_id;
@@ -1231,8 +1232,10 @@ class fetchDescendentsResponder: public LLHTTPClient::Responder
 };
 
 //If we get back a normal response, handle it here
+// Note: this is the handler for WebFetchInventoryDescendents and agent/inventory caps
 void  fetchDescendentsResponder::result(const LLSD& content)
 {
+	llinfos << "fetch descentdents got " << ll_pretty_print_sd(content) << llendl; // OGPX
 	if (content.has("folders"))	
 	{
 
@@ -1448,7 +1451,12 @@ void LLInventoryModel::bulkFetch(std::string url)
 				    folder_sd["fetch_folders"]	= TRUE; //(LLSD::Boolean)sFullFetchStarted;
 				    folder_sd["fetch_items"]	= (LLSD::Boolean)TRUE;
 				    
-				    if (ALEXANDRIA_LINDEN_ID == cat->getOwnerID())
+					llinfos << "fetching " <<cat->getUUID()<<" with cat owner "<<cat->getOwnerID()<<" and agent" <<gAgent.getID() << llendl;
+				    //OGPX if (ALEXANDRIA_LINDEN_ID == cat->getOwnerID())
+					// for OGP it really doesnt make sense to have the decision about whether to fetch
+					// from the library or user cap be determined by a hard coded UUID. 
+					// if it isnt an item that belongs to the agent, then fetch from the library
+					if (gAgent.getID() != cat->getOwnerID()) //if i am not the owner, it must be in the library
 					    body_lib["folders"].append(folder_sd);
 				    else
 					    body["folders"].append(folder_sd);
@@ -1479,11 +1487,19 @@ void LLInventoryModel::bulkFetch(std::string url)
 			sBulkFetchCount++;
 			if (body["folders"].size())
 			{
+				llinfos << " fetch descendents post to " << url << ": " << ll_pretty_print_sd(body) <<  llendl; // OGPX
 				LLHTTPClient::post(url, body, new fetchDescendentsResponder(body),300.0);
 			}
 			if (body_lib["folders"].size())
 			{
-				std::string url_lib = gAgent.getRegion()->getCapability("FetchLibDescendents");
+				std::string url_lib;
+				if (!gSavedSettings.getBOOL("OpenGridProtocol") )
+				{
+					url_lib = gAgent.getRegion()->getCapability("FetchLibDescendents");
+				}else{
+					url_lib = gAgent.getCapability("agent/inventory_library");
+				}
+				llinfos << " fetch descendents lib post: " << ll_pretty_print_sd(body_lib) << llendl; // OGPX
 				LLHTTPClient::post(url_lib, body_lib, new fetchDescendentsResponder(body_lib),300.0);
 			}
 			sFetchTimer.reset();
@@ -1564,8 +1580,21 @@ void LLInventoryModel::backgroundFetch(void*)
 {
 	if (sBackgroundFetchActive && gAgent.getRegion())
 	{
-		//If we'll be using the capability, we'll be sending batches and the background thing isn't as important.
-		std::string url = gAgent.getRegion()->getCapability("WebFetchInventoryDescendents");   
+	    // OGPX : agent/inventory is on gAgent for OGPX. I check both, and give
+		// ...preference to the one on gAgent. That way the existing non OGP path will remain the same. 
+        // Q: How *should* I handle deciding which cap to use? Maybe I don't want to trust fetching inventory from the region
+		// OGPX TODO: manage getting caps from more than one service securely. 
+		std::string url = gAgent.getCapability("agent/inventory"); // was WebFetchInventoryDescendents
+		if (url.empty()) 
+		{
+			// OGPX : if we didn't get an agent/inventory cap from the Agent Domain, check to see if there was one on the region
+			// If we'll be using the capability, we'll be sending batches and the background thing isn't as important.
+			// OGPX TODO: this should change when Capabilities are refactored. 
+			// ... this is a trust/security issue. if we have an agent/inventory from the Agent Domain, 
+			// maybe we shouldn't trust WFID from region.
+			llinfos << " no agent/inventory not on AD, checking fallback to region " << llendl; 
+			url = gAgent.getRegion()->getCapability("WebFetchInventoryDescendents"); 
+		}
 		if (!url.empty()) 
 		{
 			bulkFetch(url);
@@ -1933,6 +1962,220 @@ bool LLInventoryModel::isCategoryComplete(const LLUUID& cat_id) const
 		}
 	}
 	return false;
+}
+
+// OGPX : This loadSkeleton() takes LLSD formated data, other loadSkeleton is for XML-RPC data.
+//  There are major differences in what is returned from the XML-RPC authenticate call versus
+//  the style and sequence of OGP/llsd style authentication. 
+//  In OGP, authentication returns a cap to the skeleton on agent domain. An HTTP GET then occurs on
+//  this "agent/inventory-skeleton" cap. This loadSkeleton() 
+//  routine is called after that HTTP GET of "agent/inventory-skeleton" cap occurs.  
+bool LLInventoryModel::loadSkeleton(
+	const LLSD& options,
+	const LLUUID& owner_id)
+{
+	LL_INFOS("OGPX") << "importing inventory skeleton for " << owner_id << LL_ENDL;
+	LL_DEBUGS("Inventory") << " skeleton is " << ll_pretty_print_sd(options) << LL_ENDL;
+
+	typedef std::set<LLPointer<LLViewerInventoryCategory>, InventoryIDPtrLess> cat_set_t;
+	cat_set_t temp_cats;
+
+	update_map_t child_counts;
+
+	LLUUID id;
+	LLAssetType::EType preferred_type;
+	bool rv = true;
+	for (LLSD::array_const_iterator it = options.beginArray(); it < options.endArray(); ++it)
+	{
+		LLPointer<LLViewerInventoryCategory> cat = new LLViewerInventoryCategory(owner_id);
+		
+		LL_DEBUGS("Inventory") << "cat name, folder, parent, type " << (*it)["name"].asString() << " " << (*it)["folder_id"].asUUID() << " " << (*it)["parent_id"].asUUID() << " " << (*it)["type_default"].asString() << " " << LL_ENDL; // OGPX
+		if ((*it)["name"].asString().empty()) goto clean_cat;
+		cat->rename((*it)["name"].asString().c_str());
+		if ((*it)["folder_id"].asUUID().isNull()) goto clean_cat;
+		id = (*it)["folder_id"].asUUID();
+		// if an id is null, it locks the viewer.
+		if (id.isNull()) goto clean_cat;
+		cat->setUUID(id);
+		// OGPX : slight change in snowglobe non OGP handling of things with null parents vs OGP9 SVN branch
+		// OGPX : so commented this line out for OGPX as well. if((*it)["parent_id"].asUUID().isNull()) goto clean_cat;
+		id = (*it)["parent_id"].asUUID();
+		cat->setParent(id);
+		if ((*it)["type_default"].asString().empty())
+		{
+			preferred_type = LLAssetType::AT_NONE;
+		}
+		else
+		{
+			S32 t = (*it)["type_default"].asInteger();
+			preferred_type = (LLAssetType::EType)t;
+		}
+		cat->setPreferredType(preferred_type);
+		if ((*it)["version"].asString().empty()) goto clean_cat;
+		cat->setVersion((*it)["version"].asInteger());
+		temp_cats.insert(cat);
+		continue;
+	clean_cat:
+		llwarns << "Unable to import near " << cat->getName() << llendl;
+		rv = false;
+		//delete cat; // automatic when cat is reasigned or destroyed
+	}
+ 
+	S32 cached_category_count = 0;
+	S32 cached_item_count = 0;
+	if (!temp_cats.empty())
+	{
+		cat_array_t categories;
+		item_array_t items;
+		std::string owner_id_str;
+		owner_id.toString(owner_id_str);
+		std::string path(gDirUtilp->getExpandedFilename(LL_PATH_CACHE, owner_id_str));
+		std::string inventory_filename;
+		inventory_filename = llformat(CACHE_FORMAT_STRING, path.c_str());
+		const S32 NO_VERSION = LLViewerInventoryCategory::VERSION_UNKNOWN;
+		std::string gzip_filename(inventory_filename);
+		gzip_filename.append(".gz");
+		LLFILE* fp = LLFile::fopen(gzip_filename, "rb");
+		bool remove_inventory_file = false;
+		if (fp)
+		{
+			fclose(fp);
+			fp = NULL;
+			if (gunzip_file(gzip_filename, inventory_filename))
+			{
+				// we only want to remove the inventory file if it was
+				// gzipped before we loaded, and we successfully
+				// gunziped it.
+				remove_inventory_file = true;
+			}
+			else
+			{
+				llinfos << "Unable to gunzip " << gzip_filename << llendl;
+			}
+		}
+		bool is_cache_obsolete = false;
+		if (loadFromFile(inventory_filename, categories, items, is_cache_obsolete))
+		{
+			// We were able to find a cache of files. So, use what we
+			// found to generate a set of categories we should add. We
+			// will go through each category loaded and if the version
+			// does not match, invalidate the version.
+			S32 count = categories.count();
+			cat_set_t::iterator not_cached = temp_cats.end();
+			std::set<LLUUID> cached_ids;
+			for (S32 i = 0; i < count; ++i)
+			{
+				LLViewerInventoryCategory* cat = categories[i];
+				cat_set_t::iterator cit = temp_cats.find(cat);
+				if (cit == temp_cats.end())
+				{
+					continue; // cache corruption?? not sure why this happens -SJB
+				}
+				LLViewerInventoryCategory* tcat = *cit;
+				
+				// we can safely ignore anything loaded from file, but
+				// not sent down in the skeleton.
+				if (cit == not_cached)
+				{
+					continue;
+				}
+				if (cat->getVersion() != tcat->getVersion())
+				{
+					// if the cached version does not match the server version,
+					// throw away the version we have so we can fetch the
+					// correct contents the next time the viewer opens the folder.
+					tcat->setVersion(NO_VERSION);
+				}
+				else
+				{
+					cached_ids.insert(tcat->getUUID());
+				}
+			}
+
+			// go ahead and add the cats returned during the download
+			std::set<LLUUID>::iterator not_cached_id = cached_ids.end();
+			cached_category_count = cached_ids.size();
+			for (cat_set_t::iterator it = temp_cats.begin(); it != temp_cats.end(); ++it)
+			{
+				if (cached_ids.find((*it)->getUUID()) == not_cached_id)
+				{
+					// this check is performed so that we do not
+					// mark new folders in the skeleton (and not in cache)
+					// as being cached.
+					LLViewerInventoryCategory *llvic = (*it);
+					llvic->setVersion(NO_VERSION);
+				}
+				addCategory(*it);
+				++child_counts[(*it)->getParentUUID()];
+			}
+
+			// Add all the items loaded which are parented to a
+			// category with a correctly cached parent
+			count = items.count();
+			cat_map_t::iterator unparented = mCategoryMap.end();
+			for (int i = 0; i < count; ++i)
+			{
+				cat_map_t::iterator cit = mCategoryMap.find(items[i]->getParentUUID());
+				
+				if (cit != unparented)
+				{
+					LLViewerInventoryCategory* cat = cit->second;
+					if (cat->getVersion() != NO_VERSION)
+					{
+						addItem(items[i]);
+						cached_item_count += 1;
+						++child_counts[cat->getUUID()];
+					}
+				}
+			}
+		}
+		else
+		{
+			// go ahead and add everything after stripping the version
+			// information.
+			for (cat_set_t::iterator it = temp_cats.begin(); it != temp_cats.end(); ++it)
+			{
+				LLViewerInventoryCategory *llvic = (*it);
+				llvic->setVersion(NO_VERSION);
+				addCategory(*it);
+			}
+		}
+
+		// At this point, we need to set the known descendents for each
+		// category which successfully cached so that we do not
+		// needlessly fetch descendents for categories which we have.
+		update_map_t::iterator no_child_counts = child_counts.end();
+		update_map_t::iterator the_count;
+		for (cat_set_t::iterator it = temp_cats.begin(); it != temp_cats.end(); ++it)
+		{
+			LLViewerInventoryCategory* cat = (*it);
+			if (cat->getVersion() != NO_VERSION)
+			{
+				the_count = child_counts.find(cat->getUUID());
+				if (the_count != no_child_counts)
+				{
+					cat->setDescendentCount((*the_count).second.mValue);
+				}
+				else
+				{
+					cat->setDescendentCount(0);
+				}
+			}
+		}
+
+		if (remove_inventory_file)
+		{
+			// clean up the gunzipped file.
+			LLFile::remove(inventory_filename);
+		}
+		categories.clear(); // will unref and delete entries
+	}
+
+	LL_DEBUGS("Inventory") << "Successfully loaded " << cached_category_count
+			<< " categories and " << cached_item_count << " items from cache."
+			<< LL_ENDL;
+
+	return rv;
 }
 
 bool LLInventoryModel::loadSkeleton(

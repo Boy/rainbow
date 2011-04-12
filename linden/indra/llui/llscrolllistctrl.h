@@ -339,6 +339,8 @@ public:
 	void	setUserdata( void* userdata )	{ mUserdata = userdata; }
 	void*	getUserdata() const 			{ return mUserdata; }
 
+	void setToolTip(const std::string tool_tip) 		{ mToolTip=tool_tip; }
+
 	LLUUID	getUUID() const					{ return mItemValue.asUUID(); }
 	LLSD	getValue() const				{ return mItemValue; }
 
@@ -370,6 +372,7 @@ private:
 	BOOL	mEnabled;
 	void*	mUserdata;
 	LLSD	mItemValue;
+	std::string mToolTip;
 	std::vector<LLScrollListCell *> mColumns;
 };
 

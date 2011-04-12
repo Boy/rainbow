@@ -40,11 +40,12 @@
 
 unsigned char gMACAddress[MAC_ADDRESS_BYTES];		/* Flawfinder: ignore */
 
-const EGridInfo DEFAULT_GRID_CHOICE = 1;
 EGridInfo GRID_INFO_OTHER;
 
 LLViewerLogin::LLViewerLogin() :
-	mGridChoice(DEFAULT_GRID_CHOICE)
+	mGridChoice(DEFAULT_GRID_CHOICE),
+	mCurrentURI(0),
+	mNameEditted(false)
 {
 	LLSD array = mGridList.emptyArray();
 	LLSD entry = mGridList.emptyMap();
@@ -57,14 +58,14 @@ LLViewerLogin::LLViewerLogin() :
 	// Add SecondLife servers (main and beta grid):
 	entry = mGridList.emptyMap();
 	entry.insert("label", "SecondLife");
-	entry.insert("name", "agni.lindenlab.com");
+	entry.insert("name", "util.agni.lindenlab.com");
 	entry.insert("login_uri", "https://login.agni.lindenlab.com/cgi-bin/login.cgi");
 	entry.insert("helper_uri", "https://secondlife.com/helpers/");
 	entry.insert("login_page", "http://secondlife.com/app/login/");
 	array.append(entry);
 	entry = mGridList.emptyMap();
 	entry.insert("label", "SecondLife Beta");
-	entry.insert("name", "aditi.lindenlab.com");
+	entry.insert("name", "util.aditi.lindenlab.com");
 	entry.insert("login_uri", "https://login.aditi.lindenlab.com/cgi-bin/login.cgi");
 	entry.insert("helper_uri", "http://aditi-secondlife.webdev.lindenlab.com/helpers/");
 	entry.insert("login_page", "http://secondlife.com/app/login/");
@@ -85,6 +86,8 @@ LLViewerLogin::LLViewerLogin() :
 	mGridList["grids"].append(entry);
 
 	GRID_INFO_OTHER = (EGridInfo)mGridList.get("grids").size() - 1;
+
+	parseCommandLineURIs();
 }
 
 void LLViewerLogin::loadGridsLLSD(std::string xml_filename)
@@ -171,7 +174,10 @@ void LLViewerLogin::setGridChoice(EGridInfo grid)
 	}
 	else
 	{
-		mGridName = mGridList.get("grids")[mGridChoice].get("label").asString();
+		mGridName = mGridList.get("grids")[grid].get("label").asString();
+		setGridURI(mGridList.get("grids")[grid].get("login_uri").asString());
+		setHelperURI(mGridList.get("grids")[grid].get("helper_uri").asString());
+		setLoginPageURI(mGridList.get("grids")[grid].get("login_page").asString());
 	}
 
 	gSavedSettings.setS32("ServerChoice", mGridChoice);
@@ -199,7 +205,7 @@ void LLViewerLogin::setGridChoice(const std::string& grid_name)
 			{
 				// Found a matching label in the list...
 				setGridChoice(grid_index);
-				return;
+				break;
 			}
 		}
 
@@ -211,7 +217,21 @@ void LLViewerLogin::setGridChoice(const std::string& grid_name)
 	}
 }
 
-std::string LLViewerLogin::getGridLabel() const
+void LLViewerLogin::setGridURI(const std::string& uri)
+{
+	std::vector<std::string> uri_list;
+	uri_list.push_back(uri);
+	setGridURIs(uri_list);
+}
+
+void LLViewerLogin::setGridURIs(const std::vector<std::string>& urilist)
+{
+	mGridURIs.clear();
+	mGridURIs.insert(mGridURIs.begin(), urilist.begin(), urilist.end());
+	mCurrentURI = 0;
+}
+
+std::string LLViewerLogin::getGridLabel()
 {
 	if(mGridChoice == GRID_INFO_NONE)
 	{
@@ -221,22 +241,14 @@ std::string LLViewerLogin::getGridLabel() const
 	{
 		return mGridList["grids"][mGridChoice].get("label").asString();
 	}
-
-	return mGridName;
-}
-
-std::string LLViewerLogin::getLoginPageURI() const
-{
-	if (mGridChoice == GRID_INFO_NONE)
+	else if (!mGridName.empty())
 	{
-		return "";
+		return mGridName;
 	}
-	else if (mGridChoice < GRID_INFO_OTHER)
+	else
 	{
-		return mGridList["grids"][mGridChoice].get("login_page").asString();
+		return LLURI(getCurrentGridURI()).hostName();
 	}
-
-	return "";
 }
 
 std::string LLViewerLogin::getKnownGridLabel(EGridInfo grid) const
@@ -248,83 +260,133 @@ std::string LLViewerLogin::getKnownGridLabel(EGridInfo grid) const
 	return mGridList.get("grids")[GRID_INFO_NONE].get("label").asString();
 }
 
-void LLViewerLogin::resetURIs()
+const std::vector<std::string>& LLViewerLogin::getCommandLineURIs()
 {
-    // Clear URIs when picking a new server
-	gSavedSettings.setValue("CmdLineLoginURI", LLSD::emptyArray());
-	gSavedSettings.setString("CmdLineHelperURI", "");
+	return mCommandLineURIs;
 }
 
-void LLViewerLogin::getLoginURIs(std::vector<std::string>& uris) const
+const std::vector<std::string>& LLViewerLogin::getGridURIs()
+{
+	return mGridURIs;
+}
+
+void LLViewerLogin::parseCommandLineURIs()
 {
 	// return the login uri set on the command line.
 	LLControlVariable* c = gSavedSettings.getControl("CmdLineLoginURI");
 	if(c)
 	{
 		LLSD v = c->getValue();
-		if(v.isArray())
+		if (!v.isUndefined())
 		{
-			for(LLSD::array_const_iterator itr = v.beginArray();
-				itr != v.endArray(); ++itr)
+			bool foundRealURI = false;
+			if(v.isArray())
 			{
-				std::string uri = itr->asString();
-				if(!uri.empty())
+				for(LLSD::array_const_iterator itr = v.beginArray();
+					itr != v.endArray(); ++itr)
 				{
-					uris.push_back(uri);
+					std::string uri = itr->asString();
+					if(!uri.empty())
+					{
+						foundRealURI = true;
+						mCommandLineURIs.push_back(uri);
+					}
 				}
 			}
-		}
-		else
-		{
-			std::string uri = v.asString();
-			if(!uri.empty())
+			else if (v.isString())
 			{
-				uris.push_back(uri);
+				std::string uri = v.asString();
+				if(!uri.empty())
+				{
+					foundRealURI = true;
+					mCommandLineURIs.push_back(uri);
+				}
+			}
+
+			if (foundRealURI)
+			{
+				mGridChoice = GRID_INFO_OTHER;
+				mCurrentURI = 0;
+				mGridName = getGridLabel();
 			}
 		}
 	}
 
-	// If there was no command line uri...
-	if(uris.empty())
+	setLoginPageURI(gSavedSettings.getString("LoginPage"));
+	setHelperURI(gSavedSettings.getString("CmdLineHelperURI"));
+}
+
+const std::string LLViewerLogin::getCurrentGridURI()
+{
+	return (((int)(mGridURIs.size()) > mCurrentURI) ? mGridURIs[mCurrentURI] : std::string());
+}
+
+bool LLViewerLogin::tryNextURI()
+{
+	if (++mCurrentURI < (int)(mGridURIs.size()))
 	{
-		// If its a known grid choice, get the uri from the table,
-		// else try the grid name.
-		if(mGridChoice > GRID_INFO_NONE && mGridChoice < GRID_INFO_OTHER)
-		{
-			uris.push_back(mGridList["grids"][mGridChoice].get("login_uri").asString());
-		}
-		else
-		{
-			uris.push_back(mGridName);
-		}
+		return true;
+	}
+	else
+	{
+		mCurrentURI = 0;
+		return false;
 	}
 }
 
-std::string LLViewerLogin::getHelperURI() const
+const std::string LLViewerLogin::getStaticGridHelperURI(const EGridInfo grid) const
 {
-	std::string helper_uri = gSavedSettings.getString("CmdLineHelperURI");
+	std::string helper_uri;
+	// grab URI from selected grid
+	if(grid > GRID_INFO_NONE && grid < GRID_INFO_OTHER)
+	{
+		helper_uri = mGridList["grids"][grid].get("helper_uri").asString();
+	}
+
 	if (helper_uri.empty())
 	{
-		// grab URI from selected grid
-		if(mGridChoice > GRID_INFO_NONE && mGridChoice < GRID_INFO_OTHER)
-		{
-			helper_uri = mGridList["grids"][mGridChoice].get("helper_uri").asString();
-		}
-
-		if (helper_uri.empty())
-		{
-			// what do we do with unnamed/miscellaneous grids?
-			// for now, operations that rely on the helper URI (currency/land purchasing) will fail
-			llwarns << "Missing Helper URI for this grid ! Currency/land purchasing) will fail..." << llendl;
-		}
+		// what do we do with unnamed/miscellaneous grids?
+		// for now, operations that rely on the helper URI (currency/land purchasing) will fail
+		llwarns << "Missing Helper URI for this grid ! Currency/land purchasing) will fail..." << llendl;
 	}
 	return helper_uri;
 }
 
+const std::string LLViewerLogin::getHelperURI() const
+{
+	return mHelperURI;
+}
+
+void LLViewerLogin::setHelperURI(const std::string& uri)
+{
+	mHelperURI = uri;
+}
+
+const std::string LLViewerLogin::getLoginPageURI() const
+{
+	return mLoginPageURI;
+}
+
+void LLViewerLogin::setLoginPageURI(const std::string& uri)
+{
+	mLoginPageURI = uri;
+}
+
 bool LLViewerLogin::isInProductionGrid()
 {
-	std::vector<std::string> uris;
-	getLoginURIs(uris);
-	LLStringUtil::toLower(uris[0]);
-	return ((uris[0].find("aditi") == std::string::npos));
+	return (getCurrentGridURI().find("aditi") == std::string::npos);
+}
+
+const std::string LLViewerLogin::getStaticGridURI(const EGridInfo grid) const
+{
+	// If its a known grid choice, get the uri from the table,
+	// else try the grid name.
+	if (grid > GRID_INFO_NONE && grid < GRID_INFO_OTHER)
+	{
+		return mGridList.get("grids")[grid].get("login_uri").asString();
+	}
+	else
+	{
+		return std::string("");
+	}
 }

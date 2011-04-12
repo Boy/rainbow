@@ -277,6 +277,8 @@ BOOL gCrashOnStartup = FALSE;
 BOOL gLLErrorActivated = FALSE;
 BOOL gLogoutInProgress = FALSE;
 
+static std::string gPlaceAvatarCap;	//OGPX TODO: should belong elsewhere, as part of the llagent caps?
+
 ////////////////////////////////////////////////////////////
 // Internal globals... that should be removed.
 static std::string gArgs;
@@ -461,6 +463,7 @@ void LLAppViewer::initGridChoice()
 
 	// Get the grid choice specified via the command line.
 	std::string	grid_choice	= gSavedSettings.getString("CmdLineGridChoice");
+	LLViewerLogin* vl = LLViewerLogin::getInstance();
 
 	// Load last server choice by default 
 	// ignored if the command line grid	choice has been	set
@@ -473,11 +476,16 @@ void LLAppViewer::initGridChoice()
 		}
 		else if (server != GRID_INFO_NONE)
 		{
-			LLViewerLogin::getInstance()->setGridChoice(server);
+			vl->setGridChoice(server);
+			return;
+		}
+		else
+		{
+			vl->setGridChoice(DEFAULT_GRID_CHOICE);
 			return;
 		}
 	}
-	LLViewerLogin::getInstance()->setGridChoice(grid_choice); // Note: this call is no op when string is empty.
+	vl->setGridChoice(grid_choice); // Note: this call is no op when string is empty.
 }
 
 //virtual
@@ -1573,46 +1581,78 @@ bool LLAppViewer::initLogging()
 	return true;
 }
 
-bool LLAppViewer::loadSettingsFromDirectory(ELLPath path_index, bool set_defaults)
+bool LLAppViewer::loadSettingsFromDirectory(const std::string& location_key,
+					    bool set_defaults)
 {	
-	for(LLSD::map_iterator itr = mSettingsFileList.beginMap(); itr != mSettingsFileList.endMap(); ++itr)
+	// Find and vet the location key.
+	if(!mSettingsLocationList.has(location_key))
 	{
-		std::string settings_name = (*itr).first;
-		std::string settings_file = mSettingsFileList[settings_name].asString();
+		llerrs << "Requested unknown location: " << location_key << llendl;
+		return false;
+	}
 
-		std::string full_settings_path = gDirUtilp->getExpandedFilename(path_index, settings_file);
+	LLSD location = mSettingsLocationList.get(location_key);
 
-		if(settings_name == sGlobalSettingsName 
-			&& path_index == LL_PATH_USER_SETTINGS)
+	if(!location.has("PathIndex"))
+	{
+		llerrs << "Settings location is missing PathIndex value. Settings cannot be loaded." << llendl;
+		return false;
+	}
+	ELLPath path_index = (ELLPath)(location.get("PathIndex").asInteger());
+	if(path_index <= LL_PATH_NONE || path_index >= LL_PATH_LAST)
+	{
+		llerrs << "Out of range path index in app_settings/settings_files.xml" << llendl;
+		return false;
+	}
+
+	// Iterate through the locations list of files.
+	LLSD files = location.get("Files");
+	for(LLSD::map_iterator itr = files.beginMap(); itr != files.endMap(); ++itr)
+	{
+		std::string settings_group = (*itr).first;
+		llinfos << "Attempting to load settings for the group " << settings_group 
+			    << " - from location " << location_key << llendl;
+
+		if(gSettings.find(settings_group) == gSettings.end())
 		{
-			// The non-persistent setting, ClientSettingsFile, specifies a 
-			// custom name to use for the global settings file.
-			// Only apply this setting if this method is setting the 'Global' 
-			// settings from the user_settings path.
-			std::string custom_path;
-			if(gSettings[sGlobalSettingsName]->controlExists("ClientSettingsFile"))
-			{
-				custom_path = 
-					gSettings[sGlobalSettingsName]->getString("ClientSettingsFile");
-			}
-			if(!custom_path.empty())
-			{
-				full_settings_path = custom_path;
-			}
-		}
-
-		if(gSettings.find(settings_name) == gSettings.end())
-		{
-			llwarns << "Cannot load " << settings_file << " - No matching settings group for name " << settings_name << llendl;
+			llwarns << "No matching settings group for name " << settings_group << llendl;
 			continue;
 		}
-		if(!gSettings[settings_name]->loadFromFile(full_settings_path, set_defaults))
+
+		LLSD file = (*itr).second;
+
+		std::string full_settings_path;
+		if(file.has("NameFromSetting"))
 		{
-			// If attempting to load the default global settings (app_settings/settings.xml) 
-			// fails, the app should error and quit.
-			if(path_index == LL_PATH_APP_SETTINGS && settings_name == sGlobalSettingsName)
+			std::string custom_name_setting = file.get("NameFromSetting");
+			// *NOTE: Regardless of the group currently being lodaed,
+			// this setting is always read from the Global settings.
+			if(gSettings[sGlobalSettingsName]->controlExists(custom_name_setting))
 			{
-				llwarns << "Error: Cannot load default settings from: " << full_settings_path << llendl;
+				std::string file_name = 
+					gSettings[sGlobalSettingsName]->getString(custom_name_setting);
+				full_settings_path = file_name;
+			}
+		}
+
+		if(full_settings_path.empty())
+		{
+			std::string file_name = file.get("Name");
+			full_settings_path = gDirUtilp->getExpandedFilename(path_index, file_name);
+		}
+
+		int requirement = 0;
+		if(file.has("Requirement"))
+		{
+			requirement = file.get("Requirement").asInteger();
+		}
+		
+		if(!gSettings[settings_group]->loadFromFile(full_settings_path, set_defaults))
+		{
+			if(requirement == 1)
+			{
+				llwarns << "Error: Cannot load required settings file from: " 
+						<< full_settings_path << llendl;
 				return false;
 			}
 			else
@@ -1628,11 +1668,20 @@ bool LLAppViewer::loadSettingsFromDirectory(ELLPath path_index, bool set_default
 	return true;
 }
 
-std::string LLAppViewer::getSettingsFileName(const std::string& file)
+std::string LLAppViewer::getSettingsFilename(const std::string& location_key,
+											 const std::string& file)
 {
-	if(mSettingsFileList.has(file))
+	if(mSettingsLocationList.has(location_key))
 	{
-		return mSettingsFileList[file].asString();
+		LLSD location = mSettingsLocationList.get(location_key);
+		if(location.has("Files"))
+		{
+			LLSD files = location.get("Files");
+			if(files.has(file) && files[file].has("Name"))
+			{
+				return files.get(file).get("Name").asString();
+			}
+		}
 	}
 	return std::string();
 }
@@ -1653,8 +1702,8 @@ bool LLAppViewer::initConfiguration()
         llerrs << "Cannot load default configuration file " << settings_file_list << llendl;
 	}
 
-	mSettingsFileList = settings_control.getLLSD("Files");
-	
+	mSettingsLocationList = settings_control.getLLSD("Locations");
+		
 	// The settings and command line parsing have a fragile
 	// order-of-operation:
 	// - load defaults from app_settings
@@ -1667,7 +1716,7 @@ bool LLAppViewer::initConfiguration()
 	
 	// - load defaults
 	bool set_defaults = true;
-	if(!loadSettingsFromDirectory(LL_PATH_APP_SETTINGS, set_defaults))
+	if(!loadSettingsFromDirectory("Default", set_defaults))
 	{
 		std::ostringstream msg;
 		msg << "Rainbow Viewer could not load its default settings file. \n" 
@@ -1797,7 +1846,7 @@ bool LLAppViewer::initConfiguration()
 	}
 
 	// - load overrides from user_settings 
-	loadSettingsFromDirectory(LL_PATH_USER_SETTINGS);
+	loadSettingsFromDirectory("User");
 
 #if LL_DYNAMIC_FONT_DISCOVERY
 	// Linux does *dynamic* font discovery which is preferable to
@@ -2957,6 +3006,18 @@ const std::string& LLAppViewer::getWindowTitle() const
 	return gWindowTitle;
 }
 
+ // OGPX TODO: refactor caps code please, also "PlaceAvatar" is a bit dated, since
+ // we have since changed the name of the cap
+void LLAppViewer::setPlaceAvatarCap(const std::string& uri)
+{
+    gPlaceAvatarCap = uri;
+}
+
+const std::string& LLAppViewer::getPlaceAvatarCap() const
+{
+	return gPlaceAvatarCap;
+}
+
 // Callback from a dialog indicating user was logged out.  
 void finish_disconnect(S32 option, void* userdata)
 {
@@ -3575,16 +3636,63 @@ void LLAppViewer::idleShutdown()
 	}
 }
 
+// OGPX : Instead of sending UDP messages to the sim, tell the Agent Domain about logoff
+//... This responder is used with rez_avatar/place when the specialized case
+//... of sending a null region name is sent to the agent domain. Null region name means
+//... log me off of agent domain. *But* what about cases where you want to be logged into
+//... agent domain, but not physically on a region? 
+class LLLogoutResponder :
+	public LLHTTPClient::Responder
+{
+public:
+	LLLogoutResponder()
+	{
+	}
+
+	~LLLogoutResponder()
+	{
+	}
+	
+	void error(U32 statusNum, const std::string& reason)
+	{		
+		// consider retries
+		llinfos << "LLLogoutResponder error "
+				<< statusNum << " " << reason << llendl;
+	}
+
+	void result(const LLSD& content)
+	{
+		// perhaps logoutReply should come through this in the future
+		llinfos << "LLLogoutResponder completed successfully" << llendl;
+	
+	}
+
+};
+
 void LLAppViewer::sendLogoutRequest()
 {
 	if(!mLogoutRequestSent)
 	{
+
+		if (!gSavedSettings.getBOOL("OpenGridProtocol")) // OGPX : if not OGP mode, then tell sim bye
+		{
 		LLMessageSystem* msg = gMessageSystem;
 		msg->newMessageFast(_PREHASH_LogoutRequest);
 		msg->nextBlockFast(_PREHASH_AgentData);
 		msg->addUUIDFast(_PREHASH_AgentID, gAgent.getID() );
 		msg->addUUIDFast(_PREHASH_SessionID, gAgent.getSessionID());
 		gAgent.sendReliableMessage();
+		}
+		else 
+		{
+			// OGPX : Send log-off to Agent Domain instead of sim. This is done via HTTP using the
+			// rez_avatar/place cap. Also, note that sending a null region is how a 
+			// "logoff" is indicated.
+			LLSD args;
+			args["public_region_seed_capability"] = "";
+			std::string cap = LLAppViewer::instance()->getPlaceAvatarCap();
+			LLHTTPClient::post(cap, args, new LLLogoutResponder());
+		}
 
 		gLogoutTimer.reset();
 		gLogoutMaxTime = LOGOUT_REQUEST_TIME;

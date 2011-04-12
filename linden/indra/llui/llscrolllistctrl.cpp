@@ -3499,6 +3499,7 @@ LLColumnHeader::LLColumnHeader(const std::string& label, const LLRect &rect, LLS
 	mButton->setMouseDownCallback(onMouseDown);
 
 	mButton->setCallbackUserData(this);
+	mButton->setToolTip(label);
 
 	mAscendingText = std::string("[LOW]...[HIGH](Ascending)"); // *TODO: Translate
 	mDescendingText = std::string("[HIGH]...[LOW](Descending)"); // *TODO: Translate

@@ -367,6 +367,7 @@ LLAgent::LLAgent()
 	mAutoPilotFinishedCallback(NULL),
 	mAutoPilotCallbackData(NULL),
 	
+	mCapabilities(),
 
 	mEffectColor(0.f, 1.f, 1.f, 1.f),
 	mHaveHomePosition(FALSE),
@@ -381,7 +382,8 @@ LLAgent::LLAgent()
 	mAgentWearablesUpdateSerialNum(0),
 	mWearablesLoaded(FALSE),
 	mTextureCacheQueryID(0),
-	mAppearanceSerialNum(0)
+	mAppearanceSerialNum(0),
+	mbTeleportKeepsLookAt(false)
 {
 
 	U32 i;
@@ -6155,12 +6157,14 @@ bool LLAgent::teleportCore(bool is_local)
 
 void LLAgent::teleportRequest(
 	const U64& region_handle,
-	const LLVector3& pos_local)
+	const LLVector3& pos_local,
+	bool look_at_from_camera)
 {
 	LLViewerRegion* regionp = getRegion();
-	if(regionp && teleportCore())
+	bool is_local = (region_handle == to_region_handle(getPositionGlobal()));
+	if(regionp && teleportCore(is_local))
 	{
-		llinfos << "TeleportRequest: '" << region_handle << "':" << pos_local
+		llinfos << "TeleportLocationRequest: '" << region_handle << "':" << pos_local
 				<< llendl;
 		LLMessageSystem* msg = gMessageSystem;
 		msg->newMessage("TeleportLocationRequest");
@@ -6171,6 +6175,10 @@ void LLAgent::teleportRequest(
 		msg->addU64("RegionHandle", region_handle);
 		msg->addVector3("Position", pos_local);
 		LLVector3 look_at(0,1,0);
+		if (look_at_from_camera)
+		{
+			look_at = LLViewerCamera::getInstance()->getAtAxis();
+		}
 		msg->addVector3("LookAt", look_at);
 		sendReliableMessage();
 	}
@@ -6340,6 +6348,16 @@ void LLAgent::stopCurrentAnimations()
 	}
 }
 
+// Teleport to global position, but keep facing in the same direction 
+void LLAgent::teleportViaLocationLookAt(const LLVector3d& pos_global)
+{
+	mbTeleportKeepsLookAt = true;
+	setFocusOnAvatar(FALSE, ANIMATE);	// detach camera form avatar, so it keeps direction
+	U64 region_handle = to_region_handle(pos_global);
+	LLVector3 pos_local = (LLVector3)(pos_global - from_region_handle(region_handle));
+	teleportRequest(region_handle, pos_local, getTeleportKeepsLookAt());
+}
+
 void LLAgent::setTeleportState(ETeleportState state)
 {
 	mTeleportState = state;
@@ -6347,7 +6365,12 @@ void LLAgent::setTeleportState(ETeleportState state)
 	{
 		LLFloaterSnapshot::hide(0);
 	}
-	if (mTeleportState == TELEPORT_MOVING)
+	if (mTeleportState == TELEPORT_NONE)
+	{
+		mbTeleportKeepsLookAt = false;
+	}
+	// OGPX : Only compute a 'slurl' in non-OGP mode. In OGP, set it to regionuri in floaterteleport.
+	if ((mTeleportState == TELEPORT_MOVING)&& (!gSavedSettings.getBOOL("OpenGridProtocol")))
 	{
 		// We're outa here. Save "back" slurl.
 		mTeleportSourceSLURL = getSLURL();
@@ -7895,7 +7918,7 @@ void LLAgent::userRemoveWearable( void* userdata )
 {
 	EWearableType type = (EWearableType)(intptr_t)userdata;
 	
-	if( !(type==WT_SHAPE || type==WT_SKIN || type==WT_HAIR ) ) //&&
+	if( !(type==WT_SHAPE || type==WT_SKIN || type==WT_HAIR || type==WT_EYES) ) //&&
 		//!((!gAgent.isTeen()) && ( type==WT_UNDERPANTS || type==WT_UNDERSHIRT )) )
 	{
 		gAgent.removeWearable( type );
@@ -8029,4 +8052,40 @@ void LLAgent::parseTeleportMessages(const std::string& xml_filename)
 	}//end for (all message sets in xml file)
 }
 
+// OGPX - This code will change when capabilities get refactored.
+// Right now this is used for capabilities that we get from OGP agent domain
+void LLAgent::setCapability(const std::string& name, const std::string& url)
+{
+#if 0 // OGPX : I think (hope?) we don't need this
+	  //    but I'm leaving it here commented out because I'm not quite
+	  //    sure why the region capabilities code had it wedged in setCap call
+	  //    Maybe the agent domain capabilities will need something like this as well
+
+	if (name == "EventQueueGet")
+	{
+		delete mEventPoll;
+		mEventPoll = NULL;
+		mEventPoll = new LLEventPoll(url, getHost());
+	}
+	else if (name == "UntrustedSimulatorMessage")
+	{
+		LLHTTPSender::setSender(mHost, new LLCapHTTPSender(url));
+	}
+	else
+#endif
+	{
+		mCapabilities[name] = url;
+	}
+}
+
+//OGPX : Agent Domain capabilities...  this needs to be refactored
+std::string LLAgent::getCapability(const std::string& name) const
+{
+	CapabilityMap::const_iterator iter = mCapabilities.find(name);
+	if (iter == mCapabilities.end())
+	{
+		return "";
+	}
+	return iter->second;
+}
 // EOF

@@ -53,7 +53,7 @@ bool LLURLHistory::loadFile(const std::string& filename)
 
 		if (file.is_open())
 		{
-			llinfos << "Loading history.xml file at " << filename << llendl;
+			llinfos << "Loading history.xml file at " << temp_str + filename << llendl;
 			LLSDSerialize::fromXML(data, file);
 		}
 
@@ -105,6 +105,39 @@ LLSD LLURLHistory::getURLHistory(const std::string& collection)
 	return LLSD();
 }
 
+// OGPX : static function that appends unique values to existing collection. 
+//  returns true if appended, else false.
+BOOL LLURLHistory::appendToURLCollection(const std::string& collection, const std::string& url)
+{
+	if (!url.empty())
+	{
+		BOOL found_current_url = FALSE;
+		// make room for the new url if needed
+		// always append to the end and remove from the front so you have the most recent.
+		if (sHistorySD[collection].size() >= MAX_URL_COUNT)
+		{
+			sHistorySD[collection].erase(0);
+		}
+
+		LLSD::array_iterator iter_history = sHistorySD[collection].beginArray();
+		LLSD::array_iterator iter_end = sHistorySD[collection].endArray();
+		for (; iter_history != iter_end; ++iter_history)
+		{
+			if ((*iter_history).asString() == url)
+			{ 
+				found_current_url = TRUE;
+			}
+		}
+		if (!found_current_url ) 
+		{
+			sHistorySD[collection].append(LLSD(url));
+			LLURLHistory::limitSize(collection);
+			//llinfos << " appending XX" << url << "XX urlcollection: " << LLSDOStreamer<LLSDXMLFormatter>(sHistorySD) << llendl;
+			return TRUE; // value was unique, needed to be inserted
+		}
+	}
+	return FALSE; // value was empty or already in the collection
+}
 // static
 void LLURLHistory::addURL(const std::string& collection, const std::string& url)
 {

@@ -191,6 +191,7 @@ set(viewer_SOURCE_FILES
     llfloatersnapshot.cpp
     llfloaterstats.cpp
     llfloatertelehub.cpp
+    llfloaterteleport.cpp   
     llfloaterteleporthistory.cpp
     llfloatertest.cpp
     llfloatertools.cpp
@@ -236,6 +237,7 @@ set(viewer_SOURCE_FILES
     lllandmarklist.cpp
     lllogchat.cpp
     llloginhandler.cpp
+    llsavedlogins.cpp
     llmanip.cpp
     llmaniprotate.cpp
     llmanipscale.cpp
@@ -602,6 +604,7 @@ set(viewer_HEADER_FILES
     llfloatersnapshot.h
     llfloaterstats.h
     llfloatertelehub.h
+    llfloaterteleport.h
     llfloaterteleporthistory.h
     llfloatertest.h
     llfloatertools.h
@@ -646,6 +649,7 @@ set(viewer_HEADER_FILES
     lllightconstants.h
     lllogchat.h
     llloginhandler.h
+    llsavedlogins.h
     llmanip.h
     llmaniprotate.h
     llmanipscale.h

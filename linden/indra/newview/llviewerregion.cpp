@@ -1446,6 +1446,10 @@ void LLViewerRegion::setSeedCapability(const std::string& url)
 	capabilityNames.append("ViewerStartAuction");
 	capabilityNames.append("UntrustedSimulatorMessage");
 	capabilityNames.append("ViewerStats");
+	capabilityNames.append("WebFetchInventoryDescendents"); // OGPX : since this is asking the region
+															// leave the old naming in place, on agent domain
+															// it is now called agent/inventory. Both
+															// caps have the same LLSD returned.
 	// Please add new capabilities alphabetically to reduce
 	// merge conflicts.
 

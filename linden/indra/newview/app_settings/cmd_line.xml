@@ -275,6 +275,35 @@
       <!-- Special case. Not mapped to a setting. -->
     </map>
 
+    <key>regionuri</key>
+    <map>
+      <key>desc</key>
+      <string>URL of region to connect to through Agent Domain.</string>            
+      <key>count</key>
+      <integer>1</integer>
+      <key>map-to</key>
+      <string>CmdLineRegionURI</string>
+    </map>
+    
+
+    <key>agenturi</key>
+    <map>
+      <key>desc</key>
+      <string>URL of agent host to connect to in Agent Domain.</string>            
+      <key>count</key>
+      <integer>1</integer>
+      <key>map-to</key>
+      <string>CmdLineAgentURI</string>
+    </map>
+
+    <key>ogp</key>
+    <map>
+      <key>desc</key>
+      <string>enable OGPX protocol</string>            
+      <key>map-to</key>
+      <string>OpenGridProtocol</string>
+    </map>
+
     <key>ignorepixeldepth</key>
     <map>
       <key>desc</key>

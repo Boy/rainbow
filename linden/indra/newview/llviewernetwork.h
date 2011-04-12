@@ -49,9 +49,10 @@ class LLViewerLogin : public LLSingleton<LLViewerLogin>
 public:
 	LLViewerLogin();
 
-	void setGridChoice(const EGridInfo grid);
+	void setGridChoice(EGridInfo grid);
 	void setGridChoice(const std::string& grid_name);
-	void resetURIs();
+	void setGridURI(const std::string& uri);
+	void setGridURIs(const std::vector<std::string>& urilist);
 
 	/**
 	* @brief Get the enumeration of the grid choice.
@@ -65,25 +66,46 @@ public:
 	* If the grid is 'other', returns something
 	* the string used to specifiy the grid.
 	**/
-	std::string getGridLabel() const; 
-	std::string getKnownGridLabel(const EGridInfo grid_index) const;
-	std::string getLoginPageURI() const;
+	std::string getGridLabel();
 
-	void getLoginURIs(std::vector<std::string>& uris) const;
-	std::string getHelperURI() const;
+	std::string getKnownGridLabel(EGridInfo grid_index) const; 
+	const std::string getStaticGridURI(const EGridInfo grid) const;
+	const std::string getStaticGridHelperURI(const EGridInfo grid) const;
+
+	const std::string getCurrentGridURI();
+	bool tryNextURI();
+
+	const std::vector<std::string>& getCommandLineURIs();
+	const std::vector<std::string>& getGridURIs();
+	const std::string getHelperURI() const;
+	void setHelperURI(const std::string& uri);
+	const std::string getLoginPageURI() const;
+	void setLoginPageURI(const std::string& uri);
+	void setNameEditted(bool value) { mNameEditted = value; }
 
 	bool isInProductionGrid();
+	bool nameEditted(void) const { return mNameEditted; }
 
 	void setMenuColor() const;
 	
 	void loadGridsLLSD(std::string filename);
 	
 private:
+	void parseCommandLineURIs();
+
+	LLSD mGridList;
 	EGridInfo mGridChoice;
 	std::string mGridName;
-	LLSD mGridList;
+	std::string mHelperURI;
+	std::string mLoginPageURI;
+	std::vector<std::string> mCommandLineURIs;
+	std::vector<std::string> mGridURIs;
+
+	int mCurrentURI;	// Index into mGridURIs.
+	bool mNameEditted;	// Set if the user edits/sets the First or Last name field.
 };
 
+const EGridInfo DEFAULT_GRID_CHOICE = 1;
 const EGridInfo GRID_INFO_NONE = 0;
 extern EGridInfo GRID_INFO_OTHER;
 

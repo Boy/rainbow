@@ -375,6 +375,16 @@ public:
 
 	const LLColor4		&getEffectColor();
 	void				setEffectColor(const LLColor4 &color);
+
+	// OGPX : Moving capabilities off region to agent service means they end up in LLAgent
+    //    but, long term, this needs to be refactored into generalized Capabilities class
+    //    since we want more flexibility in gathering up where services come from.
+	//    Segmenting into region and agent domain caps might not make sense. Some implementations
+	//    might want to provide caps that are not on the region or the agent domain. This is
+	//    unsettled enough for now that we'll leave it as is.
+	void				setCapability(const std::string& name, const std::string& url);
+	std::string			getCapability(const std::string& name) const ; 
+
 	//
 	// UTILITIES
 	//
@@ -493,7 +503,8 @@ public:
 	// go to a named location home
 	void teleportRequest(
 		const U64& region_handle,
-		const LLVector3& pos_local);
+		const LLVector3& pos_local,
+		bool look_at_from_camera = false);
 
 	// teleport to a landmark
 	void teleportViaLandmark(const LLUUID& landmark_id);
@@ -508,6 +519,9 @@ public:
 	// deprecated.
 	void teleportViaLocation(const LLVector3d& pos_global); 
 
+	// to a global location, preserving camera rotation
+	void teleportViaLocationLookAt(const LLVector3d& pos_global);
+	
 	// cancel the teleport, may or may not be allowed by server
 	void teleportCancel();
 
@@ -515,7 +529,10 @@ public:
 	const LLVector3	&getTargetVelocity() const;
 
 	const std::string getTeleportSourceSLURL() const { return mTeleportSourceSLURL; }
-
+	// OGPX : setTeleportSourceURL() is only used in agent domain case, 
+	//     so also made function name go from SLURL->URL for OGPX.
+	//     This is what gets chatted into text chat when a teleport successfully completes.
+	void setTeleportSourceURL(const std::string agentdTeleportURL){ mTeleportSourceSLURL = agentdTeleportURL;};
 
 	// Setting the ability for this avatar to proxy for another avatar.
 	//static void processAddModifyAbility(LLMessageSystem* msg, void**);
@@ -599,7 +616,9 @@ public:
 		TELEPORT_REQUESTED = 2,		// Waiting for source simulator to respond
 		TELEPORT_MOVING = 3,		// Viewer has received destination location from source simulator
 		TELEPORT_START_ARRIVAL = 4,	// Transition to ARRIVING.  Viewer has received avatar update, etc., from destination simulator
-		TELEPORT_ARRIVING = 5		// Make the user wait while content "pre-caches"
+		TELEPORT_ARRIVING = 5,		// Make the user wait while content "pre-caches"
+		TELEPORT_LOCAL = 6,			// Teleporting in-sim without showing the progress screen
+		TELEPORT_PLACE_AVATAR = 7	// OGPX : Separate agent domain TP using place_avatar from legacy
 	};
 
 	ETeleportState	getTeleportState() const			{ return mTeleportState; }
@@ -711,11 +730,14 @@ public:
 	//debug methods
 	static void		clearVisualParams(void *);
 
-protected:
+	// whether look-at reset after teleport
+	bool getTeleportKeepsLookAt()	{ return mbTeleportKeepsLookAt; }
+
 	// stuff to do for any sort of teleport. Returns true if the
 	// teleport can proceed.
-	bool teleportCore(bool is_local = false);
+	bool teleportCore(bool is_local = false); //OGPX : now public method so agent domain TP can call
 
+protected:
 	// helper function to prematurely age chat when agent is moving
 	void ageChat();
 
@@ -774,6 +796,7 @@ public:
 	EDoubleTapRunMode mDoubleTapRunMode;
 
 private:
+	bool mbTeleportKeepsLookAt; // try to keep look-at after teleport is complete
 	bool mbAlwaysRun; // should the avatar run by default rather than walk
 	bool mbRunning;	// is the avatar trying to run right now
 
@@ -897,6 +920,10 @@ private:
 	LLUUID			mLeaderID;
 
 	std::set<LLUUID> mProxyForAgents;
+	 
+	//
+	typedef std::map<std::string, std::string> CapabilityMap; //OGPX TODO: refactor Caps to their own class
+	CapabilityMap 	mCapabilities; // for caps that we have on the agent domain.
 
 	LLColor4 mEffectColor;
 

@@ -105,6 +105,13 @@ public:
     void loadNameCache();
     void saveNameCache();
 
+	// OGPX : rez_avatar/place cap is used on both initial login, and 
+	// ... then on teleports as well. The same cap should be good for the
+	// ... life of the connection to an agent domain. This cap is used by the viewer
+	// ... to request moving an agent between regions. 
+	void setPlaceAvatarCap(const std::string& uri);	// OGPX TODO: this should be refactored into own class that handles caps
+	const std::string& getPlaceAvatarCap() const;	// OGPX TODO: ...as above...
+
 	void removeMarkerFile(bool leave_logout_marker = false);
 	
     // LLAppViewer testing helpers.
@@ -125,10 +132,14 @@ public:
 	static const std::string sPerAccountSettingsName; 
 	static const std::string sCrashSettingsName; 
 
-	// returns false if loading a *required* settings file fails.
-	bool loadSettingsFromDirectory(ELLPath path_index, bool set_defaults = false);
+	// Load settings from the location specified by loction_key.
+	// Key availale and rules for loading, are specified in 
+	// 'app_settings/settings_files.xml'
+	bool loadSettingsFromDirectory(const std::string& location_key, 
+				       bool set_defaults = false);
 
-	std::string getSettingsFileName(const std::string& file);
+	std::string getSettingsFilename(const std::string& location_key,
+					const std::string& file);
 
 	// For thread debugging. 
 	// llstartup needs to control init.
@@ -214,7 +225,7 @@ private:
     bool mQuitRequested;				// User wants to quit, may have modified documents open.
     bool mLogoutRequestSent;			// Disconnect message sent to simulator, no longer safe to send messages to the sim.
     S32 mYieldTime;
-	LLSD mSettingsFileList;
+	LLSD mSettingsLocationList;
 
 	LLWatchdogTimeout* mMainloopTimeout;
 

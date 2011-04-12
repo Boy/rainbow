@@ -3011,6 +3011,19 @@ void process_teleport_finish(LLMessageSystem* msg, void**)
 	effectp->setColor(LLColor4U(gAgent.getEffectColor()));
 	LLHUDManager::getInstance()->sendEffects();
 
+	// OGPX : when using agent domain, we get tp finish with ip of 0.0.0.0 and port 0. 
+	//    try bailing out early if tp state is PLACE_AVATAR (so legacy should still execute rest of this path)
+	//    not really wild about this, but it's a way to test if we can get TP working w/o receiving TP finish
+	//    TODO: can be removed *when* agent domain no longer sends tp finish
+	//
+    // OGPX TODO: see if we can nuke TELEPORT_PLACE_AVATAR state once TeleportFinish is 
+	//    completely removed from all SL and OS region code
+
+	if (gAgent.getTeleportState() == LLAgent::TELEPORT_PLACE_AVATAR )
+	{
+		llinfos << "Got teleport location message when doing agentd TP" << llendl;
+		return;
+	}
 	U32 location_id;
 	U32 sim_ip;
 	U16 sim_port;
@@ -3182,8 +3195,10 @@ void process_agent_movement_complete(LLMessageSystem* msg, void**)
 	gCacheName->setUpstream(msg->getSender());
 	gViewerThrottle.sendToSim();
 	gViewerWindow->sendShapeToSim();
-
-	bool is_teleport = gAgent.getTeleportState() == LLAgent::TELEPORT_MOVING;
+	// if this is an AgentMovementComplete message that happened as the result of a teleport,
+	// then we need to do things like chat the URL and reset the camera.
+	bool is_teleport = (gAgent.getTeleportState() & (LLAgent::TELEPORT_MOVING | LLAgent::TELEPORT_PLACE_AVATAR)); //OGPX
+	llinfos << " is_teleport =" << is_teleport << llendl;
 
 	if( is_teleport )
 	{
@@ -3215,9 +3230,11 @@ void process_agent_movement_complete(LLMessageSystem* msg, void**)
 			avatarp->clearChat();
 			avatarp->slamPosition();
 		}
-
-		// add teleport destination to the list of visited places
-		gFloaterTeleportHistory->addEntry(regionp->getName(),(S16)agent_pos.mV[0],(S16)agent_pos.mV[1],(S16)agent_pos.mV[2]);
+		// OGPX TODO: remove all usage of TELEPORT_PLACE_AVATAR state once Teleport UDP sequence finalized
+		if ( gAgent.getTeleportState() == LLAgent::TELEPORT_PLACE_AVATAR ) // unset TP state, agent domain is done. OGPX
+		{
+			gAgent.setTeleportState( LLAgent::TELEPORT_NONE );
+		}
 	}
 	else
 	{

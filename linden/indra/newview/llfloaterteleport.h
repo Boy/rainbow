@@ -1,10 +1,10 @@
 /**
- * @file llurlhistory.h
- * @brief Manages a list of recent URLs
+ * @file llfloaterteleport.h
+ * @brief floater header for agentd teleports.
  *
- * $LicenseInfo:firstyear=2007&license=viewergpl$
+ * $LicenseInfo:firstyear=2008&license=viewergpl$
  * 
- * Copyright (c) 2007-2009, Linden Research, Inc.
+ * Copyright (c) 2008, Linden Research, Inc.
  * 
  * Second Life Viewer Source Code
  * The source code in this file ("Source Code") is provided by Linden Lab
@@ -28,36 +28,38 @@
  * COMPLETENESS OR PERFORMANCE.
  * $/LicenseInfo$
  */
-
-#ifndef LLURLHISTORY_H
-#define LLURLHISTORY_H
-
-#include "llstring.h"
-
-class LLSD;
-
-class LLURLHistory
+// Teleport floater for agent domain TPs using URIs.
+//Copyright International Business Machines Corporation 2008-9 
+//Contributed to Linden Research, Inc. under the Second Life Viewer Contribution
+//Agreement and licensed as above.
+#ifndef LL_FLOATER_TELEPORT_H
+#define LL_FLOATER_TELEPORT_H
+#include "llfloater.h"
+ 
+class LLFloaterTeleport : public LLFloater
 {
 public:
-	// Loads an xml file of URLs.  Currently only supports Parcel URL history
-	static bool loadFile(const std::string& filename);
+	LLFloaterTeleport();
 
-	// Saves the current history to XML
-	static bool saveFile(const std::string& filename);
+	virtual ~LLFloaterTeleport();
 
-	static LLSD getURLHistory(const std::string& collection);
-
-	static void addURL(const std::string& collection, const std::string& url);
-	// OGPX appends url to a collection if it doesn't already exist in the collection. 
-	// this is used in the collection of region URIs that are saved per region
-	static BOOL appendToURLCollection(const std::string& collection, const std::string& url); 
-	static void removeURL(const std::string& collection, const std::string& url);
-	static void clear(const std::string& collection);
-
-	static void limitSize(const std::string& collection);
-
+	// by convention, this shows the floater and does instance management
+	static void show(void*);
+ 
 private:
-	static LLSD sHistorySD;
-};
+	// when a line editor loses keyboard focus, it is committed.
+	// commit callbacks are named onCommitWidgetName by convention.
+	static void onCommitTeleport(LLUICtrl* ctrl, void *userdata);
+ 
+	// by convention, button callbacks are named onClickButtonLabel
+	static void onClickTeleport(void* userdata);
+	static void onClickCancel(void *userdata);
+ 
+	// no pointers to widgets here - they are referenced by name
 
-#endif // LLURLHISTORY_H
+	// assuming we just need one, which is typical
+	static LLFloaterTeleport* sInstance;
+
+};
+#endif
+
