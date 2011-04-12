@@ -654,7 +654,7 @@ BOOL LLToolPie::handleDoubleClick(S32 x, S32 y, MASK mask)
 		llinfos << "LLToolPie handleDoubleClick (becoming mouseDown)" << llendl;
 	}
 
-	if (gSavedSettings.getBOOL("DoubleClickAutoPilot") || gSavedSettings.getBOOL("DoubleClickTeleport"))
+	if (gSavedSettings.getBOOL("DoubleClickAutoPilot"))
 	{
 		if (mPick.mPickType == LLPickInfo::PICK_LAND
 			&& !mPick.mPosGlobal.isExactlyZero())
@@ -674,6 +674,29 @@ BOOL LLToolPie::handleDoubleClick(S32 x, S32 y, MASK mask)
 				handle_go_to();
 				return TRUE;
 			}
+		}
+	}
+	else if (gSavedSettings.getBOOL("DoubleClickTeleport")
+//MK
+#ifdef LL_RRINTERFACE_H
+		&& !(gRRenabled && gAgent.mRRInterface.contains ("tploc"))
+#endif
+//mk
+			)
+	{
+		LLViewerObject* objp = mPick.getObject();
+		LLViewerObject* parentp = objp ? objp->getRootEdit() : NULL;
+		bool is_in_world = mPick.mObjectID.notNull() && objp && !objp->isHUDAttachment();
+		bool is_land = mPick.mPickType == LLPickInfo::PICK_LAND;
+		bool pos_non_zero = !mPick.mPosGlobal.isExactlyZero();
+		bool has_touch_handler = (objp && objp->flagHandleTouch()) || (parentp && parentp->flagHandleTouch());
+		bool has_click_action = final_click_action(objp);
+		if (pos_non_zero && (is_land || (is_in_world && !has_touch_handler && !has_click_action)))
+		{
+			LLVector3d pos = mPick.mPosGlobal;
+			pos.mdV[VZ] += gAgent.getAvatarObject()->getPelvisToFoot();
+			gAgent.teleportViaLocation(pos);
+			return TRUE;
 		}
 	}
 

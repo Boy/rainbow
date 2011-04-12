@@ -88,8 +88,13 @@
 	           width="400" />
        	  <check_box bottom_delta="-20" control_name="DoubleClickTeleport" enabled="true"
 	           follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
-	           label="Enable teleporting via double-click in-world" left="10"
+	           label="Enable teleporting via double-click in-world (overrides Autopilot)" left="10"
 	           mouse_opaque="true" name="double_click_teleport_check" radio_style="false"
+	           width="400" />
+	  <check_box bottom_delta="-20" control_name="DoubleClickAutoPilot" enabled="true"
+	           follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
+	           label="Enable Autopilot via double-click in-world when not using doubleclick teleport" left="10"
+	           mouse_opaque="true" name="double_click_autopilot_check" radio_style="false"
 	           width="400" />
 	  <check_box bottom_delta="-20" control_name="SpeedRez" enabled="true"
 	           follows="left|top" font="SansSerifSmall" height="16" initial_value="false"

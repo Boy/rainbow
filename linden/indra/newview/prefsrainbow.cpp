@@ -38,6 +38,7 @@
 #include "llviewercontrol.h"
 #include "lluictrlfactory.h"
 #include "llcombobox.h"
+#include "llcolorswatch.h"
 
 class LLPrefsRainbowImpl : public LLPanel
 {
@@ -50,11 +51,13 @@ public:
 	void apply();
 	void cancel();
 
-protected:
+private:
 	static void onCommitCheckBox(LLUICtrl* ctrl, void* user_data);
+	void refreshValues();
 	BOOL mShowGrids;
 	BOOL mSaveScriptsAsMono;
 	BOOL mDoubleClickTeleport;
+	BOOL mDoubleClickAutoPilot;
 	BOOL mHideNotificationsInChat;
 	BOOL mUseOldTrackingDots;
 	BOOL mAllowMUpose;
@@ -68,13 +71,22 @@ protected:
 	BOOL mPreviewAnimInWorld;
 	BOOL mSpeedRez;
 	BOOL mRevokePermsOnStandUp;
+	BOOL mRezWithLandGroup;
+	BOOL mHideTeleportProgress;
+	BOOL mHighlightOwnNameInChat;
+	BOOL mHighlightOwnNameInIM;
+	BOOL mHighlightDisplayName;
+	BOOL mLegacyNamesForFriends;
+	BOOL mOmitResidentAsLastName;
+	LLColor4 mOwnNameChatColor;
+	std::string mHighlightNicknames;
 	U32 mSpeedRezInterval;
 	U32 mDecimalsForTools;
 	U32 mLinksForChattingObjects;
+	U32 mDisplayNamesUsage;
 	U32 mTimeFormat;
 	U32 mDateFormat;
 };
-
 
 LLPrefsRainbowImpl::LLPrefsRainbowImpl()
  : LLPanel("Rainbow Prefs Panel")
@@ -112,12 +124,21 @@ void LLPrefsRainbowImpl::onCommitCheckBox(LLUICtrl* ctrl, void* user_data)
 	}
 }
 
-void LLPrefsRainbowImpl::refresh()
+void LLPrefsRainbowImpl::refreshValues()
 {
-	mShowGrids						= gSavedSettings.getBOOL("ForceShowGrid");
-	mSaveScriptsAsMono				= gSavedSettings.getBOOL("SaveScriptsAsMono");
-	mDoubleClickTeleport			= gSavedSettings.getBOOL("DoubleClickTeleport");
-	mHideNotificationsInChat		= gSavedSettings.getBOOL("HideNotificationsInChat");
+	mShowGrids					= gSavedSettings.getBOOL("ForceShowGrid");
+	mSaveScriptsAsMono			= gSavedSettings.getBOOL("SaveScriptsAsMono");
+	mDoubleClickTeleport		= gSavedSettings.getBOOL("DoubleClickTeleport");
+	if (mDoubleClickTeleport == TRUE) 
+	{
+		mDoubleClickAutoPilot = FALSE;
+		gSavedSettings.setBOOL("DoubleClickAutoPilot", FALSE);
+	}
+	else
+	{
+		mDoubleClickAutoPilot = gSavedSettings.getBOOL("DoubleClickAutoPilot");
+	} 	
+	mHideNotificationsInChat	= gSavedSettings.getBOOL("HideNotificationsInChat");
 	mUseOldTrackingDots			= gSavedSettings.getBOOL("UseOldTrackingDots");
 	mAllowMUpose				= gSavedSettings.getBOOL("AllowMUpose");
 	mAutoCloseOOC				= gSavedSettings.getBOOL("AutoCloseOOC");
@@ -138,12 +159,43 @@ void LLPrefsRainbowImpl::refresh()
 	mPreviewAnimInWorld			= gSavedSettings.getBOOL("PreviewAnimInWorld");
 	mSpeedRez					= gSavedSettings.getBOOL("SpeedRez");
 	mSpeedRezInterval			= gSavedSettings.getU32("SpeedRezInterval");
+	mRezWithLandGroup			= gSavedSettings.getBOOL("RezWithLandGroup");
+	mHideTeleportProgress		= gSavedSettings.getBOOL("HideTeleportProgress");
+	mHighlightOwnNameInChat		= gSavedSettings.getBOOL("HighlightOwnNameInChat");
+	mHighlightOwnNameInIM		= gSavedSettings.getBOOL("HighlightOwnNameInIM");
+	mOwnNameChatColor			= gSavedSettings.getColor4("OwnNameChatColor");
+	if (LLStartUp::getStartupState() == STATE_STARTED)
+	{
+		mHighlightNicknames		= gSavedPerAccountSettings.getString("HighlightNicknames");
+		mHighlightDisplayName	= gSavedPerAccountSettings.getBOOL("HighlightDisplayName");
+	}
+	mDisplayNamesUsage			= gSavedSettings.getU32("DisplayNamesUsage");
+	mLegacyNamesForFriends		= gSavedSettings.getBOOL("LegacyNamesForFriends");
+	mOmitResidentAsLastName		= gSavedSettings.getBOOL("OmitResidentAsLastName");
+}
+
+void LLPrefsRainbowImpl::refresh()
+{
+	refreshValues();
 
 	if (LLStartUp::getStartupState() != STATE_STARTED)
 	{
-		childDisable("restrained_love_check");
+		childDisable("restrained_life_check");
+		childDisable("highlight_nicknames_text");
+		childDisable("highlight_display_name_check");
+	}
+	else
+	{
+		childSetValue("highlight_nicknames_text", mHighlightNicknames);
+		childSetValue("highlight_display_name_check", mHighlightDisplayName);
 	}
 
+	if (mDoubleClickTeleport)
+	{
+		childSetValue("double_click_autopilot_check", FALSE);
+		childDisable ("double_click_autopilot_check");
+	}
+	
 	if (mRestrainedLove)
 	{
 		childSetValue("fetch_inventory_on_login_check", TRUE);
@@ -209,6 +261,15 @@ void LLPrefsRainbowImpl::cancel()
 	gSavedSettings.setBOOL("ForceShowGrid",				mShowGrids);
 	gSavedSettings.setBOOL("SaveScriptsAsMono",			mSaveScriptsAsMono);
 	gSavedSettings.setBOOL("DoubleClickTeleport",		mDoubleClickTeleport);
+	if (mDoubleClickTeleport == TRUE)
+	{
+		mDoubleClickAutoPilot = FALSE;
+		gSavedSettings.setBOOL("DoubleClickAutoPilot", FALSE);
+	}
+	else
+	{
+		gSavedSettings.setBOOL("DoubleClickAutoPilot", 		mDoubleClickAutoPilot);
+	}
 	gSavedSettings.setBOOL("HideNotificationsInChat",	mHideNotificationsInChat);
 	gSavedSettings.setBOOL("UseOldTrackingDots",		mUseOldTrackingDots);
 	gSavedSettings.setBOOL("AllowMUpose",				mAllowMUpose);
@@ -222,6 +283,19 @@ void LLPrefsRainbowImpl::cancel()
 	gSavedSettings.setBOOL("PreviewAnimInWorld",		mPreviewAnimInWorld);
 	gSavedSettings.setBOOL("SpeedRez",					mSpeedRez);
 	gSavedSettings.setU32("SpeedRezInterval",			mSpeedRezInterval);
+	gSavedSettings.setBOOL("RezWithLandGroup",			mRezWithLandGroup);
+	gSavedSettings.setBOOL("HideTeleportProgress",		mHideTeleportProgress);
+	gSavedSettings.setBOOL("HighlightOwnNameInChat",	mHighlightOwnNameInChat);
+	gSavedSettings.setBOOL("HighlightOwnNameInIM",		mHighlightOwnNameInIM);
+	gSavedSettings.setColor4("OwnNameChatColor",		mOwnNameChatColor);
+	if (LLStartUp::getStartupState() == STATE_STARTED)
+	{
+		gSavedPerAccountSettings.setString("HighlightNicknames", mHighlightNicknames);
+		gSavedPerAccountSettings.setBOOL("HighlightDisplayName", mHighlightDisplayName);
+	}
+	gSavedSettings.setU32("DisplayNamesUsage",			mDisplayNamesUsage);
+	gSavedSettings.setBOOL("LegacyNamesForFriends",		mLegacyNamesForFriends);
+	gSavedSettings.setBOOL("OmitResidentAsLastName",	mOmitResidentAsLastName);
 }
 
 void LLPrefsRainbowImpl::apply()
@@ -229,7 +303,8 @@ void LLPrefsRainbowImpl::apply()
 	std::string short_date, long_date, short_time, long_time, timestamp;	
 
 	LLComboBox* combo = getChild<LLComboBox>("time_format_combobox");
-	if (combo) {
+	if (combo)
+	{
 		mTimeFormat = combo->getCurrentIndex();
 	}
 
@@ -276,6 +351,14 @@ void LLPrefsRainbowImpl::apply()
 	gSavedSettings.setString("ShortTimeFormat",	short_time);
 	gSavedSettings.setString("LongTimeFormat",	long_time);
 	gSavedSettings.setString("TimestampFormat",	timestamp);
+
+	if (LLStartUp::getStartupState() == STATE_STARTED)
+	{
+		gSavedPerAccountSettings.setString("HighlightNicknames", childGetValue("highlight_nicknames_text"));
+		gSavedPerAccountSettings.setBOOL("HighlightDisplayName", childGetValue("highlight_display_name_check"));
+	}
+
+	refreshValues();
 }
 
 //---------------------------------------------------------------------------

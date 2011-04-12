@@ -787,7 +787,28 @@ void LLNetMap::createObjectImage()
 
 BOOL LLNetMap::handleDoubleClick( S32 x, S32 y, MASK mask )
 {
-	LLFloaterWorldMap::show(NULL, FALSE);
+	LLVector3d pos_global = viewPosToGlobal(x, y);
+	BOOL new_target = FALSE;
+	if (!LLTracker::isTracking(NULL))
+	{
+		gFloaterWorldMap->trackLocation(pos_global);
+		new_target = TRUE;
+	}
+
+	if (gSavedSettings.getBOOL("DoubleClickTeleport")
+//MK
+#ifdef LL_RRINTERFACE_H
+		&& !(gRRenabled && gAgent.mRRInterface.contains ("tploc"))
+#endif
+//mk
+		)
+	{
+		gAgent.teleportViaLocation(pos_global);
+	}
+	else 
+	{
+		LLFloaterWorldMap::show(NULL, new_target);
+	}
 	return TRUE;
 }
 

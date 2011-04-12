@@ -1,5 +1,17 @@
 2011-04-12 Boy Lane <boy.lane@yahoo.com>
 
+    * Some additional fixes for the previous, more to do to get the menus working
+
+    modified:   ChangeLog.txt
+    modified:   linden/indra/newview/app_settings/settings.xml
+    modified:   linden/indra/newview/llnetmap.cpp
+    modified:   linden/indra/newview/lltoolpie.cpp
+    modified:   linden/indra/newview/llviewermenu.cpp
+    modified:   linden/indra/newview/prefsrainbow.cpp
+    modified:   linden/indra/newview/skins/default/xui/en-us/panel_preferences_rainbow.xml
+
+2011-04-12 Boy Lane <boy.lane@yahoo.com>
+
     * Highlight chat and IM's with own name from CoolVL, with support for Display Names
 
     modified:   ChangeLog.txt
