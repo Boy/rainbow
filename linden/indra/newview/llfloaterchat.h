@@ -66,6 +66,7 @@ public:
 	void updateConsoleVisibility();
 
 	static void setHistoryCursorAndScrollToEnd();
+	static bool isOwnNameInText(const std::string &text_line);
 	
 	// Add chat to console and history list.
 	// Color based on source, type, distance.

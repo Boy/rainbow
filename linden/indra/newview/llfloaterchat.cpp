@@ -40,6 +40,7 @@
 #include "llfloateractivespeakers.h"
 #include "llfloaterscriptdebug.h"
 
+#include "llcachename.h"
 #include "llchat.h"
 #include "llfontgl.h"
 #include "llrect.h"
@@ -66,6 +67,8 @@
 #include "llviewermessage.h"
 #include "llviewerwindow.h"
 #include "llviewercontrol.h"
+#include "llviewermenu.h"
+#include "llvoavatar.h"
 #include "lluictrlfactory.h"
 #include "llchatbar.h"
 #include "lllogchat.h"
@@ -89,6 +92,30 @@ const S32 MAX_CHATTER_COUNT = 16;
 // Global statics
 //
 LLColor4 get_text_color(const LLChat& chat);
+
+LLColor4 get_extended_text_color(const LLChat& chat, LLColor4 defaultColor)
+{
+	if (gSavedSettings.getBOOL("HighlightOwnNameInChat"))
+	{
+		std::string new_line = std::string(chat.mText);
+		int name_pos = new_line.find(chat.mFromName);
+		if (name_pos == 0)
+		{
+			new_line = new_line.substr(chat.mFromName.length());
+			if (new_line.find(": ") == 0)
+				new_line = new_line.substr(2);
+			else
+				new_line = new_line.substr(1);
+		}
+
+		if (LLFloaterChat::isOwnNameInText(new_line))
+		{
+			return gSavedSettings.getColor4("OwnNameChatColor");
+		}
+	}
+
+	return defaultColor;
+}
 
 //
 // Member Functions
@@ -459,7 +486,7 @@ LLColor4 get_text_color(const LLChat& chat)
 				}
 				else
 				{
-					text_color = gSavedSettings.getColor4("AgentChatColor");
+					text_color = get_extended_text_color(chat, gSavedSettings.getColor4("AgentChatColor"));
 				}
 			}
 			break;
@@ -573,4 +600,186 @@ void LLFloaterChat::hide(LLFloater* instance, const LLSD& key)
 	{
 		VisibilityPolicy<LLFloater>::hide(instance, key);
 	}
+}
+
+static std::set<std::string> highlight_words;
+
+bool make_words_list()
+{
+	bool changed = false;
+	size_t index;
+	std::string name, part;
+	static std::string nicknames = "";
+	if (gSavedPerAccountSettings.getString("HighlightNicknames") != nicknames)
+	{
+		nicknames = gSavedPerAccountSettings.getString("HighlightNicknames");
+		changed = true;
+	}
+
+#ifdef LL_DISPLAY_NAMES
+	LLAvatarName avatar_name;
+	static std::string display_name = "";
+	static bool highlight_display_name = false;
+	bool do_highlight = gSavedPerAccountSettings.getBOOL("HighlightDisplayName") &&
+						LLAvatarNameCache::useDisplayNames() &&
+						LLAvatarNameCache::get(gAgent.getID(), &avatar_name);
+
+	if (do_highlight != highlight_display_name)
+	{
+		highlight_display_name = do_highlight;
+		changed = true;
+		if (!highlight_display_name)
+		{
+			display_name = "";
+		}
+	}
+
+	if (highlight_display_name)
+	{
+		if (avatar_name.mIsDisplayNameDefault)
+		{
+			name = "";
+		}	
+		else
+		{
+			name = avatar_name.mDisplayName;
+			LLStringUtil::toLower(name);
+		}
+
+		if (name != display_name)
+		{
+			display_name = name;
+			changed = true;
+		}
+	}
+#endif
+
+	if (changed)
+	{
+		// Rebuild the whole list
+		highlight_words.clear();
+
+		// First, fetch the avatar name (note: we don't use
+		// gSavedSettings.getString("[First/Last]Name") here,
+		// because those are not set when using --autologin).
+		LLVOAvatar* avatarp = gAgent.getAvatarObject();
+		LLNameValue *firstname = avatarp->getNVPair("FirstName");
+		LLNameValue *lastname = avatarp->getNVPair("LastName");
+		name.assign(firstname->getString());
+		LLStringUtil::toLower(name);
+		highlight_words.insert(name);
+		name.assign(lastname->getString());
+		if (name != "Resident" && highlight_words.count(name) == 0)
+		{
+			LLStringUtil::toLower(name);
+			highlight_words.insert(name);
+		}
+
+#ifdef LL_DISPLAY_NAMES
+		if (!display_name.empty())
+		{
+			name = display_name;
+			while ((index = name.find(' ')) != std::string::npos)
+			{
+				part = name.substr(0, index);
+				name = name.substr(index + 1);
+				if (part.length() > 3)
+				{
+					highlight_words.insert(part);
+				}
+			}
+			if (name.length() > 3 && highlight_words.count(name) == 0)
+			{
+				highlight_words.insert(name);
+			}
+		}
+#endif
+
+		if (!nicknames.empty())
+		{
+			name = nicknames;
+			LLStringUtil::toLower(name);
+			LLStringUtil::replaceChar(name, ' ', ','); // Accept space and comma separated list
+			while ((index = name.find(',')) != std::string::npos)
+			{
+				part = name.substr(0, index);
+				name = name.substr(index + 1);
+				if (part.length() > 2)
+				{
+					highlight_words.insert(part);
+				}
+			}
+			if (name.length() > 2 && highlight_words.count(name) == 0)
+			{
+				highlight_words.insert(name);
+			}
+		}
+	}
+
+	return changed;
+}
+
+//static 
+bool LLFloaterChat::isOwnNameInText(const std::string &text_line)
+{
+	if (!gAgent.getAvatarObject())
+	{
+		return false;
+	}
+	const std::string separators(" .,;:'!?*-()[]\"");
+	bool flag;
+	char before, after;
+	size_t index = 0, larger_index, length = 0;
+	std::set<std::string>::iterator it;
+	std::string name;
+	std::string text = " " + text_line + " ";
+	LLStringUtil::toLower(text);
+
+	if (make_words_list())
+	{
+		name = "Highlights words list changed to: ";
+		flag = false;
+		for (it = highlight_words.begin(); it != highlight_words.end(); it++)
+		{
+			if (flag) {
+				name += ", ";
+			}
+			name += *it;
+			flag = true;
+		}
+		LL_INFOS("Chat/IM posts highlighting") << name << LL_ENDL;
+	}
+
+	do
+	{
+		flag = false;
+		larger_index = 0;
+		for (it = highlight_words.begin(); it != highlight_words.end(); it++)
+		{
+			name = *it;
+			index = text.find(name);
+			if (index != std::string::npos)
+			{
+				flag = true;
+				before = text.at(index - 1);
+				after = text.at(index + name.length());
+				if (separators.find(before) != std::string::npos && separators.find(after) != std::string::npos)
+				{
+					return true;
+				}
+				if (index >= larger_index)
+				{
+					larger_index = index;
+					length = name.length();
+				}
+			}
+		}
+		if (flag)
+		{
+			text = " " + text.substr(index + length);
+		}
+	}
+	while (flag);
+
+	return false;
 }

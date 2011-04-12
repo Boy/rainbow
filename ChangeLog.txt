@@ -1,5 +1,16 @@
 2011-04-12 Boy Lane <boy.lane@yahoo.com>
 
+    * Highlight chat and IM's with own name from CoolVL, with support for Display Names
+
+    modified:   ChangeLog.txt
+    modified:   linden/indra/newview/app_settings/settings.xml
+    modified:   linden/indra/newview/app_settings/settings_per_account.xml
+    modified:   linden/indra/newview/llfloaterchat.cpp
+    modified:   linden/indra/newview/llfloaterchat.h
+    modified:   linden/indra/newview/llimview.cpp
+
+2011-04-12 Boy Lane <boy.lane@yahoo.com>
+
     * GPU table update
 
     modified:   ChangeLog.txt
