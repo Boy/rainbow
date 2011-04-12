@@ -1,5 +1,12 @@
 2011-04-12 Boy Lane <boy.lane@yahoo.com>
 
+    * GPU table update
+
+    modified:   ChangeLog.txt
+    modified:   linden/indra/newview/gpu_table.txt
+
+2011-04-12 Boy Lane <boy.lane@yahoo.com>
+
     * Hide teleport progress from CoolVL
 
     modified:   ChangeLog.txt
