@@ -94,6 +94,7 @@ LLPrefsRainbowImpl::LLPrefsRainbowImpl()
 	LLUICtrlFactory::getInstance()->buildPanel(this, "panel_preferences_rainbow.xml");
 	childSetCommitCallback("restrained_love_check", onCommitCheckBox, this);
 	childSetCommitCallback("speed_rez_check", onCommitCheckBox, this);
+	childSetCommitCallback("double_click_teleport_check", onCommitCheckBox, this);
 	refresh();
 }
 
@@ -101,6 +102,17 @@ LLPrefsRainbowImpl::LLPrefsRainbowImpl()
 void LLPrefsRainbowImpl::onCommitCheckBox(LLUICtrl* ctrl, void* user_data)
 {
 	LLPrefsRainbowImpl* self = (LLPrefsRainbowImpl*)user_data;
+	if (self->childGetValue("double_click_teleport_check").asBoolean())
+	{
+		gSavedSettings.setBOOL("DoubleClickAutoPilot",	FALSE);
+		self->childSetValue("double_click_autopilot_check", FALSE);
+		self->childDisable ("double_click_autopilot_check");
+	}
+	else
+	{
+		self->childEnable ("double_click_autopilot_check");
+	}
+	
 	if (self->childGetValue("restrained_love_check").asBoolean())
 	{
 		gSavedSettings.setBOOL("FetchInventoryOnLogin",	TRUE);
@@ -129,7 +141,7 @@ void LLPrefsRainbowImpl::refreshValues()
 	mShowGrids					= gSavedSettings.getBOOL("ForceShowGrid");
 	mSaveScriptsAsMono			= gSavedSettings.getBOOL("SaveScriptsAsMono");
 	mDoubleClickTeleport		= gSavedSettings.getBOOL("DoubleClickTeleport");
-	if (mDoubleClickTeleport == TRUE) 
+	if (mDoubleClickTeleport) 
 	{
 		mDoubleClickAutoPilot = FALSE;
 		gSavedSettings.setBOOL("DoubleClickAutoPilot", FALSE);
@@ -193,7 +205,11 @@ void LLPrefsRainbowImpl::refresh()
 	if (mDoubleClickTeleport)
 	{
 		childSetValue("double_click_autopilot_check", FALSE);
-		childDisable ("double_click_autopilot_check");
+		childDisable("double_click_autopilot_check");
+	}
+	else
+	{
+		childEnable("double_click_autopilot_check");
 	}
 	
 	if (mRestrainedLove)
@@ -261,15 +277,7 @@ void LLPrefsRainbowImpl::cancel()
 	gSavedSettings.setBOOL("ForceShowGrid",				mShowGrids);
 	gSavedSettings.setBOOL("SaveScriptsAsMono",			mSaveScriptsAsMono);
 	gSavedSettings.setBOOL("DoubleClickTeleport",		mDoubleClickTeleport);
-	if (mDoubleClickTeleport == TRUE)
-	{
-		mDoubleClickAutoPilot = FALSE;
-		gSavedSettings.setBOOL("DoubleClickAutoPilot", FALSE);
-	}
-	else
-	{
-		gSavedSettings.setBOOL("DoubleClickAutoPilot", 		mDoubleClickAutoPilot);
-	}
+	gSavedSettings.setBOOL("DoubleClickAutoPilot", 		mDoubleClickAutoPilot);
 	gSavedSettings.setBOOL("HideNotificationsInChat",	mHideNotificationsInChat);
 	gSavedSettings.setBOOL("UseOldTrackingDots",		mUseOldTrackingDots);
 	gSavedSettings.setBOOL("AllowMUpose",				mAllowMUpose);
