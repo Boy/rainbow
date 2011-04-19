@@ -63,18 +63,24 @@ LLPreviewSound::LLPreviewSound(const std::string& name, const LLRect& rect, cons
 	button = getChild<LLButton>("Sound audition btn");
 	button->setSoundFlags(LLView::SILENT);
 
-	const LLInventoryItem* item = getItem();
-	
 	childSetCommitCallback("desc", LLPreview::onText, this);
-	childSetText("desc", item->getDescription());
 	childSetPrevalidate("desc", &LLLineEditor::prevalidatePrintableNotPipe);	
-	
-	// preload the sound
-	if(item && gAudiop)
+
+	const LLInventoryItem* item = getItem();
+	if (item)	// May be null (e.g. during prim contents fetches)...
 	{
-		gAudiop->preloadSound(item->getAssetUUID());
+		childSetText("desc", item->getDescription());
+		if (gAudiop)
+		{
+			// preload the sound
+			gAudiop->preloadSound(item->getAssetUUID());
+		}
 	}
-	
+	else
+	{
+		childSetText("desc", std::string("(loading...)"));
+	}
+
 	setTitle(title);
 
 	if (!getHost())

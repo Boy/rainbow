@@ -950,7 +950,7 @@ namespace LLError
 		
 		std::string class_name = className(site.mClassInfo);
 		std::string function_name = functionName(site.mFunction);
-		if (site.mClassInfo != typeid(NoClassInfo))
+		if (class_name != "LLError::NoClassInfo")
 		{
 			function_name = class_name + "::" + function_name;
 		}
@@ -1043,9 +1043,10 @@ namespace LLError
 	#if LL_WINDOWS
 		// DevStudio: __FUNCTION__ already includes the full class name
 	#else
-		if (site.mClassInfo != typeid(NoClassInfo))
+		std::string class_name = className(site.mClassInfo);
+		if (class_name != "LLError::NoClassInfo")
 		{
-			prefix << className(site.mClassInfo) << "::";
+			prefix << class_name << "::";
 		}
 	#endif
 		prefix << site.mFunction << ": ";

@@ -1077,7 +1077,11 @@ bool LLViewerImage::doLoadedCallbacks()
 
 		destroyRawImage();
 		readBackRawImage(gl_discard);
-		llassert_always(mRawImage.notNull());
+		if (mRawImage.isNull())
+		{
+			llwarns << "mRawImage is NULL for " << getID() << llendl;
+			return false;
+		}
 		llassert_always(!mNeedsAux || mAuxRawImage.notNull());
 	}
 

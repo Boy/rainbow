@@ -1,3 +1,38 @@
+2011-04-20 Boy Lane <boy.lane@yahoo.com>
+
+    * Accumulated minor patches and fixes
+
+    modified:   ChangeLog.txt
+    modified:   linden/indra/llaudio/audioengine.cpp
+    modified:   linden/indra/llcommon/llerror.cpp
+    modified:   linden/indra/llimage/llimage.cpp
+    modified:   linden/indra/llmath/llvolume.cpp
+    modified:   linden/indra/llmessage/llassetstorage.cpp
+    modified:   linden/indra/llrender/llvertexbuffer.cpp
+    modified:   linden/indra/llui/lltexteditor.cpp
+    modified:   linden/indra/lscript/lscript_execute/lscript_readlso.cpp
+    modified:   linden/indra/newview/app_settings/logcontrol.xml
+    modified:   linden/indra/newview/app_settings/settings.xml
+    modified:   linden/indra/newview/gpu_table.txt
+    modified:   linden/indra/newview/llagent.cpp
+    modified:   linden/indra/newview/llappviewer.cpp
+    modified:   linden/indra/newview/llface.cpp
+    modified:   linden/indra/newview/llfeaturemanager.cpp    
+    modified:   linden/indra/newview/lllandmarklist.cpp
+    modified:   linden/indra/newview/llpanelgroupgeneral.cpp
+    modified:   linden/indra/newview/llpanelland.cpp
+    modified:   linden/indra/newview/llpreviewsound.cpp
+    modified:   linden/indra/newview/llvieweraudio.cpp
+    modified:   linden/indra/newview/llviewerimage.cpp
+    modified:   linden/indra/newview/llviewerinventory.cpp
+    modified:   linden/indra/newview/llviewermenu.cpp
+    modified:   linden/indra/newview/llviewerobject.cpp
+    modified:   linden/indra/newview/llvoavatar.cpp
+    modified:   linden/indra/newview/llvovolume.cpp
+    modified:   linden/indra/newview/pipeline.cpp
+    modified:   linden/indra/newview/skins/default/xui/en-us/notify.xml
+    modified:   linden/scripts/messages/message_template.msg
+
 2011-04-13 Boy Lane <boy.lane@yahoo.com>
 
     * Fix for the fix, selection now properly working with teleport overriding autopilot

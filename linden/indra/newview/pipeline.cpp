@@ -152,7 +152,10 @@ std::string gPoolNames[] =
 	"POOL_BUMP",
 	"POOL_INVISIBLE",
 	"POOL_AVATAR",
+	"POOL_VOIDWATER",
 	"POOL_WATER",
+	"POOL_GRASS",
+	"POOL_FULLBRIGHT",
 	"POOL_GLOW",
 	"POOL_ALPHA",
 };

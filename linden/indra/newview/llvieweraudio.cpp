@@ -129,12 +129,13 @@ void audio_update_volume(bool force_update)
 		gAudiop->setDopplerFactor(gSavedSettings.getF32("AudioLevelDoppler"));
 		gAudiop->setDistanceFactor(gSavedSettings.getF32("AudioLevelDistance")); 
 		gAudiop->setRolloffFactor(gSavedSettings.getF32("AudioLevelRolloff"));
-#ifdef kAUDIO_ENABLE_WIND
-		gAudiop->enableWind(!mute_audio);
-#endif
-
 		gAudiop->setMuted(mute_audio);
-		
+		BOOL mute_ambiant = gSavedSettings.getBOOL("MuteAmbient");
+#ifdef kAUDIO_ENABLE_WIND
+		gAudiop->enableWind(!mute_audio && !mute_ambiant &&
+			!gSavedSettings.getBOOL("DisableWindAudio") &&
+			master_volume * gSavedSettings.getF32("AudioLevelAmbient") > 0.05f);
+#endif
 		if (force_update)
 		{
 			audio_update_wind(true);
@@ -146,7 +147,7 @@ void audio_update_volume(bool force_update)
 		gAudiop->setSecondaryGain(LLAudioEngine::AUDIO_TYPE_UI,
 								  gSavedSettings.getBOOL("MuteUI") ? 0.f : gSavedSettings.getF32("AudioLevelUI"));
 		gAudiop->setSecondaryGain(LLAudioEngine::AUDIO_TYPE_AMBIENT,
-								  gSavedSettings.getBOOL("MuteAmbient") ? 0.f : gSavedSettings.getF32("AudioLevelAmbient"));
+								  mute_ambiant ? 0.f : gSavedSettings.getF32("AudioLevelAmbient"));
 	}
 
 	// Streaming Music
@@ -206,6 +207,10 @@ void audio_update_listener()
 void audio_update_wind(bool force_update)
 {
 #ifdef kAUDIO_ENABLE_WIND
+	if (!gAudiop->isWindEnabled())
+	{
+		return;
+	}
 	//
 	//  Extract height above water to modulate filter by whether above/below water 
 	// 

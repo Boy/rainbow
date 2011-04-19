@@ -165,10 +165,8 @@ void LLViewerInventoryItem::updateServer(BOOL is_new) const
 {
 	if(!mIsComplete)
 	{
-		// *FIX: deal with this better.
-		// If we're crashing here then the UI is incorrectly enabled.
-		llerrs << "LLViewerInventoryItem::updateServer() - for incomplete item"
-			   << llendl;
+		llwarns << "LLViewerInventoryItem::updateServer() - for incomplete item" << llendl;
+	 	LLNotifyBox::showXml("IncompleteInventoryItem");
 		return;
 	}
 	if(gAgent.getID() != mPermissions.getOwner())
@@ -447,6 +445,8 @@ void LLViewerInventoryCategory::removeFromServer( void )
 
 bool LLViewerInventoryCategory::fetchDescendents()
 {
+	static LLViewerRegion *last_region = NULL;
+
 	if((VERSION_UNKNOWN == mVersion)
 	   && mDescendentsRequested.hasExpired())	//Expired check prevents multiple downloads.
 	{
@@ -464,7 +464,7 @@ bool LLViewerInventoryCategory::fetchDescendents()
 		std::string url = gAgent.getCapability("agent/inventory"); // OGPX : was WebFetchInventoryDescendents
 		if (url.empty()) //OGPX : agent/inventory Capability not found on agent domain.  See if the region has one.
 		{
-			llinfos << " agent/inventory not on AD, checking fallback to region " << llendl; //OGPX
+			LL_INFOS_ONCE("fetchDescendents") << " agent/inventory not on AD, checking fallback to region " << LL_ENDL; //OGPX
 			url = gAgent.getRegion()->getCapability("WebFetchInventoryDescendents");
 		}
 		if (!url.empty()) //Capability found.  Build up LLSD and use it.
@@ -473,7 +473,11 @@ bool LLViewerInventoryCategory::fetchDescendents()
 		}
 		else
 		{	//Deprecated, but if we don't have a capability, use the old system.
-			llinfos << "WebFetchInventoryDescendents capability not found.  Using deprecated UDP message." << llendl;
+			if (gAgent.getRegion() != last_region)	// Do not spam the log file.
+			{
+				llinfos << "WebFetchInventoryDescendents or agent/inventory capability not found.  Using deprecated UDP message." << llendl;
+				last_region = gAgent.getRegion();
+			}
 			LLMessageSystem* msg = gMessageSystem;
 			msg->newMessage("FetchInventoryDescendents");
 			msg->nextBlock("AgentData");

@@ -19,12 +19,7 @@
 						</array>
 					<key>tags</key>
 						<array>
-							<string>AppInit</string>
-							<string>SystemInfo</string>
-							<string>TextureCache</string>
-							<string>AppCache</string>
-							<string>Window</string>
-							<string>RenderInit</string>
+							<string>ExampleOfTag</string>
 						</array>
 				</map>
 				<map>
@@ -40,6 +35,7 @@
 						</array>
 					<key>tags</key>
 						<array>
+              				<string>ExampleOfTag</string>
 						</array>
 				</map>
 			</array>

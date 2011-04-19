@@ -518,7 +518,7 @@ void LLAgent::resetView(BOOL reset_camera, BOOL change_camera)
 		}
 
 		// Hide all popup menus
-		gMenuHolder->hideMenus();
+		if (gMenuHolder) gMenuHolder->hideMenus();
 	}
 
 	if (change_camera && !gSavedSettings.getBOOL("FreezeTime"))

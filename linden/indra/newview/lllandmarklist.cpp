@@ -55,6 +55,7 @@ LLLandmarkList::~LLLandmarkList()
 
 LLLandmark* LLLandmarkList::getAsset( const LLUUID& asset_uuid )
 {
+	static LLUUID last_requested = LLUUID();
 	LLLandmark* landmark = get_ptr_in_map(mList, asset_uuid);
 	if(landmark)
 	{
@@ -62,13 +63,14 @@ LLLandmark* LLLandmarkList::getAsset( const LLUUID& asset_uuid )
 	}
 	else
 	{
-	    if ( gLandmarkList.mBadList.find(asset_uuid) == gLandmarkList.mBadList.end() )
+	    if (asset_uuid != last_requested && gLandmarkList.mBadList.find(asset_uuid) == gLandmarkList.mBadList.end())
 		{
 			gAssetStorage->getAssetData(
 				asset_uuid,
 				LLAssetType::AT_LANDMARK,
 				LLLandmarkList::processGetAssetReply,
 				NULL);
+			last_requested = asset_uuid;	// Keep track to avoid asking multiple times in a raw for the same asset.
 		}
 	}
 	return NULL;

@@ -253,7 +253,15 @@ void LLVertexBuffer::drawArrays(U32 mode, U32 first, U32 count) const
 //static
 void LLVertexBuffer::initClass(bool use_vbo)
 {
-	sEnableVBOs = use_vbo;
+	sEnableVBOs = use_vbo && gGLManager.mHasVertexBufferObject;
+	if (sEnableVBOs)
+	{
+		llinfos << "VBO is enabled." << llendl;
+	}
+	else
+	{
+		llinfos << "VBO is disabled." << llendl;
+	}
 	LLGLNamePool::registerPool(&sDynamicVBOPool);
 	LLGLNamePool::registerPool(&sDynamicIBOPool);
 	LLGLNamePool::registerPool(&sStreamVBOPool);

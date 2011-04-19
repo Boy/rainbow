@@ -406,8 +406,6 @@ static void settings_to_globals()
 	gMapScale = gSavedSettings.getF32("MapScale");
 	gMiniMapScale = gSavedSettings.getF32("MiniMapScale");
 	LLHoverView::sShowHoverTips = gSavedSettings.getBOOL("ShowHoverTips");
-
-	LLCubeMap::sUseCubeMaps = LLFeatureManager::getInstance()->isFeatureAvailable("RenderCubeMap");
 }
 
 static void settings_modify()
@@ -741,7 +739,10 @@ bool LLAppViewer::init()
 	//
 	initWindow();
 
-#if LL_LCD_COMPILE
+	// initWindow also initializes the Feature List, so now we can initialize this global.
+	LLCubeMap::sUseCubeMaps = LLFeatureManager::getInstance()->isFeatureAvailable("RenderCubeMap");
+
+	#if LL_LCD_COMPILE
 		// start up an LCD window on a logitech keyboard, if there is one
 		HINSTANCE hInstance = GetModuleHandle(NULL);
 		gLcdScreen = new LLLCD(hInstance);

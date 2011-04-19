@@ -2723,11 +2723,11 @@ LLViewerInventoryItem* LLViewerObject::getInventoryItemByAsset(const LLUUID& ass
 		for( ; it != end; ++it)
 		{
 			LLInventoryObject* obj = *it;
-			if(obj->getType() != LLAssetType::AT_CATEGORY)
+			if (obj && obj->getType() != LLAssetType::AT_CATEGORY && obj->getType() != LLAssetType::AT_NONE)
 			{
 				// *FIX: gank-ass down cast!
 				item = (LLViewerInventoryItem*)obj;
-				if(item->getAssetUUID() == asset_id)
+				if (item && item->getAssetUUID() == asset_id)
 				{
 					rv = item;
 					break;
@@ -4554,7 +4554,7 @@ bool LLViewerObject::setParameterEntry(U16 param_type, const LLNetworkData& new_
 bool LLViewerObject::setParameterEntryInUse(U16 param_type, BOOL in_use, bool local_origin)
 {
 	ExtraParameter* param = getExtraParameterEntryCreate(param_type);
-	if (param->in_use != in_use)
+	if (param && param->in_use != in_use)
 	{
 		param->in_use = in_use;
 		parameterChanged(param_type, param->data, in_use, local_origin);

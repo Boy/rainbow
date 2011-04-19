@@ -249,12 +249,10 @@ BOOL LLFeatureManager::loadFeatureTables()
 	mTableVersion = version;
 
 	LLFeatureList *flp = NULL;
-	while (!file.eof() && file.good())
+	while (file >> name)
 	{
 		char buffer[MAX_STRING];		 /*Flawfinder: ignore*/
 
-		file >> name;
-		
 		if (name.substr(0,2) == "//")
 		{
 			// This is a comment.

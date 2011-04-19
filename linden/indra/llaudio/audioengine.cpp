@@ -616,11 +616,13 @@ void LLAudioEngine::enableWind(bool enable)
 	{
 		initWind();
 		mEnableWind = enable;
+		llinfos << "Wind audio enabled." << llendl;
 	}
 	else if (mEnableWind && (!enable))
 	{
 		mEnableWind = enable;
 		cleanupWind();
+		llinfos << "Wind audio disabled." << llendl;
 	}
 }
 
