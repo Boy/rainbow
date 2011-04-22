@@ -318,6 +318,15 @@ static bool handleJoystickChanged(const LLSD& newvalue)
 	return true;
 }
 
+static bool handleCameraCollisionsChanged(const LLSD& newvalue)
+{
+	if (newvalue.asBoolean())
+	{
+		gAgent.setCameraCollidePlane(LLVector4(0.f, 0.f, 0.f, 1.f));
+	}
+	return true;
+}
+
 static bool handleAudioStreamMusicChanged(const LLSD& newvalue)
 {
 	if (gAudiop)
@@ -587,6 +596,7 @@ void settings_setup_listeners()
 	gSavedSettings.getControl("JoystickAxis4")->getSignal()->connect(boost::bind(&handleJoystickChanged, _1));
 	gSavedSettings.getControl("JoystickAxis5")->getSignal()->connect(boost::bind(&handleJoystickChanged, _1));
 	gSavedSettings.getControl("JoystickAxis6")->getSignal()->connect(boost::bind(&handleJoystickChanged, _1));
+	gSavedSettings.getControl("CameraIgnoreCollisions")->getSignal()->connect(boost::bind(&handleCameraCollisionsChanged, _1));
 	gSavedSettings.getControl("FlycamAxisScale0")->getSignal()->connect(boost::bind(&handleJoystickChanged, _1));
 	gSavedSettings.getControl("FlycamAxisScale1")->getSignal()->connect(boost::bind(&handleJoystickChanged, _1));
 	gSavedSettings.getControl("FlycamAxisScale2")->getSignal()->connect(boost::bind(&handleJoystickChanged, _1));

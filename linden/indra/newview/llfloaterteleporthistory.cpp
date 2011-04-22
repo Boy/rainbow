@@ -37,17 +37,16 @@
 #include "llworld.h"
 #include "lleventpoll.h"
 #include "llagent.h"
+#include "llappviewer.h"
 #include "llfloaterteleporthistory.h"
 #include "llfloaterworldmap.h"
 #include "lltimer.h"
 #include "lluictrlfactory.h"
 #include "llurldispatcher.h"
 #include "llurlsimstring.h"
-#include "llviewercontrol.h"   // gSavedSettings
+#include "llviewercontrol.h"
 #include "llviewerwindow.h"
 #include "llweb.h"
-
-#include "apr_time.h"
 
 // globals
 LLFloaterTeleportHistory* gFloaterTeleportHistory;
@@ -55,7 +54,7 @@ LLFloaterTeleportHistory* gFloaterTeleportHistory;
 LLFloaterTeleportHistory::LLFloaterTeleportHistory()
 :	LLFloater(std::string("teleporthistory")),
 	mPlacesList(NULL),
-	id(0)
+	mID(0)
 {
 	LLUICtrlFactory::getInstance()->buildFloater(this, "floater_teleport_history.xml", NULL);
 }
@@ -69,7 +68,7 @@ LLFloaterTeleportHistory::~LLFloaterTeleportHistory()
 void LLFloaterTeleportHistory::onFocusReceived()
 {
 	// take care to enable or disable buttons depending on the selection in the places list
-	if(mPlacesList->getFirstSelected())
+	if (mPlacesList->getFirstSelected())
 	{
 		setButtonsEnabled(TRUE);
 	}
@@ -84,7 +83,7 @@ BOOL LLFloaterTeleportHistory::postBuild()
 {
 	// make sure the cached pointer to the scroll list is valid
 	mPlacesList=getChild<LLScrollListCtrl>("places_list");
-	if(!mPlacesList)
+	if (!mPlacesList)
 	{
 		llwarns << "coud not get pointer to places list" << llendl;
 		return FALSE;
@@ -100,7 +99,7 @@ BOOL LLFloaterTeleportHistory::postBuild()
 	return TRUE;
 }
 
-void LLFloaterTeleportHistory::addEntry(std::string regionName, S16 x, S16 y, S16 z)
+void LLFloaterTeleportHistory::addPendingEntry(std::string regionName, S16 x, S16 y, S16 z)
 {
 //MK
 	if (gRRenabled && gAgent.mRRInterface.mContainsShowloc)
@@ -108,51 +107,78 @@ void LLFloaterTeleportHistory::addEntry(std::string regionName, S16 x, S16 y, S1
 		return;
 	}
 //mk
-	// only if the cached scroll list pointer is valid
-	if(mPlacesList)
+	// Set pending entry timestamp
+	U32 utc_time;
+	utc_time = time_corrected();
+	struct tm* internal_time;
+	internal_time = utc_to_pacific_time(utc_time, gPacificDaylightTime);
+	// check if we are in daylight savings time
+	std::string timeZone = " PST";
+	if (gPacificDaylightTime)
 	{
-		// prepare display of position
-		std::string position=llformat("%d, %d, %d", x, y, z);
-		// prepare simstring for later parsing
-		std::string simString = regionName + llformat("/%d/%d/%d", x, y, z); 
-		simString = LLWeb::escapeURL(simString);
+		timeZone = " PDT";
+	}
+#ifdef LOCALIZED_TIME
+	timeStructToFormattedString(internal_time, gSavedSettings.getString("LongTimeFormat"), mPendingTimeString);
+	mPendingTimeString += timeZone;
+#else
+	mPendingTimeString = llformat("%02d:%02d:%02d", internal_time->tm_hour, internal_time->tm_min, internal_time->tm_sec) + timeZone;
+#endif
 
-		// check if we are in daylight savings time
-		std::string timeZone = "PST";
-		if(is_daylight_savings()) timeZone = "PDT";
+	// Set pending region name
+	mPendingRegionName = regionName;
 
-		// do all time related stuff as closely together as possible, because every other operation
-		// might change the internal tm* buffer
-		struct tm* internal_time;
-		internal_time = utc_to_pacific_time(time_corrected(), is_daylight_savings());
-		std::string timeString=llformat("%02d:%02d:%02d ", internal_time->tm_hour, internal_time->tm_min, internal_time->tm_sec)+timeZone;
+	// Set pending position
+	mPendingPosition = llformat("%d, %d, %d", x, y, z);
 
+	// prepare simstring for later parsing
+	mPendingSimString = regionName + llformat("/%d/%d/%d", x, y, z); 
+	mPendingSimString = LLWeb::escapeURL(mPendingSimString);
+
+	// Prepare the SLURL
+	mPendingSLURL = LLURLDispatcher::buildSLURL(regionName, x, y, z);
+}
+
+void LLFloaterTeleportHistory::addEntry(std::string parcelName)
+{
+	if (mPendingRegionName.empty())
+	{
+		return;
+	}
+
+ 	// only if the cached scroll list pointer is valid
+	if (mPlacesList)
+	{
 		// build the list entry
 		LLSD value;
-		value["id"] = id;
-		value["columns"][0]["column"] = "region";
-		value["columns"][0]["value"] = regionName;
-		value["columns"][1]["column"] = "position";
-		value["columns"][1]["value"] = position;
-		value["columns"][2]["column"] = "visited";
-		value["columns"][2]["value"] = timeString;
+		value["id"] = mID;
+		value["columns"][LIST_PARCEL]["column"] = "parcel";
+		value["columns"][LIST_PARCEL]["value"] = parcelName;
+		value["columns"][LIST_REGION]["column"] = "region";
+		value["columns"][LIST_REGION]["value"] = mPendingRegionName;
+		value["columns"][LIST_POSITION]["column"] = "position";
+		value["columns"][LIST_POSITION]["value"] = mPendingPosition;
+		value["columns"][LIST_VISITED]["column"] = "visited";
+		value["columns"][LIST_VISITED]["value"] = mPendingTimeString;
 
 		// these columns are hidden and serve as data storage for simstring and SLURL
-		value["columns"][3]["column"] = "slurl";
-		value["columns"][3]["value"] = LLURLDispatcher::buildSLURL(regionName, x, y, z);
-		value["columns"][4]["column"] = "simstring";
-		value["columns"][4]["value"] = simString;
+		value["columns"][LIST_SLURL]["column"] = "slurl";
+		value["columns"][LIST_SLURL]["value"] = mPendingSLURL;
+		value["columns"][LIST_SIMSTRING]["column"] = "simstring";
+		value["columns"][LIST_SIMSTRING]["value"] = mPendingSimString;
 
 		// add the new list entry on top of the list, deselect all and disable the buttons
 		mPlacesList->addElement(value, ADD_TOP);
 		mPlacesList->deselectAllItems(TRUE);
 		setButtonsEnabled(FALSE);
-		id++;
+		mID++;
 	}
 	else
 	{
 		llwarns << "pointer to places list is NULL" << llendl;
 	}
+
+	mPendingRegionName.clear();
 }
 
 void LLFloaterTeleportHistory::setButtonsEnabled(BOOL on)
@@ -183,7 +209,7 @@ void LLFloaterTeleportHistory::onPlacesSelected(LLUICtrl* /* ctrl */, void* data
 	LLFloaterTeleportHistory* self = (LLFloaterTeleportHistory*) data;
 
 	// on selection change check if we need to enable or disable buttons
-	if(self->mPlacesList->getFirstSelected())
+	if (self->mPlacesList->getFirstSelected())
 	{
 		self->setButtonsEnabled(TRUE);
 	}
@@ -199,7 +225,7 @@ void LLFloaterTeleportHistory::onTeleport(void* data)
 	LLFloaterTeleportHistory* self = (LLFloaterTeleportHistory*) data;
 
 	// build secondlife::/app link from simstring for instant teleport to destination
-	std::string slapp="secondlife:///app/teleport/" + self->mPlacesList->getFirstSelected()->getColumn(4)->getValue().asString();
+	std::string slapp = "secondlife:///app/teleport/" + self->mPlacesList->getFirstSelected()->getColumn(LIST_SIMSTRING)->getValue().asString();
 	LLWebBrowserCtrl* web = NULL;
 	LLURLDispatcher::dispatch(slapp, web, TRUE);
 }
@@ -210,7 +236,7 @@ void LLFloaterTeleportHistory::onShowOnMap(void* data)
 	LLFloaterTeleportHistory* self = (LLFloaterTeleportHistory*) data;
 
 	// get simstring from selected entry and parse it for its components
-	std::string simString = self->mPlacesList->getFirstSelected()->getColumn(4)->getValue().asString();
+	std::string simString = self->mPlacesList->getFirstSelected()->getColumn(LIST_SIMSTRING)->getValue().asString();
 	std::string region = "";
 	S32 x = 128;
 	S32 y = 128;
@@ -229,6 +255,6 @@ void LLFloaterTeleportHistory::onCopySLURL(void* data)
 	LLFloaterTeleportHistory* self = (LLFloaterTeleportHistory*) data;
 
 	// get SLURL of the selected entry and copy it to the clipboard
-	std::string SLURL=self->mPlacesList->getFirstSelected()->getColumn(3)->getValue().asString();
+	std::string SLURL = self->mPlacesList->getFirstSelected()->getColumn(LIST_SLURL)->getValue().asString();
 	gViewerWindow->mWindow->copyTextToClipboard(utf8str_to_wstring(SLURL));
 }

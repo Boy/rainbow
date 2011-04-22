@@ -1556,6 +1556,12 @@ Expected [VALIDS]
 [FILE]
 		</message>
 	</alert>
+	<alert modal="true" name="SoundFileInvalidChunkSize">
+		<message name="message">
+			Wrong chunk size in WAV file:
+[FILE]
+		</message>
+	</alert>
 	<alert modal="true" name="SoundFileInvalidTooLong">
 		<message name="message">
 			Audio file is too long (10 second maximum): 

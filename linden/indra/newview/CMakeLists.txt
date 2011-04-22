@@ -191,8 +191,8 @@ set(viewer_SOURCE_FILES
     llfloatersnapshot.cpp
     llfloaterstats.cpp
     llfloatertelehub.cpp
-    llfloaterteleport.cpp   
     llfloaterteleporthistory.cpp
+    llfloaterteleport.cpp
     llfloatertest.cpp
     llfloatertools.cpp
     llfloatertopobjects.cpp
@@ -604,8 +604,8 @@ set(viewer_HEADER_FILES
     llfloatersnapshot.h
     llfloaterstats.h
     llfloatertelehub.h
-    llfloaterteleport.h
     llfloaterteleporthistory.h
+    llfloaterteleport.h
     llfloatertest.h
     llfloatertools.h
     llfloatertopobjects.h

@@ -45,39 +45,54 @@
 
 class LLFloaterTeleportHistory : public LLFloater
 {
-	public:
-		LLFloaterTeleportHistory();
-		virtual ~LLFloaterTeleportHistory();
+public:
+	LLFloaterTeleportHistory();
+	virtual ~LLFloaterTeleportHistory();
 
-		/// @brief: reimplemented to check for selection changes in the places list scrolllist
-		virtual void onFocusReceived();
+	/// @brief: reimplemented to check for selection changes in the places list scrolllist
+	virtual void onFocusReceived();
 
-		/// @brief: reimplemented to make the menu toggle work
-		virtual void onClose(bool app_quitting);
+	/// @brief: reimplemented to make the menu toggle work
+	virtual void onClose(bool app_quitting);
 
-		/// @brief: reimplemented to prevent this floater from closing while the viewer is shutting down
-		virtual BOOL canClose();
+	/// @brief: reimplemented to prevent this floater from closing while the viewer is shutting down
+	virtual BOOL canClose();
 
-		BOOL postBuild();
+	BOOL postBuild();
 
-		/// @brief: adds a teleport destination to the list of visited places
-		void addEntry(std::string regionName, S16 x, S16 y, S16 z);
+	/// @brief: adds the pending teleport destination
+	void addPendingEntry(std::string regionName, S16 x, S16 y, S16 z);
+	/// @brief: adds the destination to the list of visited places
+	void addEntry(std::string parcelName);
 
-	protected:
-		static void onPlacesSelected(LLUICtrl* ctrl, void* data);
-		static void onTeleport(void* data);
-		static void onShowOnMap(void* data);
-		static void onCopySLURL(void* data);
+private:
+	enum HISTORY_COLUMN_ORDER
+	{
+		LIST_PARCEL,
+		LIST_REGION,
+		LIST_POSITION,
+		LIST_VISITED,
+		LIST_SLURL,
+		LIST_SIMSTRING
+	};
 
-		/// @brief: enables or disables the "Teleport", "Show On Map" and "Copy To SLURL" buttons **/
-		void setButtonsEnabled(BOOL on);
+	static void onPlacesSelected(LLUICtrl* ctrl, void* data);
+	static void onTeleport(void* data);
+	static void onShowOnMap(void* data);
+	static void onCopySLURL(void* data);
 
-		LLScrollListCtrl* mPlacesList;
+	/// @brief: enables or disables the "Teleport", "Show On Map" and "Copy To SLURL" buttons **/
+	void setButtonsEnabled(BOOL on);
 
-		S32 id;
+	LLScrollListCtrl* mPlacesList;
 
-		/// @brief: to see if this was the first time setVisible() was called (at program startup)
-		BOOL firstRun;
+	S32 mID;
+
+	std::string mPendingRegionName;
+	std::string mPendingPosition;
+	std::string mPendingSimString;
+	std::string mPendingTimeString;
+	std::string mPendingSLURL;
 };
 
 // globals

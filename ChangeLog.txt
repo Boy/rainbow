@@ -1,3 +1,23 @@
+2011-04-22 Boy Lane <boy.lane@yahoo.com>
+
+    * Teleport History fixed & CameraIgnoreCollision from CoolVL
+
+    modified:   ChangeLog.txt
+    modified:   linden/indra/llaudio/vorbisencode.cpp
+    modified:   linden/indra/llaudio/vorbisencode.h
+    modified:   linden/indra/newview/CMakeLists.txt
+    modified:   linden/indra/newview/app_settings/settings.xml
+    modified:   linden/indra/newview/llagent.cpp
+    modified:   linden/indra/newview/llfloaterpreference.cpp
+    modified:   linden/indra/newview/llfloaterteleporthistory.cpp
+    modified:   linden/indra/newview/llfloaterteleporthistory.h
+    modified:   linden/indra/newview/llviewercontrol.cpp
+    modified:   linden/indra/newview/llviewermessage.cpp
+    modified:   linden/indra/newview/llviewerparcelmgr.cpp
+    modified:   linden/indra/newview/skins/default/xui/en-us/alerts.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_teleport_history.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/role_actions.xml
+
 2011-04-20 Boy Lane <boy.lane@yahoo.com>
 
     * Accumulated minor patches and fixes

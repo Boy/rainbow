@@ -3235,6 +3235,9 @@ void process_agent_movement_complete(LLMessageSystem* msg, void**)
 		{
 			gAgent.setTeleportState( LLAgent::TELEPORT_NONE );
 		}
+
+		// add teleport destination to the list of visited places
+		gFloaterTeleportHistory->addPendingEntry(regionp->getName(), (S16)agent_pos.mV[VX], (S16)agent_pos.mV[VY], (S16)agent_pos.mV[VZ]);
 	}
 	else
 	{
@@ -4153,6 +4156,10 @@ void process_avatar_appearance(LLMessageSystem *mesgsys, void **user_data)
 
 void process_camera_constraint(LLMessageSystem *mesgsys, void **user_data)
 {
+	if (gSavedSettings.getBOOL("CameraIgnoreCollisions"))
+	{
+		return;
+	}
 	LLVector4 cameraCollidePlane;
 	mesgsys->getVector4Fast(_PREHASH_CameraCollidePlane, _PREHASH_Plane, cameraCollidePlane);
 
