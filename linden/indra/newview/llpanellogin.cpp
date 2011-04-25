@@ -1122,7 +1122,7 @@ void LLPanelLogin::onClickConnect(void *)
 void LLPanelLogin::newAccountAlertCallback(S32 option, void*)
 {
 	sInstance->setFocus(TRUE);
-	return false;
+	return;
 }
 
 
