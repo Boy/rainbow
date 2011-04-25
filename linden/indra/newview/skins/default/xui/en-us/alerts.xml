@@ -728,16 +728,9 @@ The outfit folder contains no clothing, body parts, or attachments.
 	<alert modal="true" name="MustHaveAccountToLogIn">
 		<message name="message">
 Oops! Something was left blank.
-You need to enter both the First and Last name of your avatar.
 
-You need an account to enter [SECOND_LIFE]. Would you like to create one now?
+If you are trying to log into Second Life with an avatar created after November 2010, please use your username as the first name and "Resident" as the last name.
 		</message>
-		<option name="OK">
-			Create a new account
-		</option>
-		<option name="Cancel">
-			Try again
-		</option>
 	</alert>
 	<alert modal="true" name="AddClassified">
 		<message name="message">

@@ -1121,15 +1121,8 @@ void LLPanelLogin::onClickConnect(void *)
 // static
 void LLPanelLogin::newAccountAlertCallback(S32 option, void*)
 {
-	if (0 == option)
-	{
-		llinfos << "Going to account creation URL" << llendl;
-		LLWeb::loadURLExternal( CREATE_ACCOUNT_URL );
-	}
-	else
-	{
-		sInstance->setFocus(TRUE);
-	}
+	sInstance->setFocus(TRUE);
+	return false;
 }
 
 

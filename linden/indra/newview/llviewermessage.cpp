@@ -2537,6 +2537,49 @@ void process_chat_from_simulator(LLMessageSystem *msg, void **user_data)
 		is_owned_by_me = chatter->permYouOwner();
 	}
 
+	U32 links_for_chatting_objects = gSavedSettings.getU32("LinksForChattingObjects");
+	if (links_for_chatting_objects != 0 && chat.mSourceType == CHAT_SOURCE_OBJECT &&
+//MK
+		(!gRRenabled || !gAgent.mRRInterface.mContainsShownames) &&
+//mk
+		(!is_owned_by_me || links_for_chatting_objects == 2))
+	{
+		LLSD query_string;
+		query_string["name"]  = from_name;
+		query_string["owner"] = owner_id;
+//MK
+		if (!gRRenabled || !gAgent.mRRInterface.mContainsShowloc)
+		{
+//mk
+			LLViewerObject* obj;
+			// Compute the object SLURL.
+			if (chatter)
+			{
+				obj = chatter;
+			}
+			else
+			{
+				// It's a HUD: use the object owner instead.
+				obj = gObjectList.findObject(owner_id);
+			}
+			if (obj)
+			{
+				LLVector3 pos = obj->getPositionRegion();
+				S32 x = llround((F32)fmod((F64)pos.mV[VX], (F64)REGION_WIDTH_METERS));
+				S32 y = llround((F32)fmod((F64)pos.mV[VY], (F64)REGION_WIDTH_METERS));
+				S32 z = llround((F32)pos.mV[VZ]);
+				std::ostringstream location;
+				location << obj->getRegion()->getName() << "/" << x << "/" << y << "/" << z;
+				query_string["slurl"] = location.str();
+			}
+//MK
+		}
+//mk
+		std::ostringstream link;
+		link << "secondlife:///app/objectim/" << from_id << LLURI::mapToQueryString(query_string);
+		chat.mURL = link.str();
+	}
+
 	if (is_audible)
 	{
 		BOOL visible_in_chat_bubble = FALSE;
@@ -2576,20 +2619,33 @@ void process_chat_from_simulator(LLMessageSystem *msg, void **user_data)
 			if ((chatter &&	(chatter->isAvatar () || !chatter->isAttachment () || !chatter->permYouOwner ()))  // avatar, object or attachment that doesn't belong to me
 				|| !chatter) /// or this may be a HUD (visible only to the other party) or an unrezzed avatar or object
 			{
-				if (gAgent.mRRInterface.containsWithoutException ("recvchat", from_id.asString()))
+				if (gAgent.mRRInterface.containsWithoutException("recvchat", from_id.asString())
+					|| gAgent.mRRInterface.contains("recvchatfrom:" + from_id.asString()))
 				{
 					chat.mFromName = from_name;				
 					chat.mText = gAgent.mRRInterface.crunchEmote (mesg, 20); // + '\0';
+					if (!gSavedSettings.getBOOL("RestrainedLoveShowEllipsis") && chat.mText == "...")
+					{
+						chat.mText = "";
+					}
 					mesg = chat.mText;
 				}
 
-				if (gAgent.mRRInterface.containsWithoutException ("recvemote", from_id.asString()))
+				if (gAgent.mRRInterface.containsWithoutException("recvemote", from_id.asString())
+					|| gAgent.mRRInterface.contains("recvemotefrom:" + from_id.asString()))
 				{
 					std::string prefix = mesg.substr(0, 4);
 					if (prefix == "/me " || prefix == "/me'")
 					{
 						chat.mFromName = from_name;				
-						chat.mText = "/me ...";
+						if (gSavedSettings.getBOOL("RestrainedLoveShowEllipsis"))
+						{
+							chat.mText = "/me ...";
+						}
+						else
+						{
+							chat.mText = "";
+						}
 						mesg = chat.mText;
 					}
 				}
@@ -2597,7 +2653,7 @@ void process_chat_from_simulator(LLMessageSystem *msg, void **user_data)
 				if (from_id != gAgent.getID() && gAgent.mRRInterface.mContainsShownames)
 				{
 					// also scramble the name of the chatter (replace with a dummy name)
-					if (chatter->isAvatar ())
+					if (chatter && chatter->isAvatar())
 					{
 						from_name = gAgent.mRRInterface.getDummyName (from_name, chat.mAudible);
 					}

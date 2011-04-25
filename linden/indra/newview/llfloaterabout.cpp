@@ -122,7 +122,7 @@ LLFloaterAbout::LLFloaterAbout()
 	}
 //mk
 	support_widget->appendColoredText(version, FALSE, FALSE, gColors.getColor("TextFgReadOnlyColor"));
-	support_widget->appendStyledText(LLTrans::getString("ReleaseNotes"), FALSE, FALSE, &viewer_link_style);
+	support_widget->appendStyledText(LLTrans::getString("ReleaseNotes"), FALSE, FALSE, viewer_link_style);
 
 	std::string support;
 	support.append("\n\n");
@@ -188,7 +188,7 @@ LLFloaterAbout::LLFloaterAbout()
 		}
 //mk
 		support_widget->appendColoredText(support, FALSE, FALSE, gColors.getColor("TextFgReadOnlyColor"));
-		support_widget->appendStyledText(LLTrans::getString("ReleaseNotes"), FALSE, FALSE, &server_link_style);
+		support_widget->appendStyledText(LLTrans::getString("ReleaseNotes"), FALSE, FALSE, server_link_style);
 
 		support = "\n\n";
 	}

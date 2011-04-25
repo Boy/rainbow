@@ -155,6 +155,17 @@
         <real>1.0</real>
       </array>
     </map>
+    <key>LinksForChattingObjects</key>
+    <map>
+      <key>Comment</key>
+      <string>Show links for chatting objects (0=no, 1=for others' objects, 2=for all objects)</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>U32</string>
+      <key>Value</key>
+      <real>0</real>
+    </map>
     <key>HighlightOwnNameInIM</key>
     <map>
       <key>Comment</key>
@@ -258,6 +269,17 @@
       <string>Boolean</string>
       <key>Value</key>
       <integer>0</integer>
+    </map>
+    <key>AvatarOffsetZ</key>
+    <map>
+      <key>Comment</key>
+      <string>Avatar Z offset (used to adjust animation height)</string>
+      <key>Persist</key>
+      <integer>0</integer>
+      <key>Type</key>
+      <string>F32</string>
+      <key>Value</key>
+      <real>0.0</real>
     </map>
     <key>AppearanceCameraMovement</key>
     <map>

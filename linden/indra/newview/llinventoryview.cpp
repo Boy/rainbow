@@ -1509,10 +1509,17 @@ void LLInventoryPanel::modelChanged(U32 mask)
 						}
 
 						LLFolderViewFolder* new_parent = (LLFolderViewFolder*)mFolders->getItemByID(model_item->getParentUUID());
-						if (view_item->getParentFolder() != new_parent)
+						if (new_parent)
 						{
-							view_item->getParentFolder()->extractItem(view_item);
-							view_item->addToFolder(new_parent, mFolders);
+							if (view_item->getParentFolder() != new_parent)
+							{
+								view_item->getParentFolder()->extractItem(view_item);
+								view_item->addToFolder(new_parent, mFolders);
+							}
+						}
+						else
+						{
+							llwarns << model_item->getParentUUID() << ": parent folder gone !" << llendl;
 						}
 					}
 				}
@@ -1529,7 +1536,7 @@ void LLInventoryPanel::modelChanged(U32 mask)
 					}
 					else
 					{
-						llwarns << *id_it << "Item does not exist in either view or model, but notification triggered" << llendl;
+						llwarns << *id_it << ": Item does not exist in either view or model, but notification triggered" << llendl;
 					}
 				}
 			}

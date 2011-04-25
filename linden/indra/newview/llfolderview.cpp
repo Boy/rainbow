@@ -119,6 +119,10 @@ LLColor4 LLFolderViewItem::sSearchStatusColor;
 LLUIImagePtr LLFolderViewItem::sArrowImage;
 LLUIImagePtr LLFolderViewItem::sBoxImage;
 
+// This is used to keep track of existing folder view items and
+// avoid a crash bug due to a race condition (see in doIdle()).
+static std::set<LLFolderViewItem*> sFolderViewItems;
+
 //static
 void LLFolderViewItem::initClass()
 {
@@ -170,6 +174,7 @@ LLFolderViewItem::LLFolderViewItem( const std::string& name, LLUIImagePtr icon,
 	mDragAndDropTarget(FALSE),
 	mIsLoading(FALSE)
 {
+	sFolderViewItems.insert(this);
 	refresh(); // possible opt: only call refreshFromListener()
 	setTabStop(FALSE);
 }
@@ -177,6 +182,7 @@ LLFolderViewItem::LLFolderViewItem( const std::string& name, LLUIImagePtr icon,
 // Destroys the object
 LLFolderViewItem::~LLFolderViewItem( void )
 {
+	sFolderViewItems.erase(this);
 	delete mListener;
 	mListener = NULL;
 }
@@ -4369,7 +4375,19 @@ void LLFolderView::doIdle()
 		LLFastTimer t3(LLFastTimer::FTM_AUTO_SELECT);
 		// select new item only if a filtered item not currently selected
 		LLFolderViewItem* selected_itemp = mSelectedItems.empty() ? NULL : mSelectedItems.back();
-		if ((!selected_itemp || !selected_itemp->getFiltered()) && !mAutoSelectOverride)
+		if (selected_itemp != NULL && sFolderViewItems.count(selected_itemp) == 0)
+		{
+			// There is a crash bug due to a race condition: when a folder view item is
+			// destroyed, its address may still appear in mSelectedItems a couple of doIdle()
+			// later, even if you explicitely clear this list and dirty the filters in the
+			// destructor...
+			// This code avoids the crash bug.
+			llwarns << "Invalid folder view item (" << selected_itemp << ") in selection: clearing the latter." << llendl;
+			dirtyFilter();
+			clearSelection();
+			requestArrange();
+		}
+		else if (!mAutoSelectOverride && (!selected_itemp || !selected_itemp->getFiltered()))
 		{
 			// select first filtered item
 			LLSelectFirstFilteredItem filter;
@@ -4640,7 +4658,7 @@ BOOL LLInventoryFilter::check(LLFolderViewItem* item)
 	BOOL passed = (0x1 << listener->getInventoryType() & mFilterOps.mFilterTypes || listener->getInventoryType() == LLInventoryType::IT_NONE)
 					&& (mFilterSubString.size() == 0 || mSubStringMatchOffset != std::string::npos)
 					&& (mFilterWorn == false || gAgent.isWearingItem(item_id) ||
-						gAgent.getAvatarObject() && gAgent.getAvatarObject()->isWearingAttachment(item_id))
+						(gAgent.getAvatarObject() && gAgent.getAvatarObject()->isWearingAttachment(item_id)))
 					&& ((listener->getPermissionMask() & mFilterOps.mPermissions) == mFilterOps.mPermissions)
 					&& (listener->getCreationDate() >= earliest && listener->getCreationDate() <= mFilterOps.mMaxDate);
 	return passed;

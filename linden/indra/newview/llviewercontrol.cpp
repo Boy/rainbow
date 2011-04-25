@@ -318,6 +318,12 @@ static bool handleJoystickChanged(const LLSD& newvalue)
 	return true;
 }
 
+static bool handleAvatarOffsetChanged(const LLSD& newvalue)
+{
+	gAgent.sendAgentSetAppearance();
+	return true;
+}
+
 static bool handleCameraCollisionsChanged(const LLSD& newvalue)
 {
 	if (newvalue.asBoolean())
@@ -635,6 +641,7 @@ void settings_setup_listeners()
 	gSavedSettings.getControl("BuildAxisDeadZone3")->getSignal()->connect(boost::bind(&handleJoystickChanged, _1));
 	gSavedSettings.getControl("BuildAxisDeadZone4")->getSignal()->connect(boost::bind(&handleJoystickChanged, _1));
 	gSavedSettings.getControl("BuildAxisDeadZone5")->getSignal()->connect(boost::bind(&handleJoystickChanged, _1));
+	gSavedSettings.getControl("AvatarOffsetZ")->getSignal()->connect(boost::bind(&handleAvatarOffsetChanged, _1));
     gSavedSettings.getControl("DebugViews")->getSignal()->connect(boost::bind(&handleDebugViewsChanged, _1));
     gSavedSettings.getControl("UserLogFile")->getSignal()->connect(boost::bind(&handleLogFileChanged, _1));
 	gSavedSettings.getControl("RenderHideGroupTitle")->getSignal()->connect(boost::bind(handleHideGroupTitleChanged, _1));

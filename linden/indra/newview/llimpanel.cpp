@@ -1594,8 +1594,8 @@ void LLFloaterIMPanel::addHistoryLine(const std::string &utf8msg, const LLColor4
 				}
 			}
 			// Convert the name to a hotlink and add to message.
-			const LLStyleSP &source_style = LLStyleMap::instance().lookup(source);
-			mHistoryEditor->appendStyledText(name,false,prepend_newline,&source_style);
+			const LLStyleSP &source_style = LLStyleMap::instance().lookupAgent(source);
+			mHistoryEditor->appendStyledText(name,false,prepend_newline,source_style);
 		}
 		prepend_newline = false;
 	}
