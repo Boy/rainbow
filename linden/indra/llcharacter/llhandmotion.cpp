@@ -143,23 +143,29 @@ BOOL LLHandMotion::onUpdate(F32 time, U8* joint_mask)
 	}
 	else
 	{
-		// this is a new morph we didn't know about before
-		if (*requestedHandPose != mNewPose && mNewPose != mCurrentPose && mNewPose != HAND_POSE_SPREAD)
+		if (*requestedHandPose < NUM_HAND_POSES)
 		{
-			mCharacter->setVisualParamWeight(gHandPoseNames[mNewPose], 0.f);
+			// this is a new morph we didn't know about before
+			if (*requestedHandPose != mNewPose && mNewPose != mCurrentPose && mNewPose != HAND_POSE_SPREAD)
+			{
+				mCharacter->setVisualParamWeight(gHandPoseNames[mNewPose], 0.f);
+			}
+			mNewPose = *requestedHandPose;
 		}
-		mNewPose = *requestedHandPose;
+		else
+		{
+			LL_WARNS("Animation") << "Invalid requested hand pose index; ignoring new hand pose." << LL_ENDL;
+			mNewPose = mCurrentPose;
+		}
 	}
 
 	mCharacter->removeAnimationData("Hand Pose");
 	mCharacter->removeAnimationData("Hand Pose Priority");
 
-//	if (requestedHandPose)
-//		llinfos << "Hand Pose " << *requestedHandPose << llendl;
-
 	// if we are still blending...
 	if (mCurrentPose != mNewPose)
 	{
+		LL_DEBUGS("Animation") << "New Hand Pose: " << gHandPoseNames[mNewPose] << LL_ENDL;
 		F32 incomingWeight = 1.f;
 		F32 outgoingWeight = 0.f;
 

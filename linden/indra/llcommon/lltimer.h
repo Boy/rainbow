@@ -170,6 +170,9 @@ void secondsToTimecodeString(F32 current_time, std::string& tcstring);
 void timeToFormattedString(time_t time, std::string format, std::string &timestr);
 void timeStructToFormattedString(struct tm * time, std::string format, std::string &timestr);
 
+// We have localized time support:
+#define LOCALIZED_TIME
+
 // class for scheduling a function to be called at a given frequency (approximate, inprecise)
 class LLEventTimer 
 {

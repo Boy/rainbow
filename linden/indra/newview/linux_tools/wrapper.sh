@@ -70,7 +70,8 @@ fi
 #	export LL_ATI_MOUSE_CURSOR_BUG=x
 #fi
 
-
+## unset proxy vars
+unset http_proxy https_proxy no_proxy HTTP_PROXY HTTPS_PROXY
 ## Nothing worth editing below this line.
 ##-------------------------------------------------------------------
 

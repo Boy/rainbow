@@ -78,10 +78,10 @@ namespace
 	LLViewerObject* get_object_to_mute_from_id(LLUUID object_id)
 	{
 		LLViewerObject *objectp = gObjectList.findObject(object_id);
-		if ((objectp) && (!objectp->isAvatar()))
+		if (objectp && !objectp->isAvatar())
 		{
-			LLViewerObject *parentp = (LLViewerObject *)objectp->getParent();
-			if (parentp && parentp->getID() != gAgent.getID())
+			LLViewerObject *parentp = objectp->getRootEdit();
+			if (parentp)
 			{
 				objectp = parentp;
 			}
@@ -110,10 +110,10 @@ static LLDispatchEmptyMuteList sDispatchEmptyMuteList;
 //-----------------------------------------------------------------------------
 // LLMute()
 //-----------------------------------------------------------------------------
-const char BY_NAME_SUFFIX[] = " (by name)";
-const char AGENT_SUFFIX[] = " (resident)";
-const char OBJECT_SUFFIX[] = " (object)";
-const char GROUP_SUFFIX[] = " (group)";
+char LLMute::BY_NAME_SUFFIX[] = " (by name)";
+char LLMute::AGENT_SUFFIX[] = " (resident)";
+char LLMute::OBJECT_SUFFIX[] = " (object)";
+char LLMute::GROUP_SUFFIX[] = " (group)";
 
 
 LLMute::LLMute(const LLUUID& id, const std::string& name, EType type, U32 flags)
@@ -786,8 +786,9 @@ void LLMuteList::processMuteListUpdate(LLMessageSystem* msg, void**)
 		llwarns << "Got an mute list update for the wrong agent." << llendl;
 		return;
 	}
-	std::string filename;
-	msg->getStringFast(_PREHASH_MuteData, _PREHASH_Filename, filename);
+	std::string unclean_filename;
+	msg->getStringFast(_PREHASH_MuteData, _PREHASH_Filename, unclean_filename);
+	std::string filename = LLDir::getScrubbedFileName(unclean_filename);
 	
 	std::string *local_filename_and_path = new std::string(gDirUtilp->getExpandedFilename( LL_PATH_CACHE, filename ));
 	gXferManager->requestFile(*local_filename_and_path,

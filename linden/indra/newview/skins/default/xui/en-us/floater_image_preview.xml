@@ -55,11 +55,11 @@ Try saving image as 24 bit Targa (.tga).
 	</text>
 	<check_box bottom="37" control_name="LosslessJ2CUpload" enabled="false"
 	     follows="bottom|left" font="SansSerifSmall" height="16"
-	     initial_value="false" label="Use lossless compression"
-	     left_delta="-7" name="lossless_check" width="280" />
-  <check_box bottom="37" control_name="EmeraldTemporaryUpload" enabled="true"
+	     initial_value="false" label="Use lossless compression" left="10"
+	     left_delta="2" name="lossless_check" width="280" />
+	<check_box bottom="37" control_name="TemporaryUpload" enabled="true"
 	     follows="bottom|left" font="SansSerifSmall" height="16"
-	     initial_value="false" label="Temporary Image (Free)"
+	     initial_value="false" label="Temporary (Free)"
 	     left_delta="155" name="temp_check" width="280" tooltip="Sets the asset to be temporary, meaning its free, but in return, only good for a short time before it ceases to exist." />
 	<button bottom="10" follows="bottom|right" height="20" label="Cancel" left="165"
 	     name="cancel_btn" width="125" />

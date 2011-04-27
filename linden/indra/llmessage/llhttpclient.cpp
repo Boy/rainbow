@@ -78,8 +78,10 @@ namespace
 		{
 			if (mResponder.get())
 			{
-				mResponder->completedRaw(mStatus, mReason, channels, buffer);
+				// Allow clients to parse headers before we attempt to parse
+				// the body and provide completed/result/error calls.
 				mResponder->completedHeader(mStatus, mReason, mHeaderOutput);
+				mResponder->completedRaw(mStatus, mReason, channels, buffer);
 			}
 		}
 		virtual void header(const std::string& header, const std::string& value)
@@ -189,9 +191,11 @@ namespace
 			
 			LLVFile vfile(gVFS, mUUID, mAssetType, LLVFile::READ);
 			S32 fileSize = vfile.getSize();
-			std::vector<U8> fileBuffer(fileSize);
-			vfile.read(&fileBuffer[0], fileSize);
-			ostream.write((char*)&fileBuffer[0], fileSize);
+			U8* fileBuffer;
+			fileBuffer = new U8 [fileSize];
+            vfile.read(fileBuffer, fileSize);
+            ostream.write((char*)fileBuffer, fileSize);
+			delete [] fileBuffer;
 			eos = true;
 			return STATUS_DONE;
 		}

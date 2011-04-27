@@ -78,6 +78,8 @@ public:
 	// button highlights, etc.
 	void updatePopup(LLCoordGL center, MASK mask);
 
+	void toolsPrecision();
+
 	// When the floater is going away, reset any options that need to be 
 	// cleared.
 	void resetToolState();
@@ -144,6 +146,7 @@ public:
 	LLComboBox*		mComboGridMode;
 	LLCheckBoxCtrl*	mCheckStretchUniform;
 	LLCheckBoxCtrl*	mCheckStretchTexture;
+	LLCheckBoxCtrl*	mCheckLimitDrag;
 
 	LLButton	*mBtnRotateLeft;
 	LLButton	*mBtnRotateReset;
@@ -194,6 +197,7 @@ private:
 	BOOL					mDirty;
 	S32						mSmallHeight;
 	S32						mLargeHeight;
+	U32						mPrecision;
 
 	std::map<std::string, std::string> mStatusText;
 };

@@ -38,6 +38,7 @@
 
 class LLFace;
 class LLDrawPool;
+class LLSelectNode;
 
 
 class LLVOTree : public LLViewerObject
@@ -90,6 +91,9 @@ public:
 										  LLVector3* normal = NULL,             // return the surface normal at the intersection point
 										  LLVector3* bi_normal = NULL           // return the surface bi-normal at the intersection point
 		);
+
+	void    generateSilhouette(LLSelectNode* nodep, const LLVector3& view_point);
+	
 
 	static S32 sMaxTreeSpecies;
 
@@ -157,6 +161,15 @@ protected:
 	static S32 sLODVertexCount[4];
 	static S32 sLODSlices[4];
 	static F32 sLODAngles[4];
+
+private:
+	void generateSilhouetteVertices(std::vector<LLVector3> &vertices,
+									std::vector<LLVector3> &normals,
+									std::vector<S32> &segments,
+									const LLVector3& view_vec,
+									const LLMatrix4& mat,
+									const LLMatrix3& norm_mat);
+	
 };
 
 #endif

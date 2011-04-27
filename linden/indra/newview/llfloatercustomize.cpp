@@ -1006,7 +1006,7 @@ void LLPanelEditWearable::draw()
 	childSetEnabled("Save As", is_copyable && is_complete && has_wearable);
 	childSetEnabled("Revert", has_wearable && is_dirty );
 	childSetEnabled("Take Off",  has_wearable );
-	childSetVisible("Take Off", mCanTakeOff  );
+	childSetVisible("Take Off", mCanTakeOff && has_wearable  );
 	childSetVisible("Create New", !has_wearable );
 
 	childSetVisible("not worn instructions",  !has_wearable );
@@ -1077,14 +1077,27 @@ void LLPanelEditWearable::draw()
 			if (texture_ctrl)
 			{
 				const LLTextureEntry* te = avatar->getTE(te_index);
+
+				LLUUID new_id;
+				
 				if( te && (te->getID() != IMG_DEFAULT_AVATAR) )
 				{
-					texture_ctrl->setImageAssetID( te->getID() );
+					new_id = te->getID();
 				}
 				else
 				{
-					texture_ctrl->setImageAssetID( LLUUID::null );
+					new_id = LLUUID::null;
 				}
+
+				LLUUID old_id = texture_ctrl->getImageAssetID();
+
+				if (old_id != new_id)
+				{
+					// texture has changed, close the floater to avoid DEV-22461
+					texture_ctrl->closeFloater();
+				}
+				
+				texture_ctrl->setImageAssetID(new_id);
 			}
 		}
 
@@ -1271,6 +1284,24 @@ void LLPanelEditWearable::setUIPermissions(U32 perm_mask, BOOL is_complete)
 		 iter != mInvisibilityList.end(); ++iter)
 	{
 		childSetVisible(iter->first, is_copyable && is_modifiable && is_complete);
+	}
+}
+
+void updateAvatarHeightDisplay()
+{
+	if (gFloaterCustomize)
+	{
+		LLVOAvatar* avatar = gAgent.getAvatarObject();
+		if (!avatar) return;	// Paranoia
+		F32 shoes = avatar->getVisualParamWeight("Shoe_Heels") * 0.08f;
+		shoes += avatar->getVisualParamWeight("Shoe_Platform") * 0.07f;
+		gFloaterCustomize->getChild<LLTextBox>("ShoesText")->setValue(llformat("%.2f", shoes) + "m");
+		F32 avatar_size = (avatar->mBodySize.mV[VZ]) - shoes + (F32)0.17; //mBodySize is actually quite a bit off.
+		gFloaterCustomize->getChild<LLTextBox>("HeightTextM")->setValue(llformat("%.2f", avatar_size) + "m");
+		F32 feet = avatar_size / 0.3048;
+		F32 inches = (feet - (F32)((U32)feet)) * 12.0;
+		gFloaterCustomize->getChild<LLTextBox>("HeightTextI")->setValue(llformat("%d'%d\"", (U32)feet, (U32)inches));
+		gFloaterCustomize->getChild<LLTextBox>("PelvisToFootText")->setValue(llformat("%.2f", avatar->getPelvisToFoot()) + "m");
 	}
 }
 
@@ -1470,18 +1501,7 @@ void LLScrollingPanelParam::onSliderMoved(LLUICtrl* ctrl, void* userdata)
 	F32 new_weight = self->percentToWeight( (F32)slider->getValue().asReal() );
 	if (current_weight != new_weight )
 	{
-		LLFloaterCustomize* floater_customize = gFloaterCustomize;
-		if (!floater_customize) return;
-
-		//KOWs avatar height stuff
-		LLVOAvatar* avatar = gAgent.getAvatarObject();
-		F32 avatar_size = (avatar->mBodySize.mV[VZ]) + (F32)0.17; //mBodySize is actually quite a bit off.
-		//avatar_size += (F32)99; //mBodySize is actually quite a bit off.
-		
-		floater_customize->getChild<LLTextBox>("HeightText")->setValue(llformat("%.2f", avatar_size) + "m");
-		floater_customize->getChild<LLTextBox>("HeightText2")->setValue(llformat("%.2f",llround(avatar_size / 0.3048)) + "'"
-																	  + llformat("%.2f",llround(avatar_size * 39.37) % 12) + "\"");
-
+		updateAvatarHeightDisplay();
 		gAgent.getAvatarObject()->setVisualParamWeight( param, new_weight, FALSE);
 		gAgent.getAvatarObject()->updateVisualParams();
 	}
@@ -2526,20 +2546,7 @@ void LLFloaterCustomize::draw()
 	// arrives. Figure out some way to avoid this if possible.
 	updateInventoryUI();
 
-	LLFloaterCustomize* floater_customize = gFloaterCustomize;
-	if (!floater_customize) return;
-
-	//KOWs avatar height stuff
-	LLVOAvatar* avatar = gAgent.getAvatarObject();
-	F32 avatar_size = (avatar->mBodySize.mV[VZ]) + (F32)0.17; //mBodySize is actually quite a bit off.
-		
-	floater_customize->getChild<LLTextBox>("HeightText")->setValue(llformat("%.2f", avatar_size) + "m");
-	//inches = avatar_size * 39.37
-	//round(inches) + inches % 12
-	std::string temp = llformat("%.0f",(F32)llfloor(avatar_size / 0.3048));
-	std::string temp2 = llformat("%.0f",(F32)(llround(avatar_size * 39.37) % 12));
-	floater_customize->getChild<LLTextBox>("HeightText2")->setValue(temp + "'"
-																  + temp2 + "\"");
+	updateAvatarHeightDisplay();
 
 	LLScrollingPanelParam::sUpdateDelayFrames = 0;
 	

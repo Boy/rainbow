@@ -93,9 +93,6 @@ private:
 
 	U32 mFinalSize;
 
-	bool mHasBKGD;
-	png_color_16p mBackgroundColor;
-
 	F64 mGamma;
 
 	std::string mErrorMessage;

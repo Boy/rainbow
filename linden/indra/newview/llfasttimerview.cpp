@@ -209,7 +209,7 @@ static const int FTV_DISPLAY_NUM  = (sizeof(ft_display_table)/sizeof(ft_display_
 S32 ft_display_idx[FTV_DISPLAY_NUM]; // line of table entry for display purposes (for collapse)
 
 LLFastTimerView::LLFastTimerView(const std::string& name, const LLRect& rect)
-	:	LLFloater(name, rect, std::string("Fast Timers"))
+ : LLFloater(name, rect, std::string(), FALSE, 1, 1, FALSE, FALSE, TRUE)
 {
 	setVisible(FALSE);
 	mDisplayMode = 0;
@@ -296,6 +296,15 @@ S32 LLFastTimerView::getLegendIndex(S32 y)
 
 BOOL LLFastTimerView::handleMouseDown(S32 x, S32 y, MASK mask)
 {
+	{
+		S32 local_x = x - mButtons[BUTTON_CLOSE]->getRect().mLeft;
+		S32 local_y = y - mButtons[BUTTON_CLOSE]->getRect().mBottom;
+		if (mButtons[BUTTON_CLOSE]->getVisible() &&
+			mButtons[BUTTON_CLOSE]->pointInView(local_x, local_y))
+		{
+			return LLFloater::handleMouseDown(x, y, mask);
+		}
+	}
 	if (x < mBarRect.mLeft) 
 	{
 		S32 legend_index = getLegendIndex(y);
@@ -357,6 +366,15 @@ BOOL LLFastTimerView::handleMouseDown(S32 x, S32 y, MASK mask)
 
 BOOL LLFastTimerView::handleMouseUp(S32 x, S32 y, MASK mask)
 {
+	{
+		S32 local_x = x - mButtons[BUTTON_CLOSE]->getRect().mLeft;
+		S32 local_y = y - mButtons[BUTTON_CLOSE]->getRect().mBottom;
+		if (mButtons[BUTTON_CLOSE]->getVisible() &&
+			mButtons[BUTTON_CLOSE]->pointInView(local_x, local_y))
+		{
+			return LLFloater::handleMouseUp(x, y, mask);
+		}
+	}
 	return FALSE;
 }
 
@@ -405,6 +423,18 @@ BOOL LLFastTimerView::handleScrollWheel(S32 x, S32 y, S32 clicks)
 	return TRUE;
 }
 
+void LLFastTimerView::onClose(bool app_quitting)
+{
+	if (app_quitting)
+	{
+		LLFloater::close(app_quitting);
+	}
+	else
+	{
+		setVisible(FALSE);
+	}
+}
+
 void LLFastTimerView::draw()
 {
 	LLFastTimer t(LLFastTimer::FTM_RENDER_TIMER);
@@ -418,8 +448,9 @@ void LLFastTimerView::draw()
 	S32 height = (S32) (gViewerWindow->getVirtualWindowRect().getHeight()*0.75f);
 	S32 width = (S32) (gViewerWindow->getVirtualWindowRect().getWidth() * 0.75f);
 	
-	// HACK: casting away const. Should use setRect or some helper function instead.
-		const_cast<LLRect&>(getRect()).setLeftTopAndSize(getRect().mLeft, getRect().mTop, width, height);
+	LLRect new_rect;
+	new_rect.setLeftTopAndSize(getRect().mLeft, getRect().mTop, width, height);
+	setRect(new_rect);
 
 	S32 left, top, right, bottom;
 	S32 x, y, barw, barh, dx, dy;
@@ -567,11 +598,14 @@ void LLFastTimerView::draw()
 		left = x; right = x + texth;
 		top = y; bottom = y - texth;
 		S32 scale_offset = 0;
-		if (i == mHoverIndex)
+		if (y > 3 * texth)
 		{
-			scale_offset = llfloor(sinf(mHighlightTimer.getElapsedTimeF32() * 6.f) * 2.f);
+			if (i == mHoverIndex)
+			{
+				scale_offset = llfloor(sinf(mHighlightTimer.getElapsedTimeF32() * 6.f) * 2.f);
+			}
+			gl_rect_2d(left - scale_offset, top + scale_offset, right + scale_offset, bottom - scale_offset, *ft_display_table[i].color);
 		}
-		gl_rect_2d(left - scale_offset, top + scale_offset, right + scale_offset, bottom - scale_offset, *ft_display_table[i].color);
 
 		int tidx = ft_display_table[i].timer;
 		F32 ms = 0;
@@ -601,7 +635,7 @@ void LLFastTimerView::draw()
 		dx = (texth+4) + level*8;
 
 		LLColor4 color = disabled > 1 ? LLColor4::grey : LLColor4::white;
-		if (level > 0)
+		if (level > 0 && y > 3 * texth)
 		{
 			S32 line_start_y = (top + bottom) / 2;
 			S32 line_end_y = line_start_y + ((texth + 2) * (display_line[i] - display_line[parent])) - (texth / 2);
@@ -623,13 +657,16 @@ void LLFastTimerView::draw()
 			next_parent = ft_display_table[next_parent].parent;
 		}
 
-		if (is_child_of_hover_item)
+		if (y > 3 * texth)
 		{
-			LLFontGL::sMonospace->renderUTF8(tdesc, 0, x, y, color, LLFontGL::LEFT, LLFontGL::TOP, LLFontGL::BOLD);
-		}
-		else
-		{
-			LLFontGL::sMonospace->renderUTF8(tdesc, 0, x, y, color, LLFontGL::LEFT, LLFontGL::TOP);
+			if (is_child_of_hover_item)
+			{
+				LLFontGL::sMonospace->renderUTF8(tdesc, 0, x, y, color, LLFontGL::LEFT, LLFontGL::TOP, LLFontGL::BOLD);
+			}
+			else
+			{
+				LLFontGL::sMonospace->renderUTF8(tdesc, 0, x, y, color, LLFontGL::LEFT, LLFontGL::TOP);
+			}
 		}
 		y -= (texth + 2);
 
@@ -637,6 +674,11 @@ void LLFastTimerView::draw()
 		if (textw > legendwidth)
 			legendwidth = textw;
 	}
+	if (y <= 3 * texth)
+	{
+		LLFontGL::sMonospace->renderUTF8("<list truncated>", 0, 3 * texth, 2 * texth, LLColor4::white, LLFontGL::LEFT, LLFontGL::TOP, LLFontGL::BOLD);
+	}
+
 	for (S32 i=cur_line; i<FTV_DISPLAY_NUM; i++)
 	{
 		ft_display_idx[i] = -1;

@@ -33,6 +33,7 @@
 
 #include "llfloaterdirectory.h"
 
+#include "llstartup.h"			// for gIsInSecondLife
 #include "llpaneldirfind.h"
 #include "llpaneldirevents.h"
 #include "llpaneldirland.h"
@@ -93,14 +94,18 @@ LLFloaterDirectory::LLFloaterDirectory(const std::string& name)
 
 	LLCallbackMap::map_t factory_map;
 	factory_map["find_all_old_panel"] = LLCallbackMap(createFindAllOld, this);
-	factory_map["find_all_panel"] = LLCallbackMap(createFindAll, this);
 	factory_map["classified_panel"] = LLCallbackMap(createClassified, this);
 	factory_map["events_panel"] = LLCallbackMap(createEvents, this);
-	factory_map["showcase_panel"] = LLCallbackMap(createShowcase, this);
 	factory_map["places_panel"] = LLCallbackMap(createPlaces, this);
 	factory_map["land_sales_panel"] = LLCallbackMap(createLand, this);
 	factory_map["people_panel"] = LLCallbackMap(createPeople, this);
 	factory_map["groups_panel"] = LLCallbackMap(createGroups, this);
+	if (gIsInSecondLife)
+	{
+		// web search and showcase only for SecondLife
+		factory_map["find_all_panel"] = LLCallbackMap(createFindAll, this);
+		factory_map["showcase_panel"] = LLCallbackMap(createShowcase, this);
+	}
 
 	factory_map["classified_details_panel"] = LLCallbackMap(createClassifiedDetail, this);
 	factory_map["event_details_panel"] = LLCallbackMap(createEventDetail, this);
@@ -111,7 +116,14 @@ LLFloaterDirectory::LLFloaterDirectory(const std::string& name)
 
 	factory_map["Panel Avatar"] = LLCallbackMap(createPanelAvatar, this);
 	
-	LLUICtrlFactory::getInstance()->buildFloater(this, "floater_directory.xml", &factory_map);
+	if (gIsInSecondLife)
+	{
+		LLUICtrlFactory::getInstance()->buildFloater(this, "floater_directory.xml", &factory_map);
+	}
+	else
+	{
+		LLUICtrlFactory::getInstance()->buildFloater(this, "floater_directory2.xml", &factory_map);
+	}
 	moveResizeHandlesToFront();
 
 	if(mPanelAvatarp)
@@ -120,14 +132,18 @@ LLFloaterDirectory::LLFloaterDirectory(const std::string& name)
 	}
 	
 	childSetTabChangeCallback("Directory Tabs", "find_all_old_panel", onTabChanged, this);
-	childSetTabChangeCallback("Directory Tabs", "find_all_panel", onTabChanged, this);
 	childSetTabChangeCallback("Directory Tabs", "classified_panel", onTabChanged, this);
 	childSetTabChangeCallback("Directory Tabs", "events_panel", onTabChanged, this);
-	childSetTabChangeCallback("Directory Tabs", "showcase_panel", onTabChanged, this);
 	childSetTabChangeCallback("Directory Tabs", "places_panel", onTabChanged, this);
 	childSetTabChangeCallback("Directory Tabs", "land_sales_panel", onTabChanged, this);
 	childSetTabChangeCallback("Directory Tabs", "people_panel", onTabChanged, this);
 	childSetTabChangeCallback("Directory Tabs", "groups_panel", onTabChanged, this);
+	if (gIsInSecondLife)
+	{
+		// web search and showcase for SecondLife
+		childSetTabChangeCallback("Directory Tabs", "find_all_panel", onTabChanged, this);
+		childSetTabChangeCallback("Directory Tabs", "showcase_panel", onTabChanged, this);
+	}
 }
 
 LLFloaterDirectory::~LLFloaterDirectory()
@@ -276,7 +292,7 @@ void* LLFloaterDirectory::createGroupDetailHolder(void* userdata)
 void* LLFloaterDirectory::createPlaceDetail(void* userdata)
 {
 	LLFloaterDirectory *self = (LLFloaterDirectory*)userdata;
-	self->mPanelPlacep = new LLPanelPlace();
+	self->mPanelPlacep = new LLPanelPlace(false);
 	LLUICtrlFactory::getInstance()->buildPanel(self->mPanelPlacep, "panel_place.xml");
 	self->mPanelPlacep->setVisible(FALSE);
 	return self->mPanelPlacep;
@@ -286,7 +302,7 @@ void* LLFloaterDirectory::createPlaceDetail(void* userdata)
 void* LLFloaterDirectory::createPlaceDetailSmall(void* userdata)
 {
 	LLFloaterDirectory *self = (LLFloaterDirectory*)userdata;
-	self->mPanelPlaceSmallp = new LLPanelPlace();
+	self->mPanelPlaceSmallp = new LLPanelPlace(false);
 	LLUICtrlFactory::getInstance()->buildPanel(self->mPanelPlaceSmallp, "panel_place_small.xml");
 	self->mPanelPlaceSmallp->setVisible(FALSE);
 	return self->mPanelPlaceSmallp;
@@ -392,13 +408,14 @@ void LLFloaterDirectory::showPanel(const std::string& tabname)
 // static
 void LLFloaterDirectory::toggleFind(void*)
 {
-#ifndef LL_RELEASE_FOR_DOWNLOAD
-	delete sInstance;
-	sInstance = NULL;
-#endif
 	if (!sInstance)
 	{
 		std::string panel = gSavedSettings.getString("LastFindPanel");
+		if (!gIsInSecondLife && (panel == "find_all_panel" || panel == "showcase_panel"))
+		{
+			// No web search neither showcase for OpenSim grids...
+			panel = "find_all_old_panel";
+		}
 		showPanel(panel);
 
 		// HACK: force query for today's events
@@ -418,7 +435,7 @@ void LLFloaterDirectory::toggleFind(void*)
 	}
 	else
 	{
-		sInstance->close();
+		sInstance->setVisible(FALSE);
 	}
 }
 
@@ -442,7 +459,7 @@ void LLFloaterDirectory::toggleEvents(void*)
 		LLPanel *current_panel = sInstance->childGetVisibleTab("Directory Tabs");
 		if (current_panel == sInstance->mEventsPanel)
 		{
-			sInstance->close();
+			sInstance->setVisible(FALSE);
 		}
 		else
 		{
@@ -456,7 +473,7 @@ void LLFloaterDirectory::hide(void*)
 {
 	if (sInstance)
 	{
-		sInstance->close();
+		sInstance->setVisible(FALSE);
 	}
 }
 
@@ -469,7 +486,8 @@ void LLFloaterDirectory::setVisible(BOOL visible)
 
 void LLFloaterDirectory::onClose(bool app_quitting)
 {
-	setVisible(FALSE);
+//	setVisible(FALSE);
+	LLFloater::onClose(app_quitting);	// so that the web browsers are destroyed and stop eating up 100% of the CPU...
 }
 
 // static

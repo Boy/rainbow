@@ -557,7 +557,12 @@ U32 LLViewerJointMesh::drawShape( F32 pixelArea, BOOL first_pass)
 		}
 		else
 		{
-			llwarns << "Layerset without composite" << llendl;
+				static std::set<S32> mesh_ids;
+				if (mesh_ids.count(mMeshID) == 0)
+				{
+					mesh_ids.insert(mMeshID);
+					llwarns << "Layerset without composite for MeshID = " << mMeshID << llendl;
+				}
 			gGL.getTexUnit(0)->bind(gImageList.getImage(IMG_DEFAULT));
 		}
 	}

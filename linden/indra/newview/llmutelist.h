@@ -60,6 +60,11 @@ public:
 		flagAll				= 0x0000000F		// Mask of all currently defined flags
 	};
 	
+	static char BY_NAME_SUFFIX[];
+	static char AGENT_SUFFIX[];
+	static char OBJECT_SUFFIX[];
+	static char GROUP_SUFFIX[];
+
 	LLMute(const LLUUID& id, const std::string& name = std::string(), EType type = BY_NAME, U32 flags = 0);
 
 	// Returns name + suffix based on type

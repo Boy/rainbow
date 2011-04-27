@@ -72,7 +72,9 @@ const S32 PREVIEW_TEXTURE_HEIGHT = 300;
 // LLFloaterImagePreview()
 //-----------------------------------------------------------------------------
 LLFloaterImagePreview::LLFloaterImagePreview(const std::string& filename) : 
-	LLFloaterNameDesc(filename)
+	LLFloaterNameDesc(filename),
+	mAvatarPreview(NULL),
+	mSculptedPreview(NULL)
 {
 	mLastMouseX = 0;
 	mLastMouseY = 0;
@@ -118,7 +120,7 @@ BOOL LLFloaterImagePreview::postBuild()
 		if (mRawImagep->getWidth() * mRawImagep->getHeight () <= LL_IMAGE_REZ_LOSSLESS_CUTOFF * LL_IMAGE_REZ_LOSSLESS_CUTOFF)
 			childEnable("lossless_check");
 
-		gSavedSettings.setBOOL("EmeraldTemporaryUpload",FALSE);
+		gSavedSettings.setBOOL("TemporaryUpload",FALSE);
 		childSetValue("temp_check",FALSE);
 	}
 	else

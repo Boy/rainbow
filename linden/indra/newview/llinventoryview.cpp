@@ -1462,6 +1462,29 @@ void LLInventoryPanel::modelChanged(U32 mask)
 			}
 		}
 	}
+	if (mask & LLInventoryObserver::REBUILD)
+	{
+		handled = true;
+		// icon change for each object in this change set.
+		const std::set<LLUUID>& changed_items = gInventory.getChangedIDs();
+		std::set<LLUUID>::const_iterator id_it = changed_items.begin();
+		std::set<LLUUID>::const_iterator id_end = changed_items.end();
+		for (;id_it != id_end; ++id_it)
+		{
+			// sync view with model
+			LLInventoryModel* model = getModel();
+			if (model)
+			{
+				LLInventoryObject* model_item = model->getObject(*id_it);
+				LLFolderViewItem* view_item = mFolders->getItemByID(*id_it);
+				if (model_item && view_item)
+				{
+					view_item->destroyView();
+				}
+				buildNewViews(*id_it);
+			}
+		}
+	}
 	if((mask & (LLInventoryObserver::STRUCTURE
 				| LLInventoryObserver::ADD
 				| LLInventoryObserver::REMOVE)) != 0)

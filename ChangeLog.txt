@@ -1,3 +1,74 @@
+2011-04-27 Boy Lane <boy.lane@yahoo.com>
+
+    * Lots of additional minor fixes and patches backported mainly from CoolVL 1.25
+
+    modified:   linden/indra/cmake/00-Common.cmake
+    modified:   linden/indra/llaudio/CMakeLists.txt
+    modified:   linden/indra/llaudio/audioengine.cpp
+    modified:   linden/indra/llaudio/audioengine.h
+    modified:   linden/indra/llaudio/audioengine_fmod.cpp
+    modified:   linden/indra/llaudio/audioengine_openal.cpp
+    modified:   linden/indra/llaudio/llaudiodecodemgr.cpp
+    modified:   linden/indra/llcharacter/llhandmotion.cpp
+    modified:   linden/indra/llcommon/llavatarconstants.h
+    modified:   linden/indra/llcommon/llsd.cpp
+    modified:   linden/indra/llcommon/llsd.h
+    modified:   linden/indra/llcommon/llstring.cpp
+    modified:   linden/indra/llcommon/lltimer.h
+    modified:   linden/indra/llimage/llpngwrapper.cpp
+    modified:   linden/indra/llimage/llpngwrapper.h
+    modified:   linden/indra/llmessage/llhttpclient.cpp
+    modified:   linden/indra/llui/llfloater.h
+    modified:   linden/indra/newview/app_settings/logcontrol.xml
+    modified:   linden/indra/newview/app_settings/settings.xml
+    modified:   linden/indra/newview/linux_tools/wrapper.sh
+    modified:   linden/indra/newview/lldebugview.cpp
+    modified:   linden/indra/newview/llfasttimerview.cpp
+    modified:   linden/indra/newview/llfasttimerview.h
+    modified:   linden/indra/newview/llfloatercustomize.cpp
+    modified:   linden/indra/newview/llfloaterdirectory.cpp
+    modified:   linden/indra/newview/llfloaterimagepreview.cpp
+    modified:   linden/indra/newview/llfloatersnapshot.cpp
+    modified:   linden/indra/newview/llfloatertools.cpp
+    modified:   linden/indra/newview/llfloatertools.h
+    modified:   linden/indra/newview/llgroupnotify.cpp
+    modified:   linden/indra/newview/llinventorymodel.h
+    modified:   linden/indra/newview/llinventoryview.cpp
+    modified:   linden/indra/newview/llmutelist.cpp
+    modified:   linden/indra/newview/llmutelist.h
+    modified:   linden/indra/newview/llpaneldirbrowser.cpp
+    modified:   linden/indra/newview/llpanelobject.cpp
+    modified:   linden/indra/newview/llpanelplace.cpp
+    modified:   linden/indra/newview/llpanelplace.h
+    modified:   linden/indra/newview/llselectmgr.cpp
+    modified:   linden/indra/newview/lltexturectrl.cpp
+    modified:   linden/indra/newview/lltexturectrl.h
+    modified:   linden/indra/newview/lltooldraganddrop.cpp
+    modified:   linden/indra/newview/lltoolplacer.cpp
+    modified:   linden/indra/newview/lltracker.cpp
+    modified:   linden/indra/newview/llviewercamera.cpp
+    modified:   linden/indra/newview/llviewerjointmesh.cpp
+    modified:   linden/indra/newview/llviewermenu.cpp
+    modified:   linden/indra/newview/llviewermenufile.cpp
+    modified:   linden/indra/newview/llviewermessage.cpp
+    modified:   linden/indra/newview/llviewerobject.cpp
+    modified:   linden/indra/newview/llviewerobjectlist.cpp
+    modified:   linden/indra/newview/llviewerobjectlist.h
+    modified:   linden/indra/newview/llviewerparcelmgr.cpp
+    modified:   linden/indra/newview/llvocache.cpp
+    modified:   linden/indra/newview/llvograss.cpp
+    modified:   linden/indra/newview/llvograss.h
+    modified:   linden/indra/newview/llvotree.cpp
+    modified:   linden/indra/newview/llvotree.h
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_customize.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_image_preview.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_snapshot.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_texture_ctrl.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_tools.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/notify.xml
+    new file:   linden/indra/newview/skins/default/xui/en-us/floater_directory2.xml
+    new file:   linden/indra/newview/skins/silver/xui/en-us/floater_directory2.xml
+
 2011-04-25 Boy Lane <boy.lane@yahoo.com>
 
     * Further ongoing fixes and additions - work in progress

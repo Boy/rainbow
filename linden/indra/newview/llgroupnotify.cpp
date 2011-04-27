@@ -165,7 +165,6 @@ LLGroupNotifyBox::LLGroupNotifyBox(const std::string& subject,
 		}
 	};
 
-
 	// Title
 	addChild(new NoticeText(std::string("title"),LLRect(x,y,RIGHT - HPAD,y - LINE_HEIGHT),std::string("Group Notice"),LLFontGL::sSansSerifHuge));
 

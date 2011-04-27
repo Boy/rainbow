@@ -107,18 +107,23 @@
 		</combo_item>
 	</combo_box>
 	<check_box bottom="-70" control_name="ScaleUniform" follows="left|top"
-	     font="SansSerifSmall" height="16" initial_value="false"
+	     font="SansSerifSmall" height="15" initial_value="false"
 	     label="Stretch Both Sides" left="143" mouse_opaque="true"
 	     name="checkbox uniform" width="134" />
-	<check_box bottom_delta="-15" control_name="ScaleStretchTextures" follows="left|top"
-	     font="SansSerifSmall" height="16" initial_value="true"
+	<check_box bottom_delta="-16" control_name="ScaleStretchTextures" follows="left|top"
+	     font="SansSerifSmall" height="15" initial_value="true"
 	     label="Stretch Textures" left_delta="0" mouse_opaque="true"
 	     name="checkbox stretch textures" width="134" />
-	<check_box bottom_delta="-19" control_name="SnapEnabled" follows="left|top"
-	     font="SansSerifSmall" height="16" initial_value="true" label="Use Grid"
+	<check_box bottom_delta="-16" control_name="LimitDragDistance" follows="left|top"
+	     font="SansSerifSmall" height="15" initial_value="true"
+	     label="Limit drag distance" left_delta="0" mouse_opaque="true"
+	     name="checkbox limit drag distance" width="134" />
+	<check_box bottom_delta="-16" control_name="SnapEnabled" follows="left|top"
+	     font="SansSerifSmall" height="15" initial_value="true" label="Use Grid"
 	     left_delta="0" mouse_opaque="true" name="checkbox snap to grid" width="134" />
-	<button bottom_delta="-14" follows="left|top" font="SansSerifSmall" halign="center"
-	     height="16" label="Options..." label_selected="Options..." left_delta="20"
+	<button bottom_delta="-17" follows="left|top" font="SansSerifSmall"
+       halign="center" valign="center"
+	     height="20" label="Options..." label_selected="Options..." left_delta="20"
 	     mouse_opaque="true" name="Options..." scale_image="TRUE" width="80" />
 
 <!-- Help text -->
@@ -857,12 +862,12 @@
 				Slice Begin and End
 			</text>
 			<spinner bottom_delta="-19" decimal_digits="3" follows="left|top" height="16"
-			     increment="0.025" initial_val="0" label="B" label_width="10" left="121"
-			     max_val="0.95" min_val="0" mouse_opaque="true" name="Path Limit Begin"
+			     increment="0.02" initial_val="0" label="B" label_width="10" left="121"
+			     max_val="0.98" min_val="0" mouse_opaque="true" name="Path Limit Begin"
 			     width="68" />
 			<spinner bottom_delta="0" decimal_digits="3" follows="left|top" height="16"
-			     increment="0.025" initial_val="1" label="E" label_width="10" left_delta="73"
-			     max_val="1" min_val="0.05" mouse_opaque="true" name="Path Limit End"
+			     increment="0.02" initial_val="1" label="E" label_width="10" left_delta="73"
+			     max_val="1" min_val="0.02" mouse_opaque="true" name="Path Limit End"
 			     width="68" />
 			<text bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 			     bottom_delta="-14" drop_shadow_visible="true" follows="left|top"
@@ -1020,7 +1025,7 @@
 
 		<panel border="true" bottom="-383" follows="left|top|right|bottom" height="367"
 		     label="Texture" left="1" mouse_opaque="false" name="Texture" width="270">
-			<texture_picker allow_no_texture="false" bottom="-90" can_apply_immediately="true"
+			<texture_picker allow_no_texture="false" allow_invisible_texture="true" bottom="-90" can_apply_immediately="true"
 			     default_image_name="Default" follows="left|top" height="80" label="Texture"
 			     left="10" mouse_opaque="true" name="texture control"
 			     tool_tip="Click to choose a picture" width="64" />

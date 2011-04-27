@@ -161,6 +161,7 @@ namespace
 		
 		virtual LLSD::Type type() const { return T; }
 
+		using LLSD::Impl::assign; // Unhiding base class virtuals...
 		virtual void assign(LLSD::Impl*& var, DataRef value) {
 			if (shared())
 			{
@@ -347,9 +348,13 @@ namespace
 
 		virtual LLSD::Boolean asBoolean() const { return !mData.empty(); }
 
-		virtual bool has(const LLSD::String&) const; 
-		virtual LLSD get(const LLSD::String&) const; 
-		        void insert(const LLSD::String& k, const LLSD& v);
+		virtual bool has(const LLSD::String&) const;
+
+		using LLSD::Impl::get; // Unhiding get(LLSD::Integer)
+		using LLSD::Impl::erase; // Unhiding erase(LLSD::Integer)
+		using LLSD::Impl::ref; // Unhiding ref(LLSD::Integer)
+		virtual LLSD get(const LLSD::String&) const;
+		void insert(const LLSD::String& k, const LLSD& v);
 		virtual void erase(const LLSD::String&);
 		              LLSD& ref(const LLSD::String&);
 		virtual const LLSD& ref(const LLSD::String&) const;
@@ -433,6 +438,9 @@ namespace
 
 		virtual LLSD::Boolean asBoolean() const { return !mData.empty(); }
 
+		using LLSD::Impl::get; // Unhiding get(LLSD::String)
+		using LLSD::Impl::erase; // Unhiding erase(LLSD::String)
+		using LLSD::Impl::ref; // Unhiding ref(LLSD::String)
 		virtual int size() const; 
 		virtual LLSD get(LLSD::Integer) const;
 		        void set(LLSD::Integer, const LLSD&);
@@ -738,9 +746,13 @@ LLSD LLSD::emptyMap()
 
 bool LLSD::has(const String& k) const	{ return safe(impl).has(k); }
 LLSD LLSD::get(const String& k) const	{ return safe(impl).get(k); } 
+void LLSD::insert(const String& k, const LLSD& v) {	makeMap(impl).insert(k, v); }
 
-void LLSD::insert(const String& k, const LLSD& v)
-										{ makeMap(impl).insert(k, v); }
+LLSD& LLSD::with(const String& k, const LLSD& v)
+										{ 
+											makeMap(impl).insert(k, v); 
+											return *this;
+										}
 void LLSD::erase(const String& k)		{ makeMap(impl).erase(k); }
 
 LLSD&		LLSD::operator[](const String& k)
@@ -760,9 +772,13 @@ int LLSD::size() const					{ return safe(impl).size(); }
  
 LLSD LLSD::get(Integer i) const			{ return safe(impl).get(i); } 
 void LLSD::set(Integer i, const LLSD& v){ makeArray(impl).set(i, v); }
+void LLSD::insert(Integer i, const LLSD& v) { makeArray(impl).insert(i, v); }
 
-void LLSD::insert(Integer i, const LLSD& v)
-										{ makeArray(impl).insert(i, v); }
+LLSD& LLSD::with(Integer i, const LLSD& v)
+										{ 
+											makeArray(impl).insert(i, v); 
+											return *this;
+										}
 void LLSD::append(const LLSD& v)		{ makeArray(impl).append(v); }
 void LLSD::erase(Integer i)				{ makeArray(impl).erase(i); }
 
@@ -788,9 +804,15 @@ static const char *llsd_dump(const LLSD &llsd, bool useXMLFormat)
 	{
 		std::ostringstream out;
 		if (useXMLFormat)
-			out << LLSDXMLStreamer(llsd);
+		{
+			LLSDXMLStreamer xml_streamer(llsd);
+			out << xml_streamer;
+		}
 		else
-			out << LLSDNotationStreamer(llsd);
+		{
+			LLSDNotationStreamer notation_streamer(llsd);
+			out << notation_streamer;
+		}
 		out_string = out.str();
 	}
 	int len = out_string.length();

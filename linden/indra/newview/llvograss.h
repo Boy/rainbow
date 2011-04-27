@@ -36,6 +36,7 @@
 #include "lldarray.h"
 #include <map>
 
+class LLSelectNode;
 class LLSurfacePatch;
 class LLViewerImage;
 
@@ -75,6 +76,8 @@ public:
 	/*virtual*/ BOOL updateLOD();
 	/*virtual*/ void setPixelAreaAndAngle(LLAgent &agent); // generate accurate apparent angle and area
 
+	void    generateSilhouette(LLSelectNode* nodep, const LLVector3& view_point);
+	
 	void plantBlades();
 
 	/*virtual*/ BOOL    isActive() const; // Whether this object needs to do an idleUpdate.
@@ -120,6 +123,12 @@ protected:
 	~LLVOGrass();
 
 private:
+	void generateSilhouetteVertices(std::vector<LLVector3> &vertices,
+									std::vector<LLVector3> &normals,
+									std::vector<S32> &segments,
+									const LLVector3& view_vec,
+									const LLMatrix4& mat,
+									const LLMatrix3& norm_mat);
 	void updateSpecies();
 	F32 mLastHeight;		// For cheap update hack
 	S32 mNumBlades;

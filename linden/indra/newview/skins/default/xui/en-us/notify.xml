@@ -1074,9 +1074,11 @@ Click Accept to join the chat or Decline to decline the invitation. Click Mute t
 			An error has occurred while trying to connect to voice chat for [VOICE_CHANNEL_NAME].  Please try again later.
 		</message>
 	</notify>
-	<notify caution="true" duration="10" name="ServerVersionChanged" tip="true">
+	<notify caution="true" duration="15" name="ServerVersionChanged" tip="true">
 		<message name="message">
-			The region you have entered is running a different simulator version. Click this message for details.
+			The region you have entered is running a different simulator version.
+			Current simulator : [NEWVERSION]
+			Previous simulator: [OLDVERSION]
 		</message>
 	</notify>
 	<notify caution="true" name="UnableToOpenCommandURL" tip="true">

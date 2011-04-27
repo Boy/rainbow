@@ -708,7 +708,7 @@ void LLPanelDirBrowser::processDirEventsReply(LLMessageSystem* msg, void**)
 		msg->getUUID("QueryReplies", "OwnerID", owner_id, i);
 		msg->getString("QueryReplies", "Name", name, i);
 		msg->getU32("QueryReplies", "EventID", event_id, i);
-		msg->getString("QueryReplies", "Date", date, i);
+//		msg->getString("QueryReplies", "Date", date, i);
 		msg->getU32("QueryReplies", "UnixTime", unix_time, i);
 		msg->getU32("QueryReplies", "EventFlags", event_flags, i);
 	

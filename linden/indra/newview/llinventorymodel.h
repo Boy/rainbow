@@ -65,6 +65,7 @@ public:
 		REMOVE = 8,			// something deleted
 		STRUCTURE = 16,		// structural change, eg, item or folder moved
 		CALLING_CARD = 32,	// online, grant status, cancel, etc change
+		REBUILD = 128,		// icon changed, for example. Rebuild all.
 		ALL = 0xffffffff
 	};
 	virtual ~LLInventoryObserver() {};

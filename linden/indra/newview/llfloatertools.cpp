@@ -55,6 +55,7 @@
 #include "llpanelpermissions.h"
 #include "llselectmgr.h"
 #include "llslider.h"
+#include "llspinctrl.h"
 #include "llstatusbar.h"
 #include "lltabcontainer.h"
 #include "lltextbox.h"
@@ -173,6 +174,28 @@ void*	LLFloaterTools::createPanelLandInfo(void* data)
 	return floater->mPanelLandInfo;
 }
 
+void LLFloaterTools::toolsPrecision()
+{
+	U32 decimals = gSavedSettings.getU32("DecimalsForTools");
+	if (decimals != mPrecision)
+	{
+		if (decimals > 5)
+		{
+			decimals = 5;
+		}
+		getChild<LLSpinCtrl>("Pos X")->setPrecision(decimals);
+		getChild<LLSpinCtrl>("Pos Y")->setPrecision(decimals);
+		getChild<LLSpinCtrl>("Pos Z")->setPrecision(decimals);
+		getChild<LLSpinCtrl>("Scale X")->setPrecision(decimals);
+		getChild<LLSpinCtrl>("Scale Y")->setPrecision(decimals);
+		getChild<LLSpinCtrl>("Scale Z")->setPrecision(decimals);
+		getChild<LLSpinCtrl>("Rot X")->setPrecision(decimals);
+		getChild<LLSpinCtrl>("Rot Y")->setPrecision(decimals);
+		getChild<LLSpinCtrl>("Rot Z")->setPrecision(decimals);
+		mPrecision = decimals;
+	}
+}
+
 BOOL	LLFloaterTools::postBuild()
 {
 	
@@ -234,9 +257,14 @@ BOOL	LLFloaterTools::postBuild()
 	childSetValue("checkbox uniform",(BOOL)gSavedSettings.getBOOL("ScaleUniform"));
 	mCheckStretchTexture = getChild<LLCheckBoxCtrl>("checkbox stretch textures");
 	childSetValue("checkbox stretch textures",(BOOL)gSavedSettings.getBOOL("ScaleStretchTextures"));
+	mCheckLimitDrag = getChild<LLCheckBoxCtrl>("checkbox limit drag distance");
+	childSetValue("checkbox limit drag distance",(BOOL)gSavedSettings.getBOOL("LimitDragDistance"));
 	mTextGridMode = getChild<LLTextBox>("text ruler mode");
 	mComboGridMode = getChild<LLComboBox>("combobox grid mode");
 	childSetCommitCallback("combobox grid mode",commit_grid_mode, this);
+
+	toolsPrecision();
+
 	//
 	// Create Buttons
 	//
@@ -376,6 +404,7 @@ LLFloaterTools::LLFloaterTools()
 	mComboGridMode(NULL),
 	mCheckStretchUniform(NULL),
 	mCheckStretchTexture(NULL),
+	mCheckLimitDrag(NULL),
 
 	mBtnRotateLeft(NULL),
 	mBtnRotateReset(NULL),
@@ -410,7 +439,8 @@ LLFloaterTools::LLFloaterTools()
 	mPanelLandInfo(NULL),
 
 	mTabLand(NULL),
-	mDirty(TRUE)
+	mDirty(TRUE),
+	mPrecision(3)
 {
 	setAutoFocus(FALSE);
 	LLCallbackMap::map_t factory_map;
@@ -479,6 +509,9 @@ void LLFloaterTools::refresh()
 	mTab->enableTabButton(idx_face, all_volume);
 	mTab->enableTabButton(idx_contents, all_volume);
 
+	toolsPrecision();
+
+	// Refresh child tabs
 	mPanelPermissions->refresh();
 	mPanelObject->refresh();
 	mPanelVolume->refresh();
@@ -659,6 +692,7 @@ void LLFloaterTools::updatePopup(LLCoordGL center, MASK mask)
 	//mCheckSelectLinked	->setVisible( edit_visible );
 	if (mCheckStretchUniform) mCheckStretchUniform->setVisible( edit_visible );
 	if (mCheckStretchTexture) mCheckStretchTexture->setVisible( edit_visible );
+	if (mCheckLimitDrag) mCheckLimitDrag->setVisible( edit_visible );
 
 	// Create buttons
 	BOOL create_visible = (tool == LLToolCompCreate::getInstance());

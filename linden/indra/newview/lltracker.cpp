@@ -760,7 +760,7 @@ void LLTracker::setLandmarkVisited()
 			gInventory.accountForUpdate(up);
 
 			// need to communicate that the icon needs to change...
-			gInventory.addChangedMask(LLInventoryObserver::INTERNAL, item->getUUID());
+			gInventory.addChangedMask(LLInventoryObserver::REBUILD, item->getUUID());
 			gInventory.notifyObservers();
 		}
 	}

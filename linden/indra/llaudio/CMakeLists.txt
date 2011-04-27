@@ -56,13 +56,6 @@ if (FMOD)
          audioengine_fmod.h
          listener_fmod.h
          )
-
-    if (LINUX)
-      if (${CXX_VERSION} MATCHES "4.[23]")
-        set_source_files_properties(audioengine_fmod.cpp
-                                    COMPILE_FLAGS -Wno-error=write-strings)
-      endif (${CXX_VERSION} MATCHES "4.[23]")
-    endif (LINUX)
 endif (FMOD)
 
 if (OPENAL)

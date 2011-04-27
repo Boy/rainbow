@@ -1382,30 +1382,21 @@ void LLToolDragAndDrop::dropObject(LLViewerObject* raycast_target,
 	msg->nextBlockFast(_PREHASH_AgentData);
 	msg->addUUIDFast(_PREHASH_AgentID,  gAgent.getID());
 	msg->addUUIDFast(_PREHASH_SessionID,  gAgent.getSessionID());
-
-// RezWithLandGroup 2009-05, If avatar is in land group/land owner group,
-	//it rezzes it with it to prevent autoreturn/whatever...
-	if ( gSavedSettings.getBOOL("RezWithLandGroup") )
+	LLUUID group_id = gAgent.getGroupID();
+	if (gSavedSettings.getBOOL("RezWithLandGroup"))
 	{
 		LLParcel *parcel = LLViewerParcelMgr::getInstance()->getAgentParcel();
-		if ( gAgent.isInGroup(parcel->getGroupID()) )
+		if (gAgent.isInGroup(parcel->getGroupID()))
 		{
-			msg->addUUIDFast(_PREHASH_GroupID, parcel->getGroupID());
+			group_id = parcel->getGroupID();
 		}
-		else if ( gAgent.isInGroup(parcel->getOwnerID()) )
+		else if (gAgent.isInGroup(parcel->getOwnerID()))
 		{
-			msg->addUUIDFast(_PREHASH_GroupID, parcel->getOwnerID());
-		}
-		else 
-		{
-			msg->addUUIDFast(_PREHASH_GroupID, gAgent.getGroupID());
+			group_id = parcel->getOwnerID();
 		}
 	}
-	else 
-	{
-		msg->addUUIDFast(_PREHASH_GroupID, gAgent.getGroupID());
-	}
-		
+	msg->addUUIDFast(_PREHASH_GroupID, group_id);
+
 	msg->nextBlock("RezData");
 	// if it's being rezzed from task inventory, we need to enable
 	// saving it back into the task inventory.

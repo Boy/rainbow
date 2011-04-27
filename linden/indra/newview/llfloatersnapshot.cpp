@@ -77,8 +77,8 @@
 ///----------------------------------------------------------------------------
 /// Local function declarations, constants, enums, and typedefs
 ///----------------------------------------------------------------------------
-S32 LLFloaterSnapshot::sUIWinHeightLong = 526 ;
-S32 LLFloaterSnapshot::sUIWinHeightShort = LLFloaterSnapshot::sUIWinHeightLong - 230 ;
+S32 LLFloaterSnapshot::sUIWinHeightLong = 546 ;
+S32 LLFloaterSnapshot::sUIWinHeightShort = LLFloaterSnapshot::sUIWinHeightLong - 250 ;
 S32 LLFloaterSnapshot::sUIWinWidth = 215 ;
 
 LLSnapshotFloaterView* gSnapshotFloaterView = NULL;
@@ -1239,6 +1239,11 @@ void LLFloaterSnapshot::Impl::updateControls(LLFloaterSnapshot* floater)
 	floater->childSetVisible("save_btn",			shot_type == LLSnapshotLivePreview::SNAPSHOT_LOCAL);
 	floater->childSetEnabled("keep_aspect_check",	shot_type != LLSnapshotLivePreview::SNAPSHOT_TEXTURE && !sAspectRatioCheckOff);
 	floater->childSetEnabled("layer_types",			shot_type == LLSnapshotLivePreview::SNAPSHOT_LOCAL);
+	if (shot_type != LLSnapshotLivePreview::SNAPSHOT_TEXTURE)
+	{
+		floater->childSetValue("temp_check", false);
+	}
+	floater->childSetEnabled("temp_check",			shot_type == LLSnapshotLivePreview::SNAPSHOT_TEXTURE);
 
 	BOOL is_advance = gSavedSettings.getBOOL("AdvanceSnapshot");
 	BOOL is_local = shot_type == LLSnapshotLivePreview::SNAPSHOT_LOCAL;
@@ -1274,6 +1279,7 @@ void LLFloaterSnapshot::Impl::updateControls(LLFloaterSnapshot* floater)
 	LLLocale locale(LLLocale::USER_LOCALE);
 	std::string bytes_string;
 	LLResMgr::getInstance()->getIntegerString(bytes_string, (previewp->getDataSize()) >> 10 );
+	floater->childSetVisible("temp_check", is_advance);
 	floater->childSetTextArg("file_size_label", "[SIZE]", got_snap ? bytes_string : floater->getString("unknown"));
 	floater->childSetColor("file_size_label", 
 		shot_type == LLSnapshotLivePreview::SNAPSHOT_POSTCARD 
@@ -2044,6 +2050,8 @@ BOOL LLFloaterSnapshot::postBuild()
 	// make sure preview is below snapshot floater
 	sInstance->getRootView()->addChild(previewp);
 	sInstance->getRootView()->addChild(gSnapshotFloaterView);
+
+	gSavedSettings.setBOOL("TemporaryUpload", FALSE);
 
 	Impl::sPreviewHandle = previewp->getHandle();
 

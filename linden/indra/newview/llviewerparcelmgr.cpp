@@ -648,17 +648,16 @@ LLParcel *LLViewerParcelMgr::getAgentParcel() const
 // Return whether the agent can build on the land they are on
 BOOL LLViewerParcelMgr::agentCanBuild() const
 {
-	if (mAgentParcel)
+	if (gAgent.isGodlike())
 	{
-		return (gAgent.isGodlike()
-				|| (mAgentParcel->allowModifyBy(
-						gAgent.getID(),
-						gAgent.getGroupID())));
+		return true;
 	}
-	else
+	if (!mAgentParcel)
 	{
-		return gAgent.isGodlike();
+		return false;
 	}
+	return (mAgentParcel->allowModifyBy(gAgent.getID(), gAgent.getGroupID()) ||
+			gAgent.hasPowerInGroup(mAgentParcel->getGroupID(), GP_LAND_ALLOW_CREATE));
 }
 
 BOOL LLViewerParcelMgr::agentCanTakeDamage() const

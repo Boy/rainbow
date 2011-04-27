@@ -110,7 +110,9 @@ public:
 	*/
 	//@{
 		typedef bool			Boolean;
+		typedef U32				Unsigned;
 		typedef S32				Integer;
+		typedef F32				Float;
 		typedef F64				Real;
 		typedef std::string		String;
 		typedef LLUUID			UUID;
@@ -184,7 +186,9 @@ public:
 	*/
 	//@{
 		Boolean	asBoolean() const;
+		Unsigned asUnsigned() const {return (U32)asInteger();}
 		Integer	asInteger() const;
+		Float	asFloat() const {return (F32)asReal();}
 		Real	asReal() const;
 		String	asString() const;
 		UUID	asUUID() const;
@@ -193,7 +197,9 @@ public:
 		Binary	asBinary() const;
 
 		operator Boolean() const	{ return asBoolean(); }
+		operator Unsigned() const	{ return asUnsigned(); }
 		operator Integer() const	{ return asInteger(); }
+		operator Float() const		{ return asFloat(); }
 		operator Real() const		{ return asReal(); }
 		operator String() const		{ return asString(); }
 		operator UUID() const		{ return asUUID(); }
@@ -224,7 +230,8 @@ public:
 		LLSD get(const String&) const;
 		void insert(const String&, const LLSD&);
 		void erase(const String&);
-		
+		LLSD& with(const String&, const LLSD&);
+
 		LLSD& operator[](const String&);
 		LLSD& operator[](const char* c)			{ return (*this)[String(c)]; }
 		const LLSD& operator[](const String&) const;
@@ -240,6 +247,7 @@ public:
 		void insert(Integer, const LLSD&);
 		void append(const LLSD&);
 		void erase(Integer);
+		LLSD& with(Integer, const LLSD&);
 		
 		const LLSD& operator[](Integer) const;
 		LLSD& operator[](Integer);

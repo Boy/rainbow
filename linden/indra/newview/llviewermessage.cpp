@@ -34,6 +34,7 @@
 
 #include "llviewermessage.h"
 
+#include <time.h>
 #include <deque>
 
 #include "audioengine.h" 
@@ -2018,7 +2019,9 @@ void process_improved_im(LLMessageSystem *msg, void **user_data)
 	break;
 
 	case IM_FROM_TASK:
-		if (is_busy && !is_owned_by_me)
+			if ((is_busy && !is_owned_by_me) ||
+				LLMuteList::getInstance()->isMuted(from_id, LLMute::flagTextChat) ||
+				LLMuteList::getInstance()->isMuted(session_id, name, LLMute::flagTextChat))
 		{
 			return;
 		}
@@ -3364,17 +3367,15 @@ void process_agent_movement_complete(LLMessageSystem* msg, void**)
 	// send walk-vs-run status
 	gAgent.sendWalkRun(gAgent.getRunning() || gAgent.getAlwaysRun());
 
-	// If the server version has changed, display an info box and offer
-	// to display the release notes, unless this is the initial log in.
-	if (gLastVersionChannel == version_channel)
+	// If the server version has changed, display an info box, unless we don't
+	// want such notifications.
+	if (gLastVersionChannel != version_channel && !gLastVersionChannel.empty() &&
+		 gSavedSettings.getBOOL("NotifyServerVersion"))
 	{
-		return;
-	}
-
-	if (!gLastVersionChannel.empty())
-	{
-		LLNotifyBox::showXml(
-			"ServerVersionChanged",	display_release_notes, NULL);
+		LLStringUtil::format_map_t args;
+		args["OLDVERSION"] = gLastVersionChannel;
+		args["NEWVERSION"] = version_channel;
+		LLNotifyBox::showXml("ServerVersionChanged", args);
 	}
 
 	gLastVersionChannel = version_channel;
@@ -3488,6 +3489,11 @@ void send_agent_update(BOOL force_send, BOOL send_reliable)
 	// LBUTTON and ML_LBUTTON so that using the camera (alt-key) doesn't
 	// trigger a control event.
 	U32 control_flags = gAgent.getControlFlags();
+	if (gSavedSettings.getBOOL("SpoofMouseLook"))
+	{
+		// Let's the scripts believe we are in mouse-look even when not
+		control_flags |= AGENT_CONTROL_MOUSELOOK;
+	}
 	MASK	key_mask = gKeyboard->currentMask(TRUE);
 	if (key_mask & MASK_ALT || key_mask & MASK_CONTROL)
 	{
@@ -3886,8 +3892,13 @@ void process_preload_sound(LLMessageSystem *msg, void **user_data)
 	// audio data into a buffer at this point, as it won't actually
 	// help us out.
 
-	// Add audioData starts a transfer internally.
-	sourcep->addAudioData(datap, FALSE);
+	// Don't play sounds from a region with maturity above current agent maturity
+	LLVector3d pos_global = objectp->getPositionGlobal();
+	if (gAgent.canAccessMaturityAtGlobal(pos_global))
+	{
+		// Add audioData starts a transfer internally.
+		sourcep->addAudioData(datap, FALSE);
+	}
 }
 
 void process_attached_sound(LLMessageSystem *msg, void **user_data)
@@ -3915,6 +3926,14 @@ void process_attached_sound(LLMessageSystem *msg, void **user_data)
 	
 	if (LLMuteList::getInstance()->isMuted(owner_id, LLMute::flagObjectSounds)) return;
 
+	
+	// Don't play sounds from a region with maturity above current agent maturity
+	LLVector3d pos = objectp->getPositionGlobal();
+	if( !gAgent.canAccessMaturityAtGlobal(pos) )
+	{
+		return;
+	}
+	
 	objectp->setAttachedSound(sound_id, owner_id, gain, flags);
 }
 
@@ -5645,6 +5664,55 @@ void process_script_dialog(LLMessageSystem* msg, void**)
 	LLStringUtil::format_map_t args;
 	args["[TITLE]"] = title;
 	args["[MESSAGE]"] = message;
+
+	// Ignore dialogs coming from muted objects or pertaining to muted
+	// residents.
+	LLViewerObject* objectp = gObjectList.findObject(info->mObjectID);
+	if (!objectp || !objectp->permYouOwner())	// Do not apply to objects we own
+	{
+		// Check for mutes by object id and by name
+		BOOL muted = LLMuteList::getInstance()->isMuted(info->mObjectID, title);
+		if (!muted)
+		{
+			// Check for mutes by group or owner name: since we don't know the
+			// group/owner id, we use the listed names in the mutes list.
+			std::string name;
+			if (first_name.empty())
+			{
+				name = last_name;
+				name += LLMute::GROUP_SUFFIX;
+			}
+			else
+			{
+				name = first_name + " " + last_name;
+				name += LLMute::AGENT_SUFFIX;
+			}
+			std::vector<LLMute> mutes = LLMuteList::getInstance()->getMutes();
+			std::vector<LLMute>::iterator it;
+			for (it = mutes.begin(); it != mutes.end(); ++it)
+			{
+				if (name == it->getDisplayName())
+				{
+					muted = TRUE;
+					break;
+				}
+			}
+		}
+		if (muted)
+		{
+			static clock_t last_warning = 0;
+			// Do not spam the log with such messages...
+			if (clock() - last_warning > 5 * CLOCKS_PER_SEC)
+			{
+				llwarns << "Muting scripted object dialog(s) from: "
+						<< first_name << " " << last_name << "'s "
+						<< title << llendl;
+				last_warning = clock();
+			}
+			return;
+		}
+	}
+
 	if (!first_name.empty())
 	{
 		args["[FIRST]"] = first_name;

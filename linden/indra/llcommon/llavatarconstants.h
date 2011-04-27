@@ -51,10 +51,10 @@ const U32 AVATAR_TRANSACTED				= 0x1 << 3;	// whether avatar has actively used p
 const U32 AVATAR_ONLINE					= 0x1 << 4; // the online status of this avatar, if known.
 const U32 AVATAR_AGEVERIFIED			= 0x1 << 5;	// whether avatar has been age-verified
 
-static const std::string VISIBILITY_DEFAULT("default");
-static const std::string VISIBILITY_HIDDEN("hidden");
-static const std::string VISIBILITY_VISIBLE("visible");
-static const std::string VISIBILITY_INVISIBLE("invisible");
+const char* const VISIBILITY_DEFAULT	= "default";
+const char* const VISIBILITY_HIDDEN		= "hidden";
+const char* const VISIBILITY_VISIBLE	= "visible";
+const char* const VISIBILITY_INVISIBLE	= "invisible";
 
 #endif
 

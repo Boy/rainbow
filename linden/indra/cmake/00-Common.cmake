@@ -29,10 +29,10 @@ if (WINDOWS)
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /MTd"
       CACHE STRING "C++ compiler debug options" FORCE)
   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO 
-      "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /Od /Zi /MT"
+      "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /Od /Zi /MT /fp:fast"
       CACHE STRING "C++ compiler release-with-debug options" FORCE)
   set(CMAKE_CXX_FLAGS_RELEASE
-      "${CMAKE_CXX_FLAGS_RELEASE} ${LL_CXX_FLAGS} /O2 /Oi /Ob2 /Ot /Oy /MT /arch:SSE2"
+      "${CMAKE_CXX_FLAGS_RELEASE} ${LL_CXX_FLAGS} /O2 /Oi /Ob2 /Ot /Oy /MT /arch:SSE2 /fp:fast"
       CACHE STRING "C++ compiler release options" FORCE)
 
   add_definitions(
