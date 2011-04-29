@@ -1,3 +1,16 @@
+2011-04-29 Boy Lane <boy.lane@yahoo.com>
+
+    * Proper measurement for heels in inches and update for object backup/import
+
+    modified:   ChangeLog.txt
+    modified:   linden/indra/newview/llfloatercustomize.cpp
+    modified:   linden/indra/newview/llviewermenu.cpp
+    modified:   linden/indra/newview/primbackup.cpp
+    modified:   linden/indra/newview/primbackup.h
+    modified:   linden/indra/newview/skins/default/xui/en-us/alerts.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_customize.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/notify.xml
+
 2011-04-27 Boy Lane <boy.lane@yahoo.com>
 
     * Lots of additional minor fixes and patches backported mainly from CoolVL 1.25

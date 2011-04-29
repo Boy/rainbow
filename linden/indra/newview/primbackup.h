@@ -3,7 +3,7 @@
 
 #define LL_GRID_PERMISSIONS 1
 
-enum export_states {EXPORT_INIT,EXPORT_STRUCTURE,EXPORT_TEXTURES,EXPORT_LLSD,EXPORT_DONE};
+enum export_states {EXPORT_INIT,EXPORT_STRUCTURE,EXPORT_TEXTURES,EXPORT_LLSD,EXPORT_DONE,EXPORT_FAILED};
 
 class primbackup : 	public LLFloater
 
@@ -17,8 +17,6 @@ class primbackup : 	public LLFloater
 
 	//Static accessor
 	static primbackup* getInstance();
-
-  static bool check_perms( LLSelectNode* node );
 
 	virtual ~primbackup();
 	
@@ -51,6 +49,18 @@ class primbackup : 	public LLFloater
 	//New prim call back
 	bool newprim(LLViewerObject * pobject);
 
+	static const U32 TEXTURE_OK = 0x00;
+	static const U32 TEXTURE_BAD_PERM = 0x01;
+	static const U32 TEXTURE_MISSING = 0x02;
+	static const U32 TEXTURE_BAD_ENCODING = 0x04;
+	static const U32 TEXTURE_IS_NULL = 0x08;
+	static const U32 TEXTURE_SAVED_FAILED = 0x10;
+	// Export state machine
+	enum export_states mExportState; 
+
+	// Export result flags for textures.
+	U32 mNonExportedTextures;
+
 private:
 
 	//Static singleton stuff
@@ -79,9 +89,13 @@ private:
 	void updateimportnumbers();
 	void updateexportnumbers();
 
-	//Convert a selection list of objects to LLSD
-	LLSD prims_to_llsd(LLViewerObject::child_list_t child_list);
-		
+	// Permissions stuff.
+	bool validatePerms(const LLPermissions* item_permissions);
+	LLUUID validateTextureID(LLUUID asset_id);
+
+	// Convert a selection list of objects to LLSD
+	LLSD primsToLLSD(LLViewerObject::child_list_t child_list, bool is_attachment);
+
 	// Start the import process
 	void import_object1a();
 

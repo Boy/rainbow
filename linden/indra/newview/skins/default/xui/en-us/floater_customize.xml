@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <floater bottom="-562" can_close="true" can_drag_on_left="false" can_minimize="false"
-     can_resize="false" follows="left|top" height="540" left="12" min_height="0"
+     can_resize="false" follows="left|top" height="560" left="12" min_height="0"
      min_width="0" mouse_opaque="true" name="floater customize"
      rect_control="FloaterCustomizeAppearanceRect" title="Appearance"
      width="494">
@@ -1244,9 +1244,9 @@ from scratch and wear it.
         (metric)
 	</text>
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
-	     bottom_delta="-18" drop_shadow_visible="true" follows="left|top"
+	     bottom_delta="0" drop_shadow_visible="true" follows="left|top"
 	     font="SansSerif" h_pad="0" halign="left" height="16"
-	     left="8" mouse_opaque="true" name="HeightTextI" v_pad="0" width="140">
+	     left="64" mouse_opaque="true" name="HeightTextI" v_pad="0" width="140">
         (imperial)
 	</text>
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
@@ -1256,10 +1256,16 @@ from scratch and wear it.
         Shoes Height:
 	</text>
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
-	     bottom_delta="-18" drop_shadow_visible="true" follows="left|top"
+	     drop_shadow_visible="true" follows="left|top"
 	     font="SansSerif" h_pad="0" halign="left" height="16"
-	     left="8" mouse_opaque="true" name="ShoesText" v_pad="0" width="140">
+	     left="8" mouse_opaque="true" name="ShoesTextM" v_pad="0" width="50">
         (metric)
+	</text>
+	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+	     bottom_delta="0" drop_shadow_visible="true" follows="top"
+	     font="SansSerif" h_pad="0" halign="top" height="16"
+	     left="64" mouse_opaque="true" name="ShoesTextI" v_pad="0" width="50">
+        (imperial)
 	</text>
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 	     bottom_delta="-18" drop_shadow_visible="true" follows="left|top"
@@ -1270,19 +1276,25 @@ from scratch and wear it.
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 	     bottom_delta="-18" drop_shadow_visible="true" follows="left|top"
 	     font="SansSerif" h_pad="0" halign="left" height="16"
-	     left="8" mouse_opaque="true" name="PelvisToFootText" v_pad="0" width="140">
+	     left="8" mouse_opaque="true" name="PelvisToFootTextM" v_pad="0" width="140">
         (metric)
 	</text>
+	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+	     bottom_delta="0" drop_shadow_visible="true" follows="left|top"
+	     font="SansSerif" h_pad="0" halign="left" height="16"
+	     left="64" mouse_opaque="true" name="PelvisToFootTextI" v_pad="0" width="140">
+        (imperial)
+	</text>
 	<button bottom="-536" follows="right|bottom" font="SansSerif" halign="center"
-	     height="20" label="Cancel" label_selected="Cancel" mouse_opaque="true"
-	     name="Cancel" right="-10" scale_image="true" width="100" />
+	     height="20" label="Close" label_selected="Close" mouse_opaque="true"
+	     name="Close" right="-10" scale_image="true" width="80" />
 	<button bottom="-536" follows="right|bottom" font="SansSerif" halign="center"
-	     height="20" label="OK" label_selected="OK" mouse_opaque="true"
-	     name="Ok" right="-116" scale_image="true" width="100" />
-	<button bottom="-536" follows="left|bottom" font="SansSerif" halign="center"
-	     height="20" label="Make Outfit..." label_selected="Make Outfit..."
-	     mouse_opaque="true" name="Make Outfit" left="100" scale_image="true"
-	     width="100" />
+	     height="20" label="Save All" label_selected="Save All" mouse_opaque="true"
+	     name="Save All" right="-100" scale_image="true" width="80" />
+	<button bottom="-536" follows="right|bottom" font="SansSerif" halign="center"
+	     height="20" label="Make Outfit" label_selected="Make Outfit"
+	     mouse_opaque="true" name="Make Outfit" right="-190" scale_image="true"
+	     width="80" />
   <button bottom="-536" follows="right|bottom" font="SansSerif" halign="center" height="20" hidden="false" label="Export" label_selected="Export" right="-280" mouse_opaque="true" name="Export" scale_image="true" width="80" />
   <button bottom="-536" follows="right|bottom" font="SansSerif" halign="center" height="20" hidden="false" label="Import" label_selected="Import" right="-370" mouse_opaque="true" name="Import" scale_image="true" width="80" />
 </floater>

@@ -5064,5 +5064,15 @@ Could not attach object.
 Exceeds the attachments limit of MAX_ATTACHMENTS objects. Please detach another object first.
 		</message>
 	</alert>
+	<alert modal="true" name="ExportFailed">
+		<message name="message">
+			Bad permissions for the exported object. Export aborted.
+		</message>
+ 	</alert>
+	<alert modal="true" name="ExportPartial">
+		<message name="message">
+			Object exported. Some textures could not be saved due to: [REASON]
+		</message>
+ 	</alert>
  </alerts>
 

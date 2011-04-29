@@ -2321,32 +2321,33 @@ class LLObjectEnableExport : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-		LLControlVariable* control = 
-			gMenuHolder->findControl(userdata["control"].asString());
-
-		LLViewerObject* object =
-			LLSelectMgr::getInstance()->getSelection()->getPrimaryObject();
-
-		if((object != NULL) &&
-		   (find_avatar_from_object(object) == NULL))
+		LLViewerObject* object = LLSelectMgr::getInstance()->getSelection()->getPrimaryObject();
+		bool new_value = (object != NULL);
+		if (new_value)
 		{
-			
 			struct ff : public LLSelectedNodeFunctor
 			{
+				ff(const LLSD& data) : LLSelectedNodeFunctor(), userdata(data)
+				{
+				}
+				const LLSD& userdata;
 				virtual bool apply(LLSelectNode* node)
 				{
-					return primbackup::check_perms( node );
+					// Note: the actual permission checking algorithm depends on the grid TOS and must be
+					// performed for each prim and texture. This is done later in llviewerobjectbackup.cpp.
+					// This means that even if the item is enabled in the menu, the export may fail should
+					// the permissions not be met for each exported asset. The permissions check below
+					// therefore only corresponds to the minimal permissions requirement common to all grids.
+					LLPermissions *item_permissions = node->mPermissions;
+					return (gAgent.getID() == item_permissions->getOwner() &&
+							(gAgent.getID() == item_permissions->getCreator() ||
+							 (item_permissions->getMaskOwner() & PERM_ITEM_UNRESTRICTED) == PERM_ITEM_UNRESTRICTED));
 				}
-			} func;
-
-			if(LLSelectMgr::getInstance()->getSelection()->applyToNodes(&func,false))
-			{
-				control->setValue(true);
-				return true;	
-			}
+			};
+			ff * the_ff = new ff(userdata);
+			new_value = LLSelectMgr::getInstance()->getSelection()->applyToNodes(the_ff, false);
 		}
- 
-		control->setValue(false);
+		gMenuHolder->findControl(userdata["control"].asString())->setValue(new_value);
 		return true;
 	}
 };
@@ -2356,11 +2357,7 @@ class LLObjectExport : public view_listener_t
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
 		LLViewerObject* object = LLSelectMgr::getInstance()->getSelection()->getPrimaryObject();
-		if (!object) return true;
-
-		LLVOAvatar* avatar = find_avatar_from_object(object); 
-
-		if (!avatar)
+		if (object)
 		{
 			primbackup::getInstance()->pre_export_object();
 		}

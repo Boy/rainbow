@@ -1077,8 +1077,8 @@ Click Accept to join the chat or Decline to decline the invitation. Click Mute t
 	<notify caution="true" duration="15" name="ServerVersionChanged" tip="true">
 		<message name="message">
 			The region you have entered is running a different simulator version.
-			Current simulator : [NEWVERSION]
-			Previous simulator: [OLDVERSION]
+Current simulator : [NEWVERSION]
+Previous simulator: [OLDVERSION]
 		</message>
 	</notify>
 	<notify caution="true" name="UnableToOpenCommandURL" tip="true">
@@ -1104,6 +1104,11 @@ OLD_NAME (SLID) is now known as NEW_NAME.
 	<notify name="IncompleteInventoryItem" tip="true">
 		<message name="message">
 			The item you are accessing is not yet locally available. Please try again in a minute.
+		</message>
+ 	</notify>
+	<notify name="ExportSuccessful" tip="true">
+		<message name="message">
+			Export successful.
 		</message>
  	</notify>
 </notifications>
