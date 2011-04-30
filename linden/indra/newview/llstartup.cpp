@@ -1670,6 +1670,11 @@ bool idle_startup()
 		// reset globals
 		gAcceptTOS = FALSE;
 		gAcceptCriticalMessage = FALSE;
+		std::string temp_uri = LLViewerLogin::getInstance()->getCurrentGridURI();
+		LLStringUtil::toLower(temp_uri);
+		gIsInSecondLife = (temp_uri.find("aditi") != std::string::npos ||
+						   temp_uri.find("agni") != std::string::npos ||
+						   temp_uri.find("://216.82.") != std::string::npos);
 		LLStartUp::setStartupState( STATE_LOGIN_NO_DATA_YET );
 		return FALSE;
 	}

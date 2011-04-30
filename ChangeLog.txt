@@ -1,3 +1,11 @@
+2011-04-30 Boy Lane <boy.lane@yahoo.com>
+
+    * Secondlife grid detection fix for permission check and object backup code cleanup
+
+    modified:   ChangeLog.txt
+    modified:   linden/indra/newview/llstartup.cpp
+    modified:   linden/indra/newview/primbackup.cpp
+
 2011-04-29 Boy Lane <boy.lane@yahoo.com>
 
     * Proper measurement for heels in inches and update for object backup/import
@@ -15,6 +23,7 @@
 
     * Lots of additional minor fixes and patches backported mainly from CoolVL 1.25
 
+    modified:   ChangeLog.txt
     modified:   linden/indra/cmake/00-Common.cmake
     modified:   linden/indra/llaudio/CMakeLists.txt
     modified:   linden/indra/llaudio/audioengine.cpp
