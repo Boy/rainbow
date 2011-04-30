@@ -3274,14 +3274,23 @@ void process_agent_movement_complete(LLMessageSystem* msg, void**)
 
 		if (avatarp)
 		{
-			// Chat the "back" SLURL. (DEV-4907)
+			if (gSavedSettings.getBOOL("TeleportHistoryInChat")
 //MK
-			if (!gRRenabled || !gAgent.mRRInterface.mContainsShowloc)
-			{
+				&& (!gRRenabled || !gAgent.mRRInterface.mContainsShowloc)
 //mk
+			)
+			{
+				// Chat the "back" SLURL. (DEV-4907)
 				LLChat chat("Teleport completed from " + gAgent.getTeleportSourceSLURL());
 				chat.mSourceType = CHAT_SOURCE_SYSTEM;
  				LLFloaterChat::addChatHistory(chat);
+			}
+			if (gSavedSettings.getBOOL("TeleportHistoryDeparture"))
+			{
+				// Add the departure location, using the "current" parcel name
+				// (which is in fact still the old parcel name since the new
+				// parcel properties message was not yet received at this point)
+				gFloaterTeleportHistory->addSourceEntry(gAgent.getTeleportSourceSLURL(), LLViewerParcelMgr::getInstance()->getAgentParcelName());
 			}
 
 			// Set the new position

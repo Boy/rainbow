@@ -1,5 +1,17 @@
 2011-04-30 Boy Lane <boy.lane@yahoo.com>
 
+    * Update for Teleport History from CoolVL
+
+    modified:   ChangeLog.txt
+    modified:   linden/doc/contributions.txt
+    modified:   linden/indra/newview/app_settings/settings.xml
+    modified:   linden/indra/newview/llfloaterteleporthistory.cpp
+    modified:   linden/indra/newview/llfloaterteleporthistory.h
+    modified:   linden/indra/newview/llviewermessage.cpp
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_teleport_history.xml
+
+2011-04-30 Boy Lane <boy.lane@yahoo.com>
+
     * Secondlife grid detection fix for permission check and object backup code cleanup
 
     modified:   ChangeLog.txt

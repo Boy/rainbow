@@ -49,29 +49,34 @@ public:
 	LLFloaterTeleportHistory();
 	virtual ~LLFloaterTeleportHistory();
 
-	/// @brief: reimplemented to check for selection changes in the places list scrolllist
+	// @brief: reimplemented to check for selection changes in the places list scrolllist
 	virtual void onFocusReceived();
 
-	/// @brief: reimplemented to make the menu toggle work
+	// @brief: reimplemented to make the menu toggle work
 	virtual void onClose(bool app_quitting);
 
-	/// @brief: reimplemented to prevent this floater from closing while the viewer is shutting down
+	// @brief: reimplemented to prevent this floater from closing while the viewer is shutting down
 	virtual BOOL canClose();
 
 	BOOL postBuild();
 
-	/// @brief: adds the pending teleport destination
-	void addPendingEntry(std::string regionName, S16 x, S16 y, S16 z);
-	/// @brief: adds the destination to the list of visited places
-	void addEntry(std::string parcelName);
+	// @brief adds the pending teleport destination
+	void addPendingEntry(const std::string& regionName, S16 x, S16 y, S16 z);
+	// @brief adds the destination to the list of visited places
+	void addEntry(const std::string& parcelName, bool departure = false);
+	// @brief adds a source teleport SLURL to the visited places.
+	void addSourceEntry(const std::string& sourceSURL, const std::string& parcelName);
+	// @brief clears the history
+	void clearHistory();
 
 private:
 	enum HISTORY_COLUMN_ORDER
 	{
+		LIST_TYPE,
 		LIST_PARCEL,
 		LIST_REGION,
 		LIST_POSITION,
-		LIST_VISITED,
+		LIST_TIMESTAMP,
 		LIST_SLURL,
 		LIST_SIMSTRING
 	};
@@ -80,9 +85,14 @@ private:
 	static void onTeleport(void* data);
 	static void onShowOnMap(void* data);
 	static void onCopySLURL(void* data);
+	static void onClearHistory(void* data);
+	static void onButtonClose(void* data);
 
-	/// @brief: enables or disables the "Teleport", "Show On Map" and "Copy To SLURL" buttons **/
-	void setButtonsEnabled(BOOL on);
+	// @brief: enables or disables the "Teleport", "Show On Map" and "Copy To SLURL" buttons
+	void setButtonsStatus();
+
+	void loadEntries();
+	void saveEntry(LLSD entry);
 
 	LLScrollListCtrl* mPlacesList;
 
@@ -93,6 +103,8 @@ private:
 	std::string mPendingSimString;
 	std::string mPendingTimeString;
 	std::string mPendingSLURL;
+
+	LLSD mTPlist;
 };
 
 // globals

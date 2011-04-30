@@ -3618,6 +3618,28 @@
         <integer>200</integer>
       </array>
     </map>
+    <key>TeleportHistoryDeparture</key>
+    <map>
+      <key>Comment</key>
+      <string>Register the TP departure locations in the Teleport History</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>TeleportHistoryInChat</key>
+    <map>
+      <key>Comment</key>
+      <string>Log the TP departure locations in the chat history</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
     <key>FloaterViewBottom</key>
     <map>
       <key>Comment</key>
