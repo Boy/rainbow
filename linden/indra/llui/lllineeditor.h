@@ -87,6 +87,7 @@ public:
 	// mousehandler overrides
 	/*virtual*/ BOOL	handleMouseDown(S32 x, S32 y, MASK mask);
 	/*virtual*/ BOOL	handleMouseUp(S32 x, S32 y, MASK mask);
+	/*virtual*/ BOOL	handleRightMouseDown(S32 x, S32 y, MASK mask);
 	/*virtual*/ BOOL	handleHover(S32 x, S32 y, MASK mask);
 	/*virtual*/ BOOL	handleDoubleClick(S32 x,S32 y,MASK mask);
 	/*virtual*/ BOOL	handleKeyHere(KEY key, MASK mask );
@@ -111,6 +112,18 @@ public:
 
 	virtual void	deselect();
 	virtual BOOL	canDeselect() const;
+
+	// Context menu actions
+	static void context_selectall(void* data);
+	static void context_cut(void* data);
+	static void context_copy(void* data);
+	static void context_paste(void* data);
+	static void context_delete(void* data);
+	static BOOL context_enable_selectall(void* data);
+	static BOOL context_enable_cut(void* data);
+	static BOOL context_enable_copy(void* data);
+	static BOOL context_enable_paste(void* data);
+	static BOOL context_enable_delete(void* data);
 
 	// view overrides
 	virtual void	draw();
@@ -304,6 +317,8 @@ protected:
 	LLWString	mPreeditOverwrittenWString;
 	std::vector<S32> mPreeditPositions;
 	LLPreeditor::standouts_t mPreeditStandouts;
+
+	LLHandle<LLView> mPopupMenuHandle;
 
 private:
 	// Utility on top of LLUI::getUIImage, looks up a named image in a given XML node and returns it if possible

@@ -79,6 +79,7 @@ public:
 	// mousehandler overrides
 	virtual BOOL	handleMouseDown(S32 x, S32 y, MASK mask);
 	virtual BOOL	handleMouseUp(S32 x, S32 y, MASK mask);
+	virtual BOOL	handleRightMouseDown(S32 x, S32 y, MASK mask);
 	virtual BOOL	handleHover(S32 x, S32 y, MASK mask);
 	virtual BOOL	handleScrollWheel(S32 x, S32 y, S32 clicks);
 	virtual BOOL	handleDoubleClick(S32 x, S32 y, MASK mask );
@@ -122,6 +123,18 @@ public:
 	virtual BOOL	canSelectAll()	const;
 	virtual void	deselect();
 	virtual BOOL	canDeselect() const;
+
+	// Context menu actions
+	static void context_selectall(void* data);
+	static void context_cut(void* data);
+	static void context_copy(void* data);
+	static void context_paste(void* data);
+	static void context_delete(void* data);
+	static BOOL context_enable_selectall(void* data);
+	static BOOL context_enable_cut(void* data);
+	static BOOL context_enable_copy(void* data);
+	static BOOL context_enable_paste(void* data);
+	static BOOL context_enable_delete(void* data);
 
 	void			selectNext(const std::string& search_text_in, BOOL case_insensitive, BOOL wrap = TRUE);
 	BOOL			replaceText(const std::string& search_text, const std::string& replace_text, BOOL case_insensitive, BOOL wrap = TRUE);
@@ -421,7 +434,9 @@ protected:
 	LLWString			mPreeditOverwrittenWString;
 	std::vector<S32> 	mPreeditPositions;
 	std::vector<BOOL> 	mPreeditStandouts;
-	
+
+	LLHandle<LLView>	mPopupMenuHandle;
+
 private:
 
 	//

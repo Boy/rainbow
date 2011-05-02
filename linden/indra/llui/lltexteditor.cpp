@@ -51,6 +51,7 @@
 #include "llstring.h"
 #include "llkeyboard.h"
 #include "llkeywords.h"
+#include "llmenugl.h"
 #include "llundo.h"
 #include "llviewborder.h"
 #include "llcontrol.h"
@@ -251,6 +252,7 @@ LLTextEditor::LLTextEditor(
 	BOOL allow_embedded_items)
 	:	
 	LLUICtrl( name, rect, TRUE, NULL, NULL, FOLLOWS_TOP | FOLLOWS_LEFT ),
+	mPopupMenuHandle(),
 	mTextIsUpToDate(TRUE),
 	mMaxTextByteLength( max_length ),
 	mBaseDocIsPristine(TRUE),
@@ -338,6 +340,18 @@ LLTextEditor::LLTextEditor(
 
 	mParseHTML=FALSE;
 	mHTML.clear();
+
+	// Context menu
+	LLMenuGL* menu = new LLMenuGL("text_editor_context_menu");
+	menu->append(new LLMenuItemCallGL("Select All", context_selectall, context_enable_selectall, this));
+	menu->appendSeparator("sep1");
+	menu->append(new LLMenuItemCallGL("Cut", context_cut, context_enable_cut, this));
+	menu->append(new LLMenuItemCallGL("Copy", context_copy, context_enable_copy, this));
+	menu->append(new LLMenuItemCallGL("Paste", context_paste, context_enable_paste, this));
+	menu->append(new LLMenuItemCallGL("Delete", context_delete, context_enable_delete, this));
+	menu->setCanTearOff(FALSE);
+	menu->setVisible(FALSE);
+	mPopupMenuHandle = menu->getHandle();
 }
 
 
@@ -356,6 +370,83 @@ LLTextEditor::~LLTextEditor()
 	std::for_each(mSegments.begin(), mSegments.end(), DeletePointer());
 
 	std::for_each(mUndoStack.begin(), mUndoStack.end(), DeletePointer());
+
+	LLView::deleteViewByHandle(mPopupMenuHandle);
+}
+
+void LLTextEditor::context_selectall(void* data)
+{
+	LLTextEditor* line = (LLTextEditor*)data;
+	if (line)
+	{
+		line->selectAll();
+	}
+}
+
+BOOL LLTextEditor::context_enable_selectall(void* data)
+{
+	LLTextEditor* line = (LLTextEditor*)data;
+	return (line && line->canSelectAll());
+}
+
+void LLTextEditor::context_cut(void* data)
+{
+	LLTextEditor* line = (LLTextEditor*)data;
+	if (line)
+	{
+		line->cut();
+	}
+}
+
+BOOL LLTextEditor::context_enable_cut(void* data)
+{
+	LLTextEditor* line = (LLTextEditor*)data;
+	return (line && line->canCut());
+}
+
+void LLTextEditor::context_copy(void* data)
+{
+	LLTextEditor* line = (LLTextEditor*)data;
+	if (line)
+	{
+		line->copy();
+	}
+}
+
+BOOL LLTextEditor::context_enable_copy(void* data)
+{
+	LLTextEditor* line = (LLTextEditor*)data;
+	return (line && line->canCopy());
+}
+
+void LLTextEditor::context_paste(void* data)
+{
+	LLTextEditor* line = (LLTextEditor*)data;
+	if (line)
+	{
+		line->paste();
+	}
+}
+
+BOOL LLTextEditor::context_enable_paste(void* data)
+{
+	LLTextEditor* line = (LLTextEditor*)data;
+	return (line && line->canPaste());
+}
+
+void LLTextEditor::context_delete(void* data)
+{
+	LLTextEditor* line = (LLTextEditor*)data;
+	if (line)
+	{
+		line->doDelete();
+	}
+}
+
+BOOL LLTextEditor::context_enable_delete(void* data)
+{
+	LLTextEditor* line = (LLTextEditor*)data;
+	return (line && line->canDoDelete());
 }
 
 void LLTextEditor::setTrackColor( const LLColor4& color )
@@ -1139,6 +1230,14 @@ BOOL LLTextEditor::handleMouseDown(S32 x, S32 y, MASK mask)
 {
 	BOOL	handled = FALSE;
 
+	// Key presses are not being passed to the Popup menu.
+	// A proper fix is non-trivial so instead just close the menu.
+	LLMenuGL* menu = (LLMenuGL*)mPopupMenuHandle.get();
+	if (menu && menu->isOpen())
+	{
+		LLMenuGL::sMenuContainer->hideMenus();
+	}
+
 	// Let scrollbar have first dibs
 	handled = LLView::childrenHandleMouseDown(x, y, mask) != NULL;
 
@@ -1214,6 +1313,19 @@ BOOL LLTextEditor::handleMouseDown(S32 x, S32 y, MASK mask)
 	return handled;
 }
 
+BOOL LLTextEditor::handleRightMouseDown(S32 x, S32 y, MASK mask)
+{
+	setFocus(TRUE);
+
+	LLMenuGL* menu = (LLMenuGL*)mPopupMenuHandle.get();
+	if (menu)
+	{
+		menu->buildDrawLabels();
+		menu->updateParent(LLMenuGL::sMenuContainer);
+		LLMenuGL::showPopup(this, menu, x, y);
+	}
+	return TRUE;
+}
 
 BOOL LLTextEditor::handleHover(S32 x, S32 y, MASK mask)
 {
@@ -2175,6 +2287,14 @@ BOOL LLTextEditor::handleKeyHere(KEY key, MASK mask )
 	BOOL	return_key_hit = FALSE;
 	BOOL	text_may_have_changed = TRUE;
 
+	// Key presses are not being passed to the Popup menu.
+	// A proper fix is non-trivial so instead just close the menu.
+	LLMenuGL* menu = (LLMenuGL*)mPopupMenuHandle.get();
+	if (menu && menu->isOpen())
+	{
+		LLMenuGL::sMenuContainer->hideMenus();
+	}
+
 	if ( gFocusMgr.getKeyboardFocus() == this )
 	{
 		// Special case for TAB.  If want to move to next field, report
@@ -2216,6 +2336,14 @@ BOOL LLTextEditor::handleKeyHere(KEY key, MASK mask )
 				selection_modified = TRUE;
 				text_may_have_changed = TRUE;
 			}
+		}
+
+		// Key presses are not being passed to the Popup menu.
+		// A proper fix is non-trivial so instead just close the menu.
+		LLMenuGL* menu = (LLMenuGL*)mPopupMenuHandle.get();
+		if (menu && menu->isOpen())
+		{
+			LLMenuGL::sMenuContainer->hideMenus();
 		}
 
 		// Handle most keys only if the text editor is writeable.

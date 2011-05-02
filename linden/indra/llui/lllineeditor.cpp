@@ -41,6 +41,7 @@
 #include "llfontgl.h"
 #include "llgl.h"
 #include "lltimer.h"
+#include "llmenugl.h"
 
 //#include "llclipboard.h"
 #include "llcontrol.h"
@@ -101,6 +102,7 @@ LLLineEditor::LLLineEditor(const std::string& name, const LLRect& rect,
 						   S32 border_thickness)
 	:
 		LLUICtrl( name, rect, TRUE, commit_callback, userdata, FOLLOWS_TOP | FOLLOWS_LEFT ),
+		mPopupMenuHandle(),
 		mMaxLengthBytes(max_length_bytes),
 		mCursorPos( 0 ),
 		mScrollHPos( 0 ),
@@ -176,6 +178,18 @@ LLLineEditor::LLLineEditor(const std::string& name, const LLRect& rect,
 		sImage = LLUI::getUIImage("sm_rounded_corners_simple.tga");
 	}
 	mImage = sImage;
+
+	// Context menu
+	LLMenuGL* menu = new LLMenuGL("line_editor_context_menu");
+	menu->append(new LLMenuItemCallGL("Select All", context_selectall, context_enable_selectall, this));
+	menu->appendSeparator("sep1");
+	menu->append(new LLMenuItemCallGL("Cut", context_cut, context_enable_cut, this));
+	menu->append(new LLMenuItemCallGL("Copy", context_copy, context_enable_copy, this));
+	menu->append(new LLMenuItemCallGL("Paste", context_paste, context_enable_paste, this));
+	menu->append(new LLMenuItemCallGL("Delete", context_delete, context_enable_delete, this));
+	menu->setCanTearOff(FALSE);
+	menu->setVisible(FALSE);
+	mPopupMenuHandle = menu->getHandle();
 }
 
 
@@ -189,6 +203,8 @@ LLLineEditor::~LLLineEditor()
 	{
 		gEditMenuHandler = NULL;
 	}
+
+	LLView::deleteViewByHandle(mPopupMenuHandle);
 }
 
 
@@ -434,6 +450,80 @@ void LLLineEditor::selectAll()
 	mIsSelecting = TRUE;
 }
 
+void LLLineEditor::context_selectall(void* data)
+{
+	LLLineEditor* line = (LLLineEditor*)data;
+	if (line)
+	{
+		line->selectAll();
+	}
+}
+
+BOOL LLLineEditor::context_enable_selectall(void* data)
+{
+	LLLineEditor* line = (LLLineEditor*)data;
+	return (line && line->canSelectAll());
+}
+
+void LLLineEditor::context_cut(void* data)
+{
+	LLLineEditor* line = (LLLineEditor*)data;
+	if (line)
+	{
+		line->cut();
+	}
+}
+
+BOOL LLLineEditor::context_enable_cut(void* data)
+{
+	LLLineEditor* line = (LLLineEditor*)data;
+	return (line && line->canCut());
+}
+
+void LLLineEditor::context_copy(void* data)
+{
+	LLLineEditor* line = (LLLineEditor*)data;
+	if (line)
+	{
+		line->copy();
+	}
+}
+
+BOOL LLLineEditor::context_enable_copy(void* data)
+{
+	LLLineEditor* line = (LLLineEditor*)data;
+	return (line && line->canCopy());
+}
+
+void LLLineEditor::context_paste(void* data)
+{
+	LLLineEditor* line = (LLLineEditor*)data;
+	if (line)
+	{
+		line->paste();
+	}
+}
+
+BOOL LLLineEditor::context_enable_paste(void* data)
+{
+	LLLineEditor* line = (LLLineEditor*)data;
+	return (line && line->canPaste());
+}
+
+void LLLineEditor::context_delete(void* data)
+{
+	LLLineEditor* line = (LLLineEditor*)data;
+	if (line)
+	{
+		line->doDelete();
+	}
+}
+
+BOOL LLLineEditor::context_enable_delete(void* data)
+{
+	LLLineEditor* line = (LLLineEditor*)data;
+	return (line && line->canDoDelete());
+}
 
 BOOL LLLineEditor::handleDoubleClick(S32 x, S32 y, MASK mask)
 {
@@ -570,6 +660,19 @@ BOOL LLLineEditor::handleMouseDown(S32 x, S32 y, MASK mask)
 	return TRUE;
 }
 
+BOOL LLLineEditor::handleRightMouseDown( S32 x, S32 y, MASK mask )
+{
+	setFocus(TRUE);
+
+	LLMenuGL* menu = (LLMenuGL*)mPopupMenuHandle.get();
+	if (menu)
+	{
+		menu->buildDrawLabels();
+		menu->updateParent(LLMenuGL::sMenuContainer);
+		LLMenuGL::showPopup(this, menu, x, y);
+	}
+	return TRUE;
+}
 
 BOOL LLLineEditor::handleHover(S32 x, S32 y, MASK mask)
 {
@@ -1241,6 +1344,14 @@ BOOL LLLineEditor::handleKeyHere(KEY key, MASK mask )
 	BOOL	handled = FALSE;
 	BOOL	selection_modified = FALSE;
 
+	// Key presses are not being passed to the Popup menu.
+	// A proper fix is non-trivial so instead just close the menu.
+	LLMenuGL* menu = (LLMenuGL*)mPopupMenuHandle.get();
+	if (menu && menu->isOpen())
+	{
+		LLMenuGL::sMenuContainer->hideMenus();
+	}
+
 	if ( gFocusMgr.getKeyboardFocus() == this )
 	{
 		LLLineEditorRollback rollback( this );
@@ -1315,6 +1426,14 @@ BOOL LLLineEditor::handleUnicodeCharHere(llwchar uni_char)
 
 	if ( (gFocusMgr.getKeyboardFocus() == this) && getVisible() && !mReadOnly)
 	{
+		// Key presses are not being passed to the Popup menu.
+		// A proper fix is non-trivial so instead just close the menu.
+		LLMenuGL* menu = (LLMenuGL*)mPopupMenuHandle.get();
+		if (menu && menu->isOpen())
+		{
+			LLMenuGL::sMenuContainer->hideMenus();
+		}
+
 		handled = TRUE;
 
 		LLLineEditorRollback rollback( this );
