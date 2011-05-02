@@ -2585,6 +2585,37 @@ void process_chat_from_simulator(LLMessageSystem *msg, void **user_data)
 
 	if (is_audible)
 	{
+		if (chatter && chatter->isAvatar())
+		{
+//MK
+			if (!gRRenabled || !gAgent.mRRInterface.mContainsShownames)
+			{
+//mk
+				if (LLAvatarName::sOmitResidentAsLastName)
+				{
+					LLStringUtil::replaceString(from_name, " Resident", "");
+				}
+				if (LLAvatarNameCache::useDisplayNames())
+				{
+					LLAvatarName avatar_name;
+					if (LLAvatarNameCache::get(from_id, &avatar_name))
+					{
+						if (LLAvatarNameCache::useDisplayNames() == 2)
+						{
+							from_name = avatar_name.mDisplayName;
+						}
+						else
+						{
+							from_name = avatar_name.getNames();
+						}
+					}
+					chat.mFromName = from_name;
+				}
+//MK
+			}
+//mk
+		}
+
 		BOOL visible_in_chat_bubble = FALSE;
 		std::string verb;
 
@@ -2592,30 +2623,6 @@ void process_chat_from_simulator(LLMessageSystem *msg, void **user_data)
 		msg->getStringFast(_PREHASH_ChatData, _PREHASH_Message, mesg);
 
 		BOOL ircstyle = FALSE;
-
-		if (!gRRenabled || !gAgent.mRRInterface.mContainsShownames)
-		{
-			if (LLAvatarName::sOmitResidentAsLastName)
-			{
-				LLStringUtil::replaceString(from_name, " Resident", "");
-			}
-			if (LLAvatarNameCache::useDisplayNames())
-			{
-				LLAvatarName avatar_name;
-				if (LLAvatarNameCache::get(from_id, &avatar_name))
-				{
-					if (LLAvatarNameCache::useDisplayNames() == 2)
-					{
-						from_name = avatar_name.mDisplayName;
-					}
-					else
-					{
-						from_name = avatar_name.getNames();
-					}
-				}
-				chat.mFromName = from_name;
-			}
-		}
 //MK
 		if (gRRenabled && chat.mChatType != CHAT_TYPE_OWNER)
 		{
@@ -2675,13 +2682,10 @@ void process_chat_from_simulator(LLMessageSystem *msg, void **user_data)
 		if (prefix == "/me " || prefix == "/me'")
 		{
 			chat.mText = from_name;
-			chat.mText += mesg.substr(3);
+			mesg = mesg.substr(3);
 			ircstyle = TRUE;
 		}
-		else
-		{
-			chat.mText = mesg;
-		}
+		chat.mText += mesg;
 
 		// Look for the start of typing so we can put "..." in the bubbles.
 		if (CHAT_TYPE_START == chat.mChatType)

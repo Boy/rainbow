@@ -1,5 +1,12 @@
 2011-05-02 Boy Lane <boy.lane@yahoo.com>
 
+    * Fix for chat
+    
+    modified:   ChangeLog.txt
+    modified:   linden/indra/newview/llviewermessage.cpp
+
+2011-05-02 Boy Lane <boy.lane@yahoo.com>
+
     * Pre-decode audio and group titles in pie menu from CoolVL 
 
     modified:   ChangeLog.txt
