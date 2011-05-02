@@ -158,6 +158,7 @@ set(viewer_SOURCE_FILES
     llfloatergroupinfo.cpp
     llfloatergroupinvite.cpp
     llfloatergroups.cpp
+    hbfloatergrouptitles.cpp
     llfloaterhardwaresettings.cpp
     llfloaterhtml.cpp
     llfloaterhtmlhelp.cpp
@@ -571,6 +572,7 @@ set(viewer_HEADER_FILES
     llfloatergroupinfo.h
     llfloatergroupinvite.h
     llfloatergroups.h
+    hbfloatergrouptitles.h
     llfloaterhardwaresettings.h
     llfloaterhtml.h
     llfloaterhtmlhelp.h

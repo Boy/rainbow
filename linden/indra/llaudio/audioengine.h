@@ -169,6 +169,8 @@ public:
 	LLAudioChannel *getFreeChannel(const F32 priority); // Get a free channel or flush an existing one if your priority is higher
 	void cleanupBuffer(LLAudioBuffer *bufferp);
 
+	bool isUISound(const LLUUID &uuid) { return (mUISounds.find(uuid) != mUISounds.end()); }
+
 	bool hasDecodedFile(const LLUUID &uuid);
 	bool hasLocalFile(const LLUUID &uuid);
 
@@ -229,6 +231,8 @@ protected:
 
 	source_map mAllSources;
 	data_map mAllData;
+
+	std::set<LLUUID> mUISounds;
 
 	LLAudioChannel *mChannels[MAX_CHANNELS];
 

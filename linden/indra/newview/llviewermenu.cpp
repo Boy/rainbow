@@ -111,6 +111,7 @@
 #include "llfloatergodtools.h"
 #include "llfloatergroupinfo.h"
 #include "llfloatergroupinvite.h"
+#include "hbfloatergrouptitles.h"
 #include "llfloatergroups.h"
 #include "llfloaterhtml.h"
 #include "llfloaterhtmlhelp.h"
@@ -189,6 +190,7 @@
 #include "lluserauth.h"
 #include "lluuid.h"
 #include "llvelocitybar.h"
+#include "llvieweraudio.h"		// audio_preload_ui_sounds()
 #include "llviewercamera.h"
 #include "llviewergenericmessage.h"
 #include "llviewergesture.h"
@@ -441,6 +443,7 @@ void dump_select_mgr(void*);
 void dump_volume_mgr(void*);
 void dump_inventory(void*);
 void edit_ui(void*);
+void decode_ui_sounds(void*);
 void toggle_visibility(void*);
 BOOL get_visibility(void*);
 
@@ -1056,6 +1059,9 @@ void init_debug_ui_menu(LLMenuGL* menu)
 {
 	menu->append(new LLMenuItemCallGL("Web Browser Test", &handle_web_browser_test));
 	menu->append(new LLMenuItemCallGL("Editable UI", &edit_ui));
+	menu->appendSeparator();
+	menu->append(new LLMenuItemCallGL("Decode all UI sounds", &decode_ui_sounds));
+	menu->appendSeparator();
 	menu->append(new LLMenuItemCallGL( "Dump SelectMgr", &dump_select_mgr));
 	menu->append(new LLMenuItemCallGL( "Dump Inventory", &dump_inventory));
 	menu->append(new LLMenuItemCallGL( "Dump Focus Holder", &handle_dump_focus, NULL, NULL, 'F', MASK_ALT | MASK_CONTROL));
@@ -2934,6 +2940,14 @@ void handle_dump_focus(void *)
 	llinfos << "Keyboard focus " << (ctrl ? ctrl->getName() : "(none)") << llendl;
 }
 
+class HBSelfGroupTitles : public view_listener_t
+{
+	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
+	{
+		HBFloaterGroupTitles::show();
+		return true;
+	}
+};
 class LLSelfStandUp : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
@@ -5634,6 +5648,11 @@ class LLObjectEnableSitOrStand : public view_listener_t
 void edit_ui(void*)
 {
 	LLFloater::setEditModeEnabled(!LLFloater::getEditModeEnabled());
+}
+
+void decode_ui_sounds(void*)
+{
+	audio_preload_ui_sounds(true);
 }
 
 void dump_select_mgr(void*)
@@ -8415,6 +8434,7 @@ void initialize_menus()
 	// most items use the ShowFloater method
 
 	// Self pie menu
+	addMenu(new HBSelfGroupTitles(), "Self.GroupTitles");
 	addMenu(new LLSelfStandUp(), "Self.StandUp");
 	addMenu(new LLSelfRemoveAllAttachments(), "Self.RemoveAllAttachments");
 

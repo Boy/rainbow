@@ -893,6 +893,11 @@ void LLAudioEngine::triggerSound(const LLUUID &audio_uuid, const LLUUID& owner_i
 	// Create a new source (since this can't be associated with an existing source.
 	//llinfos << "Localized: " << audio_uuid << llendl;
 
+	if (type == AUDIO_TYPE_UI)
+	{
+		mUISounds.insert(audio_uuid);
+	}
+
 	if (mMuted)
 	{
 		return;
@@ -1090,8 +1095,15 @@ bool LLAudioEngine::hasDecodedFile(const LLUUID &uuid)
 	uuid.toString(uuid_str);
 
 	std::string wav_path;
-	wav_path = gDirUtilp->getExpandedFilename(LL_PATH_CACHE,uuid_str);
-	wav_path += ".dsf";
+	bool ui_sound = isUISound(uuid);
+	if (ui_sound)
+	{
+		wav_path = gDirUtilp->getExpandedFilename(LL_PATH_SKINS, "default", "sounds", uuid_str) + ".dsf";
+	}
+	if (!ui_sound || !gDirUtilp->fileExists(wav_path))
+	{
+		wav_path = gDirUtilp->getExpandedFilename(LL_PATH_CACHE, uuid_str) + ".dsf";
+	}
 
 	if (gDirUtilp->fileExists(wav_path))
 	{
@@ -1845,7 +1857,15 @@ bool LLAudioData::load()
 	std::string uuid_str;
 	std::string wav_path;
 	mID.toString(uuid_str);
-	wav_path= gDirUtilp->getExpandedFilename(LL_PATH_CACHE,uuid_str) + ".dsf";
+	bool ui_sound = gAudiop->isUISound(mID);
+	if (ui_sound)
+	{
+		wav_path = gDirUtilp->getExpandedFilename(LL_PATH_SKINS, "default", "sounds", uuid_str) + ".dsf";
+	}
+	if (!ui_sound || !gDirUtilp->fileExists(wav_path))
+	{
+		wav_path = gDirUtilp->getExpandedFilename(LL_PATH_CACHE, uuid_str) + ".dsf";
+	}
 
 	if (!mBufferp->loadWAV(wav_path))
 	{

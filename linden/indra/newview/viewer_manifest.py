@@ -74,6 +74,10 @@ class ViewerManifest(LLManifest):
         # skins
         if self.prefix(src="skins"):
                 self.path("paths.xml")
+                # include pre-decoded sounds if any
+                if self.prefix(src="default/sounds"):
+                    self.path("*.dsf")
+                    self.end_prefix("default/sounds")
                 # include the entire textures directory recursively
                 if self.prefix(src="*/textures"):
                         self.path("*.tga")

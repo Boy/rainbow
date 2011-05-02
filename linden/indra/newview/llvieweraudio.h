@@ -39,6 +39,7 @@
 #define kAUDIO_NUM_SOURCES 30 
 
 void init_audio();
+void audio_preload_ui_sounds(bool force_decode = false);
 void audio_update_volume(bool force_update = true);
 void audio_update_listener();
 void audio_update_wind(bool force_update = true);

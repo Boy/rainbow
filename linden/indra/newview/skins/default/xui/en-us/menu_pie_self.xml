@@ -9,6 +9,9 @@
 	<menu_item_call enabled="true" label="Go..." name="Go...">
 		<on_click function="ShowFloater" userdata="movement controls" />
 	</menu_item_call>
+	<menu_item_call enabled="true" label="Titles..." name="Titles...">
+		<on_click function="Self.GroupTitles" userdata="" />
+	</menu_item_call>
 	<menu_item_call enabled="true" label="Stand Up" name="Stand Up">
 		<on_click function="Self.StandUp" userdata="" />
 		<on_enable function="Self.EnableStandUp" />
