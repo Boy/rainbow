@@ -44,6 +44,7 @@
 #include "llconsole.h"
 #include "lldrawpoolterrain.h"
 #include "llflexibleobject.h"
+#include "llfloater.h"
 #include "llfeaturemanager.h"
 #include "llviewershadermgr.h"
 #include "llnetmap.h"
@@ -310,6 +311,24 @@ static bool handleConsoleMaxLinesChanged(const LLSD& newvalue)
 static void handleAudioVolumeChanged(const LLSD& newvalue)
 {
 	audio_update_volume(true);
+}
+
+static bool handleStackMinimizedTopToBottom(const LLSD& newvalue)
+{
+	LLFloaterView::setStackMinimizedTopToBottom(newvalue.asBoolean());
+	return true;
+}
+
+static bool handleStackMinimizedRightToLeft(const LLSD& newvalue)
+{
+	LLFloaterView::setStackMinimizedRightToLeft(newvalue.asBoolean());
+	return true;
+}
+
+static bool handleStackScreenWidthFraction(const LLSD& newvalue)
+{
+	LLFloaterView::setStackScreenWidthFraction(newvalue.asInteger());
+	return true;
 }
 
 static bool handleJoystickChanged(const LLSD& newvalue)
@@ -595,6 +614,9 @@ void settings_setup_listeners()
 	gSavedSettings.getControl("WLSkyDetail")->getSignal()->connect(boost::bind(&handleWLSkyDetailChanged, _1));
 	gSavedSettings.getControl("RenderLightingDetail")->getSignal()->connect(boost::bind(&handleRenderLightingDetailChanged, _1));
 	gSavedSettings.getControl("NumpadControl")->getSignal()->connect(boost::bind(&handleNumpadControlChanged, _1));
+	gSavedSettings.getControl("StackMinimizedTopToBottom")->getSignal()->connect(boost::bind(&handleStackMinimizedTopToBottom, _1));
+	gSavedSettings.getControl("StackMinimizedRightToLeft")->getSignal()->connect(boost::bind(&handleStackMinimizedRightToLeft, _1));
+	gSavedSettings.getControl("StackScreenWidthFraction")->getSignal()->connect(boost::bind(&handleStackScreenWidthFraction, _1));
 	gSavedSettings.getControl("JoystickAxis0")->getSignal()->connect(boost::bind(&handleJoystickChanged, _1));
 	gSavedSettings.getControl("JoystickAxis1")->getSignal()->connect(boost::bind(&handleJoystickChanged, _1));
 	gSavedSettings.getControl("JoystickAxis2")->getSignal()->connect(boost::bind(&handleJoystickChanged, _1));

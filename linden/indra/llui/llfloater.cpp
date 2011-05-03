@@ -61,6 +61,10 @@ const S32 CLOSE_BOX_FROM_TOP = 1;
 // use this to control "jumping" behavior when Ctrl-Tabbing
 const S32 TABBED_FLOATER_OFFSET = 0;
 
+BOOL LLFloaterView::sStackMinimizedTopToBottom = FALSE;
+BOOL LLFloaterView::sStackMinimizedRightToLeft = FALSE;
+U32 LLFloaterView::sStackScreenWidthFraction = 1;
+
 std::string	LLFloater::sButtonActiveImageNames[BUTTON_COUNT] = 
 {
 	"UIImgBtnCloseActiveUUID",		//BUTTON_CLOSE
@@ -2087,15 +2091,49 @@ void LLFloaterView::focusFrontFloater()
 
 void LLFloaterView::getMinimizePosition(S32 *left, S32 *bottom)
 {
-	S32 col = 0;
+	S32 row, row_start, row_end, row_delta;
+	S32 col, col_start, col_end, col_delta, width;
 	LLRect snap_rect_local = getLocalSnapRect();
-	for(S32 row = snap_rect_local.mBottom;
-		row < snap_rect_local.getHeight() - LLFLOATER_HEADER_SIZE;
-		row += LLFLOATER_HEADER_SIZE ) //loop rows
+
+	if (sStackMinimizedTopToBottom)
 	{
-		for(col = snap_rect_local.mLeft;
-			col < snap_rect_local.getWidth() - MINIMIZED_WIDTH;
-			col += MINIMIZED_WIDTH)
+		row_start = snap_rect_local.getHeight(); // - LLFLOATER_HEADER_SIZE;
+		row_end = snap_rect_local.mBottom;
+		row_delta = -LLFLOATER_HEADER_SIZE;
+	}
+	else
+	{
+		row_start = snap_rect_local.mBottom;
+		row_end = snap_rect_local.getHeight() - LLFLOATER_HEADER_SIZE;
+		row_delta = LLFLOATER_HEADER_SIZE;
+	}
+
+	width = (snap_rect_local.getWidth() - MINIMIZED_WIDTH - snap_rect_local.mLeft) / sStackScreenWidthFraction;
+	if (width < MINIMIZED_WIDTH)
+	{
+		width = MINIMIZED_WIDTH;
+	}
+
+	if (sStackMinimizedRightToLeft)
+	{
+		col_start = snap_rect_local.getWidth() - MINIMIZED_WIDTH;
+		col_end = col_start - width;
+		col_delta = -MINIMIZED_WIDTH;
+	}
+	else
+	{
+		col_start = snap_rect_local.mLeft;
+		col_end = col_start + width;
+		col_delta = MINIMIZED_WIDTH;
+	}
+
+	for (row = row_start;
+		 (row_delta > 0 ? row < row_end : row > row_end);
+		 row += row_delta ) //loop rows
+	{
+		for (col = col_start;
+			 (col_delta > 0 ? col < col_end : col > col_end);
+			 col += col_delta)
 		{
 			bool foundGap = TRUE;
 			for(child_list_const_iter_t child_it = getChildList()->begin();
@@ -2128,10 +2166,9 @@ void LLFloaterView::getMinimizePosition(S32 *left, S32 *bottom)
 		} //done this col
 	}
 
-	// crude - stack'em all at 0,0 when screen is full of minimized
-	// floaters.
-	*left = snap_rect_local.mLeft;
-	*bottom = snap_rect_local.mBottom;
+	// crude - stack'em all there when screen is full of minimized floaters.
+	*left = col_start;
+	*bottom = row_start;
 }
 
 

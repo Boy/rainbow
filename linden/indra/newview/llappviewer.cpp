@@ -377,6 +377,10 @@ static void settings_to_globals()
 	LLCOMBOBOX_HEIGHT	= BTN_HEIGHT - 2;
 	LLCOMBOBOX_WIDTH	= 128;
 
+	LLFloaterView::setStackMinimizedTopToBottom(gSavedSettings.getBOOL("StackMinimizedTopToBottom"));
+	LLFloaterView::setStackMinimizedRightToLeft(gSavedSettings.getBOOL("StackMinimizedRightToLeft"));
+	LLFloaterView::setStackScreenWidthFraction(gSavedSettings.getU32("StackScreenWidthFraction"));
+
 	LLSurface::setTextureSize(gSavedSettings.getU32("RegionTextureSize"));
 	
 	LLImageGL::sGlobalUseAnisotropic	= gSavedSettings.getBOOL("RenderAnisotropic");

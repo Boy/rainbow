@@ -358,12 +358,20 @@ public:
 
 	void setSnapOffsetBottom(S32 offset) { mSnapOffsetBottom = offset; }
 
+	static void		setStackMinimizedTopToBottom(BOOL flag) { sStackMinimizedTopToBottom = flag; }
+	static void		setStackMinimizedRightToLeft(BOOL flag) { sStackMinimizedRightToLeft = flag; }
+	static void		setStackScreenWidthFraction(U32 fraction) { if (fraction > 0) sStackScreenWidthFraction = fraction; }
+
 private:
 	S32				mColumn;
 	S32				mNextLeft;
 	S32				mNextTop;
 	BOOL			mFocusCycleMode;
 	S32				mSnapOffsetBottom;
+
+	static BOOL		sStackMinimizedTopToBottom;
+	static BOOL		sStackMinimizedRightToLeft;
+	static U32		sStackScreenWidthFraction;
 };
 
 // https://wiki.lindenlab.com/mediawiki/index.php?title=LLMultiFloater&oldid=81376

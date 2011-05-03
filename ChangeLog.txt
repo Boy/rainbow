@@ -1,5 +1,16 @@
 2011-05-03 Boy Lane <boy.lane@yahoo.com>
 
+    * Stacking/minimized floaters from CoolVL
+
+    modified:   ChangeLog.txt    
+    modified:   linden/indra/llui/llfloater.cpp
+    modified:   linden/indra/llui/llfloater.h
+    modified:   linden/indra/newview/app_settings/settings.xml
+    modified:   linden/indra/newview/llappviewer.cpp
+    modified:   linden/indra/newview/llviewercontrol.cpp
+
+2011-05-03 Boy Lane <boy.lane@yahoo.com>
+
     * Improved inspection floater from CoolVL
     
     modified:   ChangeLog.txt    
