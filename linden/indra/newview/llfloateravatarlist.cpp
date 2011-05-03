@@ -43,6 +43,7 @@
 #include "llviewerobjectlist.h"
 #include "llmutelist.h"
 #include "llcallbacklist.h"
+#include "llviewermenu.h"
 
 #include <time.h>
 #include <string.h>
@@ -364,10 +365,13 @@ void LLFloaterAvatarList::updateAvatarList()
 {
 	if (sInstance != this) return;
 
+//MK
 	if (gRRenabled && gAgent.mRRInterface.mContainsShownames)
 	{
 		close();
 	}
+//mk
+
 	//llinfos << "radar refresh: updating map" << llendl;
 
 	// Check whether updates are enabled
@@ -554,7 +558,7 @@ void LLFloaterAvatarList::updateAvatarList()
 			}
 		}
 	}
-	
+
 //	llinfos << "radar refresh: done" << llendl;
 
 	expireAvatarList();
@@ -1417,7 +1421,7 @@ void LLFloaterAvatarList::onClickTeleport(void* userdata)
 		LLAvatarListEntry *entry = self->getAvatarEntry(agent_id);
 		if (entry)
 		{
-//			llinfos << "Trying to teleport to " << entry->getName() << " at " << entry->getPosition() << llendl;
+//			llinfos << "Trying to teleport to " << entry->getDisplayName() << " at " << entry->getPosition() << llendl;
 			gAgent.teleportViaLocation(entry->getPosition());
 		}
 	}

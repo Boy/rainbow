@@ -1,7 +1,19 @@
 2011-05-03 Boy Lane <boy.lane@yahoo.com>
 
-    * Fix for LL breaking 1.x viewers with the new jiggly in 2.6.3 and some other minor stuff from CoolVL
+    * Improved inspection floater from CoolVL
     
+    modified:   ChangeLog.txt    
+    modified:   linden/indra/newview/llagent.h
+    modified:   linden/indra/newview/llfloateravatarlist.cpp
+    modified:   linden/indra/newview/llfloaterinspect.cpp
+    modified:   linden/indra/newview/llfloaterinspect.h
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_inspect.xml
+
+2011-05-03 Boy Lane <boy.lane@yahoo.com>
+
+    * Fix for LL breaking 1.x viewers with the new jiggly in 2.6.3 and some other minor stuff from CoolVL
+
+    modified:   ChangeLog.txt    
     modified:   linden/indra/llinventory/llnotecard.cpp
     modified:   linden/indra/llvfs/llvfs.cpp
     modified:   linden/indra/newview/llviewermessage.cpp

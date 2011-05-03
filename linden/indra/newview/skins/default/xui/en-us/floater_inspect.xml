@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <floater can_close="true" can_drag_on_left="false" can_minimize="true" can_resize="true"
-     min_height="300" min_width="400" name="inspect"
+     min_height="300" min_width="750" name="inspect"
      rect_control="FloaterInspectRect" title="Inspect Objects">
 	<scroll_list bottom="30" can_resize="false" column_padding="0" draw_heading="true"
 	     follows="top|right|left|bottom" left="10" multi_select="false"
 	     name="object_list" right="-10"
 	     tool_tip="Select an object from this list to highlight it in-world"
 	     top="-20">
-		<column dynamicwidth="true" label="Object Name" name="object_name" />
-		<column dynamicwidth="true" label="Owner Name" name="owner_name" />
-		<column dynamicwidth="true" label="Creator Name" name="creator_name" />
-		<column label="Creation Date" name="creation_date" width="150" />
+		<column name="object_name" label="Object Name" dynamicwidth="true" tool_tip="Name of the primitive (names in bold are for root primitives)" />
+		<column name="owner_name" label="Owner Name" width="120" tool_tip="Name of the current owner of the primitive" />
+		<column name="last_owner_name" label="Last Owner Name" width="120" tool_tip="Name of the previous owner of the primitive" />
+		<column name="creator_name" label="Creator Name" width="120" tool_tip="Name of the avatar who created the primitive" />
+		<column name="creation_date" label="Creation Date" width="150" tool_tip="Date at which the primitive was created" />
+		<column name="inventory" label="Scripts/Tot" width="85" tool_tip="Number of scripts in the primitive/Total number of inventory items in the primitive" />
 	</scroll_list>
 	<button bottom="5" follows="left|bottom" font="SansSerif" halign="center" height="20"
 	     label="See Owner Profile..." label_selected="" left="10"
@@ -21,4 +23,10 @@
 	     mouse_opaque="true" name="button creator"
 	     tool_tip="See profile of the highlighted object&apos;s original creator"
 	     width="150" />
+	<button name="close" label="Close" font="SansSerif" halign="center" mouse_opaque="true"
+	     bottom="5" right="-10" height="20" width="80" follows="right|bottom"
+	     tool_tip="Close this floater" />
+	<button name="refresh" label="Refresh" font="SansSerif" halign="center" mouse_opaque="true"
+	     bottom="5" right="-100" height="20" width="80" follows="right|bottom"
+	     tool_tip="Force-refreshes the objects data" />
 </floater>

@@ -222,7 +222,7 @@ public:
 	void			heardChat(const LLUUID& id);
 	void			lookAtLastChat();
 	void			lookAtObject(LLUUID avatar_id, ECameraPosition camera_pos);
-	F32			getTypingTime() { return mTypingTimer.getElapsedTimeF32(); }
+	F32				getTypingTime() { return mTypingTimer.getElapsedTimeF32(); }
 
 	void			setAFK();
 	void			clearAFK();
