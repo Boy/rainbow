@@ -507,7 +507,7 @@ void LLToolBar::onClickSit(void*)
 		if (gRRenabled && gAgent.mRRInterface.contains ("standtp"))
 		{
 			gAgent.mRRInterface.mSnappingBackToLastStandingLocation = TRUE;
-//			gAgent.teleportViaLocationLookAt (gAgent.mRRInterface.mLastStandingLocation);
+			gAgent.teleportViaLocationLookAt (gAgent.mRRInterface.mLastStandingLocation);
 			gAgent.mRRInterface.mSnappingBackToLastStandingLocation = FALSE;
 		}
 //mk

@@ -1,3 +1,28 @@
+2011-05-05 Boy Lane <boy.lane@yahoo.com>
+
+    * Update to RLV 2.6 (original RLV from Marine Kelley)
+
+    modified:   ChangeLog.txt    
+    modified:   linden/indra/newview/CMakeLists.txt
+    modified:   linden/indra/newview/RRInterface.cpp
+    modified:   linden/indra/newview/RRInterface.h
+    modified:   linden/indra/newview/app_settings/settings.xml
+    modified:   linden/indra/newview/app_settings/settings_per_account.xml
+    modified:   linden/indra/newview/llagent.cpp
+    modified:   linden/indra/newview/llappviewer.cpp
+    modified:   linden/indra/newview/llchatbar.cpp
+    modified:   linden/indra/newview/llfloaterchat.cpp
+    modified:   linden/indra/newview/llimview.cpp
+    modified:   linden/indra/newview/llnetmap.cpp
+    modified:   linden/indra/newview/lloverlaybar.cpp
+    modified:   linden/indra/newview/llpaneldirfind.cpp
+    modified:   linden/indra/newview/llprefsim.cpp
+    modified:   linden/indra/newview/llstartup.cpp
+    modified:   linden/indra/newview/lltoolbar.cpp
+    modified:   linden/indra/newview/lltoolpie.cpp
+    modified:   linden/indra/newview/llviewermenu.cpp
+    modified:   linden/indra/newview/llviewermessage.cpp
+
 2011-05-03 Boy Lane <boy.lane@yahoo.com>
 
     * Stacking/minimized floaters from CoolVL

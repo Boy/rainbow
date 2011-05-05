@@ -31,6 +31,7 @@
 #include "llfloaterenvsettings.h"
 #include "llfloatermap.h"
 #include "llfloaterpostprocess.h"
+#include "hbfloaterrlv.h"
 #include "llfloatersettingsdebug.h"
 #include "llfloaterwater.h"
 #include "llfloaterwindlight.h"
@@ -616,6 +617,7 @@ BOOL RRInterface::add (LLUUID object_uuid, std::string action, std::string optio
 		// Insert the new behav
 		mSpecialObjectBehaviours.insert(std::pair<std::string, std::string>(object_uuid.asString(), action));
 		refreshCachedVariable(action);
+		HBFloaterRLV::setDirty(NULL);
 
 		// Actions to do AFTER inserting the new behav
 		if (action=="showhovertextall" || action=="showloc" || action=="shownames"
@@ -666,6 +668,7 @@ BOOL RRInterface::remove (LLUUID object_uuid, std::string action, std::string op
 				llinfos << "  => removed. " << llendl;
 			}
 			refreshCachedVariable(action);
+			HBFloaterRLV::setDirty(NULL);
 
 			// Actions to do AFTER removing the behav
 			if (action=="showhovertextall" || action=="showloc" || action=="shownames"
@@ -712,6 +715,7 @@ BOOL RRInterface::clear (LLUUID object_uuid, std::string command)
 			it++;
 		}
 	}
+	HBFloaterRLV::setDirty(NULL);
 	updateAllHudTexts();
 	return TRUE;
 }
@@ -731,6 +735,7 @@ void RRInterface::replace (LLUUID what, LLUUID by)
 	}
 	// and then clear the old UUID
 	clear (what, "");
+	HBFloaterRLV::setDirty(NULL);
 }
 
 
@@ -3478,6 +3483,8 @@ bool RRInterface::canTouch(LLViewerObject* object, LLVector3 pick_intersection /
 
 	if (!root->isHUDAttachment() && contains ("touchall")) return false;
 	if (contains ("touchthis:"+object->getRootEdit()->getID().asString())) return false;
+
+	if (!isAllowed (object->getRootEdit()->getID(), "touchme")) return true; // to check the presence of "touchme" on this object, which means that we can touch it
 
 	if (!canTouchFar (object, pick_intersection)) return false;
 

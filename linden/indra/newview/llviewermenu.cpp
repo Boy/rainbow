@@ -129,6 +129,7 @@
 #include "llfloaterpreference.h"
 #include "llfloaterregioninfo.h"
 #include "llfloaterreporter.h"
+#include "hbfloaterrlv.h"
 #include "llfloaterscriptdebug.h"
 #include "llfloatersettingsdebug.h"
 #include "llfloaterenvsettings.h"
@@ -1408,16 +1409,26 @@ void init_debug_avatar_menu(LLMenuGL* menu)
 #endif
 	menu->createJumpKeys();
 }
+
 //MK
+void handle_restrictions_list(void*)
+{
+	HBFloaterRLV::showInstance();
+}
 void init_restrained_love_menu(LLMenuGL* menu)
 {
 	menu->append(new LLMenuItemCheckGL("Allow Wear", menu_toggle_control, NULL, menu_check_control, (void*) "RestrainedLoveAllowWear"));
 	menu->append(new LLMenuItemCheckGL("Allow Add to/Replace Outfit", menu_toggle_control, NULL, menu_check_control, (void*) "RestrainedLoveAddReplace"));
 	menu->append(new LLMenuItemCheckGL("Forbid give to #RLV/", menu_toggle_control, NULL, menu_check_control, (void*) "RestrainedLoveForbidGiveToRLV"));
 	menu->append(new LLMenuItemCheckGL("Ignore @setenv (after restart)", menu_toggle_control, NULL, menu_check_control, (void*) "RestrainedLoveNoSetEnv"));
+	menu->append(new LLMenuItemCheckGL("Show '...' for muted text when deafened", menu_toggle_control, NULL, menu_check_control, (void*) "RestrainedLoveShowEllipsis"));
+	menu->appendSeparator();
+	menu->append(new LLMenuItemCallGL("Restrictions list", 	&handle_restrictions_list, NULL));
+	menu->appendSeparator();
 	menu->append(new LLMenuItemCheckGL("Debug mode", menu_toggle_control, NULL, menu_check_control, (void*) "RestrainedLoveDebug"));
 }
 //mk
+
 void init_debug_baked_texture_menu(LLMenuGL* menu)
 {
 	menu->append(new LLMenuItemCallGL("Iris", handle_grab_texture, enable_grab_texture, (void*) LLVOAvatar::TEX_EYES_BAKED));
@@ -1689,12 +1700,6 @@ class LLObjectOpen : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-//MK
-		if (gRRenabled && gAgent.mRRInterface.mContainsEdit)
-		{
-			return true;
-		}
-//mk
 		return handle_object_open();
 	}
 };
@@ -1899,21 +1904,14 @@ class LLObjectEdit : public view_listener_t
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
 //MK
-		if (gRRenabled && gAgent.mRRInterface.mContainsEdit)
+		if (gRRenabled)
 		{
-			return false;
-		}
-
-		if (gRRenabled && gAgent.mRRInterface.mContainsFartouch
-			&& LLSelectMgr::getInstance()->getSelection()->getFirstObject()
-//			&& LLSelectMgr::getInstance()->getSelection()->getSelectType() != SELECT_TYPE_HUD
-			&& !LLSelectMgr::getInstance()->getSelection()->getFirstObject()->isHUDAttachment()
-			)
-		{
-//			LLVector3 pos = LLSelectMgr::getInstance()->getSelection()->getFirstObject()->getPositionRegion ();
-			LLVector3 pos = LLToolPie::getInstance()->getPick().mIntersection;
-			pos -= gAgent.getPositionAgent ();
-			if (pos.magVec () >= 1.5)
+			LLViewerObject* obj = LLSelectMgr::getInstance()->getSelection()->getFirstObject();
+			if (obj && !gAgent.mRRInterface.canEdit(obj))
+			{
+				return false;
+			}
+			if (obj && !gAgent.mRRInterface.canTouchFar(obj, LLToolPie::getInstance()->getPick().mIntersection))
 			{
 				return false;
 			}
@@ -2732,7 +2730,7 @@ class LLAvatarGiveCard : public view_listener_t
 			}
 			else
 			{
-				gViewerWindow->alertXml("CantOfferCallingCard", args);
+				gViewerWindow->alertXml("CantOfferCallingCard");
 			}
 		}
 		return true;
@@ -2961,6 +2959,14 @@ class LLSelfStandUp : public view_listener_t
 			}
 //mk
 			gAgent.setControlFlags(AGENT_CONTROL_STAND_UP);
+//MK
+			if (gRRenabled && gAgent.mRRInterface.contains("standtp"))
+			{
+				gAgent.mRRInterface.mSnappingBackToLastStandingLocation = TRUE;
+				gAgent.teleportViaLocationLookAt (gAgent.mRRInterface.mLastStandingLocation);
+				gAgent.mRRInterface.mSnappingBackToLastStandingLocation = FALSE;
+			}
+//mk
 		}
 		else
 		{
@@ -3240,6 +3246,14 @@ bool handle_sit_or_stand()
 	if (sitting_on_selection())
 	{
 		gAgent.setControlFlags(AGENT_CONTROL_STAND_UP);
+//MK
+		if (gRRenabled && gAgent.mRRInterface.contains("standtp"))
+		{
+			gAgent.mRRInterface.mSnappingBackToLastStandingLocation = TRUE;
+			gAgent.teleportViaLocationLookAt (gAgent.mRRInterface.mLastStandingLocation);
+			gAgent.mRRInterface.mSnappingBackToLastStandingLocation = FALSE;
+		}
+//mk
 		return true;
 	}
 
@@ -3248,18 +3262,26 @@ bool handle_sit_or_stand()
 	if (object && object->getPCode() == LL_PCODE_VOLUME)
 	{
 //MK
-		if (gRRenabled && gAgent.mRRInterface.contains ("sit"))
+		if (gRRenabled)
 		{
-			return true;
-		}
-		if (gRRenabled && gAgent.mRRInterface.contains ("sittp")
-			|| gAgent.mRRInterface.mContainsFartouch)
-		{
-			LLVector3 pos = object->getPositionRegion() + pick.mObjectOffset;
-			pos -= gAgent.getPositionAgent ();
-			if (pos.magVec () >= 1.5)
+			if (gAgent.mRRInterface.contains("sit"))
 			{
 				return true;
+			}
+			if (gAgent.mRRInterface.contains("sittp") || gAgent.mRRInterface.mContainsFartouch)
+			{
+				LLVector3 pos = object->getPositionRegion() + pick.mObjectOffset;
+				pos -= gAgent.getPositionAgent ();
+				if (pos.magVec () >= 1.5)
+				{
+					return true;
+				}
+			}
+			LLVOAvatar* avatarp = gAgent.getAvatarObject();
+			if (avatarp && !avatarp->mIsSitting)
+			{
+				// We are now standing, and we want to sit down => store our current location so that we can snap back here when we stand up, if under @standtp
+				gAgent.mRRInterface.mLastStandingLocation = LLVector3d(gAgent.getPositionGlobal ());
 			}
 		}
 //mk

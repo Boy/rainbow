@@ -936,8 +936,7 @@ bool LLAppViewer::mainLoop()
 //MK
 				// Do some RLV maintenance (garbage collector etc)
 				if (gRRenabled && LLStartUp::getStartupState() == STATE_STARTED
-					&& !gViewerWindow->getShowProgress()
-					&& !gFocusMgr.focusLocked())
+					&& !gViewerWindow->getShowProgress())
 				{
 					// if RLV share inventory has not been fetched yet, fetch it now
 					gAgent.mRRInterface.fetchInventory ();

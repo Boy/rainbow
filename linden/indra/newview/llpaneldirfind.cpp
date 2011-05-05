@@ -256,7 +256,7 @@ void LLPanelDirFind::navigateToDefaultPage()
 	if (!gRRenabled || !gAgent.mRRInterface.mContainsShowloc)
 	{
 //mk
-	llinfos << "default url: "  << start_url << llendl;
+		llinfos << "default url: "  << start_url << llendl;
 //MK
 	}
 //mk
@@ -314,11 +314,11 @@ std::string LLPanelDirFind::buildSearchURL(const std::string& search_text, const
 	url += getSearchURLSuffix(inc_pg, inc_mature, inc_adult);
 //MK
 	if (!gRRenabled || !gAgent.mRRInterface.mContainsShowloc)
-		{
+	{
 //mk
-	llinfos << "search url " << url << llendl;
+		llinfos << "search url " << url << llendl;
 //MK
-		}
+	}
 //mk
 	return url;
 }

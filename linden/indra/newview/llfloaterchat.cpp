@@ -417,6 +417,13 @@ void LLFloaterChat::addChat(const LLChat& chat,
 			  BOOL from_instant_message, 
 			  BOOL local_agent)
 {
+//MK
+	if (gRRenabled && chat.mText == "")
+	{
+		// In case crunchEmote() returned an empty string, just abort.
+		return;
+	}
+//mk
 	LLColor4 text_color = get_text_color(chat);
 
 	BOOL invisible_script_debug_chat = 

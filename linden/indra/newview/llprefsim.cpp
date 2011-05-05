@@ -260,6 +260,7 @@ void LLPrefsIMImpl::setPersonalInfo(const std::string& visibility, bool im_via_e
 	childEnable("log_chat_timestamp");
 	childEnable("log_chat_IM");
 	childEnable("log_date_timestamp");
+	childEnable("logfile_name_datestamp");
 	
 	//RN: get wide string so replace char can work (requires fixed-width encoding)
 	LLWString busy_response = utf8str_to_wstring( gSavedPerAccountSettings.getString("BusyModeResponse") );

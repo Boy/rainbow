@@ -1539,7 +1539,7 @@ void process_improved_im(LLMessageSystem *msg, void **user_data)
 			// return the version message
 			std::string my_name;
 			gAgent.buildFullname(my_name);
-			std::string response = gAgent.mRRInterface.getVersion2 ();
+			std::string response = gAgent.mRRInterface.getVersion ();
 			pack_instant_message(
 				gMessageSystem,
 				gAgent.getID(),
@@ -1638,7 +1638,7 @@ void process_improved_im(LLMessageSystem *msg, void **user_data)
 				// tell the sender the avatar could not read them
 				std::string my_name;
 				gAgent.buildFullname(my_name);
-				my_name = my_name+" using viewer "+gAgent.mRRInterface.getVersion2 ();
+				my_name = my_name+" using viewer "+gAgent.mRRInterface.getVersion ();
 				std::string response = "The Resident you messaged is prevented from reading your instant messages at the moment, please try again later.";
 				pack_instant_message(
 					gMessageSystem,
@@ -5447,16 +5447,18 @@ void handle_lure_callback(S32 option, const std::string& text, void* userdata)
 		msg->addUUIDFast(_PREHASH_SessionID, gAgent.getSessionID());
 		msg->nextBlockFast(_PREHASH_Info);
 		msg->addU8Fast(_PREHASH_LureType, (U8)0); // sim will fill this in.
-//MK
-		if (gRRenabled && gAgent.mRRInterface.containsWithoutException ("sendim"))
-		{
-			msg->addStringFast(_PREHASH_Message, std::string("(Hidden)"));
-		}
-		else
-//mk
-			msg->addStringFast(_PREHASH_Message, text);
+
 		for(LLDynamicArray<LLUUID>::iterator itr = invitees->begin(); itr != invitees->end(); ++itr)
 		{
+//MK
+			if (gRRenabled && (gAgent.mRRInterface.containsWithoutException("sendim")
+				|| gAgent.mRRInterface.containsSubstr("sendimto:" + (*itr).asString())))
+			{
+				msg->addStringFast(_PREHASH_Message, std::string("(Hidden)"));
+			}
+			else
+//mk
+			msg->addStringFast(_PREHASH_Message, text);
 			msg->nextBlockFast(_PREHASH_TargetData);
 			msg->addUUIDFast(_PREHASH_TargetID, *itr);
 		}

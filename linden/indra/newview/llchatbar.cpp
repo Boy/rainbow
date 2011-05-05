@@ -857,7 +857,7 @@ class LLChatHandler : public LLCommandHandler
 {
 public:
 	// not allowed from outside the app
-	LLChatHandler() : LLCommandHandler("chat", false) { }
+	LLChatHandler() : LLCommandHandler("chat", true) { }
 
     // Your code here
 	bool handle(const LLSD& tokens, const LLSD& query_map,

@@ -323,16 +323,29 @@
         <key>Value</key>
             <integer>1</integer>
         </map>
+    <key>LogFileNamewithDate</key>
+	<map>
+	<key>Comment</key>
+	    <string>Add Date Stamp to chat and IM Logs with format chat-YYYY-MM-DD and 'IM file name'-YYYY-MM. To view old logs goto ..\Second Life\[login name]</string>
+	<key>Persist</key>
+	    <integer>1</integer>
+	<key>Type</key>
+	    <string>Boolean</string>
+	<key>Value</key>
+	    <integer>0</integer>
+    </map>
     <key>RestrainedLoveTPOK</key>
-    	<map>
+        <map>
         <key>Comment</key>
             <string>Set when not restricted for TP</string>
         <key>Persist</key>
+            <integer>1</integer>
+        <key>HideFromEditor</key>
             <integer>1</integer>
         <key>Type</key>
             <string>Boolean</string>
         <key>Value</key>
             <integer>0</integer>
-        </map>
+        </map>	
     </map>
 </llsd>

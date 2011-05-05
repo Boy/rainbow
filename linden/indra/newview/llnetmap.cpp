@@ -803,7 +803,7 @@ BOOL LLNetMap::handleDoubleClick( S32 x, S32 y, MASK mask )
 //mk
 		)
 	{
-		gAgent.teleportViaLocation(pos_global);
+		gAgent.teleportViaLocationLookAt(pos_global);
 	}
 	else 
 	{

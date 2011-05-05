@@ -327,6 +327,14 @@ void LLOverlayBar::onClickStandUp(void*)
 //mk
 	LLSelectMgr::getInstance()->deselectAllForStandingUp();
 	gAgent.setControlFlags(AGENT_CONTROL_STAND_UP);
+//MK
+	if (gRRenabled && gAgent.mRRInterface.contains ("standtp"))
+	{
+		gAgent.mRRInterface.mSnappingBackToLastStandingLocation = TRUE;
+		gAgent.teleportViaLocationLookAt (gAgent.mRRInterface.mLastStandingLocation);
+		gAgent.mRRInterface.mSnappingBackToLastStandingLocation = FALSE;
+	}
+//mk
 }
 
 ////////////////////////////////////////////////////////////////////////////////

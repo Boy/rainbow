@@ -3836,7 +3836,7 @@ void update_dialog_callback(S32 option, void *userdata)
 #elif LL_DARWIN
 	// if a sim name was passed in via command line parameter (typically through a SLURL)
 //MK
-	if (!RRenabled && LLURLSimString::sInstance.mSimString.length())
+	if (!gRRenabled && LLURLSimString::sInstance.mSimString.length())
 //mk
 	{
 		// record the location to start at next time

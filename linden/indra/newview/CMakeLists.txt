@@ -64,6 +64,7 @@ set(viewer_SOURCE_FILES
     aoremotectrl.cpp
     emeraldboobutils.cpp
     floaterao.cpp
+    hbfloaterrlv.cpp
     jcfloaterareasearch.cpp
     llagent.cpp
     llagentaccess.cpp
@@ -476,6 +477,7 @@ set(viewer_HEADER_FILES
     aoremotectrl.h
     emeraldboobutils.h
     floaterao.h
+    hbfloaterrlv.h
     jcfloaterareasearch.h
     llagent.h
     llagentaccess.h

@@ -4250,6 +4250,7 @@ void LLAgent::changeCameraToCustomizeAvatar(BOOL avatar_animate, BOOL camera_ani
 	if (gRRenabled && gAgent.mRRInterface.contains ("standtp"))
 	{
 		gAgent.mRRInterface.mSnappingBackToLastStandingLocation = TRUE;
+		gAgent.teleportViaLocationLookAt (gAgent.mRRInterface.mLastStandingLocation);
 		gAgent.mRRInterface.mSnappingBackToLastStandingLocation = FALSE;
 	}
 //mk
@@ -6180,7 +6181,7 @@ void LLAgent::teleportViaLandmark(const LLUUID& landmark_asset_id)
 //MK
 	LLVOAvatar* avatar = gAgent.getAvatarObject();
 	if (gRRenabled && (LLStartUp::getStartupState() != STATE_STARTED || gViewerWindow->getShowProgress() 
-					  || gFocusMgr.focusLocked() || gAgent.mRRInterface.contains ("tplm") 
+					  || gAgent.mRRInterface.contains ("tplm") 
 					  || (gAgent.mRRInterface.mContainsUnsit && avatar && avatar->mIsSitting)))
 	{
 		return;
@@ -6262,7 +6263,7 @@ void LLAgent::teleportViaLocation(const LLVector3d& pos_global)
 //MK
 	LLVOAvatar* avatar = gAgent.getAvatarObject();
 	if (gRRenabled && (LLStartUp::getStartupState() != STATE_STARTED || gViewerWindow->getShowProgress() 
-					  || gFocusMgr.focusLocked() || gAgent.mRRInterface.contains ("tploc") 
+					  || gAgent.mRRInterface.contains ("tploc") 
 					  || (gAgent.mRRInterface.mContainsUnsit && avatar && avatar->mIsSitting)))
 	{
 		return;
@@ -6341,6 +6342,25 @@ void LLAgent::stopCurrentAnimations()
 // Teleport to global position, but keep facing in the same direction 
 void LLAgent::teleportViaLocationLookAt(const LLVector3d& pos_global)
 {
+//MK
+	if (gRRenabled)
+	{
+		// Do not perform these checks if we are automatically snapping back to the last standing location
+		if (!gAgent.mRRInterface.mSnappingBackToLastStandingLocation)
+		{
+			LLVOAvatar* avatarp = gAgent.getAvatarObject();
+			// Can't TP if we can't sittp, unsit, tp to a location or when the
+			// forward control is taken (and not passed), and something is locked
+			if (gAgent.mRRInterface.contains ("tploc") 
+				|| (gAgent.forwardGrabbed() && gAgent.mRRInterface.mContainsDetach)
+				|| gAgent.mRRInterface.contains ("sittp") 
+				|| (gAgent.mRRInterface.mContainsUnsit && avatarp && avatarp->mIsSitting))
+			{
+				return;
+			}
+		}
+	}
+//mk
 	mbTeleportKeepsLookAt = true;
 	setFocusOnAvatar(FALSE, ANIMATE);	// detach camera form avatar, so it keeps direction
 	U64 region_handle = to_region_handle(pos_global);

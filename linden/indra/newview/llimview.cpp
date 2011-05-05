@@ -643,7 +643,13 @@ LLUUID LLIMMgr::addSession(
 	{
 		LLDynamicArray<LLUUID> ids;
 		ids.put(other_participant_id);
-
+//MK
+		if (gRRenabled && (gAgent.mRRInterface.containsWithoutException("startim", other_participant_id.asString())
+			|| gAgent.mRRInterface.contains ("startimto:"+other_participant_id.asString())))
+		{
+			return LLUUID::null;
+		}
+//mk
 		floater = createFloater(
 			session_id,
 			other_participant_id,

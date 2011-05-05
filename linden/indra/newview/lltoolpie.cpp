@@ -678,9 +678,7 @@ BOOL LLToolPie::handleDoubleClick(S32 x, S32 y, MASK mask)
 	}
 	else if (gSavedSettings.getBOOL("DoubleClickTeleport")
 //MK
-#ifdef LL_RRINTERFACE_H
 		&& !(gRRenabled && gAgent.mRRInterface.contains ("tploc"))
-#endif
 //mk
 			)
 	{
@@ -695,7 +693,7 @@ BOOL LLToolPie::handleDoubleClick(S32 x, S32 y, MASK mask)
 		{
 			LLVector3d pos = mPick.mPosGlobal;
 			pos.mdV[VZ] += gAgent.getAvatarObject()->getPelvisToFoot();
-			gAgent.teleportViaLocation(pos);
+			gAgent.teleportViaLocationLookAt(pos);
 			return TRUE;
 		}
 	}
