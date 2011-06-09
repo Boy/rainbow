@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <floater can_close="true" can_drag_on_left="false" can_minimize="false"
-     can_resize="false" height="215" name="settings_debug"
-     title="Debug Settings" width="350">
-	<combo_box allow_text_entry="true" bottom="-50" follows="top|left" font="SansSerifSmall"
+     can_resize="false" height="235" name="settings_debug"
+     title="Debug Settings" rect_control="FloaterDebugSettingsRect" width="350">
+	<text name="filter" type="string" length="1" font="SansSerif" halign="left" valign="center"
+	     bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+	     bottom="-48" drop_shadow_visible="true" enabled="true"
+	     height="20" left="15" width="50" follows="left|top">
+		Filter:
+	</text>
+	<search_editor name="control_search" label="Type the search string here" visible="true"
+	     bottom_delta="3" left="65" height="20" width="270" />
+	<combo_box allow_text_entry="false" bottom_delta="-28" follows="top|left" font="SansSerifSmall"
 	     height="20" left="15" max_chars="255" name="settings_combo" />
-	<text_editor bottom_delta="-75" enabled="false" height="60" width="320" hide_scrollbar="true"
+	<text_editor bottom_delta="-68" enabled="false" height="60" width="320" hide_scrollbar="true"
 	     name="comment_text" word_wrap="true" />
 	<combo_box bottom_delta="-30" follows="top|left" font="SansSerifSmall" height="20"
 	     left="15" name="boolean_combo" visible="false">
@@ -15,7 +23,7 @@
 			FALSE
 		</combo_item>
 	</combo_box>
-	<line_editor bottom_delta="0" height="20" name="val_text" visible="false" width="300" />
+	<line_editor bottom_delta="0" height="20" name="val_text" max_length="1024" visible="false" width="320" />
 	<color_swatch bottom="30" can_apply_immediately="true" height="55" label="Color"
 	     name="color_swatch" visible="true" width="37" />
 	<spinner bottom_delta="25" height="20" label="x" label_width="40" max_val="10000000"

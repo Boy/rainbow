@@ -34,7 +34,7 @@
 #include "llfloater.h"
 #include "lluictrlfactory.h"
 #include "llfirstuse.h"
-#include "llcombobox.h"
+#include "lllineeditor.h"
 #include "llspinctrl.h"
 #include "llcolorswatch.h"
 #include "llviewercontrol.h"
@@ -56,7 +56,7 @@ LLFloaterSettingsDebug::~LLFloaterSettingsDebug()
 
 BOOL LLFloaterSettingsDebug::postBuild()
 {
-	LLComboBox* settings_combo = getChild<LLComboBox>("settings_combo");
+	mComboNames = getChild<LLComboBox>("settings_combo");
 
 	struct f : public LLControlGroup::ApplyFunctor
 	{
@@ -64,18 +64,21 @@ BOOL LLFloaterSettingsDebug::postBuild()
 		f(LLComboBox* c) : combo(c) {}
 		virtual void apply(const std::string& name, LLControlVariable* control)
 		{
-			combo->add(name, (void*)control);
+			if (!control->isHiddenFromSettingsEditor())
+			{
+				combo->add(name, (void*)control);
+			}
 		}
-	} func(settings_combo);
+	} func(mComboNames);
 
 	gSavedSettings.applyToAll(&func);
 	gSavedPerAccountSettings.applyToAll(&func);
 	gColors.applyToAll(&func);
 
-	settings_combo->sortByName();
-	settings_combo->setCommitCallback(onSettingSelect);
-	settings_combo->setCallbackUserData(this);
-	settings_combo->updateSelection();
+	mComboNames->sortByName();
+	mComboNames->setCommitCallback(onSettingSelect);
+	mComboNames->setCallbackUserData(this);
+	mComboNames->selectFirstItem();
 
 	childSetCommitCallback("val_spinner_1", onCommitSettings);
 	childSetUserData("val_spinner_1", this);
@@ -93,14 +96,19 @@ BOOL LLFloaterSettingsDebug::postBuild()
 	childSetUserData("color_swatch", this);
 	childSetAction("default_btn", onClickDefault, this);
 	mComment = getChild<LLTextEditor>("comment_text");
+
+	getChild<LLSearchEditor>("control_search")->setSearchCallback(onSearchEdit, this);
+
 	return TRUE;
 }
 
 void LLFloaterSettingsDebug::draw()
 {
-	LLComboBox* settings_combo = getChild<LLComboBox>("settings_combo");
-	LLControlVariable* controlp = (LLControlVariable*)settings_combo->getCurrentUserdata();
-	updateControl(controlp);
+	if (mComboNames)
+	{
+		LLControlVariable* controlp = (LLControlVariable*)mComboNames->getCurrentUserdata();
+		updateControl(controlp);
+	}
 
 	LLFloater::draw();
 }
@@ -129,11 +137,54 @@ void LLFloaterSettingsDebug::onSettingSelect(LLUICtrl* ctrl, void* user_data)
 }
 
 //static
+void LLFloaterSettingsDebug::onSearchEdit(const std::string& search_string, void* user_data)
+{
+	static std::string filter;
+
+	LLFloaterSettingsDebug* self = (LLFloaterSettingsDebug*)user_data;
+	if (!self || !self->mComboNames)
+	{
+		return;
+	}
+
+	filter = search_string;
+	LLStringUtil::trim(filter);
+	LLStringUtil::toLower(filter);
+
+	struct f : public LLControlGroup::ApplyFunctor
+	{
+		LLComboBox* combo;
+		f(LLComboBox* c) : combo(c) {}
+		virtual void apply(const std::string& name, LLControlVariable* control)
+		{
+			if (!control->isHiddenFromSettingsEditor())
+			{
+				std::string setting_name = name;
+				LLStringUtil::toLower(setting_name);
+				if (filter.empty() || setting_name.find(filter) != std::string::npos)
+				{
+					combo->add(name, (void*)control);
+				}
+			}
+		}
+	} func(self->mComboNames);
+
+	self->mComboNames->removeall();
+
+	gSavedSettings.applyToAll(&func);
+	gSavedPerAccountSettings.applyToAll(&func);
+	gColors.applyToAll(&func);
+
+	self->mComboNames->sortByName();
+	self->mComboNames->selectFirstItem();
+}
+
+//static
 void LLFloaterSettingsDebug::onCommitSettings(LLUICtrl* ctrl, void* user_data)
 {
 	LLFloaterSettingsDebug* floaterp = (LLFloaterSettingsDebug*)user_data;
 
-	LLComboBox* settings_combo = floaterp->getChild<LLComboBox>("settings_combo");
+	LLComboBox* settings_combo = floaterp->mComboNames;
 	LLControlVariable* controlp = (LLControlVariable*)settings_combo->getCurrentUserdata();
 
 	LLVector3 vector;
@@ -312,7 +363,7 @@ void LLFloaterSettingsDebug::onClickDefault(void* user_data)
 //mk
 
 	LLFloaterSettingsDebug* floaterp = (LLFloaterSettingsDebug*)user_data;
-	LLComboBox* settings_combo = floaterp->getChild<LLComboBox>("settings_combo");
+	LLComboBox* settings_combo = floaterp->mComboNames;
 	LLControlVariable* controlp = (LLControlVariable*)settings_combo->getCurrentUserdata();
 
 	if (controlp)

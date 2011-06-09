@@ -3199,6 +3199,22 @@
         <integer>0</integer>
       </array>
     </map>
+    <key>FloaterDebugSettingsRect</key>
+    <map>
+      <key>Comment</key>
+      <string>Rectangle for Debug Settings floater</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Rect</string>
+      <key>Value</key>
+      <array>
+        <integer>0</integer>
+        <integer>0</integer>
+        <integer>0</integer>
+        <integer>0</integer>
+      </array>
+    </map>
     <key>FloaterEnvRect</key>
     <map>
       <key>Comment</key>
@@ -3429,7 +3445,7 @@
     <key>FloaterLandmarkRect</key>
     <map>
       <key>Comment</key>
-      <string>Rectangle for landmark picker</string>
+      <string>Rectangle for landmark floater</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
@@ -3437,8 +3453,8 @@
       <key>Value</key>
       <array>
         <integer>0</integer>
-        <integer>290</integer>
-        <integer>310</integer>
+        <integer>440</integer>
+        <integer>495</integer>
         <integer>0</integer>
       </array>
     </map>

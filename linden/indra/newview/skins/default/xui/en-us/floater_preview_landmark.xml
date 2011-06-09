@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater name="landmark_preview" rect_control="FloaterLandmarkRect"
+ can_close="true" can_drag_on_left="false" can_minimize="true"
+ can_resize="false" mouse_opaque="true"
+ width="440" height="495" min_width="440" min_height="495" >
+	<panel name="place_details_panel" follows="bottom|left"
+	 width="440" height="475" left="0" bottom="0" />
+	<button name="Discard btn" label="Discard" follows="bottom|left"
+	 width="100" height="20" left="320" bottom="7" />
+</floater>

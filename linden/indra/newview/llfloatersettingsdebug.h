@@ -35,6 +35,7 @@
 #include "llcontrol.h"
 #include "llfloater.h"
 #include "lltexteditor.h"
+#include "llcombobox.h"
 
 class LLFloaterSettingsDebug : public LLFloater
 {
@@ -48,13 +49,16 @@ public:
 	void updateControl(LLControlVariable* control);
 
 	static void show(void*);
+
+private:
 	static void onSettingSelect(LLUICtrl* ctrl, void* user_data);
+	static void onSearchEdit(const std::string& search_string, void* user_data);
 	static void onCommitSettings(LLUICtrl* ctrl, void* user_data);
 	static void onClickDefault(void* user_data);
 
-protected:
 	static LLFloaterSettingsDebug* sInstance;
 	LLTextEditor* mComment;
+	LLComboBox* mComboNames;
 };
 
 #endif //LLFLOATERDEBUGSETTINGS_H

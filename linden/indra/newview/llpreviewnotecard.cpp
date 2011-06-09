@@ -34,6 +34,7 @@
 #include "llpreviewnotecard.h"
 
 #include "llinventory.h"
+#include "llmenugl.h"
 
 #include "llagent.h"
 #include "llassetuploadresponders.h"

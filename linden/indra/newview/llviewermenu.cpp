@@ -707,6 +707,12 @@ void init_menus()
 	show_debug_menus();
 
 	gLoginMenuBarView = (LLMenuBarGL*)LLUICtrlFactory::getInstance()->buildMenu("menu_login.xml", gMenuHolder);
+	// Add the debug settings item to the login menu bar
+	menu = new LLMenuGL(CLIENT_MENU_NAME);
+	menu->append(new LLMenuItemCallGL("Debug Settings...", LLFloaterSettingsDebug::show, NULL, NULL));
+	gLoginMenuBarView->appendMenu(menu);
+	menu->updateParent(LLMenuGL::sMenuContainer);
+
 	LLRect menuBarRect = gLoginMenuBarView->getRect();
 	gLoginMenuBarView->setRect(LLRect(menuBarRect.mLeft, menuBarRect.mTop, gViewerWindow->getRootView()->getRect().getWidth() - menuBarRect.mLeft,  menuBarRect.mBottom));
 

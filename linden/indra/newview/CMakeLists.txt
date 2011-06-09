@@ -170,7 +170,6 @@ set(viewer_SOURCE_FILES
     llfloaterlagmeter.cpp
     llfloaterland.cpp
     llfloaterlandholdings.cpp
-    llfloaterlandmark.cpp
     llfloatermap.cpp
     llfloatermediafilter.cpp
     llfloatermemleak.cpp
@@ -585,7 +584,6 @@ set(viewer_HEADER_FILES
     llfloaterlagmeter.h
     llfloaterland.h
     llfloaterlandholdings.h
-    llfloaterlandmark.h
     llfloatermap.h
     llfloatermediafilter.h
     llfloatermemleak.h

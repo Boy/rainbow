@@ -76,10 +76,7 @@ LLPreviewLandmark::LLPreviewLandmark(const std::string& name,
 									 BOOL show_keep_discard,
 									 LLViewerInventoryItem* inv_item)
 :	LLPreview(name,
-			  LLRect(rect.mLeft, 
-					rect.mTop, 
-					(show_keep_discard ? rect.mRight+70 : rect.mRight), 
-					rect.mBottom), 
+			  LLRect(rect.mLeft, rect.mTop, rect.mRight, rect.mBottom), 
 			  title, 
 			  item_uuid, 
 			  LLUUID::null, // object id
@@ -90,14 +87,14 @@ LLPreviewLandmark::LLPreviewLandmark(const std::string& name,
 {
 	
 	mFactoryMap["place_details_panel"] = LLCallbackMap(LLPreviewLandmark::createPlaceDetail, this);
+	LLUICtrlFactory::getInstance()->buildFloater(this, "floater_preview_landmark.xml", &getFactoryMap());
 	if (show_keep_discard)
 	{
-		LLUICtrlFactory::getInstance()->buildFloater(this, "floater_preview_new_landmark.xml", &getFactoryMap());
-		childSetAction("Discard btn",onDiscardBtn,this);
+		childSetAction("Discard btn", onDiscardBtn, this);
 	}
 	else
 	{
-		LLUICtrlFactory::getInstance()->buildFloater(this, "floater_preview_existing_landmark.xml", &getFactoryMap());
+		childSetVisible("Discard btn", false);
 	}
 
 	/*

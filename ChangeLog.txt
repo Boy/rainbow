@@ -1,5 +1,26 @@
 2011-06-09 Boy Lane <boy.lane@yahoo.com>
 
+    * BetterDebugSettings, BetterLandmarkFloater, BetterNotecardFloater from CoolVL
+    
+    deleted:    linden/indra/newview/llfloaterlandmark.cpp
+    deleted:    linden/indra/newview/llfloaterlandmark.h
+    deleted:    linden/indra/newview/skins/default/xui/en-us/floater_landmark_ctrl.xml
+    deleted:    linden/indra/newview/skins/default/xui/en-us/floater_preview_existing_landmark.xml
+    modified:   ChangeLog.txt
+    modified:   linden/indra/llui/lltexteditor.cpp
+    modified:   linden/indra/newview/CMakeLists.txt
+    modified:   linden/indra/newview/app_settings/settings.xml
+    modified:   linden/indra/newview/llfloatersettingsdebug.cpp
+    modified:   linden/indra/newview/llfloatersettingsdebug.h
+    modified:   linden/indra/newview/llpreviewlandmark.cpp
+    modified:   linden/indra/newview/llpreviewnotecard.cpp
+    modified:   linden/indra/newview/llpreviewscript.cpp
+    modified:   linden/indra/newview/llviewermenu.cpp
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_settings_debug.xml
+    new file:   linden/indra/newview/skins/default/xui/en-us/floater_preview_landmark.xml
+
+2011-06-09 Boy Lane <boy.lane@yahoo.com>
+
     * BetterBeacons and fix for grids.xml (local grids)
 
     modified:   ChangeLog.txt
