@@ -1108,7 +1108,6 @@ set(viewer_XUI_FILES
     skins/default/xui/en-us/floater_joystick.xml
     skins/default/xui/en-us/floater_lagmeter.xml
     skins/default/xui/en-us/floater_land_holdings.xml
-    skins/default/xui/en-us/floater_landmark_ctrl.xml
     skins/default/xui/en-us/floater_live_lsleditor.xml
     skins/default/xui/en-us/floater_lsl_guide.xml
     skins/default/xui/en-us/floater_media_browser.xml
@@ -1128,7 +1127,6 @@ set(viewer_XUI_FILES
     skins/default/xui/en-us/floater_preview_animation.xml
     skins/default/xui/en-us/floater_preview_classified.xml
     skins/default/xui/en-us/floater_preview_event.xml
-    skins/default/xui/en-us/floater_preview_existing_landmark.xml
     skins/default/xui/en-us/floater_preview_gesture.xml
     skins/default/xui/en-us/floater_preview_notecard_keep_discard.xml
     skins/default/xui/en-us/floater_preview_notecard.xml
