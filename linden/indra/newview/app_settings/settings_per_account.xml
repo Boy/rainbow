@@ -333,7 +333,7 @@
 	    <string>Boolean</string>
 	<key>Value</key>
 	    <integer>0</integer>
-    </map>
+    	</map>
     <key>RestrainedLoveTPOK</key>
         <map>
         <key>Comment</key>

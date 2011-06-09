@@ -34,6 +34,7 @@
 #include "llfloaterbeacons.h"
 #include "llviewercontrol.h"
 #include "lluictrlfactory.h"
+#include "llradiogroup.h"
 #include "llcheckboxctrl.h"
 #include "pipeline.h"
 
@@ -57,6 +58,9 @@ LLFloaterBeacons::LLFloaterBeacons(const LLSD& seed)
 	LLPipeline::setRenderParticleBeacons(     gSavedSettings.getBOOL("particlesbeacon"));
 	LLPipeline::setRenderHighlights(          gSavedSettings.getBOOL("renderhighlights"));
 	LLPipeline::setRenderBeacons(             gSavedSettings.getBOOL("renderbeacons"));
+	LLPipeline::setRenderInvisibleSoundBeacons(gSavedSettings.getBOOL("invisiblesoundsbeacon"));
+	LLPipeline::setRenderAttachments(gSavedSettings.getBOOL("renderattachment"));
+	LLPipeline::setRenderByOwner(gSavedSettings.getU32("renderbyowner"));
 }
 
 BOOL LLFloaterBeacons::postBuild()
@@ -68,11 +72,13 @@ BOOL LLFloaterBeacons::postBuild()
 	childSetCommitCallback("particles",       onClickUICheck, this);
 	childSetCommitCallback("highlights",      onClickUICheck, this);
 	childSetCommitCallback("beacons",         onClickUICheck, this);
+	childSetCommitCallback("invisiblesounds", onClickUICheck, this);
+	childSetCommitCallback("attachments",     onClickUICheck, this);
+	childSetCommitCallback("owner",           onClickUICheck, this);
 	return TRUE;
 }
 
 // Needed to make the floater visibility toggle the beacons.
-// Too bad we can't just add control_name="BeaconAlwaysOn" to the XML.
 void LLFloaterBeacons::open()
 {
 //MK
@@ -82,14 +88,14 @@ void LLFloaterBeacons::open()
 	}
 //mk
 	LLFloater::open();
-	gSavedSettings.setBOOL( "BeaconAlwaysOn", TRUE);
+	LLPipeline::sRenderBeaconsFloaterOpen = TRUE;
 }
 void LLFloaterBeacons::close(bool app_quitting)
 {
 	LLFloater::close(app_quitting);
 	if(!app_quitting)
 	{
-		gSavedSettings.setBOOL( "BeaconAlwaysOn", FALSE);
+		LLPipeline::sRenderBeaconsFloaterOpen = FALSE;
 	}
 }
 
@@ -145,7 +151,19 @@ void LLFloaterBeacons::onClickUICheck(LLUICtrl *ctrl, void* data)
 		}
 	}
 	else if(name == "physical")       LLPipeline::setRenderPhysicalBeacons(check->get());
-	else if(name == "sounds")         LLPipeline::setRenderSoundBeacons(check->get());
+	else if (name == "sounds")
+	{
+		LLPipeline::setRenderSoundBeacons(check->get());
+		if (!LLPipeline::getRenderSoundBeacons(NULL))
+		{
+			if (LLPipeline::getRenderInvisibleSoundBeacons(NULL))
+			{
+				LLPipeline::setRenderInvisibleSoundBeacons(FALSE);
+				gSavedSettings.setBOOL("invisiblesoundsbeacon", FALSE);
+				view->getChild<LLCheckBoxCtrl>("invisiblesounds")->setControlValue(LLSD(FALSE));
+			}
+		}
+	}
 	else if(name == "particles")      LLPipeline::setRenderParticleBeacons(check->get());
 	else if(name == "highlights")
 	{
@@ -163,14 +181,42 @@ void LLFloaterBeacons::onClickUICheck(LLUICtrl *ctrl, void* data)
 	else if(name == "beacons")
 	{
 		LLPipeline::toggleRenderBeacons(NULL);
-		// Don't allow both to be OFF at the same time. Toggle the other one on if both now off.
-		if (
-			!LLPipeline::getRenderBeacons(NULL) &&
-			!LLPipeline::getRenderHighlights(NULL) )
+		if (!LLPipeline::getRenderBeacons(NULL))
 		{
-			LLPipeline::setRenderHighlights(TRUE);
-			view->getChild<LLCheckBoxCtrl>("highlights")->setControlValue(LLSD(TRUE));
-			view->getChild<LLCheckBoxCtrl>("beacons")->setControlValue(LLSD(FALSE)); // just to be sure it's in sync with llpipeline
+			// Don't allow both to be OFF at the same time. Toggle the other one on if both now off.
+			if (!LLPipeline::getRenderHighlights(NULL))
+			{
+				LLPipeline::setRenderHighlights(TRUE);
+				view->getChild<LLCheckBoxCtrl>("highlights")->setControlValue(LLSD(TRUE));
+				view->getChild<LLCheckBoxCtrl>("beacons")->setControlValue(LLSD(FALSE)); // just to be sure it's in sync with llpipeline
+			}
+			if (LLPipeline::getRenderInvisibleSoundBeacons(NULL))
+			{
+				LLPipeline::setRenderInvisibleSoundBeacons(FALSE);
+				gSavedSettings.setBOOL("invisiblesoundsbeacon", FALSE);
+				view->getChild<LLCheckBoxCtrl>("invisiblesounds")->setControlValue(LLSD(FALSE));
+			}
 		}
 	}
+	else if (name == "invisiblesounds")
+	{
+		LLPipeline::setRenderInvisibleSoundBeacons(check->get());
+		if (LLPipeline::getRenderInvisibleSoundBeacons(NULL))
+		{
+			if (!LLPipeline::getRenderSoundBeacons(NULL))
+			{
+				LLPipeline::setRenderSoundBeacons(TRUE);
+				gSavedSettings.setBOOL("soundsbeacon", TRUE);
+				view->getChild<LLCheckBoxCtrl>("sounds")->setControlValue(LLSD(TRUE));
+			}
+			if (!LLPipeline::getRenderBeacons(NULL))
+			{
+				LLPipeline::setRenderBeacons(TRUE);
+				gSavedSettings.setBOOL("renderbeacons", TRUE);
+				view->getChild<LLCheckBoxCtrl>("beacons")->setControlValue(LLSD(TRUE));
+			}
+		}
+	}
+	else if (name == "attachments")    LLPipeline::setRenderAttachments(check->get());
+	else if (name == "owner")          LLPipeline::setRenderByOwner(view->getChild<LLRadioGroup>("owner")->getSelectedIndex());
 }

@@ -233,36 +233,42 @@
 				<key>label</key><string>Tribal Net</string>
 				<key>login_uri</key><string>http://login.tribalnet.se/</string>
 				<key>helper_uri</key><string></string>
+				<key>login_page</key><string></string>
 			</map>
 			<map>
 				<key>name</key><string>sim-linuxmain.org</string>
 				<key>label</key><string>Cuon Grid</string>
 				<key>login_uri</key><string>http://sim-linuxmain.org:8002/</string>
 				<key>helper_uri</key><string></string>
+				<key>login_page</key><string></string>
 			</map>
 			<map>
 				<key>name</key><string>emeraldnetwork.webhop.net</string>
 				<key>label</key><string>Emerald Network</string>
 				<key>login_uri</key><string>http://emeraldnetwork.webhop.net:8002/</string>
 				<key>helper_uri</key><string></string>
+				<key>login_page</key><string></string>
 			</map>
 			<map>
 				<key>name</key><string>uvatar.com</string>
 				<key>label</key><string>Uvatar</string>
 				<key>login_uri</key><string>http://uvatar.com:8002/</string>
 				<key>helper_uri</key><string></string>
+				<key>login_page</key><string></string>
 			</map>
 			<map>
-				<key>name</key><string>localhost</string>
-				<key>label</key><string>Local</string>
+				<key>name</key><string>local8002</string>
+				<key>label</key><string>Port 8002</string>
 				<key>login_uri</key><string>http://127.0.0.1:8002/</string>
-				<key>helper_uri</key><string>http://127.0.0.1/</string>
+				<key>helper_uri</key><string></string>
+        			<key>login_page</key><string></string>
 			</map>
 			<map>
-				<key>name</key><string>localhost9000</string>
-				<key>label</key><string>Local port 9000</string>
+				<key>name</key><string>local9000</string>
+				<key>label</key><string>Port 9000</string>
 				<key>login_uri</key><string>http://127.0.0.1:9000/</string>
-				<key>helper_uri</key><string>http://127.0.0.1/</string>
+				<key>helper_uri</key><string></string>
+				<key>login_page</key><string></string>
 			</map>
 		</array>
 	</map>

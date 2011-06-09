@@ -1,3 +1,18 @@
+2011-06-09 Boy Lane <boy.lane@yahoo.com>
+
+    * BetterBeacons and fix for grids.xml (local grids)
+
+    modified:   ChangeLog.txt
+    modified:   linden/indra/llwindow/llwindowsdl.cpp
+    modified:   linden/indra/newview/app_settings/grids.xml
+    modified:   linden/indra/newview/app_settings/settings.xml
+    modified:   linden/indra/newview/app_settings/settings_per_account.xml
+    modified:   linden/indra/newview/llfloaterbeacons.cpp
+    modified:   linden/indra/newview/llviewerwindow.cpp
+    modified:   linden/indra/newview/pipeline.cpp
+    modified:   linden/indra/newview/pipeline.h
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_beacons.xml
+    
 2011-05-05 Boy Lane <boy.lane@yahoo.com>
 
     * Update to RLV 2.6 (original RLV from Marine Kelley)

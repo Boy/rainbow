@@ -840,7 +840,7 @@
       <key>Comment</key>
       <string>Beacons / highlighting always on</string>
       <key>Persist</key>
-      <integer>1</integer>
+      <integer>0</integer>
       <key>Type</key>
       <string>Boolean</string>
       <key>Value</key>
@@ -11625,6 +11625,39 @@
       <string>Boolean</string>
       <key>Value</key>
       <integer>1</integer>
+    </map>
+    <key>renderattachment</key>
+    <map>
+      <key>Comment</key>
+      <string>Render beacons for / Highlight attached objects as well</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>renderbyowner</key>
+    <map>
+      <key>Comment</key>
+      <string>Render beacons/highlights for objects owned by anyone (0), you (1) or others (2)</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>U32</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>invisiblesoundsbeacon</key>
+    <map>
+      <key>Comment</key>
+      <string>Beacon / Highlight invisible (non-object) sound generators</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
     </map>
     <key>scriptsbeacon</key>
     <map>

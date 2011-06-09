@@ -275,6 +275,17 @@ public:
 	static void toggleRenderHighlights(void* data);
 	static BOOL getRenderHighlights(void* data);
 
+	static void setRenderInvisibleSoundBeacons(BOOL val);
+	static void toggleRenderInvisibleSoundBeacons(void* data);
+	static BOOL getRenderInvisibleSoundBeacons(void* data);
+
+	static void setRenderAttachments(BOOL val);
+	static void toggleRenderAttachments(void* data);
+	static BOOL getRenderAttachments(void* data);
+
+	static void setRenderByOwner(U32 val);
+	static U32 getRenderByOwner(void* data);
+
 private:
 	void unloadShaders();
 	void addToQuickLookup( LLDrawPool* new_poolp );
@@ -551,6 +562,10 @@ protected:
 public:
 	static BOOL				sRenderBeacons;
 	static BOOL				sRenderHighlight;
+	static BOOL				sRenderInvisibleSoundBeacons;
+	static BOOL				sRenderAttachments;
+	static U32				sRenderByOwner;
+	static BOOL				sRenderBeaconsFloaterOpen;
 };
 
 void render_bbox(const LLVector3 &min, const LLVector3 &max);
