@@ -3344,10 +3344,10 @@ bool is_cloud()
 	LLVOAvatar* avatarp = gAgent.getAvatarObject();
 	if (!avatarp) return true;
 	if (avatarp->visualParamWeightsAreDefault()) return true;
-	if (!avatarp->isTextureDefined(LLVOAvatar::TEX_HAIR) ||
-		!avatarp->isTextureDefined(LLVOAvatar::TEX_LOWER_BAKED) ||
-		!avatarp->isTextureDefined(LLVOAvatar::TEX_UPPER_BAKED) ||
-		!avatarp->isTextureDefined(LLVOAvatar::TEX_HEAD_BAKED)) {
+	if (!avatarp->isTextureDefined(LLVOAvatarDefines::TEX_HAIR) ||
+		!avatarp->isTextureDefined(LLVOAvatarDefines::TEX_LOWER_BAKED) ||
+		!avatarp->isTextureDefined(LLVOAvatarDefines::TEX_UPPER_BAKED) ||
+		!avatarp->isTextureDefined(LLVOAvatarDefines::TEX_HEAD_BAKED)) {
 		return true;
 	}
 	return false;

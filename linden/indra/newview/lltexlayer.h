@@ -40,7 +40,7 @@
 #include "lluuid.h"
 #include "llviewerimage.h"
 #include "llviewervisualparam.h"
-#include "llvoavatar.h"
+#include "llvoavatardefines.h"
 #include "llwearable.h"
 #include "v4color.h"
 #include "llfloater.h"
@@ -280,8 +280,8 @@ public:
 	void					applyMorphMask(U8* tex_data, S32 width, S32 height, S32 num_components);
 	const std::string		getBodyRegion() 				{ return mInfo->mBodyRegion; }
 	BOOL					hasComposite()					{ return (mComposite != NULL); }
-	LLVOAvatar::ETextureIndex getBakedTE() { return mBakedTexIndex; }
-	void					setBakedTE(LLVOAvatar::ETextureIndex index) { mBakedTexIndex = index; }
+	LLVOAvatarDefines::EBakedTextureIndex getBakedTexIndex() { return mBakedTexIndex; }
+	void					setBakedTexIndex(LLVOAvatarDefines::EBakedTextureIndex index) { mBakedTexIndex = index; }
 	BOOL					isVisible() const 				{ return mIsVisible; }
 
 public:
@@ -297,7 +297,7 @@ protected:
 	BOOL					mUpdatesEnabled;
 	BOOL					mIsVisible;
 
-	LLVOAvatar::ETextureIndex mBakedTexIndex;
+	LLVOAvatarDefines::EBakedTextureIndex mBakedTexIndex;
 
 	LLTexLayerSetInfo 		*mInfo;
 };

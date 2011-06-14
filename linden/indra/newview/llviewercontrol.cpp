@@ -259,16 +259,6 @@ static bool handleMaxPartCountChanged(const LLSD& newvalue)
 	return true;
 }
 
-const S32 MAX_USER_COMPOSITE_LIMIT = 100;
-const S32 MIN_USER_COMPOSITE_LIMIT = 0;
-
-static bool handleCompositeLimitChanged(const LLSD& newvalue)
-{
-	S32 composite_limit = llmax(MIN_USER_COMPOSITE_LIMIT,  llmin((S32)newvalue.asInteger(), MAX_USER_COMPOSITE_LIMIT));
-	LLVOAvatar::sMaxOtherAvatarsToComposite = composite_limit;
-	return true;
-}
-
 static bool handleVideoMemoryChanged(const LLSD& newvalue)
 {
 	gImageList.updateMaxResidentTexMem(newvalue.asInteger());
@@ -584,7 +574,6 @@ void settings_setup_listeners()
 	gSavedSettings.getControl("RenderDebugPipeline")->getSignal()->connect(boost::bind(&handleRenderDebugPipelineChanged, _1));
 	gSavedSettings.getControl("RenderResolutionDivisor")->getSignal()->connect(boost::bind(&handleRenderResolutionDivisorChanged, _1));
 	gSavedSettings.getControl("RenderDeferred")->getSignal()->connect(boost::bind(&handleSetShaderChanged, _1));
-	gSavedSettings.getControl("AvatarCompositeLimit")->getSignal()->connect(boost::bind(&handleCompositeLimitChanged, _1));
 	gSavedSettings.getControl("TextureMemory")->getSignal()->connect(boost::bind(&handleVideoMemoryChanged, _1));
 	gSavedSettings.getControl("ChatFontSize")->getSignal()->connect(boost::bind(&handleChatFontSizeChanged, _1));
 	gSavedSettings.getControl("ChatPersistTime")->getSignal()->connect(boost::bind(&handleChatPersistTimeChanged, _1));

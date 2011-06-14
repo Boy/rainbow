@@ -1,3 +1,40 @@
+2011-06-14 Boy Lane <boy.lane@yahoo.com>
+
+    * Fix for partial alphas not rendered correctly (disappeared after some seconds), backport from 1.23/SG
+    
+    modified:   linden/indra/newview/CMakeLists.txt
+    modified:   linden/indra/newview/RRInterface.cpp
+    modified:   linden/indra/newview/llagent.cpp
+    modified:   linden/indra/newview/llappearance.h
+    modified:   linden/indra/newview/lldrawpoolavatar.cpp
+    modified:   linden/indra/newview/llfloateranimpreview.cpp
+    modified:   linden/indra/newview/llfloateravatartextures.cpp
+    modified:   linden/indra/newview/llfloateravatartextures.h
+    modified:   linden/indra/newview/llfloatercustomize.cpp
+    modified:   linden/indra/newview/llgenepool.cpp
+    modified:   linden/indra/newview/llmaniprotate.cpp
+    modified:   linden/indra/newview/llpreviewgesture.cpp
+    modified:   linden/indra/newview/llstartup.cpp
+    modified:   linden/indra/newview/lltexlayer.cpp
+    modified:   linden/indra/newview/lltexlayer.h
+    modified:   linden/indra/newview/lltoolbar.cpp
+    modified:   linden/indra/newview/lltooldraganddrop.cpp
+    modified:   linden/indra/newview/lltoolfocus.cpp
+    modified:   linden/indra/newview/llviewercontrol.cpp
+    modified:   linden/indra/newview/llviewerjoint.cpp
+    modified:   linden/indra/newview/llviewerjoint.h
+    modified:   linden/indra/newview/llviewermenu.cpp
+    modified:   linden/indra/newview/llviewermessage.cpp
+    modified:   linden/indra/newview/llviewerobject.cpp
+    modified:   linden/indra/newview/llvoavatar.cpp
+    modified:   linden/indra/newview/llvoavatar.h
+    modified:   linden/indra/newview/llvoiceclient.cpp
+    modified:   linden/indra/newview/llwearable.cpp
+    new file:   linden/indra/newview/hbfloaterrlv.cpp
+    new file:   linden/indra/newview/hbfloaterrlv.h 
+    new file:   linden/indra/newview/llvoavatardefines.cpp
+    new file:   linden/indra/newview/llvoavatardefines.h
+    
 2011-06-09 Boy Lane <boy.lane@yahoo.com>
 
     * BetterDebugSettings, BetterLandmarkFloater, BetterNotecardFloater from CoolVL

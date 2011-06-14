@@ -223,6 +223,8 @@
 
 #include "primbackup.h"
 
+using namespace LLVOAvatarDefines;
+
 void init_client_menu(LLMenuGL* menu);
 void init_server_menu(LLMenuGL* menu);
 
@@ -1357,8 +1359,6 @@ void init_debug_rendering_menu(LLMenuGL* menu)
 	menu->createJumpKeys();
 }
 
-extern BOOL gDebugAvatarRotation;
-
 void init_debug_avatar_menu(LLMenuGL* menu)
 {
 	LLMenuGL* sub_menu = new LLMenuGL("Grab Baked Texture");
@@ -1406,7 +1406,7 @@ void init_debug_avatar_menu(LLMenuGL* menu)
 	//menu->append(new LLMenuItemToggleGL("Show Collision Plane", &LLVOAvatar::sShowFootPlane));
 	menu->append(new LLMenuItemToggleGL("Show Collision Skeleton", &LLVOAvatar::sShowCollisionVolumes));
 	menu->append(new LLMenuItemToggleGL( "Display Agent Target", &LLAgent::sDebugDisplayTarget));
-	menu->append(new LLMenuItemToggleGL( "Debug Rotation", &gDebugAvatarRotation));
+	menu->append(new LLMenuItemToggleGL( "Debug Rotation", &LLVOAvatar::sDebugAvatarRotation));
 	menu->append(new LLMenuItemCallGL("Dump Attachments", handle_dump_attachments));
 	menu->append(new LLMenuItemCallGL("Rebake Textures", handle_rebake_textures, NULL, NULL, 'R', MASK_ALT | MASK_CONTROL ));
 #ifndef LL_RELEASE_FOR_DOWNLOAD
@@ -1437,12 +1437,12 @@ void init_restrained_love_menu(LLMenuGL* menu)
 
 void init_debug_baked_texture_menu(LLMenuGL* menu)
 {
-	menu->append(new LLMenuItemCallGL("Iris", handle_grab_texture, enable_grab_texture, (void*) LLVOAvatar::TEX_EYES_BAKED));
-	menu->append(new LLMenuItemCallGL("Hair", handle_grab_texture, enable_grab_texture, (void*) LLVOAvatar::TEX_HAIR_BAKED));
-	menu->append(new LLMenuItemCallGL("Head", handle_grab_texture, enable_grab_texture, (void*) LLVOAvatar::TEX_HEAD_BAKED));
-	menu->append(new LLMenuItemCallGL("Upper Body", handle_grab_texture, enable_grab_texture, (void*) LLVOAvatar::TEX_UPPER_BAKED));
-	menu->append(new LLMenuItemCallGL("Lower Body", handle_grab_texture, enable_grab_texture, (void*) LLVOAvatar::TEX_LOWER_BAKED));
-	menu->append(new LLMenuItemCallGL("Skirt", handle_grab_texture, enable_grab_texture, (void*) LLVOAvatar::TEX_SKIRT_BAKED));
+	menu->append(new LLMenuItemCallGL("Iris", handle_grab_texture, enable_grab_texture, (void*) TEX_EYES_BAKED));
+	menu->append(new LLMenuItemCallGL("Head", handle_grab_texture, enable_grab_texture, (void*) TEX_HEAD_BAKED));
+	menu->append(new LLMenuItemCallGL("Upper Body", handle_grab_texture, enable_grab_texture, (void*) TEX_UPPER_BAKED));
+	menu->append(new LLMenuItemCallGL("Lower Body", handle_grab_texture, enable_grab_texture, (void*) TEX_LOWER_BAKED));
+	menu->append(new LLMenuItemCallGL("Skirt", handle_grab_texture, enable_grab_texture, (void*) TEX_SKIRT_BAKED));
+	menu->append(new LLMenuItemCallGL("Hair", handle_grab_texture, enable_grab_texture, (void*) TEX_HAIR_BAKED));
 	menu->createJumpKeys();
 }
 
@@ -3208,12 +3208,10 @@ class LLEditEnableCustomizeAvatar : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-		LLVOAvatar* avatar = gAgent.getAvatarObject();
-
-		bool enabled = ((avatar && avatar->isFullyLoaded()) &&
-				   (gAgent.getWearablesLoaded()));
-
-		gMenuHolder->findControl(userdata["control"].asString())->setValue(enabled);
+		bool new_value = (gAgent.getAvatarObject() && 
+						  gAgent.getAvatarObject()->isFullyLoaded() &&
+						  gAgent.areWearablesLoaded());
+		gMenuHolder->findControl(userdata["control"].asString())->setValue(new_value);
 		return true;
 	}
 };
@@ -5744,7 +5742,7 @@ class LLShowFloater : public view_listener_t
 		}
 		else if (floater_name == "appearance")
 		{
-			if (gAgent.getWearablesLoaded())
+			if (gAgent.areWearablesLoaded())
 			{
 				gAgent.changeCameraToCustomizeAvatar();
 			}
@@ -7585,7 +7583,7 @@ void handle_debug_avatar_textures(void*)
 
 void handle_grab_texture(void* data)
 {
-	LLVOAvatar::ETextureIndex index = (LLVOAvatar::ETextureIndex)((intptr_t)data);
+	ETextureIndex index = (ETextureIndex)((intptr_t)data);
 	LLVOAvatar* avatar = gAgent.getAvatarObject();
 	if ( avatar )
 	{
@@ -7599,23 +7597,23 @@ void handle_grab_texture(void* data)
 			std::string name = "Baked ";
 			switch (index)
 			{
-			case LLVOAvatar::TEX_EYES_BAKED:
+			case TEX_EYES_BAKED:
 				name.append("Iris");
 				break;
-			case LLVOAvatar::TEX_HAIR_BAKED:
-				name.append("Hair");
-				break;
-			case LLVOAvatar::TEX_HEAD_BAKED:
+			case TEX_HEAD_BAKED:
 				name.append("Head");
 				break;
-			case LLVOAvatar::TEX_UPPER_BAKED:
+			case TEX_UPPER_BAKED:
 				name.append("Upper Body");
 				break;
-			case LLVOAvatar::TEX_LOWER_BAKED:
+			case TEX_LOWER_BAKED:
 				name.append("Lower Body");
 				break;
-			case LLVOAvatar::TEX_SKIRT_BAKED:
+			case TEX_SKIRT_BAKED:
 				name.append("Skirt");
+				break;
+			case TEX_HAIR_BAKED:
+				name.append("Hair");
 				break;
 			default:
 				name.append("Unknown");
@@ -7678,7 +7676,7 @@ void handle_grab_texture(void* data)
 
 BOOL enable_grab_texture(void* data)
 {
-	LLVOAvatar::ETextureIndex index = (LLVOAvatar::ETextureIndex)((intptr_t)data);
+	ETextureIndex index = (ETextureIndex)((intptr_t)data);
 	LLVOAvatar* avatar = gAgent.getAvatarObject();
 	if ( avatar )
 	{

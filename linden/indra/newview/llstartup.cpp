@@ -3295,7 +3295,7 @@ bool idle_startup()
 		else
 		{
 			// OK to just get the wearables
-			if ( gAgent.getWearablesLoaded() )
+			if ( gAgent.areWearablesLoaded() )
 			{
 				// We have our clothing, proceed.
 				//llinfos << "wearables loaded" << llendl;

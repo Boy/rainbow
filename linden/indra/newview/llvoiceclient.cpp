@@ -4886,7 +4886,7 @@ void LLVoiceClient::sessionState::removeAllParticipants()
 	
 	if(!mParticipantsByUUID.empty())
 	{
-		LL_ERRS("Voice") << "Internal error: empty URI map, non-empty UUID map" << LL_ENDL
+		llerrs << "Internal error: empty URI map, non-empty UUID map" << llendl;
 	}
 }
 
@@ -6214,7 +6214,7 @@ LLVoiceClient::sessionState *LLVoiceClient::addSession(const std::string &uri, c
 		if(handle != result->mHandle)
 		{
 			// TODO: Should this be an internal error?
-			LL_DEBUGS("Voice") << "changing handle from " << result->mHandle << " to " << handle << LL_ENDL;
+			lldebugs << "changing handle from " << result->mHandle << " to " << handle << llendl;
 			setSessionHandle(result, handle);
 		}
 		
@@ -6277,7 +6277,7 @@ void LLVoiceClient::deleteSession(sessionState *session)
 		{
 			if(iter->second != session)
 			{
-				LL_ERRS("Voice") << "Internal error: session mismatch" << LL_ENDL
+				llerrs << "Internal error: session mismatch" << llendl;
 			}
 			mSessionsByHandle.erase(iter);
 		}
@@ -6317,7 +6317,7 @@ void LLVoiceClient::deleteAllSessions()
 	
 	if(!mSessionsByHandle.empty())
 	{
-		LL_ERRS("Voice") << "Internal error: empty session map, non-empty handle map" << LL_ENDL
+		llerrs << "Internal error: empty session map, non-empty handle map" << llendl;
 	}
 }
 

@@ -1,10 +1,10 @@
 /** 
- * @file llappearance.h
- * @brief LLAppearance class definition
+ * @file hbfloaterrlv.h
+ * @brief The HBFloaterRLV class declaration
  *
- * $LicenseInfo:firstyear=2002&license=viewergpl$
+ * $LicenseInfo:firstyear=2011&license=viewergpl$
  * 
- * Copyright (c) 2002-2009, Linden Research, Inc.
+ * Copyright (c) 2011, Henri Beauchamp
  * 
  * Second Life Viewer Source Code
  * The source code in this file ("Source Code") is provided by Linden Lab
@@ -17,7 +17,8 @@
  * There are special exceptions to the terms and conditions of the GPL as
  * it is applied to this Source Code. View the full text of the exception
  * in the file doc/FLOSS-exception.txt in this software distribution, or
- * online at http://secondlifegrid.net/programs/open_source/licensing/flossexception
+ * online at
+ * http://secondlifegrid.net/programs/open_source/licensing/flossexception
  * 
  * By copying, modifying or distributing this software, you acknowledge
  * that you have read and understood your obligations described above,
@@ -29,28 +30,30 @@
  * $/LicenseInfo$
  */
 
-#ifndef LL_LLAPPEARANCE_H
-#define LL_LLAPPEARANCE_H
+#ifndef LL_HBFLOATERRLV_H
+#define LL_HBFLOATERRLV_H
 
-#include "lluuid.h"
+#include "llfloater.h"
 
-class LLAppearance
+class LLScrollListCtrl;
+
+class HBFloaterRLV : public LLFloater
 {
 public:
-	LLAppearance()										{}
-	~LLAppearance()										{ mParamMap.clear(); } 
+	HBFloaterRLV();
+	BOOL postBuild();
+	/*virtual*/ void draw();
+	/*virtual*/ ~HBFloaterRLV();
 
-	void	addParam( S32 id, F32 value )				{ mParamMap[id] = value; }
-	F32		getParam( S32 id, F32 defval )				{ return get_if_there(mParamMap, id, defval ); }
+	static void showInstance();
 
-	void	addTexture( S32 te, const LLUUID& uuid )	{ if( te < LLVOAvatarDefines::TEX_NUM_INDICES ) mTextures[te] = uuid; }
-	const LLUUID& getTexture( S32 te )					{ return ( te < LLVOAvatarDefines::TEX_NUM_INDICES ) ? mTextures[te] : LLUUID::null; }
-	
-	void	clear()										{ mParamMap.clear(); for( S32 i=0; i<LLVOAvatarDefines::TEX_NUM_INDICES; i++ ) mTextures[i].setNull(); }
+	static void setDirty(void*);
+	static void onButtonClose(void* data);
 
-	typedef std::map<S32, F32> param_map_t;
-	param_map_t mParamMap;
-	LLUUID	mTextures[LLVOAvatarDefines::TEX_NUM_INDICES];
+private:
+	LLScrollListCtrl* mRestrictions;
+	bool mIsDirty;
+
+	static HBFloaterRLV* sInstance;
 };
-
-#endif  // LL_LLAPPEARANCE_H
+#endif

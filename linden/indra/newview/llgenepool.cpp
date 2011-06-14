@@ -43,6 +43,8 @@
 
 #include "lldir.h"
 
+using namespace LLVOAvatarDefines;
+
 LLGenePool::LLGenePool()
 	:
 	mLoaded( FALSE )
@@ -354,19 +356,19 @@ void LLGenePool::spawn( EWearableType type )
 
 
 	// Pull Textures from the dominant archetype
-	for( S32 te = 0; te < LLVOAvatar::TEX_NUM_ENTRIES; te++ )
+	for( S32 te = 0; te < TEX_NUM_INDICES; te++ )
 	{
-		if( LLVOAvatar::isTextureIndexBaked( te ) )
+		if( LLVOAvatar::isIndexBakedTexture((ETextureIndex)te))
 		{
 			continue;
 		}
 
-		if( LLVOAvatar::getTEWearableType( te ) == type )
+		if( LLVOAvatar::getTEWearableType((ETextureIndex)te) == type )
 		{
 			LLUUID image_id = dominant_arch->getTexture( te );
 			if( image_id.isNull() )
 			{
-				image_id = LLVOAvatar::getDefaultTEImageID( te );
+				image_id = LLVOAvatar::getDefaultTEImageID((ETextureIndex)te);
 			}
 
 			LLViewerImage* image = gImageList.getImage( image_id );
