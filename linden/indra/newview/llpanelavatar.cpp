@@ -1300,37 +1300,35 @@ void LLPanelAvatar::setOnlineStatus(EOnlineStatus online_status)
 {
 	// Online status NO could be because they are hidden
 	// If they are a friend, we may know the truth!
-	if ((ONLINE_STATUS_YES != online_status)
-		&& mIsFriend
-		&& (LLAvatarTracker::instance().isBuddyOnline( mAvatarID )))
+	if (online_status != ONLINE_STATUS_YES && mIsFriend &&
+		LLAvatarTracker::instance().isBuddyOnline(mAvatarID))
 	{
 		online_status = ONLINE_STATUS_YES;
 	}
 
-	mPanelSecondLife->childSetVisible("online_yes", (online_status == ONLINE_STATUS_YES));
+	mPanelSecondLife->childSetVisible("online_yes", online_status == ONLINE_STATUS_YES);
 
 	// Since setOnlineStatus gets called after setAvatarID
 	// need to make sure that "Offer Teleport" doesn't get set
 	// to TRUE again for yourself
 	if (mAvatarID != gAgent.getID())
 	{
-		childSetVisible("Offer Teleport...",TRUE);
+		childSetVisible("Offer Teleport...", true);
 	}
 
-	BOOL in_prelude = gAgent.inPrelude();
-	if(gAgent.isGodlike())
+	if (gAgent.isGodlike())
 	{
-		childSetEnabled("Offer Teleport...", TRUE);
+		childSetEnabled("Offer Teleport...", true);
 		childSetToolTip("Offer Teleport...", childGetValue("TeleportGod").asString());
 	}
-	else if (in_prelude)
+	else if (gAgent.inPrelude())
 	{
-		childSetEnabled("Offer Teleport...",FALSE);
-		childSetToolTip("Offer Teleport...",childGetValue("TeleportPrelude").asString());
+		childSetEnabled("Offer Teleport...", false);
+		childSetToolTip("Offer Teleport...", childGetValue("TeleportPrelude").asString());
 	}
 	else
 	{
-		childSetEnabled("Offer Teleport...", (online_status == ONLINE_STATUS_YES));
+		childSetEnabled("Offer Teleport...", true);
 		childSetToolTip("Offer Teleport...", childGetValue("TeleportNormal").asString());
 	}
 }

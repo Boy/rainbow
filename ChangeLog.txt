@@ -1,5 +1,16 @@
 2011-06-14 Boy Lane <boy.lane@yahoo.com>
 
+    * ForceSitOnGround with RLV, NotifyOutWorldTransactions, OfferTeleportToAnyone
+    
+    modified:   ChangeLog.txt
+    modified:   linden/indra/newview/llassetuploadresponders.cpp
+    modified:   linden/indra/newview/llpanelavatar.cpp
+    modified:   linden/indra/newview/llviewermenu.cpp
+    modified:   linden/indra/newview/llviewermessage.cpp
+    modified:   linden/indra/newview/skins/default/xui/en-us/notify.xml
+
+2011-06-14 Boy Lane <boy.lane@yahoo.com>
+
     * Fix for partial alphas not rendered correctly (disappeared after some seconds), backport from 1.23/SG
     
     modified:   linden/indra/newview/CMakeLists.txt

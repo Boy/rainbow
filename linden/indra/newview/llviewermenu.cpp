@@ -5318,9 +5318,15 @@ class LLWorldSitOnGround : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-		if (gAgent.getAvatarObject() && !gAgent.getAvatarObject()->mIsSitting)
+		if (gAgent.getAvatarObject() && !gAgent.getAvatarObject()->mIsSitting && !(gRRenabled && gAgent.mRRInterface.contains("sit")))
 		{
 			gAgent.setControlFlags(AGENT_CONTROL_SIT_ON_GROUND);
+			if (gRRenabled)
+			{
+				// Store our current location so that we can snap back
+				// here when we stand up, if under @standtp
+				gAgent.mRRInterface.mLastStandingLocation = LLVector3d(gAgent.getPositionGlobal());
+			}
 		}
 		return true;
 	}
@@ -5331,6 +5337,10 @@ class LLWorldEnableSitOnGround : public view_listener_t
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
 		bool new_value = (gAgent.getAvatarObject() && !gAgent.getAvatarObject()->mIsSitting);
+		if (gRRenabled && gAgent.mRRInterface.contains("sit"))
+		{
+			new_value = false;
+		}
 		gMenuHolder->findControl(userdata["control"].asString())->setValue(new_value);
 		return true;
 	}

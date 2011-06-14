@@ -213,7 +213,7 @@ void LLNewAgentInventoryResponder::uploadComplete(const LLSD& content)
 
 		LLStringUtil::format_map_t args;
 		args["[AMOUNT]"] = llformat("%d",LLGlobalEconomy::Singleton::getInstance()->getPriceUpload());
-		LLNotifyBox::showXml("UploadPayment", args);
+		LLNotifyBox::showXml("UploadDone", args);
 	}
 
 	// Actually add the upload to viewer inventory

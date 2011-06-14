@@ -46,9 +46,9 @@
 (Takes about 5 minutes.)
 		</message>
 	</notify>
-	<notify name="UploadPayment" tip="false">
+	<notify name="UploadDone" tip="false">
 		<message name="message">
-			You paid L$[AMOUNT] to upload.
+			Upload successful (L$[AMOUNT] charged).
 		</message>
 	</notify>
 	<notify name="UploadingSnapshot" tip="true">

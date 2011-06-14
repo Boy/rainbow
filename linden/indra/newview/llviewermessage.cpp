@@ -4560,6 +4560,7 @@ void process_time_dilation(LLMessageSystem *msg, void **user_data)
 
 void process_money_balance_reply( LLMessageSystem* msg, void** )
 {
+	S32 old_balance = -1;
 	S32 balance = 0;
 	S32 credit = 0;
 	S32 committed = 0;
@@ -4574,7 +4575,7 @@ void process_money_balance_reply( LLMessageSystem* msg, void** )
 
 	if (gStatusBar)
 	{
-		S32 old_balance = gStatusBar->getBalance();
+		old_balance = gStatusBar->getBalance();
 
 		// This is an update, not the first transmission of balance
 		if (old_balance != 0)
@@ -4598,13 +4599,26 @@ void process_money_balance_reply( LLMessageSystem* msg, void** )
 	LLUUID tid;
 	msg->getUUID("MoneyData", "TransactionID", tid);
 	static std::deque<LLUUID> recent;
-	if(!desc.empty() && gSavedSettings.getBOOL("NotifyMoneyChange")
-	   && (std::find(recent.rbegin(), recent.rend(), tid) == recent.rend()))
+	if (gSavedSettings.getBOOL("NotifyMoneyChange") &&
+	 	std::find(recent.rbegin(), recent.rend(), tid) == recent.rend())
 	{
-		// Make the user confirm the transaction, since they might
-		// have missed something during an event.
+		// Confirm the transaction to the user, since they might have missed
+		// something during an event, or this may be an out-world transaction.
 		// *TODO:translate
 		LLStringUtil::format_map_t args;
+		if (desc.empty())
+		{
+			// Out-world transaction.
+			if (balance == old_balance || old_balance <= 0)
+			{
+				return;
+			}
+			std::ostringstream odesc;
+			odesc << "Your money balance has "
+				  << (balance > old_balance ? "increased" : "decreased")
+				  << " by L$" << abs(balance - old_balance);
+			desc = odesc.str();
+		}
 		args["[MESSAGE]"] = desc;
 		LLNotifyBox::showXml("SystemMessage", args);
 
