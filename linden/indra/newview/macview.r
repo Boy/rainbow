@@ -22,7 +22,7 @@ resource 'MENU' (mApple, preload) {
         apple,
         {       /* array: 2 elements */
                 /* [1] */
-                "About Second Life", noIcon, noKey, noMark, plain,
+                "About Rainbow Viewer", noIcon, noKey, noMark, plain,
                 /* [2] */
                 "-", noIcon, noKey, noMark, plain
         }

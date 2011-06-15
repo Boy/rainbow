@@ -26,8 +26,8 @@
 
 #define RR_VIEWER_NAME "RestrainedLife"
 #define RR_VIEWER_NAME_NEW "RestrainedLove"
-#define RR_VERSION_NUM "2060002"
-#define RR_VERSION "2.06.00.02"
+#define RR_VERSION_NUM "2070002"
+#define RR_VERSION "2.07.00.02"
 #define RR_SLV_VERSION "Rainbow 1.22.12.7"
 
 #define RR_PREFIX "@"
@@ -157,7 +157,7 @@ public:
 	LLInventoryCategory* getCategoryUnderRlvShare (std::string catName, LLInventoryCategory* root = NULL);
 	LLInventoryCategory* findCategoryUnderRlvShare (std::string catName, LLInventoryCategory* root = NULL);
 	std::string findAttachmentNameFromPoint (LLViewerJointAttachment* attachpt);
-	LLViewerJointAttachment* findAttachmentPointFromName (std::string objectName, BOOL exactName = FALSE);
+	LLViewerJointAttachment* findAttachmentPointFromName(std::string objectName, bool exactName = false);
 	LLViewerJointAttachment* findAttachmentPointFromParentName (LLInventoryItem* item);
 	S32 findAttachmentPointNumber (LLViewerJointAttachment* attachment);
 	void detachObject(LLViewerObject* object);
@@ -239,6 +239,8 @@ public:
 	BOOL mContainsShowhovertextworld;
 	BOOL mContainsDefaultwear;
 	BOOL mContainsPermissive;
+	BOOL mContainsRun;
+	BOOL mContainsAlwaysRun;
 
 	static BOOL sRRNoSetEnv;
 	static BOOL sRestrainedLoveDebug;

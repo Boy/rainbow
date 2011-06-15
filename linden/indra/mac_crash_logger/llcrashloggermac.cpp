@@ -222,13 +222,13 @@ void LLCrashLoggerMac::gatherPlatformSpecificFiles()
 			std::string mBuf;
 			bool isLeopard = false;
 			// Try the 10.3 path first...
-			std::string dw_file_name = std::string(path) + std::string("/CrashReporter/Second Life.crash.log");
+			std::string dw_file_name = std::string(path) + std::string("/CrashReporter/RainbowViewer.crash.log");
 			int res = stat(dw_file_name.c_str(), &dw_stat);
 
 			if (res)
 			{
 				// Try the 10.2 one next...
-				dw_file_name = std::string(path) + std::string("/Second Life.crash.log");
+				dw_file_name = std::string(path) + std::string("/RainbowViewer.crash.log");
 				res = stat(dw_file_name.c_str(), &dw_stat);
 			}
 	
@@ -239,7 +239,7 @@ void LLCrashLoggerMac::gatherPlatformSpecificFiles()
 				//use the last one found.
 				std::string old_file_name, current_file_name, pathname, mask;
 				pathname = std::string(path) + std::string("/CrashReporter/");
-				mask = "Second Life*";
+				mask = "RainbowViewer*";
 				while(gDirUtilp->getNextFileInDir(pathname, mask, current_file_name, false))
 				{
 					old_file_name = current_file_name;

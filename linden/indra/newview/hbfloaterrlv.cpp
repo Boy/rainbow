@@ -193,6 +193,6 @@ void HBFloaterRLV::onButtonClose(void* data)
 	HBFloaterRLV* self = (HBFloaterRLV*)data;
 	if (self)
 	{
-		self->destroy();
+		self->close();
 	}
 }

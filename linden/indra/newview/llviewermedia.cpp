@@ -537,7 +537,7 @@ void LLViewerMedia::buildMediaManagerData( LLMediaManagerData* init_data )
 	std::string profile_dir = gDirUtilp->getExpandedFilename( LL_PATH_MOZILLA_PROFILE, "" );
 	init_data->setBrowserProfileDir( profile_dir );
 	init_data->setBrowserComponentDir( component_dir );
-	std::string profile_name("Second Life");
+	std::string profile_name("Rainbow Viewer");
 	init_data->setBrowserProfileName( profile_name );
 	init_data->setBrowserParentWindow( gViewerWindow->getMediaWindow() );
 

@@ -2974,10 +2974,18 @@ class LLSelfStandUp : public view_listener_t
 			}
 //mk
 		}
-		else
+		else if (!gRRenabled || !gAgent.mRRInterface.contains("sit"))
+////	else
 		{
 			gAgent.setControlFlags(AGENT_CONTROL_SIT_ON_GROUND);
-
+//MK
+			if (gRRenabled)
+			{
+				// Store our current location so that we can snap back
+				// here when we stand up, if under @standtp
+				gAgent.mRRInterface.mLastStandingLocation = LLVector3d(gAgent.getPositionGlobal());
+			}
+//mk
 			// Might be first sit
 			LLFirstUse::useSit();
 		}
@@ -3312,11 +3320,22 @@ class LLObjectSitOrStand : public view_listener_t
 
 void near_sit_down_point(BOOL success, void *)
 {
-	if (success)
+	if (success
+//MK
+		 && !(gRRenabled && gAgent.mRRInterface.contains("sit"))
+//mk
+		)
 	{
 		gAgent.setFlying(FALSE);
 		gAgent.setControlFlags(AGENT_CONTROL_SIT_ON_GROUND);
-
+//MK
+		if (gRRenabled)
+		{
+			// Store our current location so that we can snap back
+			// here when we stand up, if under @standtp
+			gAgent.mRRInterface.mLastStandingLocation = LLVector3d(gAgent.getPositionGlobal());
+		}
+//mk
 		// Might be first sit
 		LLFirstUse::useSit();
 	}
@@ -5291,7 +5310,10 @@ class LLWorldAlwaysRun : public view_listener_t
 			gAgent.clearAlwaysRun();
 			gAgent.clearRunning();
 		}
-		else
+//MK
+		else if (!gRRenabled || !gAgent.mRRInterface.mContainsAlwaysRun)
+//mk
+////	else
 		{
 			gAgent.setAlwaysRun();
 			gAgent.setRunning();

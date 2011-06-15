@@ -1,3 +1,32 @@
+2011-06-15 Boy Lane <boy.lane@yahoo.com>
+
+    * Update to RLV 2.7, fix for installer check if Rainbow is running (thanks Jon!), several cleanups
+    
+    modified:   ChangeLog.txt
+    modified:   linden/indra/llwindow/llwindowmacosx.cpp
+    modified:   linden/indra/llwindow/llwindowsdl.cpp
+    modified:   linden/indra/llwindow/llwindowwin32.cpp
+    modified:   linden/indra/mac_crash_logger/llcrashloggermac.cpp
+    modified:   linden/indra/mac_updater/AutoUpdater.nib/objects.xib
+    modified:   linden/indra/mac_updater/mac_updater.cpp
+    modified:   linden/indra/newview/Info-RainbowViewer.plist
+    modified:   linden/indra/newview/RRInterface.cpp
+    modified:   linden/indra/newview/RRInterface.h
+    modified:   linden/indra/newview/app_settings/ao_template.ini
+    modified:   linden/indra/newview/app_settings/grids.xml
+    modified:   linden/indra/newview/hbfloaterrlv.cpp
+    modified:   linden/indra/newview/installers/windows/installer_template.nsi
+    modified:   linden/indra/newview/llappviewer.cpp
+    modified:   linden/indra/newview/llappviewerwin32.cpp
+    modified:   linden/indra/newview/llnotify.cpp
+    modified:   linden/indra/newview/llstartup.cpp
+    modified:   linden/indra/newview/llviewerkeyboard.cpp
+    modified:   linden/indra/newview/llviewermedia.cpp
+    modified:   linden/indra/newview/llviewermenu.cpp
+    modified:   linden/indra/newview/llwebbrowserctrl.cpp
+    modified:   linden/indra/newview/macview.r
+    modified:   linden/indra/newview/res/viewerRes.rc
+
 2011-06-14 Boy Lane <boy.lane@yahoo.com>
 
     * ForceSitOnGround with RLV, NotifyOutWorldTransactions, OfferTeleportToAnyone

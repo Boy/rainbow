@@ -205,7 +205,7 @@ FunctionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Function CloseRainbowViewer
   Push $0
-  FindWindow $0 "Second Life" ""
+  FindWindow $0 "Rainbow Viewer" ""
   IntCmp $0 0 DONE
   MessageBox MB_OKCANCEL $(CloseRainbowViewerInstMB) IDOK CLOSE IDCANCEL CANCEL_INSTALL
 
@@ -217,7 +217,7 @@ Function CloseRainbowViewer
     SendMessage $0 16 0 0
 
   LOOP:
-	  FindWindow $0 "Second Life" ""
+	  FindWindow $0 "Rainbow Viewer" ""
 	  IntCmp $0 0 DONE
 	  Sleep 500
 	  Goto LOOP
@@ -338,7 +338,7 @@ FunctionEnd
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 Function un.CloseRainbowViewer
   Push $0
-  FindWindow $0 "Second Life" ""
+  FindWindow $0 "Rainbow Viewer" ""
   IntCmp $0 0 DONE
   MessageBox MB_OKCANCEL $(CloseRainbowViewerUnInstMB) IDOK CLOSE IDCANCEL CANCEL_UNINSTALL
 
@@ -350,7 +350,7 @@ Function un.CloseRainbowViewer
     SendMessage $0 16 0 0
 
   LOOP:
-	  FindWindow $0 "Second Life" ""
+	  FindWindow $0 "Rainbow Viewer" ""
 	  IntCmp $0 0 DONE
 	  Sleep 500
 	  Goto LOOP

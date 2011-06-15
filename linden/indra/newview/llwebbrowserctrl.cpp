@@ -741,7 +741,7 @@ void LLWebBrowserCtrl::onClickLinkHref( const EventType& eventIn )
 				const bool open_links_externally = false;
 				LLFloaterHtml::getInstance()->show( 
 					eventIn.getStringValue(), 
-						"Second Life Browser",
+						"Rainbow Viewer Browser",
 							open_links_externally,
 								mTrusted);
 			}

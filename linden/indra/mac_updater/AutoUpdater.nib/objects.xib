@@ -7,7 +7,7 @@
   <array count="5" name="allObjects">
     <object class="IBCarbonWindow" id="166">
       <string name="windowRect">405 222 533 663 </string>
-      <string name="title">Second Life Updater</string>
+      <string name="title">RainbowViewer Updater</string>
       <object name="rootControl" class="IBCarbonRootControl" id="167">
         <string name="bounds">0 0 128 441 </string>
         <array count="3" name="subviews">

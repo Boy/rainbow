@@ -104,10 +104,17 @@ static void agent_handle_doubletap_run(EKeystate s, LLAgent::EDoubleTapRunMode m
 		if (gAgent.mDoubleTapRunMode == mode &&
 		    gAgent.mDoubleTapRunTimer.getElapsedTimeF32() < NUDGE_TIME)
 		{
-			// Same walk-key was pushed again quickly; this is a
-			// double-tap so engage temporary running.
-			gAgent.setRunning();
-			gAgent.sendWalkRun(gAgent.getRunning());
+//MK
+			if (!gRRenabled || !gAgent.mRRInterface.mContainsRun)
+			{
+//mk
+				// Same walk-key was pushed again quickly; this is a
+				// double-tap so engage temporary running.
+				gAgent.setRunning();
+				gAgent.sendWalkRun(gAgent.getRunning());
+//MK
+			}
+//mk
 		}
 
 		// Pressing any walk-key resets the double-tap timer

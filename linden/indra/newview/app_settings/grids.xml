@@ -5,179 +5,11 @@
 		<key>grids</key>
 		<array>
 			<map>
-				<key>name</key><string>osgrid.org</string>
-				<key>label</key><string>OSGrid</string>
-				<key>login_uri</key><string>http://login.osgrid.org/</string>
-				<key>helper_uri</key><string>http://helper.osgrid.org/</string>
-				<key>login_page</key><string>http://osgrid.org/splash/</string>
-			</map>
-			<map>
-				<key>name</key><string>roleplayworlds.net</string>
-				<key>label</key><string>Roleplay Worlds</string>
-				<key>login_uri</key><string>http://grid.roleplayworlds.net:8002/</string>
-				<key>helper_uri</key><string>http:/grid.roleplayworlds.net/</string>
-				<key>login_page</key><string>http://grid.roleplayworlds.net/loginscreen.php</string>
-			</map>
-			<map>
-				<key>name</key><string>meta7.com</string>
-				<key>label</key><string>Meta7</string>
-				<key>login_uri</key><string>http://login.meta7.com/</string>
-				<key>helper_uri</key><string>http://login.meta7.com/secure</string>
-				<key>login_page</key><string>http://api.meta7.com/loginscreen.php</string>
-			</map>
-			<map>
-				<key>name</key><string>inworldz.com</string>
-				<key>label</key><string>Inworldz</string>
-				<key>login_uri</key><string>http://inworldz.com:8002/</string>
-				<key>helper_uri</key><string>http://inworldz.com/</string>
-				<key>login_page</key><string>http://inworldz.com/loginscreen.php</string>
-			</map>
-			<map>
-				<key>name</key><string>newworldgrid.com</string>
-				<key>label</key><string>New World Grid</string>
-				<key>login_uri</key><string>http://grid.newworldgrid.com:8002/</string>
-				<key>helper_uri</key><string>http://account.newworldgrid.com/</string>
-				<key>login_page</key><string>http://account.newworldgrid.com/loginscreen.php</string>
-			</map>
-			<map>
-				<key>name</key><string>giantgrid.no-ip.biz</string>
-				<key>label</key><string>GiantGrid</string>
-				<key>login_uri</key><string>http://Gianttest.no-ip.biz:8002/</string>
-				<key>helper_uri</key><string>http://gianttest.no-ip.biz/giantmap/</string>
-				<key>login_page</key><string>http://gianttest.no-ip.biz/GiantMap/loginscreen.php</string>
-			</map>
-			<map>
-				<key>name</key><string>3rg.changeip.org</string>
-				<key>label</key><string>3rd Rock Grid</string>
-				<key>login_uri</key><string>http://grid.3rdrockgrid.com:8002/</string>
-				<key>helper_uri</key><string>http://grid.3rdrockgrid.com/money/</string>
-				<key>login_page</key><string>http://3rdrockgrid.com/startpage.php</string>
-			</map>
-			<map>
-				<key>name</key><string>wsterra.com</string>
-				<key>label</key><string>World Sim Terra</string>
-				<key>login_uri</key><string>http://wsterra.com:8002/</string>
-				<key>helper_uri</key><string>http://wsterra.com/</string>
-				<key>login_page</key><string>http://wsterra.com/log.php</string>
-			</map>
-			<map>
-				<key>name</key><string>cyberlandia.net</string>
-				<key>label</key><string>Cyberlandia</string>
-				<key>login_uri</key><string>http://hypergrid.cyberlandia.net:8002/</string>
-				<key>helper_uri</key><string>http://hypergrid.cyberlandia.net/redux/</string>
-				<key>login_page</key><string>http://hypergrid.cyberlandia.net/redux/loginscreen.php</string>
-			</map>
-			<map>
-				<key>name</key><string>hypergrid.org</string>
-				<key>label</key><string>Metropolis</string>
-				<key>login_uri</key><string>http://hypergrid.org:8002/</string>
-				<key>helper_uri</key><string>http://metropolis.hypergrid.org/oswi.php</string>
-				<key>login_page</key><string>http://metropolis.hypergrid.org/</string>
-			</map>
-			<map>
-				<key>name</key><string>pseudospace.net</string>
-				<key>label</key><string>Pseudospace</string>
-				<key>login_uri</key><string>http://grid.pseudospace.net:8002/</string>
-				<key>helper_uri</key><string>http://www.pseudospace.net/</string>
-				<key>login_page</key><string>http://www.pseudospace.net/loginscreen.php</string>
-			</map>
-			<map>
-				<key>name</key><string>myopengrid.com</string>
-				<key>label</key><string>MyOpenGrid</string>
-				<key>login_uri</key><string>http://www.myopengrid.com:8002/</string>
-				<key>helper_uri</key><string>http://www.myopengrid.com/</string>
-				<key>login_page</key><string>http://www.myopengrid.com/loginscreen.php</string>
-			</map>
-			<map>
-				<key>name</key><string>avatarhangout.com</string>
-				<key>label</key><string>Avatar Hangout</string>
-				<key>login_uri</key><string>http://login.avatarhangout.com:8002/</string>
-				<key>helper_uri</key><string>http://avatarhangout.com/</string>
-				<key>login_page</key><string>http://www.avatarhangout.com/loginscreen.php</string>
-			</map>
-			<map>
-				<key>name</key><string>grid4us.net</string>
-				<key>label</key><string>Grid4Us</string>
-				<key>login_uri</key><string>http://grid4us.net:8002/</string>
-				<key>helper_uri</key><string>http://grid4us.net/</string>
-				<key>login_page</key><string>http://grid4us.net/login.php</string>
-			</map>
-			<map>
-				<key>name</key><string>germangrid.de</string>
-				<key>label</key><string>German Grid</string>
-				<key>login_uri</key><string>http://login.germangrid.de:8002/</string>
-				<key>helper_uri</key><string>http://germangrid.de/</string>
-				<key>login_page</key><string>http://germangrid.de/loginscreen.php</string>
-			</map>
-			<map>
-				<key>name</key><string>francogrid.net</string>
-				<key>label</key><string>FrancoGrid</string>
-				<key>login_uri</key><string>http://grid.francogrid.net:8002/</string>
-				<key>helper_uri</key><string></string>
-				<key>login_page</key><string>http://francogrid.org/client.php</string>
-			</map>
-			<map>
-				<key>name</key><string>gsquared.info</string>
-				<key>label</key><string>ReactionGrid</string>
-				<key>login_uri</key><string>http://gsquared.info:8008/</string>
-				<key>helper_uri</key><string></string>
-				<key>login_page</key><string>http://gsquared.info/portal/</string>
-			</map>
-			<map>
-				<key>name</key><string>os.taf-jp.com</string>
-				<key>label</key><string>OpenKansai</string>
-				<key>login_uri</key><string>http://os.taf-jp.com:8002/</string>
-				<key>helper_uri</key><string></string>
-				<key>login_page</key><string>http://os.taf-jp.com/</string>
-			</map>
-			<map>
-				<key>name</key><string>2lifegrid.game-host.org</string>
-				<key>label</key><string>Schweiz</string>
-				<key>login_uri</key><string>http://2lifegrid.game-host.org:8002/</string>
-				<key>helper_uri</key><string></string>
-				<key>login_page</key><string>http://2lifegrid.game-host.org/loginscreen.php</string>
-			</map>
-			<map>
-				<key>name</key><string>grid01.from-ne.com</string>
-				<key>label</key><string>Your Alternative Life</string>
-				<key>login_uri</key><string>http://grid01.from-ne.com:8002/</string>
-				<key>helper_uri</key><string>http://grid01.from-ne.com/tios/services/</string>
-				<key>login_page</key><string>http://grid01.from-ne.com/tios/loginscreen3.php</string>
-			</map>
-			<map>
-				<key>name</key><string>sciencesim.com</string>
-				<key>label</key><string>ScienceSim</string>
-				<key>login_uri</key><string>http://island.sciencesim.com:8002/</string>
-				<key>helper_uri</key><string>http://sciencesim.com/scisim/</string>
-				<key>login_page</key><string>http://sciencesim.com/scisim/loginscreen.php</string>
-			</map>
-			<map>
-				<key>name</key><string>avination.net</string>
-				<key>label</key><string>Avination</string>
-				<key>login_uri</key><string>http://login.avination.net/</string>
-				<key>helper_uri</key><string>https://secure.3dhosting.de/</string>
-				<key>login_page</key><string>http://www.avination.net/welcome.php</string>
-			</map>
-			<map>
-				<key>name</key><string>on.talentraspel.de</string>
-				<key>label</key><string>Open Neuland</string>
-				<key>login_uri</key><string>http://login-on.talentraspel.de/</string>
-				<key>helper_uri</key><string>http://secure-on.talentraspel.de</string>
-				<key>login_page</key><string>http://grid-on.talentraspel.de/portal/welcome.php</string>
-			</map>
-			<map>
-				<key>name</key><string>tritongrid.com</string>
-				<key>label</key><string>Triton Grid</string>
-				<key>login_uri</key><string>http://tritongrid.com:8002/</string>
-				<key>helper_uri</key><string>http://tritongrid.com/modules/xoopensim/helper/</string>
-				<key>login_page</key><string>http://tritongrid.com/loginscreen.php</string>
-			</map>
-			<map>
-				<key>name</key><string>virtyou.com</string>
-				<key>label</key><string>Virtyou</string>
-				<key>login_uri</key><string>http://virtyou.com:11002/</string>
-				<key>helper_uri</key><string>http://opensim.virtyou.com/opensimwi/services/</string>
-				<key>login_page</key><string>http://virtyou.com/welcome/</string>
+				<key>name</key><string>grid.ansky.ca</string>
+				<key>label</key><string>Ansky Grid</string>
+				<key>login_uri</key><string>http://grid.ansky.ca:8012/</string>
+				<key>helper_uri</key><string>http://grid.ansky.ca:8012/</string>
+				<key>login_page</key><string>http://grid.ansky.ca/webui/loginscreen/index.php</string>
 			</map>
 			<map>
 				<key>name</key><string>alphatowne.com</string>
@@ -187,18 +19,74 @@
 				<key>login_page</key><string>http://web.alphatowne.com/loginpage.cfm</string>
 			</map>
 			<map>
-				<key>name</key><string>sim-world.org</string>
-				<key>label</key><string>Sim-World</string>
-				<key>login_uri</key><string>http://sim-world.org:8003/</string>
-				<key>helper_uri</key><string>http://www.sim-world.org/home/gridservices07/</string>
-				<key>login_page</key><string>http://www.sim-world.org/home/index.php/grid-news</string>
+				<key>name</key><string>avatarhangout.com</string>
+				<key>label</key><string>Avatar Hangout</string>
+				<key>login_uri</key><string>http://login.avatarhangout.com:8002/</string>
+				<key>helper_uri</key><string>http://www.avatarhangout.com/helpers/</string>
+				<key>login_page</key><string>http://www.avatarhangout.com/gridlogin/</string>
 			</map>
 			<map>
-				<key>name</key><string>twistedsky.net</string>
-				<key>label</key><string>Twisted Sky</string>
-				<key>login_uri</key><string>http://twistedsky.net:8002/</string>
-				<key>helper_uri</key><string>http://twistedsky.net:9000/</string>
-				<key>login_page</key><string>http://twistedsky.net/OpenSimWI/loginscreen.php</string>
+				<key>name</key><string>avination.net</string>
+				<key>label</key><string>Avination</string>
+				<key>login_uri</key><string>http://login.avination.net/</string>
+				<key>helper_uri</key><string>https://secure.3dhosting.de/</string>
+				<key>login_page</key><string>http://www.avination.net/welcome.php</string>
+			</map>
+			<map>
+				<key>name</key><string>craft-world.org</string>
+				<key>label</key><string>Craft</string>
+				<key>login_uri</key><string>http://craft-world.org:8002/</string>
+				<key>helper_uri</key><string>http://webapp.craft-world.org/economy/</string>
+				<key>login_page</key><string>http://craft-world.org/loginscreen.php</string>
+			</map>
+			<map>
+				<key>name</key><string>cybergrid.de</string>
+				<key>label</key><string>Cybergrid</string>
+				<key>login_uri</key><string>http://cybergrid.de:8002/</string>
+				<key>helper_uri</key><string>http://cybergrid.de:8002/</string>
+				<key>login_page</key><string>http://cybergrid.de:8002/wifi/</string>
+			</map>
+			<map>
+				<key>name</key><string>francogrid.net</string>
+				<key>label</key><string>FrancoGrid</string>
+				<key>login_uri</key><string>http://login.francogrid.org/</string>
+				<key>helper_uri</key><string>http://helper.main.francogrid.org/</string>
+				<key>login_page</key><string>http://viewer.francogrid.org/</string>
+			</map>
+			<map>
+				<key>name</key><string>germangrid.de</string>
+				<key>label</key><string>German Grid</string>
+				<key>login_uri</key><string>http://login.germangrid.de:8002/</string>
+				<key>helper_uri</key><string>http://germangrid.de/</string>
+				<key>login_page</key><string>http://germangrid.de/loginscreen.php</string>
+			</map>
+			<map>
+				<key>name</key><string>gergrid.de</string>
+				<key>label</key><string>GerGrid</string>
+				<key>login_uri</key><string>http://gergrid.de:8002/</string>
+				<key>helper_uri</key><string>https://www.gergrid.de/</string>
+				<key>login_page</key><string>http://www.gergrid.de/loginscreen.php</string>
+			</map>
+			<map>
+				<key>name</key><string>giantgrid.no-ip.biz</string>
+				<key>label</key><string>GiantGrid</string>
+				<key>login_uri</key><string>http://Giantgrid.no-ip.biz:8002/</string>
+				<key>helper_uri</key><string>http://giantgrid.no-ip.biz/XoopCube/html/modules/xoopensim/helper/</string>
+				<key>login_page</key><string>http://www.giantgrid.nl/</string>
+			</map>
+			<map>
+				<key>name</key><string>grid.govgrid.org</string>
+				<key>label</key><string>GovGrid</string>
+				<key>login_uri</key><string>http://grid.govgrid.org:8002/</string>
+				<key>helper_uri</key><string>http://grid.govgrid.org:9000/</string>
+				<key>login_page</key><string>http://grid.govgrid.org/welcome/</string>
+			</map>
+			<map>
+				<key>name</key><string>inworldz.com</string>
+				<key>label</key><string>Inworldz</string>
+				<key>login_uri</key><string>http://inworldz.com:8002/</string>
+				<key>helper_uri</key><string>http://inworldz.com/</string>
+				<key>login_page</key><string>http://inworldz.com/loginscreen.php</string>
 			</map>
 			<map>
 				<key>name</key><string>jokaydia.metaverseworlds.com</string>
@@ -208,18 +96,180 @@
 				<key>login_page</key><string>http://jokaydia.metaverseworlds.com/welcome/</string>
 			</map>
 			<map>
-				<key>name</key><string>unica.it</string>
-				<key>label</key><string>Unica</string>
-				<key>login_uri</key><string>http://grid.unica.it:9000/</string>
-				<key>helper_uri</key><string></string>
-				<key>login_page</key><string>http://grid.unica.it/loginscreen.php</string>
+				<key>name</key><string>logicamp.dyndns.org</string>
+				<key>label</key><string>Logicamp</string>
+				<key>login_uri</key><string>http://logicamp.dyndns.org:8002/</string>
+				<key>helper_uri</key><string>http://logicamp.dyndns.org/</string>
+				<key>login_page</key><string>http://logicamp.dyndns.org/loginscreen.php</string>
 			</map>
 			<map>
-				<key>name</key><string>virtualworldsgrid.com</string>
-				<key>label</key><string>Virtual Worlds Grid</string>
-				<key>login_uri</key><string>http://www.myronjc.webhop.net:8002/</string>
+				<key>name</key><string>hypergrid.org</string>
+				<key>label</key><string>Metropolis</string>
+				<key>login_uri</key><string>http://hypergrid.org:8002/</string>
+				<key>helper_uri</key><string>http://metropolis.hypergrid.org/oswi.php</string>
+				<key>login_page</key><string>http://metropolis.hypergrid.org/</string>
+			</map>
+			<map>
+				<key>name</key><string>myopengrid.com</string>
+				<key>label</key><string>MyOpenGrid</string>
+				<key>login_uri</key><string>http://login.myopengrid.com/</string>
+				<key>helper_uri</key><string>http://myopengrid.com/modules/helper/</string>
+				<key>login_page</key><string>http://myopengrid.com/welcome/</string>
+			</map>
+			<map>
+				<key>name</key><string>newworldgrid.com</string>
+				<key>label</key><string>New World Grid</string>
+				<key>login_uri</key><string>http://grid.newworldgrid.com:8002/</string>
+				<key>helper_uri</key><string>http://account.newworldgrid.com/</string>
+				<key>login_page</key><string>http://account.newworldgrid.com/loginscreen.php</string>
+			</map>
+			<map>
+				<key>name</key><string>northgrid.net</string>
+				<key>label</key><string>North Grid</string>
+				<key>login_uri</key><string>http://northgrid.net:8002/</string>
+				<key>helper_uri</key><string>http://northgrid.net/</string>
+				<key>login_page</key><string>http://northgrid.net/</string>
+			</map>
+			<map>
+				<key>name</key><string>on.talentraspel.de</string>
+				<key>label</key><string>Open Neuland</string>
+				<key>login_uri</key><string>http://login-on.talentraspel.de/</string>
+				<key>helper_uri</key><string>http://secure-on.talentraspel.de</string>
+				<key>login_page</key><string>http://grid-on.talentraspel.de/portal/welcome.php</string>
+			</map>
+			<map>
+				<key>name</key><string>osgrid.org</string>
+				<key>label</key><string>OSGrid</string>
+				<key>login_uri</key><string>http://login.osgrid.org/</string>
+				<key>helper_uri</key><string>http://helper.osgrid.org/</string>
+				<key>login_page</key><string>http://osgrid.org/splash/</string>
+			</map>
+			<map>
+				<key>name</key><string>pseudospace.net</string>
+				<key>label</key><string>Pseudospace</string>
+				<key>login_uri</key><string>http://grid.pseudospace.net:8002/</string>
+				<key>helper_uri</key><string>http://www.pseudospace.net/</string>
+				<key>login_page</key><string>http://www.pseudospace.net/loginscreen.php</string>
+			</map>
+			<map>
+				<key>name</key><string>roleplayworlds.net</string>
+				<key>label</key><string>Roleplay Worlds</string>
+				<key>login_uri</key><string>http://grid.roleplayworlds.net:8002/</string>
+				<key>helper_uri</key><string>http:/grid.roleplayworlds.net/</string>
+				<key>login_page</key><string>http://roleplayworlds.net/loginscreen</string>
+			</map>
+			<map>
+				<key>name</key><string>sciencesim.com</string>
+				<key>label</key><string>ScienceSim</string>
+				<key>login_uri</key><string>http://island.sciencesim.com:8002/</string>
+				<key>helper_uri</key><string>http://sciencesim.com/scisim/</string>
+				<key>login_page</key><string>http://sciencesim.com/scisim/loginscreen.php</string>
+			</map>
+			<map>
+				<key>name</key><string>sim-world.org</string>
+				<key>label</key><string>Sim-World</string>
+				<key>login_uri</key><string>http://grid.sim-world.org:8003/</string>
+				<key>helper_uri</key><string>http://grid.sim-world.org/home/gridservices07/</string>
+				<key>login_page</key><string>http://grid.sim-world.org/home/loginscreen/</string>
+			</map>
+			<map>
+				<key>name</key><string>tertiarygrid.com</string>
+				<key>label</key><string>Tertiary grid</string>
+				<key>login_uri</key><string>http://tertiarygrid.com:8002/</string>
+				<key>helper_uri</key><string>http://tertiarygrid.com/osgwi/</string>
+				<key>login_page</key><string>http://tertiarygrid.com/launch.php</string>
+			</map>
+			<map>
+				<key>name</key><string>twistedsky.net</string>
+				<key>label</key><string>Twisted Sky</string>
+				<key>login_uri</key><string>http://twistedsky.net:8002/</string>
+				<key>helper_uri</key><string>http://twistedsky.net:9000/</string>
+				<key>login_page</key><string>http://twistedsky.net/OpenSimWI/loginscreen.php</string>
+			</map>
+			<map>
+				<key>name</key><string>virtyou.com</string>
+				<key>label</key><string>Virtyou</string>
+				<key>login_uri</key><string>http://virtyou.com:11002/</string>
+				<key>helper_uri</key><string>http://opensim.virtyou.com/opensimwi/services/</string>
+				<key>login_page</key><string>http://virtyou.com/welcome/</string>
+			</map>
+			<map>
+				<key>name</key><string>talentraspel.de</string>
+				<key>label</key><string>Wilder Western</string>
+				<key>login_uri</key><string>http://login-ww.talentraspel.de/</string>
+				<key>helper_uri</key><string>http://secure-ww.talentraspel.de/</string>
+				<key>login_page</key><string>http://grid-ww.talentraspel.de/portal/welcome.php</string>
+			</map>
+			<map>
+				<key>name</key><string>gravity.netbreakers.com</string>
+				<key>label</key><string>World Galileo</string>
+				<key>login_uri</key><string>http://gravity.netbreakers.com:8002//</string>
+				<key>helper_uri</key><string>http://galileo.netbreakers.com/modules/xoopensim/helper/</string>
+				<key>login_page</key><string>http://galileo.netbreakers.com/modules/xoopensim/</string>
+			</map>
+			<map>
+				<key>name</key><string>grid01.from-ne.com</string>
+				<key>label</key><string>Your Alternative Life</string>
+				<key>login_uri</key><string>http://grid01.from-ne.com:8002/</string>
+				<key>helper_uri</key><string>http://grid01.from-ne.com/tios/services/</string>
+				<key>login_page</key><string>http://grid01.from-ne.com/tios/loginscreen3.php</string>
+			</map>
+			<map>
+				<key>name</key><string>yoursimspot.com</string>
+				<key>label</key><string>YourSimSpot</string>
+				<key>login_uri</key><string>http://yoursimspot.com:9000/</string>
+				<key>helper_uri</key><string>http://yoursimspot.com/</string>
+				<key>login_page</key><string>http://yoursimspot.com/</string>
+			</map>
+			<map>
+				<key>name</key><string>3rg.changeip.org</string>
+				<key>label</key><string>3rd Rock Grid</string>
+				<key>login_uri</key><string>http://grid.3rdrockgrid.com:8002/</string>
+				<key>helper_uri</key><string>http://grid.3rdrockgrid.com/money/</string>
+				<key>login_page</key><string>http://3rdrockgrid.com/startpage.php</string>
+			</map>
+<!-- Below are grids without an Helper URI -->
+			<map>
+				<key>name</key><string>grid.atmeeting.com</string>
+				<key>label</key><string>AtMeeting</string>
+				<key>login_uri</key><string>http://atmeeting.net:8002/</string>
 				<key>helper_uri</key><string></string>
-				<key>login_page</key><string>http://www.virtualworldsgrid.com/</string>
+				<key>login_page</key><string>http://grid.atmeeting.com/</string>
+			</map>
+			<map>
+				<key>name</key><string>dorenas-world.de</string>
+				<key>label</key><string>Dorenas World</string>
+				<key>login_uri</key><string>http://dorenas-world.de:8002/</string>
+				<key>helper_uri</key><string></string>
+				<key>login_page</key><string>http://dorenas-world.de:8003/wifi/</string>
+			</map>
+			<map>
+				<key>name</key><string>fleepgrid.com</string>
+				<key>label</key><string>FleepGrid</string>
+				<key>login_uri</key><string>http://fleepgrid.com:8002/</string>
+				<key>helper_uri</key><string></string>
+				<key>login_page</key><string>http://fleepgrid.com:8002/wifi/</string>
+			</map>
+			<map>
+				<key>name</key><string>jamland.de</string>
+				<key>label</key><string>Jamland</string>
+				<key>login_uri</key><string>http://jamland.de:8002/</string>
+				<key>helper_uri</key><string></string>
+				<key>login_page</key><string>http://jamland.de/opensimwi/loginscreen.php</string>
+			</map>
+			<map>
+				<key>name</key><string>marbleisle.com</string>
+				<key>label</key><string>Marble Isle</string>
+				<key>login_uri</key><string>http://www.marbleisle.com:9000/</string>
+				<key>helper_uri</key><string></string>
+				<key>login_page</key><string>http://www.marbleisle.com:9000/wifi/welcome.html</string>
+			</map>
+			<map>
+				<key>name</key><string>my3dworld.org</string>
+				<key>label</key><string>My 3D World</string>
+				<key>login_uri</key><string>http://my3dworld.org:8002/</string>
+				<key>helper_uri</key><string></string>
+				<key>login_page</key><string>http://my3dworld.org/sim/loginscreen.php</string>
 			</map>
 			<map>
 				<key>name</key><string>nzvwg.org</string>
@@ -229,46 +279,87 @@
 				<key>login_page</key><string>http://nzvwg.org/opensim/loginScreen.php</string>
 			</map>
 			<map>
-				<key>name</key><string>tribalnet.se</string>
-				<key>label</key><string>Tribal Net</string>
-				<key>login_uri</key><string>http://login.tribalnet.se/</string>
+				<key>name</key><string>otherland.dynalias.com</string>
+				<key>label</key><string>Otherland</string>
+				<key>login_uri</key><string>http://otherland.dynalias.com:8002/</string>
 				<key>helper_uri</key><string></string>
-				<key>login_page</key><string></string>
+				<key>login_page</key><string>http://otherland.dynalias.com/</string>
 			</map>
 			<map>
-				<key>name</key><string>sim-linuxmain.org</string>
-				<key>label</key><string>Cuon Grid</string>
-				<key>login_uri</key><string>http://sim-linuxmain.org:8002/</string>
+				<key>name</key><string>gsquared.info</string>
+				<key>label</key><string>ReactionGrid</string>
+				<key>login_uri</key><string>http://gsquared.info:8008/</string>
 				<key>helper_uri</key><string></string>
-				<key>login_page</key><string></string>
+				<key>login_page</key><string>http://gsquared.info/portal/</string>
 			</map>
 			<map>
-				<key>name</key><string>emeraldnetwork.webhop.net</string>
-				<key>label</key><string>Emerald Network</string>
-				<key>login_uri</key><string>http://emeraldnetwork.webhop.net:8002/</string>
+				<key>name</key><string>xn--tln-tna.net</string>
+				<key>label</key><string>Tlon</string>
+				<key>login_uri</key><string>http://www.xn--tln-tna.net:8002/</string>
 				<key>helper_uri</key><string></string>
-				<key>login_page</key><string></string>
+				<key>login_page</key><string>http://www.xn--tln-tna.net/</string>
 			</map>
 			<map>
-				<key>name</key><string>uvatar.com</string>
-				<key>label</key><string>Uvatar</string>
-				<key>login_uri</key><string>http://uvatar.com:8002/</string>
+				<key>name</key><string>ufsgrid.com</string>
+				<key>label</key><string>UFS Grid</string>
+				<key>login_uri</key><string>http://login.ufsgrid.com:8002/</string>
 				<key>helper_uri</key><string></string>
-				<key>login_page</key><string></string>
+				<key>login_page</key><string>http://www.ufsgrid.com/app/loginscreen/screen.php</string>
 			</map>
 			<map>
-				<key>name</key><string>local8002</string>
+				<key>name</key><string>unica.it</string>
+				<key>label</key><string>Unica</string>
+				<key>login_uri</key><string>http://grid.unica.it:9000/</string>
+				<key>helper_uri</key><string></string>
+				<key>login_page</key><string>http://grid.unica.it/loginscreen.php</string>
+			</map>
+			<map>
+				<key>name</key><string>viradu.com</string>
+				<key>label</key><string>Viradu</string>
+				<key>login_uri</key><string>http://viradu.com:9000/</string>
+				<key>helper_uri</key><string></string>
+				<key>login_page</key><string>http://viradu.com:9000/wifi/welcome.html</string>
+			</map>
+			<map>
+				<key>name</key><string>virtualfrance3d.venez.fr</string>
+				<key>label</key><string>VirtualFrance3D</string>
+				<key>login_uri</key><string>http://www.virtualfrance3d.venez.fr:8002/</string>
+				<key>helper_uri</key><string></string>
+				<key>login_page</key><string>http://virtualgame.venez.fr/</string>
+			</map>
+			<map>
+				<key>name</key><string>virtual-rp.com</string>
+				<key>label</key><string>Virtual RP</string>
+				<key>login_uri</key><string>http://virtual-rp.com:8002/</string>
+				<key>helper_uri</key><string></string>
+				<key>login_page</key><string>http://loginscreen.virtual-rp.com/</string>
+			</map>
+			<map>
+				<key>name</key><string>virtualife.it</string>
+				<key>label</key><string>Virtual Life</string>
+				<key>login_uri</key><string>http://grid.virtualife.it:8002/</string>
+				<key>helper_uri</key><string></string>
+				<key>login_page</key><string>http://grid.serverradio.org/blocks/modlos/helper/loginpage.php</string>
+			</map>
+			<map>
+				<key>name</key><string>virtualworldsgrid.com</string>
+				<key>label</key><string>Virtual Worlds Grid</string>
+				<key>login_uri</key><string>http://www.myronjc.webhop.net:8002/</string>
+				<key>helper_uri</key><string></string>
+				<key>login_page</key><string>http://www.virtualworldsgrid.com/</string>
+			</map>
+<!-- Local grids -->
+			<map>
+				<key>name</key><string>localhost8002</string>
 				<key>label</key><string>Port 8002</string>
 				<key>login_uri</key><string>http://127.0.0.1:8002/</string>
-				<key>helper_uri</key><string></string>
-        			<key>login_page</key><string></string>
+				<key>helper_uri</key><string>http://127.0.0.1/</string>
 			</map>
 			<map>
-				<key>name</key><string>local9000</string>
+				<key>name</key><string>localhost9000</string>
 				<key>label</key><string>Port 9000</string>
 				<key>login_uri</key><string>http://127.0.0.1:9000/</string>
-				<key>helper_uri</key><string></string>
-				<key>login_page</key><string></string>
+				<key>helper_uri</key><string>http://127.0.0.1/</string>
 			</map>
 		</array>
 	</map>

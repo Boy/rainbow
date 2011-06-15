@@ -116,7 +116,7 @@ BEGIN
     PUSHBUTTON      "Quit",IDCANCEL,152,152,50,14
     DEFPUSHBUTTON   "Connect...",IDOK,225,152,50,14
     CONTROL         140,IDB_BITMAP1,"Static",SS_BITMAP,8,7,133,157
-    LTEXT           "Connect to Second Life",IDC_STATIC,152,7,78,8
+    LTEXT           "Connect to Virtual World",IDC_STATIC,152,7,78,8
 END
 
 SPLASHSCREEN DIALOG  32, 32, 144, 34
@@ -124,7 +124,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_VISIBLE
 FONT 8, "MS Sans Serif"
 BEGIN
     ICON            IDI_LL_ICON,IDC_STATIC,7,7,20,20
-    LTEXT           "Loading Second Life...",666,36,13,91,8
+    LTEXT           "Loading Rainbow Viewer...",666,36,13,91,8
 END
 
 
@@ -249,12 +249,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Boy Lane"
             VALUE "FileDescription", "Rainbow Viewer"
-            VALUE "FileVersion", "1.22.12.6"
+            VALUE "FileVersion", "1.22.12.7"
             VALUE "InternalName", "Rainbow Viewer"
             VALUE "LegalCopyright", "GPL"
             VALUE "OriginalFilename", "RainbowViewer.exe"
             VALUE "ProductName", "Rainbow Viewer"
-            VALUE "ProductVersion", "1.22.12 R6"
+            VALUE "ProductVersion", "1.22.12 R7"
         END
     END
     BLOCK "VarFileInfo"

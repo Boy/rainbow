@@ -378,7 +378,7 @@ int main(int argc, char **argv)
 		}
 		else
 		{
-			gProductName = "Second Life";
+			gProductName = "Rainbow Viewer";
 		}
 	}
 	
@@ -471,7 +471,7 @@ int main(int argc, char **argv)
 		err = CreateStandardAlert(
 				kAlertStopAlert,
 				CFSTR("Error"),
-				CFSTR("An error occurred while updating Second Life.  Please download the latest version from www.secondlife.com."),
+				CFSTR("An error occurred while updating Rainbow Viewer. Please download the latest version from http://my.opera.com/boylane."),
 				&params,
 				&alert);
 		
@@ -611,7 +611,7 @@ void filterFile(const char* filename)
 
 	// Now run it through sed.
 	snprintf(temp, sizeof(temp), 		
-			"sed 's/Second Life/%s/g' '%s.tmp' > '%s'", gProductName, filename, filename);
+			"sed 's/RainbowViewer/%s/g' '%s.tmp' > '%s'", gProductName, filename, filename);
 	system(temp);		/* Flawfinder: ignore */
 }
 
@@ -648,7 +648,7 @@ static bool isFSRefViewerBundle(FSRef *targetRef)
 	}
 	else
 	{
-		if(CFStringCompare(targetBundleID, CFSTR("com.secondlife.indra.viewer"), 0) == kCFCompareEqualTo)
+		if(CFStringCompare(targetBundleID, CFSTR("com.rainbowviewer.indra.viewer"), 0) == kCFCompareEqualTo)
 		{
 			// This is the bundle we're looking for.
 			result = true;
@@ -934,7 +934,7 @@ void *updatethreadproc(void*)
 
 #endif // 0 *HACK for DEV-11935
 		
-		strncat(temp, "/SecondLifeUpdate_XXXXXX", (sizeof(temp) - strlen(temp)) - 1);
+		strncat(temp, "/RainbowViewerUpdate_XXXXXX", (sizeof(temp) - strlen(temp)) - 1);
 		if(mkdtemp(temp) == NULL)
 		{
 			throw 0;
@@ -952,7 +952,7 @@ void *updatethreadproc(void*)
 				
 		chdir(tempDir);
 		
-		snprintf(temp, sizeof(temp), "SecondLife.dmg");		
+		snprintf(temp, sizeof(temp), "RainbowViewer.dmg");		
 		
 		downloadFile = LLFile::fopen(temp, "wb");		/* Flawfinder: ignore */
 		if(downloadFile == NULL)
@@ -999,7 +999,7 @@ void *updatethreadproc(void*)
 		// NOTE: we could add -private at the end of this command line to keep the image from showing up in the Finder,
 		//		but if our cleanup fails, this makes it much harder for the user to unmount the image.
 		std::string mountOutput;
-		FILE* mounter = popen("hdiutil attach SecondLife.dmg -mountpoint mnt", "r");		/* Flawfinder: ignore */
+		FILE* mounter = popen("hdiutil attach RainbowViewer.dmg -mountpoint mnt", "r");		/* Flawfinder: ignore */
 		
 		if(mounter == NULL)
 		{

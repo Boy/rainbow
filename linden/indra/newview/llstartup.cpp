@@ -831,7 +831,7 @@ bool idle_startup()
 		{
 			// *TODO:translate (maybe - very unlikely error message)
 			// Note: alerts.xml may be invalid - if this gets translated it will need to be in the code
-			std::string bad_xui_msg = "An error occured while updating Second Life. Please download the latest version from www.secondlife.com.";
+			std::string bad_xui_msg = "An error occured while updating Rainbow Viewer. Please download the latest version from http://my.opera.com/boylane.";
             LLAppViewer::instance()->earlyExit(bad_xui_msg);
 		}
 		//
@@ -1890,7 +1890,7 @@ bool idle_startup()
 			}
 			else
 			{
-				emsg << "Unable to connect to " << LLAppViewer::instance()->getSecondLifeTitle() << ".\n";
+				emsg << "Unable to connect to Virtual World" << ".\n";
 				emsg << LLUserAuth::getInstance()->errorMessage();
 			}
 			break;

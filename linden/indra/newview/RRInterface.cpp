@@ -167,6 +167,8 @@ void refreshCachedVariable (std::string var)
 	else if (var == "showhovertextworld")	gAgent.mRRInterface.mContainsShowhovertextworld = contained;
 	else if (var == "defaultwear")			gAgent.mRRInterface.mContainsDefaultwear = contained;
 	else if (var == "permissive")			gAgent.mRRInterface.mContainsPermissive = contained;
+	else if (var == "temprun")				gAgent.mRRInterface.mContainsRun = contained;
+	else if (var == "alwaysrun")			gAgent.mRRInterface.mContainsAlwaysRun = contained;
 
 	gAgent.mRRInterface.refreshTPflag(true);
 }
@@ -229,7 +231,28 @@ RRInterface::RRInterface():
 	mLastLoadedPreset(),
 	mReattaching(FALSE),
 	mReattachTimeout(FALSE),
-	mSnappingBackToLastStandingLocation(FALSE)
+	mSnappingBackToLastStandingLocation(FALSE),
+	mHasLockedHuds(FALSE),
+	mContainsDetach(FALSE),
+	mContainsShowinv(FALSE),
+	mContainsUnsit(FALSE),
+	mContainsFartouch(FALSE),
+	mContainsShowworldmap(FALSE),
+	mContainsShowminimap(FALSE),
+	mContainsShowloc(FALSE),
+	mContainsShownames(FALSE),
+	mContainsSetenv(FALSE),
+	mContainsSetdebug(FALSE),
+	mContainsFly(FALSE),
+	mContainsEdit(FALSE),
+	mContainsRez(FALSE),
+	mContainsShowhovertextall(FALSE),
+	mContainsShowhovertexthud(FALSE),
+	mContainsShowhovertextworld(FALSE),
+	mContainsDefaultwear(FALSE),
+	mContainsPermissive(FALSE),
+	mContainsRun(FALSE),
+	mContainsAlwaysRun(FALSE)
 {
 	mAllowedS32 = ",";
 
@@ -574,13 +597,27 @@ BOOL RRInterface::add (LLUUID object_uuid, std::string action, std::string optio
 		else if (action=="showminimap") {
 			gFloaterMap->setVisible(FALSE);
 		}
-		else if (action=="shownames") {
-			LLFloaterChat::getInstance()->childSetVisible("active_speakers_panel", FALSE);
+		else if (action == "shownames") {
+			LLFloaterChat::getInstance()->childSetVisible("active_speakers_panel", false);
 		}
-		else if (action=="fly") {
+		else if (action == "fly") {
  			gAgent.setFlying (FALSE);
    		}
-		else if (action=="showworldmap" || action == "showloc") {
+		else if (action == "temprun") {
+			if (gAgent.getRunning()) {
+				if (gAgent.getAlwaysRun()) gAgent.clearAlwaysRun();
+				gAgent.clearRunning();
+				gAgent.sendWalkRun(false);
+			}
+		}
+		else if (action == "alwaysrun") {
+			if (gAgent.getAlwaysRun()) {
+				if (gAgent.getRunning()) gAgent.clearRunning();
+				gAgent.clearAlwaysRun();
+				gAgent.sendWalkRun(false);
+			}
+		}
+		else if (action == "showworldmap" || action == "showloc") {
 			if (gFloaterWorldMap->getVisible()) {
 				LLFloaterWorldMap::toggle(NULL);
 			}
@@ -1051,7 +1088,7 @@ BOOL RRInterface::force (LLUUID object_uuid, std::string command, std::string op
 		}
 	}
 	else if (command=="detach" || command=="remattach") { // detach:chest=force OR detach:restraints/cuffs=force (@remattach is a synonym)
-		LLViewerJointAttachment* attachpt = findAttachmentPointFromName (option, TRUE); // exact name
+		LLViewerJointAttachment* attachpt = findAttachmentPointFromName(option, true); // exact name
 		if (attachpt != NULL || option == "") return forceDetach (option); // remove by attach pt
 		else forceDetachByName (option, FALSE, TRUE);
 	}
@@ -1994,7 +2031,7 @@ typedef struct
 	LLViewerJointAttachment* attachment;
 } Candidate;
 
-LLViewerJointAttachment* RRInterface::findAttachmentPointFromName (std::string objectName, BOOL exactName)
+LLViewerJointAttachment* RRInterface::findAttachmentPointFromName (std::string objectName, bool exactName)
 {
 	// for each possible attachment point, check whether its name appears in the name of
 	// the item.
@@ -2004,17 +2041,24 @@ LLViewerJointAttachment* RRInterface::findAttachmentPointFromName (std::string o
 	// - right-most index where it is found in the name
 	// - a pointer to that attachment point
 	// When we have that list, choose the highest index, and in case of ex-aequo choose the longest length
+	if (objectName.length() < 3)
+	{
+		// No need to bother: the shorter attachment name is "Top" with 3 characters...
+		return NULL;
+	}
 	LLVOAvatar* avatar = gAgent.getAvatarObject();
 	if (!avatar) {
 		llwarns << "NULL avatar pointer. Aborting." << llendl;
 		return NULL;
 	}
+	if (sRestrainedLoveDebug) {
+		llinfos << "Searching attachment name with " << (exactName ? "exact match" : "partial matches") << " in: " << objectName << llendl;
+	}
 	LLStringUtil::toLower(objectName);
 	std::string attachName;
-	int ind = -1;
 	bool found_one = false;
 	std::vector<Candidate> candidates;
-	
+
 	for (LLVOAvatar::attachment_map_t::iterator iter = avatar->mAttachmentPoints.begin(); 
 		 iter != avatar->mAttachmentPoints.end(); )
 	{
@@ -2023,24 +2067,28 @@ LLViewerJointAttachment* RRInterface::findAttachmentPointFromName (std::string o
 		if (attachment) {
 			attachName = attachment->getName();
 			LLStringUtil::toLower(attachName);
-			if (exactName && objectName == attachName) return attachment;
-			else if (!exactName && (ind = objectName.rfind (attachName)) != -1)
-			{
-				Candidate new_candidate;
-				new_candidate.index = ind;
-				new_candidate.length = attachName.length();
-				new_candidate.attachment = attachment;
-				candidates.push_back (new_candidate);
-				found_one = true;
-				if (sRestrainedLoveDebug) {
-					llinfos << "new candidate '" << attachName << "' : index=" << new_candidate.index << "   length=" << new_candidate.length << llendl;
+			if (exactName) {
+				if (objectName == attachName) return attachment;
+			} else {
+				int ind = objectName.rfind(attachName);
+				if (ind != -1 && objectName.substr(0, ind).find('(') != -1
+					&& objectName.substr(ind).find(')') != -1) {
+					Candidate new_candidate;
+					new_candidate.index = ind;
+					new_candidate.length = attachName.length();
+					new_candidate.attachment = attachment;
+					candidates.push_back (new_candidate);
+					found_one = true;
+					if (sRestrainedLoveDebug) {
+						llinfos << "New candidate: '" << attachName << "', index=" << new_candidate.index << ", length=" << new_candidate.length << llendl;
+					}
 				}
 			}
 		}
 	}
 	if (!found_one) {
 		if (sRestrainedLoveDebug) {
-			llinfos << "no attachment found" << llendl;
+			llinfos << "No attachment found." << llendl;
 		}
 		return NULL;
 	}
@@ -2071,7 +2119,7 @@ LLViewerJointAttachment* RRInterface::findAttachmentPointFromName (std::string o
 		candidate = candidates[ind_res];
 		res = candidate.attachment;
 		if (sRestrainedLoveDebug && res) {
-			llinfos << "returning '" << res->getName() << "'" << llendl;
+			llinfos << "Returning: '" << res->getName() << "'" << llendl;
 		}
 	}
 	return res;
@@ -2355,8 +2403,6 @@ BOOL RRInterface::forceDetachByName (std::string category, BOOL recursive, BOOL 
 								detachObject (object);
 								break;
 							}
-							handle_detach_from_avatar ((void*)attachment);
-							break;
 						}					
 					}
 					// piece of clothing
@@ -2405,8 +2451,6 @@ BOOL RRInterface::forceDetachByName (std::string category, BOOL recursive, BOOL 
 								detachObject (object);
 								break;
 							}
-							handle_detach_from_avatar ((void*)attachment);
-							break;
 						}
 					}
 				}
@@ -2950,7 +2994,7 @@ std::string RRInterface::getFullPath (LLInventoryItem* item, std::string option,
 			if (item != NULL && !gAgent.mRRInterface.isUnderRlvShare(item)) item = NULL; // security : we would return the path even if the item was not shared otherwise
 		}
 		else { // this is not a clothing layer => it has to be an attachment point
-			LLViewerJointAttachment* attach_point = gAgent.mRRInterface.findAttachmentPointFromName (option, TRUE);
+			LLViewerJointAttachment* attach_point = gAgent.mRRInterface.findAttachmentPointFromName(option, true);
 			if (attach_point) {
 				std::deque<std::string> res;
 				for (unsigned int i = 0; i < attach_point->mAttachedObjects.size(); ++i) {
@@ -3434,7 +3478,7 @@ bool RRInterface::canDetach(std::string attachpt, BOOL handle_nostrip /* = TRUE 
 	if (contains("detach:" + attachpt)) return false;
 	if (contains("remattach")) return false;
 	if (contains("remattach:" + attachpt)) return false;
-	LLViewerJointAttachment* attachment = findAttachmentPointFromName (attachpt, TRUE);
+	LLViewerJointAttachment* attachment = findAttachmentPointFromName(attachpt, true);
 	if (!canDetachAllObjectsFromAttachment (attachment, handle_nostrip)) return false;
 	return true;
 }

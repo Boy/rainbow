@@ -77,7 +77,7 @@ extern "C" {
 #endif
 #endif
 
-const std::string LLAppViewerWin32::sWindowClass = "Second Life";
+const std::string LLAppViewerWin32::sWindowClass = "Rainbow Viewer";
 
 LONG WINAPI viewer_windows_exception_handler(struct _EXCEPTION_POINTERS *exception_infop)
 {
@@ -135,7 +135,7 @@ LONG WINAPI viewer_windows_exception_handler(struct _EXCEPTION_POINTERS *excepti
 bool create_app_mutex()
 {
 	bool result = true;
-	LPCWSTR unique_mutex_name = L"SecondLifeAppMutex";
+	LPCWSTR unique_mutex_name = L"RainbowViewerAppMutex";
 	HANDLE hMutex;
 	hMutex = CreateMutex(NULL, TRUE, unique_mutex_name); 
 	if(GetLastError() == ERROR_ALREADY_EXISTS) 
@@ -158,9 +158,31 @@ int APIENTRY WINMAIN(HINSTANCE hInstance,
                      int       nCmdShow)
 {
 	LLMemType mt1(LLMemType::MTYPE_STARTUP);
+
+	const S32 MAX_HEAPS = 255;
+	DWORD heap_enable_lfh_error[MAX_HEAPS];
+	S32 num_heaps = 0;
 	
 #if WINDOWS_CRT_MEM_CHECKS && !INCLUDE_VLD
 	_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF ); // dump memory leaks on exit
+#elif 1
+	// Experimental - enable the low fragmentation heap
+	// This results in a 2-3x improvement in opening a new Inventory window (which uses a large numebr of allocations)
+	// Note: This won't work when running from the debugger unless the _NO_DEBUG_HEAP environment variable is set to 1
+
+	_CrtSetDbgFlag(0); // default, just making explicit
+	
+	ULONG ulEnableLFH = 2;
+	HANDLE* hHeaps = new HANDLE[MAX_HEAPS];
+	num_heaps = GetProcessHeaps(MAX_HEAPS, hHeaps);
+	for(S32 i = 0; i < num_heaps; i++)
+	{
+		bool success = HeapSetInformation(hHeaps[i], HeapCompatibilityInformation, &ulEnableLFH, sizeof(ulEnableLFH));
+		if (success)
+			heap_enable_lfh_error[i] = 0;
+		else
+			heap_enable_lfh_error[i] = GetLastError();
+	}
 #endif
 	
 	// *FIX: global
@@ -182,8 +204,21 @@ int APIENTRY WINMAIN(HINSTANCE hInstance,
 		llwarns << "Application init failed." << llendl;
 		return -1;
 	}
-
-		// Run the application main loop
+	
+	// Have to wait until after logging is initialized to display LFH info
+	if (num_heaps > 0)
+	{
+		llinfos << "Attempted to enable LFH for " << num_heaps << " heaps." << llendl;
+		for(S32 i = 0; i < num_heaps; i++)
+		{
+			if (heap_enable_lfh_error[i])
+			{
+				llinfos << "  Failed to enable LFH for heap: " << i << " Error: " << heap_enable_lfh_error[i] << llendl;
+			}
+		}
+	}
+	
+	// Run the application main loop
 	if(!LLApp::isQuitting()) 
 	{
 		viewer_app_ptr->mainLoop();
@@ -227,13 +262,13 @@ int APIENTRY WINMAIN(HINSTANCE hInstance,
 	viewer_app_ptr = NULL;
 
 	//start updater
-	if(LLAppViewer::sUpdaterInfo)
+	/*if(LLAppViewer::sUpdaterInfo)
 	{
 		_spawnl(_P_NOWAIT, LLAppViewer::sUpdaterInfo->mUpdateExePath.c_str(), LLAppViewer::sUpdaterInfo->mUpdateExePath.c_str(), LLAppViewer::sUpdaterInfo->mParams.str().c_str(), NULL);
 
 		delete LLAppViewer::sUpdaterInfo ;
 		LLAppViewer::sUpdaterInfo = NULL ;
-	}
+	}*/
 
 	return 0;
 }
@@ -400,58 +435,61 @@ bool LLAppViewerWin32::initHardwareTest()
 	// Do driver verification and initialization based on DirectX
 	// hardware polling and driver versions
 	//
-	BOOL vram_only = !gSavedSettings.getBOOL("ProbeHardwareOnStartup");
-
-	// per DEV-11631 - disable hardware probing for everything
-	// but vram.
-	vram_only = TRUE;
-
-	LLSplashScreen::update("Detecting hardware...");
-
-	LL_DEBUGS("AppInit") << "Attempting to poll DirectX for hardware info" << LL_ENDL;
-	gDXHardware.setWriteDebugFunc(write_debug_dx);
-	BOOL probe_ok = gDXHardware.getInfo(vram_only);
-
-	if (!probe_ok
-		&& gSavedSettings.getWarning("AboutDirectX9"))
+	if (FALSE == gSavedSettings.getBOOL("NoHardwareProbe"))
 	{
-		LL_WARNS("AppInit") << "DirectX probe failed, alerting user." << LL_ENDL;
+		BOOL vram_only = !gSavedSettings.getBOOL("ProbeHardwareOnStartup");
 
-		// Warn them that runnin without DirectX 9 will
-		// not allow us to tell them about driver issues
-		std::ostringstream msg;
-		msg << 
-			LLAppViewer::instance()->getSecondLifeTitle() << " is unable to detect DirectX 9.0b or greater.\n"
-			"\n" <<
-			LLAppViewer::instance()->getSecondLifeTitle() << " uses DirectX to detect hardware and/or\n"
-			"outdated drivers that can cause stability problems,\n"
-			"poor performance and crashes.  While you can run\n" <<
-			LLAppViewer::instance()->getSecondLifeTitle() << " without it, we highly recommend running\n"
-			"with DirectX 9.0b\n"
-			"\n"
-			"Do you wish to continue?\n";
-		S32 button = OSMessageBox(
-			msg.str(),
-			"Warning",
-			OSMB_YESNO);
-		if (OSBTN_NO== button)
+		// per DEV-11631 - disable hardware probing for everything
+		// but vram.
+		vram_only = TRUE;
+
+		LLSplashScreen::update("Detecting hardware...");
+
+		LL_DEBUGS("AppInit") << "Attempting to poll DirectX for hardware info" << LL_ENDL;
+		gDXHardware.setWriteDebugFunc(write_debug_dx);
+		BOOL probe_ok = gDXHardware.getInfo(vram_only);
+
+		if (!probe_ok
+			&& gSavedSettings.getWarning("AboutDirectX9"))
 		{
-			LL_INFOS("AppInit") << "User quitting after failed DirectX 9 detection" << LL_ENDL;
-			LLWeb::loadURLExternal(DIRECTX_9_URL);
-			return false;
+			LL_WARNS("AppInit") << "DirectX probe failed, alerting user." << LL_ENDL;
+
+			// Warn them that runnin without DirectX 9 will
+			// not allow us to tell them about driver issues
+			std::ostringstream msg;
+			msg << 
+				LLAppViewer::instance()->getSecondLifeTitle() << " is unable to detect DirectX 9.0b or greater.\n"
+				"\n" <<
+				LLAppViewer::instance()->getSecondLifeTitle() << " uses DirectX to detect hardware and/or\n"
+				"outdated drivers that can cause stability problems,\n"
+				"poor performance and crashes.  While you can run\n" <<
+				LLAppViewer::instance()->getSecondLifeTitle() << " without it, we highly recommend running\n"
+				"with DirectX 9.0b\n"
+				"\n"
+				"Do you wish to continue?\n";
+			S32 button = OSMessageBox(
+				msg.str(),
+				"Warning",
+				OSMB_YESNO);
+			if (OSBTN_NO== button)
+			{
+				LL_INFOS("AppInit") << "User quitting after failed DirectX 9 detection" << LL_ENDL;
+				LLWeb::loadURLExternal(DIRECTX_9_URL);
+				return false;
+			}
+			gSavedSettings.setWarning("AboutDirectX9", FALSE);
 		}
-		gSavedSettings.setWarning("AboutDirectX9", FALSE);
+		LL_DEBUGS("AppInit") << "Done polling DirectX for hardware info" << LL_ENDL;
+
+		// Only probe once after installation
+		gSavedSettings.setBOOL("ProbeHardwareOnStartup", FALSE);
+
+		// Disable so debugger can work
+		std::ostringstream splash_msg;
+		splash_msg << "Loading " << LLAppViewer::instance()->getSecondLifeTitle() << "...";
+
+		LLSplashScreen::update(splash_msg.str());
 	}
-	LL_DEBUGS("AppInit") << "Done polling DirectX for hardware info" << LL_ENDL;
-
-	// Only probe once after installation
-	gSavedSettings.setBOOL("ProbeHardwareOnStartup", FALSE);
-
-	// Disable so debugger can work
-	std::ostringstream splash_msg;
-	splash_msg << "Loading " << LLAppViewer::instance()->getSecondLifeTitle() << "...";
-
-	LLSplashScreen::update(splash_msg.str());
 
 	if (!restoreErrorTrap())
 	{
