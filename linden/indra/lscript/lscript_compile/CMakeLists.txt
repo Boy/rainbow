@@ -5,6 +5,7 @@ include(LLCommon)
 include(LLMath)
 include(LLMessage)
 include(LLInventory)
+include(LLPrimitive)
 include(LScript)
 
 include(FindCygwin)
@@ -41,6 +42,7 @@ include_directories(
     ${LLMATH_INCLUDE_DIRS}
     ${LLMESSAGE_INCLUDE_DIRS}
     ${LLINVENTORY_INCLUDE_DIRS}
+    ${LLPRIMITIVE_INCLUDE_DIRS}
     ${LSCRIPT_INCLUDE_DIRS}
     )
 
@@ -146,3 +148,4 @@ if (DARWIN)
 endif (DARWIN)
 
 add_library (lscript_compile ${lscript_compile_SOURCE_FILES})
+add_dependencies(lscript_compile prepare)

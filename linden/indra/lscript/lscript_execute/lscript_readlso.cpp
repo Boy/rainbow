@@ -17,7 +17,8 @@
  * There are special exceptions to the terms and conditions of the GPL as
  * it is applied to this Source Code. View the full text of the exception
  * in the file doc/FLOSS-exception.txt in this software distribution, or
- * online at http://secondlifegrid.net/programs/open_source/licensing/flossexception
+ * online at
+ * http://secondlifegrid.net/programs/open_source/licensing/flossexception
  * 
  * By copying, modifying or distributing this software, you acknowledge
  * that you have read and understood your obligations described above,
@@ -38,7 +39,7 @@
 LLScriptLSOParse::LLScriptLSOParse(LLFILE *fp)
 {
 	U8  sizearray[4];
-	S32 filesize;
+	size_t filesize;
 	S32 pos = 0;
 	if (fread(&sizearray, 1, 4, fp) != 4)
 	{
@@ -621,6 +622,16 @@ void LLScriptLSOParse::printStates(LLFILE *fp)
 						fprintf(fp, "\t\tinteger %s\n", name);
 						bytestream2char(name, mRawData, event_offset, sizeof(name));
 						fprintf(fp, "\t\tlist %s\n", name);
+						bytestream2char(name, mRawData, event_offset, sizeof(name));
+						fprintf(fp, "\t\tstring %s\n", name);
+						break;
+					case LSTT_HTTP_REQUEST:	// LSTT_HTTP_REQUEST
+						bytestream2char(name, mRawData, event_offset, sizeof(name));
+						fprintf(fp, "%s\n", name);
+						bytestream2char(name, mRawData, event_offset, sizeof(name));
+						fprintf(fp, "\t\tkey %s\n", name);
+						bytestream2char(name, mRawData, event_offset, sizeof(name));
+						fprintf(fp, "\t\tstring %s\n", name);
 						bytestream2char(name, mRawData, event_offset, sizeof(name));
 						fprintf(fp, "\t\tstring %s\n", name);
 						break;
@@ -1568,7 +1579,7 @@ void print_calllib(LLFILE *fp, U8 *buffer, S32 &offset, S32 tabs)
 	lso_print_tabs(fp, tabs);
 	fprintf(fp, "[0x%X]\tCALLLIB ", offset++);
 	arg = *(buffer + offset++);
-	fprintf(fp, "%d (%s)\n", (U32)arg, gScriptLibrary.mFunctions[arg]->mName);
+	fprintf(fp, "%d (%s)\n", (U32)arg, gScriptLibrary.mFunctions[arg].mName);
 }
 
 
@@ -1578,6 +1589,6 @@ void print_calllib_two_byte(LLFILE *fp, U8 *buffer, S32 &offset, S32 tabs)
 	lso_print_tabs(fp, tabs);
 	fprintf(fp, "[0x%X]\tCALLLIB_TWO_BYTE ", offset++);
 	arg = bytestream2u16(buffer, offset);
-	fprintf(fp, "%d (%s)\n", (U32)arg, gScriptLibrary.mFunctions[arg]->mName);
+	fprintf(fp, "%d (%s)\n", (U32)arg, gScriptLibrary.mFunctions[arg].mName);
 }
 

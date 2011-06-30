@@ -1,10 +1,10 @@
 /** 
- * @file lscript_export.h
- * @brief Export interface class
+ * @file llscriptresourceconsumer.h
+ * @brief An interface for a script resource consumer.
  *
- * $LicenseInfo:firstyear=2002&license=viewergpl$
+ * $LicenseInfo:firstyear=2008&license=viewergpl$
  * 
- * Copyright (c) 2002-2009, Linden Research, Inc.
+ * Copyright (c) 2008-2009, Linden Research, Inc.
  * 
  * Second Life Viewer Source Code
  * The source code in this file ("Source Code") is provided by Linden Lab
@@ -30,11 +30,38 @@
  * $/LicenseInfo$
  */
 
-#ifndef LL_LSCRIPT_EXPORT_H
-#define LL_LSCRIPT_EXPORT_H
+#ifndef LL_LLSCRIPTRESOURCECONSUMER_H
+#define LL_LLSCRIPTRESOURCECONSUMER_H
 
-#include "lscript_library.h"
+#include "linden_common.h"
 
+class LLScriptResourcePool;
 
+// Entities that use limited script resources 
+// should implement this interface
 
-#endif
+class LLScriptResourceConsumer
+{
+public:	
+	LLScriptResourceConsumer();
+
+	virtual ~LLScriptResourceConsumer() { }
+
+	// Get the number of public urls used by this consumer.
+	virtual S32 getUsedPublicURLs() const = 0;
+
+	// Get the resource pool this consumer is currently using.
+	LLScriptResourcePool& getScriptResourcePool();
+	const LLScriptResourcePool& getScriptResourcePool() const;
+
+	bool switchScriptResourcePools(LLScriptResourcePool& new_pool);
+	bool canUseScriptResourcePool(const LLScriptResourcePool& resource_pool);
+	bool isInPool(const LLScriptResourcePool& resource_pool);
+
+protected:
+	virtual void setScriptResourcePool(LLScriptResourcePool& pool);
+
+	LLScriptResourcePool* mScriptResourcePool;
+};
+
+#endif // LL_LLSCRIPTRESOURCECONSUMER_H

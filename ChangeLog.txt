@@ -1,8 +1,113 @@
-2011-06-15 Boy Lane <boy.lane@yahoo.com>
+2011-06-30 Boy Lane <boy.lane@yahoo.com>
+
+    * NewScriptFunctions from CoolVL 
+
+    deleted:    linden/indra/lscript/lscript_execute_mono/assembly.cpp
+    deleted:    linden/indra/lscript/lscript_execute_mono/size.cpp
+    modified:   ChangeLog.txt
+    modified:   linden/indra/llcommon/indra_constants.h
+    modified:   linden/indra/llcommon/llclickaction.h
+    modified:   linden/indra/llcommon/lllslconstants.h
+    modified:   linden/indra/lscript/CMakeLists.txt
+    modified:   linden/indra/lscript/lscript_alloc.h
+    modified:   linden/indra/lscript/lscript_byteconvert.h
+    modified:   linden/indra/lscript/lscript_byteformat.h
+    modified:   linden/indra/lscript/lscript_compile/CMakeLists.txt
+    modified:   linden/indra/lscript/lscript_compile/indra.l
+    modified:   linden/indra/lscript/lscript_compile/indra.y
+    modified:   linden/indra/lscript/lscript_compile/lscript_alloc.cpp
+    modified:   linden/indra/lscript/lscript_compile/lscript_bytecode.cpp
+    modified:   linden/indra/lscript/lscript_compile/lscript_bytecode.h
+    modified:   linden/indra/lscript/lscript_compile/lscript_error.cpp
+    modified:   linden/indra/lscript/lscript_compile/lscript_error.h
+    modified:   linden/indra/lscript/lscript_compile/lscript_heap.cpp
+    modified:   linden/indra/lscript/lscript_compile/lscript_heap.h
+    modified:   linden/indra/lscript/lscript_compile/lscript_resource.cpp
+    modified:   linden/indra/lscript/lscript_compile/lscript_resource.h
+    modified:   linden/indra/lscript/lscript_compile/lscript_scope.cpp
+    modified:   linden/indra/lscript/lscript_compile/lscript_scope.h
+    modified:   linden/indra/lscript/lscript_compile/lscript_tree.cpp
+    modified:   linden/indra/lscript/lscript_compile/lscript_tree.h
+    modified:   linden/indra/lscript/lscript_compile/lscript_typecheck.cpp
+    modified:   linden/indra/lscript/lscript_compile/lscript_typecheck.h
+    modified:   linden/indra/lscript/lscript_execute.h
+    modified:   linden/indra/lscript/lscript_execute/CMakeLists.txt
+    modified:   linden/indra/lscript/lscript_execute/lscript_execute.cpp
+    modified:   linden/indra/lscript/lscript_execute/lscript_heapruntime.cpp
+    modified:   linden/indra/lscript/lscript_execute/lscript_heapruntime.h
+    modified:   linden/indra/lscript/lscript_execute/lscript_readlso.cpp
+    modified:   linden/indra/lscript/lscript_execute/lscript_readlso.h
+    modified:   linden/indra/lscript/lscript_export.h
+    modified:   linden/indra/lscript/lscript_http.h
+    modified:   linden/indra/lscript/lscript_library.h
+    modified:   linden/indra/lscript/lscript_library/CMakeLists.txt
+    modified:   linden/indra/lscript/lscript_library/lscript_alloc.cpp
+    modified:   linden/indra/lscript/lscript_library/lscript_export.cpp
+    modified:   linden/indra/lscript/lscript_library/lscript_library.cpp
+    modified:   linden/indra/lscript/lscript_rt_interface.h
+    modified:   linden/indra/newview/llpreviewscript.cpp
+    modified:   linden/indra/newview/llviewermessage.cpp
+    modified:   linden/indra/newview/skins/default/xui/en-us/strings.xml
+    new file:   linden/indra/lscript/llscriptresource.h
+    new file:   linden/indra/lscript/llscriptresourceconsumer.h
+    new file:   linden/indra/lscript/llscriptresourcepool.h
+    new file:   linden/indra/lscript/lscript_execute/llscriptresource.cpp
+    new file:   linden/indra/lscript/lscript_execute/llscriptresourceconsumer.cpp
+    new file:   linden/indra/lscript/lscript_execute/llscriptresourcepool.cpp
+    new file:   linden/indra/lscript/lscript_compile/windows/unistd.h
+
+2011-06-30 Boy Lane <boy.lane@yahoo.com>
 
     * RezRestoreToWorld, 00-Common.cmake and menu_login/menu_viewer, UserAgent fixes, viewer version strings, QToolAlign cleanup, new certificates CA.pem, latest RLV.
 
-
+    modified:   ChangeLog.txt
+    modified:   linden/indra/cmake/00-Common.cmake
+    modified:   linden/indra/llmessage/lltemplatemessagebuilder.cpp
+    modified:   linden/indra/llmessage/llurlrequest.cpp
+    modified:   linden/indra/newview/English.lproj/InfoPlist.strings
+    modified:   linden/indra/newview/RRInterface.cpp
+    modified:   linden/indra/newview/RRInterface.h
+    modified:   linden/indra/newview/app_settings/CA.pem
+    modified:   linden/indra/newview/app_settings/settings.xml
+    modified:   linden/indra/newview/app_settings/settings_files.xml
+    modified:   linden/indra/newview/hbfloatergrouptitles.cpp
+    modified:   linden/indra/newview/llagent.cpp
+    modified:   linden/indra/newview/llappviewer.cpp
+    modified:   linden/indra/newview/llinventorybridge.cpp
+    modified:   linden/indra/newview/llinventorybridge.h
+    modified:   linden/indra/newview/llinventorymodel.cpp
+    modified:   linden/indra/newview/llpanellogin.cpp
+    modified:   linden/indra/newview/llstartup.cpp
+    modified:   linden/indra/newview/llviewerinventory.cpp
+    modified:   linden/indra/newview/llviewermedia.cpp
+    modified:   linden/indra/newview/llviewertexteditor.cpp
+    modified:   linden/indra/newview/qtoolalign.cpp
+    modified:   linden/indra/newview/qtoolalign.h
+    modified:   linden/indra/newview/skins/default/xui/de/menu_login.xml
+    modified:   linden/indra/newview/skins/default/xui/de/menu_viewer.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/alerts.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_tos.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/menu_inventory.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/menu_login.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/menu_pie_attachment.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/menu_pie_avatar.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/menu_pie_self.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/menu_viewer.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/panel_login.xml
+    modified:   linden/indra/newview/skins/default/xui/es/menu_viewer.xml
+    modified:   linden/indra/newview/skins/default/xui/fr/menu_login.xml
+    modified:   linden/indra/newview/skins/default/xui/fr/menu_viewer.xml
+    modified:   linden/indra/newview/skins/default/xui/ja/menu_login.xml
+    modified:   linden/indra/newview/skins/default/xui/ja/menu_viewer.xml
+    modified:   linden/indra/newview/skins/default/xui/ko/menu_login.xml
+    modified:   linden/indra/newview/skins/default/xui/ko/menu_viewer.xml
+    modified:   linden/indra/newview/skins/default/xui/pt/menu_login.xml
+    modified:   linden/indra/newview/skins/default/xui/pt/menu_viewer.xml
+    modified:   linden/indra/newview/skins/default/xui/zh/menu_login.xml
+    modified:   linden/indra/newview/skins/default/xui/zh/menu_viewer.xml
+    modified:   linden/indra/newview/viewer_manifest.py
+    modified:   linden/scripts/messages/message_template.msg
+    new file:   linden/indra/newview/skins/default/xui/en-us/floater_rlv_restrictions.xml
     
 2011-06-15 Boy Lane <boy.lane@yahoo.com>
 

@@ -17,7 +17,8 @@
  * There are special exceptions to the terms and conditions of the GPL as
  * it is applied to this Source Code. View the full text of the exception
  * in the file doc/FLOSS-exception.txt in this software distribution, or
- * online at http://secondlifegrid.net/programs/open_source/licensing/flossexception
+ * online at
+ * http://secondlifegrid.net/programs/open_source/licensing/flossexception
  * 
  * By copying, modifying or distributing this software, you acknowledge
  * that you have read and understood your obligations described above,
@@ -630,7 +631,7 @@ static void print_cil_cast(LLFILE* fp, LSCRIPTType srcType, LSCRIPTType targetTy
 		switch(targetType)
 		{
 		case LST_INTEGER:
-			fprintf(fp, "conv.i4\n");
+			fprintf(fp, "call int32 [LslLibrary]LindenLab.SecondLife.LslRunTime::ToInteger(float32)\n");
 			break;
 		case LST_STRING:
 			fprintf(fp, "call string [LslLibrary]LindenLab.SecondLife.LslRunTime::ToString(float32)\n");
@@ -3288,6 +3289,110 @@ S32 LLScriptHTTPResponseEvent::getSize()
 	return 16;
 }
 
+void LLScriptHTTPRequestEvent::recurse(LLFILE *fp, S32 tabs, S32 tabsize, LSCRIPTCompilePass pass, LSCRIPTPruneType ptype, BOOL &prunearg, LLScriptScope *scope, LSCRIPTType &type, LSCRIPTType basetype, U64 &count, LLScriptByteCodeChunk *chunk, LLScriptByteCodeChunk *heap, S32 stacksize, LLScriptScopeEntry *entry, S32 entrycount, LLScriptLibData **ldata)
+{
+	if (gErrorToText.getErrors())
+	{
+		return;
+	}
+	switch(pass)
+	{
+	case LSCP_PRETTY_PRINT:
+	case LSCP_EMIT_ASSEMBLY:
+		fdotabs(fp, tabs, tabsize);
+		fprintf(fp, "http_request( key ");
+		mRequestId->recurse(fp, tabs, tabsize, pass, ptype, prunearg, scope, type, basetype, count, chunk, heap, stacksize, entry, entrycount, NULL);
+		fprintf(fp, ", string ");
+		mMethod->recurse(fp, tabs, tabsize, pass, ptype, prunearg, scope, type, basetype, count, chunk, heap, stacksize, entry, entrycount, NULL);
+		fprintf(fp, ", string ");
+		mBody->recurse(fp, tabs, tabsize, pass, ptype, prunearg, scope, type, basetype, count, chunk, heap, stacksize, entry, entrycount, NULL);
+		fprintf(fp, " )\n");
+		break;
+		
+	case LSCP_SCOPE_PASS1:
+		checkForDuplicateHandler(fp, this, scope, "http_request");
+		if (scope->checkEntry(mRequestId->mName))
+		{
+			gErrorToText.writeError(fp, this, LSERROR_DUPLICATE_NAME);
+		}
+		else
+		{
+			mRequestId->mScopeEntry = scope->addEntry(mRequestId->mName, LIT_VARIABLE, LST_KEY);
+		}
+
+		if (scope->checkEntry(mMethod->mName))
+		{
+			gErrorToText.writeError(fp, this, LSERROR_DUPLICATE_NAME);
+		}
+		else
+		{
+			mMethod->mScopeEntry = scope->addEntry(mMethod->mName, LIT_VARIABLE, LST_STRING);
+		}
+		
+		if (scope->checkEntry(mBody->mName))
+		{
+			gErrorToText.writeError(fp, this, LSERROR_DUPLICATE_NAME);
+		}
+		else
+		{
+			mBody->mScopeEntry = scope->addEntry(mBody->mName, LIT_VARIABLE, LST_STRING);
+		}
+		break;
+		
+	case LSCP_RESOURCE:
+		{
+			// we're just tryng to determine how much space the variable needs
+			if (mRequestId->mScopeEntry)
+			{
+				mRequestId->mScopeEntry->mOffset = (S32)count;
+				mRequestId->mScopeEntry->mSize = 4;
+				count += mRequestId->mScopeEntry->mSize;
+
+				mMethod->mScopeEntry->mOffset = (S32)count;
+				mMethod->mScopeEntry->mSize = 4;
+				count += mMethod->mScopeEntry->mSize;
+
+				mBody->mScopeEntry->mOffset = (S32)count;
+				mBody->mScopeEntry->mSize = 4;
+				count += mBody->mScopeEntry->mSize;
+			}
+		}
+		break;
+		
+	case LSCP_EMIT_BYTE_CODE:
+		{
+#ifdef LSL_INCLUDE_DEBUG_INFO
+			char name[] = "http_request";
+			chunk->addBytes(name, strlen(name) + 1); 		/*Flawfinder: ignore*/
+			chunk->addBytes(mRequestId->mName, strlen(mRequestId->mName) + 1); 		/*Flawfinder: ignore*/
+			chunk->addBytes(mMethod->mName, strlen(mMethod->mName) + 1); 		/*Flawfinder: ignore*/
+			chunk->addBytes(mBody->mName, strlen(mBody->mName) + 1); 		/*Flawfinder: ignore*/
+#endif
+		}
+		break;
+	case LSCP_EMIT_CIL_ASSEMBLY:
+	        fdotabs(fp, tabs, tabsize);
+   	        fprintf(fp, "http_request( valuetype [ScriptTypes]LindenLab.SecondLife.Key ");
+		mRequestId->recurse(fp, tabs, tabsize, pass, ptype, prunearg, scope, type, basetype, count, chunk, heap, stacksize, entry, entrycount, NULL);
+		fprintf(fp, ", string ");
+		mMethod->recurse(fp, tabs, tabsize, pass, ptype, prunearg, scope, type, basetype, count, chunk, heap, stacksize, entry, entrycount, NULL);
+		fprintf(fp, ", string ");
+		mBody->recurse(fp, tabs, tabsize, pass, ptype, prunearg, scope, type, basetype, count, chunk, heap, stacksize, entry, entrycount, NULL);
+		fprintf(fp, " )\n");
+		break;
+	default:
+		mRequestId->recurse(fp, tabs, tabsize, pass, ptype, prunearg, scope, type, basetype, count, chunk, heap, stacksize, entry, entrycount, NULL);
+		mMethod->recurse(fp, tabs, tabsize, pass, ptype, prunearg, scope, type, basetype, count, chunk, heap, stacksize, entry, entrycount, NULL);
+		mBody->recurse(fp, tabs, tabsize, pass, ptype, prunearg, scope, type, basetype, count, chunk, heap, stacksize, entry, entrycount, NULL);
+		break;
+	}
+}
+
+S32 LLScriptHTTPRequestEvent::getSize()
+{
+	// key + string + string = 12
+	return 12;
+}
 
 void LLScriptMoneyEvent::recurse(LLFILE *fp, S32 tabs, S32 tabsize, LSCRIPTCompilePass pass, LSCRIPTPruneType ptype, BOOL &prunearg, LLScriptScope *scope, LSCRIPTType &type, LSCRIPTType basetype, U64 &count, LLScriptByteCodeChunk *chunk, LLScriptByteCodeChunk *heap, S32 stacksize, LLScriptScopeEntry *entry, S32 entrycount, LLScriptLibData **ldata)
 {
@@ -8268,10 +8373,18 @@ void LLScriptStateChange::recurse(LLFILE *fp, S32 tabs, S32 tabsize, LSCRIPTComp
 			chunk->addInteger(mIdentifier->mScopeEntry->mCount);
 		}
 		break;
+	case LSCP_TYPE:
+		mReturnType = basetype;
+		break;
 	case LSCP_EMIT_CIL_ASSEMBLY:
 		fprintf(fp, "ldarg.0\n");
 		fprintf(fp, "ldstr \"%s\"\n", mIdentifier->mName);
 		fprintf(fp, "call instance void class [LslUserScript]LindenLab.SecondLife.LslUserScript::ChangeState(string)\n");
+		// We are doing a state change. In the LSL interpreter, this is basically a longjmp. We emulate it
+		// here using a call to the ChangeState followed by a short cut return of the current method. To
+		// maintain type safety we need to push an arbitrary variable of the current method's return type
+		// onto the stack before returning. This will be ignored and discarded.
+		print_cil_init_variable(fp, mReturnType);
 		fprintf(fp, "ret\n");
 		break;
 	default:
@@ -9655,6 +9768,11 @@ void LLScriptEventHandler::recurse(LLFILE *fp, S32 tabs, S32 tabsize, LSCRIPTCom
 			mScopeEntry->mFunctionArgs.addType(LST_LIST);
 			mScopeEntry->mFunctionArgs.addType(LST_STRING);
 			break;
+		case LSTT_HTTP_REQUEST:
+			mScopeEntry->mFunctionArgs.addType(LST_KEY);
+			mScopeEntry->mFunctionArgs.addType(LST_STRING);
+			mScopeEntry->mFunctionArgs.addType(LST_STRING);
+			break;
 
 		default:
 			break;
@@ -9687,6 +9805,13 @@ void LLScriptEventHandler::recurse(LLFILE *fp, S32 tabs, S32 tabsize, LSCRIPTCom
 		break;
 	case LSCP_EMIT_BYTE_CODE:
 		{
+			//llassert(mEventp);
+			if (!mEventp)
+			{
+				llwarns << "mEventp is NULL, aborting." << llendl;
+				return;
+			}
+
 			// order for event handler
 			// set jump table value
 			S32 jumpoffset;
@@ -9700,13 +9825,11 @@ void LLScriptEventHandler::recurse(LLFILE *fp, S32 tabs, S32 tabsize, LSCRIPTCom
 			chunk->addBytes(4);
 
 			// null terminated event name and null terminated parameters
-			if (mEventp)
-			{
-				LLScriptByteCodeChunk	*event = new LLScriptByteCodeChunk(FALSE);
-				mEventp->recurse(fp, tabs, tabsize, pass, ptype, prunearg, scope, type, basetype, count, event, heap, stacksize, entry, entrycount, NULL);
-				chunk->addBytes(event->mCodeChunk, event->mCurrentOffset);
-				delete event;
-			}
+			LLScriptByteCodeChunk	*event = new LLScriptByteCodeChunk(FALSE);
+			mEventp->recurse(fp, tabs, tabsize, pass, ptype, prunearg, scope, type, basetype, count, event, heap, stacksize, entry, entrycount, NULL);
+			chunk->addBytes(event->mCodeChunk, event->mCurrentOffset);
+			delete event;
+		
 			chunk->addBytes(1);
 
 			// now we're at the first opcode
@@ -10508,6 +10631,8 @@ LLScriptScript::LLScriptScript(LLScritpGlobalStorage *globals,
 		}
 		temp = temp->mNextp;
 	}
+
+	mClassName[0] = '\0';
 }
 
 void LLScriptScript::setBytecodeDest(const char* dst_filename)
@@ -10561,20 +10686,21 @@ void LLScriptScript::recurse(LLFILE *fp, S32 tabs, S32 tabsize, LSCRIPTCompilePa
 		{
 			mGlobalScope = new LLScriptScope(gScopeStringTable);
 			// zeroth, add library functions to global scope
-			S32 i;
+			U16 function_index = 0;
 			const char *arg;
 			LLScriptScopeEntry *sentry;
-			for (i = 0; i < gScriptLibrary.mNextNumber; i++)
+			for (std::vector<LLScriptLibraryFunction>::const_iterator i = gScriptLibrary.mFunctions.begin();
+				 i != gScriptLibrary.mFunctions.end(); ++i)
 			{
 				// First, check to make sure this isn't a god only function, or that the viewer's agent is a god.
-				if (!gScriptLibrary.mFunctions[i]->mGodOnly || mGodLike)
+				if (!i->mGodOnly || mGodLike)
 				{
-					if (gScriptLibrary.mFunctions[i]->mReturnType)
-						sentry = mGlobalScope->addEntry(gScriptLibrary.mFunctions[i]->mName, LIT_LIBRARY_FUNCTION, char2type(*gScriptLibrary.mFunctions[i]->mReturnType));
+					if (i->mReturnType)
+						sentry = mGlobalScope->addEntry(i->mName, LIT_LIBRARY_FUNCTION, char2type(*i->mReturnType));
 					else
-						sentry = mGlobalScope->addEntry(gScriptLibrary.mFunctions[i]->mName, LIT_LIBRARY_FUNCTION, LST_NULL);
-					sentry->mLibraryNumber = i;
-					arg = gScriptLibrary.mFunctions[i]->mArgs;
+						sentry = mGlobalScope->addEntry(i->mName, LIT_LIBRARY_FUNCTION, LST_NULL);
+					sentry->mLibraryNumber = function_index;
+					arg = i->mArgs;
 					if (arg)
 					{
 						while (*arg)
@@ -10586,6 +10712,7 @@ void LLScriptScript::recurse(LLFILE *fp, S32 tabs, S32 tabsize, LSCRIPTCompilePa
 						}
 					}
 				}
+				function_index++;
 			}
 			// first go and collect all the global variables
 			if (mGlobals)

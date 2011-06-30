@@ -1,10 +1,10 @@
 /** 
- * @file lscript_export.h
- * @brief Export interface class
+ * @file llscriptresourcepool.cpp
+ * @brief Collection of limited script resources
  *
- * $LicenseInfo:firstyear=2002&license=viewergpl$
+ * $LicenseInfo:firstyear=2008&license=viewergpl$
  * 
- * Copyright (c) 2002-2009, Linden Research, Inc.
+ * Copyright (c) 2008-2009, Linden Research, Inc.
  * 
  * Second Life Viewer Source Code
  * The source code in this file ("Source Code") is provided by Linden Lab
@@ -30,11 +30,21 @@
  * $/LicenseInfo$
  */
 
-#ifndef LL_LSCRIPT_EXPORT_H
-#define LL_LSCRIPT_EXPORT_H
+#include "llscriptresourcepool.h"
 
-#include "lscript_library.h"
+LLScriptResourcePool LLScriptResourcePool::null;
 
+LLScriptResourcePool::LLScriptResourcePool() 
+{ 
 
+}
 
-#endif
+LLScriptResource& LLScriptResourcePool::getPublicURLResource()
+{
+	return mLSLPublicURLs;
+}
+
+const LLScriptResource& LLScriptResourcePool::getPublicURLResource() const
+{
+	return mLSLPublicURLs;
+}
