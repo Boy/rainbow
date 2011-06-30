@@ -131,23 +131,12 @@ class ViewerManifest(LLManifest):
                            {'grid':self.grid()}
 
         # set command line flags for channel
-        channel_flags = ''
-        if self.login_channel() and self.login_channel() != self.channel():
-            # Report a special channel during login, but use default
-            channel_flags = '--channel "Rainbow Viewer"'
-        elif not self.default_channel():
-            channel_flags = '--channel "Rainbow Viewer"'
+        channel_flags = '--channel "Rainbow Viewer"'
 
         # Deal with settings 
-        setting_flags = ''
-        if not self.default_channel() or not self.default_grid():
-            if self.default_grid():
-                setting_flags = '--settings settings_1.22.xml'
-            else:
-                setting_flags = '--settings settings_1.22.xml'
-                                                
-        return " ".join((channel_flags, grid_flags, setting_flags)).strip()
+        setting_flags = '--settings settings_1.22.xml'
 
+        return " ".join((channel_flags, grid_flags, setting_flags)).strip()
 
 class WindowsManifest(ViewerManifest):
     def final_exe(self):
@@ -252,11 +241,11 @@ class WindowsManifest(ViewerManifest):
 #                "../win_crash_logger/release/windows-crash-logger.exe",
 #                "../win_crash_logger/relwithdebinfo/windows-crash-logger.exe"),
 #                  dst="win_crash_logger.exe")
-        self.path(src=self.find_existing_file(
-                "../win_updater/debug/windows-updater.exe",
-                "../win_updater/release/windows-updater.exe",
-                "../win_updater/relwithdebinfo/windows-updater.exe"),
-                  dst="updater.exe")
+#        self.path(src=self.find_existing_file(
+#               "../win_updater/debug/windows-updater.exe",
+#                "../win_updater/release/windows-updater.exe",
+#                "../win_updater/relwithdebinfo/windows-updater.exe"),
+#                  dst="updater.exe")
 
     def nsi_file_commands(self, install=True):
         def wpath(path):

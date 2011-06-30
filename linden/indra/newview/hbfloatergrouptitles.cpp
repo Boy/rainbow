@@ -250,11 +250,9 @@ void HBFloaterGroupTitles::onActivate(void* userdata)
 
 	// Set the group if needed.
 	LLUUID old_group_id = gAgent.getGroupID();
-#ifdef LL_RRINTERFACE_H //MK
+//MK
 	if (group_id != old_group_id && (!gRRenabled || !gAgent.mRRInterface.contains("setgroup")))
-#else
-	if (group_id != old_group_id)
-#endif //mk
+//mk
 	{
 		LLMessageSystem* msg = gMessageSystem;
 		msg->newMessageFast(_PREHASH_ActivateGroup);

@@ -15,7 +15,7 @@
 	     bottom="54" drop_shadow_visible="true" follows="left|bottom"
 	     font="SansSerif" h_pad="0" halign="left" height="16"
 	     left="32" mouse_opaque="true" name="first_name_text" v_pad="0" width="120">
-		First Name:
+		First Name or Username:
 	</text>
 	<combo_box bevel_style="in" border_style="line" border_thickness="1" bottom_delta="-24"
 	     font="SansSerif" handle_edit_keys_directly="true" height="20" left="32"
@@ -25,7 +25,7 @@
 	     bottom="54" drop_shadow_visible="true" follows="left|bottom"
 	     font="SansSerif" h_pad="0" halign="left" height="16"
 	     left="164" mouse_opaque="true" name="last_name_text" v_pad="0" width="120">
-		Last Name:
+		Last Name or Resident:
 	</text>
 	<line_editor bevel_style="in" border_style="line" border_thickness="1" bottom_delta="-24"
 	     follows="left|bottom" font="SansSerifSmall" handle_edit_keys_directly="true"
@@ -85,7 +85,7 @@
 	     font="SansSerifSmall" font-style="UNDERLINE" h_pad="0" halign="right" height="16"
 	     left="-210" mouse_opaque="true" name="create_new_account_text" v_pad="0" width="200"
 	     hover="true" hover_color="50 115 185">
-		Sign up for SL account
+		Sign up for account
 	</text>
 	<text bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 	     bottom="25" drop_shadow_visible="true" follows="right|bottom"

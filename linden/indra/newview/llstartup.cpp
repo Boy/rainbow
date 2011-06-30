@@ -722,7 +722,7 @@ bool idle_startup()
 	LLMemType mt1(LLMemType::MTYPE_STARTUP);
 	
 	const F32 PRECACHING_DELAY = gSavedSettings.getF32("PrecachingDelay");
-	const F32 TIMEOUT_SECONDS = 5.f;
+	const F32 TIMEOUT_SECONDS = 10.f; // changed from 5 to 10 seconds for OpenSim lag
 	const S32 MAX_TIMEOUT_COUNT = 3;
 	static LLTimer timeout;
 	static S32 timeout_count = 0;
@@ -1284,7 +1284,7 @@ bool idle_startup()
 			if (!gSavedSettings.controlExists("RememberLogin")) gSavedSettings.declareBOOL("RememberLogin", false, "Remember login", false);
 			gSavedSettings.setBOOL("RememberLogin", LLPanelLogin::getRememberLogin());
 
-			LL_INFOS("AppInit") << "Attempting login as: " << firstname << " " << lastname << LL_ENDL;
+			//LL_INFOS("AppInit") << "Attempting login as: " << firstname << " " << lastname << LL_ENDL;
 			gDebugInfo["LoginName"] = firstname + " " + lastname;	
 		}
 
@@ -1890,7 +1890,7 @@ bool idle_startup()
 			}
 			else
 			{
-				emsg << "Unable to connect to Virtual World" << ".\n";
+				emsg << "Unable to connect to the grid.\n";
 				emsg << LLUserAuth::getInstance()->errorMessage();
 			}
 			break;
@@ -2901,6 +2901,7 @@ bool idle_startup()
 				}
 			}
  		}
+
 		options.clear();
 		bool show_hud = false;
 		if(LLUserAuth::getInstance()->getOptions("tutorial_setting", options))
@@ -3314,6 +3315,7 @@ bool idle_startup()
 	if (STATE_CLEANUP == LLStartUp::getStartupState())
 	{
 		set_startup_status(1.0, "", "");
+
 		// Start the AO now that settings have loaded and login successful -- MC
 		if (!gAOInvTimer)
 		{
@@ -4868,7 +4870,7 @@ void LLStartUp::multimediaInit()
 {
 	LL_DEBUGS("AppInit") << "Initializing Multimedia...." << LL_ENDL;
 	std::string msg = LLTrans::getString("LoginInitializingMultimedia");
-	set_startup_status(0.50f, msg.c_str(), gAgent.mMOTD.c_str());
+	set_startup_status(0.42f, msg.c_str(), gAgent.mMOTD.c_str());
 	display_startup();
 
 	LLViewerMedia::initClass();

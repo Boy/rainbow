@@ -157,6 +157,11 @@
 	     mouse_opaque="true" name="Copy Asset UUID" width="128">
 		<on_click filter="" function="Inventory.DoToSelected" userdata="copy_uuid" />
 	</menu_item_call>
+	<menu_item_separator name="RestoreToWorld Separator" />
+	<menu_item_call bottom_delta="-18" height="18" label="Restore to Last Position" left="0" mouse_opaque="true"
+    	name="Restore to Last Position">
+	<on_click filter="" function="Inventory.DoToSelected" userdata="restoreToWorld" />
+	</menu_item_call>
 	<menu_item_separator name="Copy Separator" />
 	<menu_item_call bottom_delta="-18" height="18" label="Copy" left="0" mouse_opaque="true"
 	     name="Copy" width="128">

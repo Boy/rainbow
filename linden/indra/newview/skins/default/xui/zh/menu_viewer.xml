@@ -231,7 +231,7 @@
 	</menu>
 	<menu label="帮助" name="Help">
 		<tearoff_menu label="~~~~~~~~~~~" name="~~~~~~~~~~~" />
-		<menu_item_call label="第二人生帮助" name="Second Life Help" />
+		<menu_item_call label="第二人生帮助" name="Rainbow Viewer Help" />
 		<!--TODO-->
 		<menu_item_call
 			 label="世界中帮助"
@@ -247,7 +247,7 @@
 <!--		<menu_item_call label="基础信息..." name="Knowledge Base..." />
 		<menu_item_call label="演示帮助..." name="Live Help..." />-->
 		<menu_item_separator label="-----------" name="separator" />
-		<menu_item_call label="官方林登博客..." name="Official Linden Blog..." />
+		<menu_item_call label="官方林登博客..." name="Rainbow Viewer Blog..." />
 		<menu_item_separator label="-----------" name="separator2" />
 		<menu_item_call
 			 label="脚本 Wiki 门户..."
@@ -302,7 +302,7 @@
 		<menu_item_separator label="-----------" name="separator5" />
 		<menu_item_call label="发行说明..." name="Release Notes..." />
 		<menu_item_separator label="-----------" name="separator6" />
-		<menu_item_call label="关于第二人生..." name="About Second Life..." />
+		<menu_item_call label="关于第二人生..." name="About Rainbow Viewer..." />
 	</menu>
 </menu_bar>
 <!--Translated for Second Life 1.19.0 (79185)-->

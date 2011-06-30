@@ -171,6 +171,7 @@ public:
 
 	virtual const std::string& getPrefix() { return LLStringUtil::null; }
 	virtual void restoreItem() {}
+	virtual void restoreToWorld() {}
 
 	// LLFolderViewEventListener functions
 	virtual const std::string& getName() const;
@@ -252,7 +253,9 @@ public:
 
 	virtual void selectItem();
 	virtual void restoreItem();
-
+	void restoreToWorld();
+	bool restoreToWorldConfirm();
+	static void restoreToWorldCallback(S32 option, void *data);
 	virtual void gotoItem(LLFolderView *folder);
 	virtual LLUIImagePtr getIcon() const;
 	virtual const std::string& getDisplayName() const;

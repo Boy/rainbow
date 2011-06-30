@@ -5074,5 +5074,21 @@ Exceeds the attachments limit of MAX_ATTACHMENTS objects. Please detach another 
 			Object exported. Some textures could not be saved due to: [REASON]
 		</message>
  	</alert>
- </alerts>
+	<alert modal="true" name="ConfirmRestoreToWorld">
+		<message name="message">
+Are you sure you want to restore the object to its last position?
+
+WARNING: Don't restore if you aren't sure where the object will go! It may rez anywhere in world and you may lose it. You've been warned :). 
+		</message>
+   		<option name="Restore">
+   		Restore
+		</option>
+		<option name="Cancel">
+		Cancel
+		</option>
+ 		<ignore name="Ignore">
+		When restoring objects to their last positions
+		</ignore>
+	</alert>
+</alerts>
 

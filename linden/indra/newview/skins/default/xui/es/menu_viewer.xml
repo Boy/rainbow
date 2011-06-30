@@ -191,11 +191,11 @@
 		     name="Set Scripts to Not Running in Selection" />
 	</menu>
 	<menu label="Ayuda" name="Help">
-		<menu_item_call label="Ayuda de Second Life" name="Second Life Help" />
+		<menu_item_call label="Ayuda de Rainbow Viewer" name="Rainbow Viewer Help" />
 		<menu_item_call label="Reservorio de conocimiento..." name="Knowledge Base..." />
 		<menu_item_call label="Contact Support..." name="Contact Support..." />
 		<menu_item_separator label="-----------" name="separator" />
-		<menu_item_call label="Blog Linden Oficial..." name="Official Linden Blog..." />
+		<menu_item_call label="Blog Rainbow Viewer..." name="Rainbow Viewer Blog..." />
 		<menu_item_separator label="-----------" name="separator2" />
 		<menu_item_call label="Guía de script..." name="Scripting Guide..." />
 		<menu_item_call label="Wiki de script..." name="Scripting Wiki..." />
@@ -210,6 +210,6 @@
 		<menu_item_call label="Help Request..." name="Help Request..." />
 		<menu_item_call label="Liberar notas..." name="Release Notes..." />
 		<menu_item_separator label="-----------" name="separator6" />
-		<menu_item_call label="Sobre Second Life..." name="About Second Life..." />
+		<menu_item_call label="Sobre Rainbow Viewer..." name="About Rainbow Viewer..." />
 	</menu>
 </menu_bar>

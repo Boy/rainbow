@@ -173,20 +173,6 @@ void refreshCachedVariable (std::string var)
 	gAgent.mRRInterface.refreshTPflag(true);
 }
 
-std::string getFirstName (std::string fullName)
-{
-	int ind = fullName.find (" ");
-	if (ind != -1) return fullName.substr (0, ind);
-	else return fullName;
-}
-
-std::string getLastName (std::string fullName)
-{
-	int ind = fullName.find (" ");
-	if (ind != -1) return fullName.substr (ind+1);
-	else return fullName;
-}
-
 void updateAllHudTexts ()
 {
 	LLHUDText::TextObjectIterator text_it;
@@ -220,11 +206,7 @@ void updateOneHudText (LLUUID uuid)
 }
 // --
 
-
-
-
-
-RRInterface::RRInterface():
+RRInterface::RRInterface() :
 	mInventoryFetched(FALSE),
 	mAllowCancelTp(TRUE),
 	mSitTargetId(),
@@ -252,7 +234,8 @@ RRInterface::RRInterface():
 	mContainsDefaultwear(FALSE),
 	mContainsPermissive(FALSE),
 	mContainsRun(FALSE),
-	mContainsAlwaysRun(FALSE)
+	mContainsAlwaysRun(FALSE),
+	mLaunchTimestamp((U32)LLDate::now().secondsSinceEpoch())
 {
 	mAllowedS32 = ",";
 
@@ -389,7 +372,7 @@ BOOL RRInterface::containsWithoutException (std::string action, std::string exce
 	// (@permissive restrains the scope of all the exceptions to their own objects)
 	RRMAP::iterator it = mSpecialObjectBehaviours.begin ();
 	while (it != mSpecialObjectBehaviours.end()) {
-		if ((it->second == action_sec || it->second == action) && mContainsPermissive) {
+		if (it->second == action_sec || (it->second == action && mContainsPermissive)) {
 			uuid.set (it->first);
 			if (isAllowed (uuid, action + ":" + except, FALSE) && isAllowed (uuid, action_sec + ":" + except, FALSE)) { // we use isAllowed because we need to check the object, but it really means "does not contain"
 				return TRUE;
@@ -407,6 +390,14 @@ BOOL RRInterface::containsWithoutException (std::string action, std::string exce
 	
 	// 4. Finally return FALSE if we didn't find anything
 	return FALSE;
+}
+
+bool RRInterface::isFolderLocked(LLInventoryCategory* cat)
+{
+	if (contains("unsharedwear") && !isUnderRlvShare(cat)) return true;
+	if (isFolderLockedWithoutException(cat, "attach") != FolderLock_unlocked) return true;
+	if (isFolderLockedWithoutException(cat, "detach") != FolderLock_unlocked) return true;
+	return false;
 }
 
 FolderLock RRInterface::isFolderLockedWithoutException (LLInventoryCategory* cat, std::string attach_or_detach)
@@ -459,32 +450,11 @@ FolderLock RRInterface::isFolderLockedWithoutException (LLInventoryCategory* cat
 				if (sRestrainedLoveDebug) {
 					llinfos << "this_lock=" << this_lock << llendl;
 				}
-				//for (unsigned int i = 0; i < commands_list.size(); ++i)
-				//{
-				//	this_command = commands_list[i];
-				//	// this_param will always be equal to "n" in this case since we added it to this_command, but we don't care about this here
-				//	if (parseCommand (this_command+"=n", this_behav, this_option, this_param)) // detach=n, recvchat=n, recvim=n, unsit=n, recvim:<uuid>=add, clear=tplure:
-				//	{
-				//		if (this_behav == attach_or_detach+"this_except") {
-				//			if (getCategoryUnderRlvShare(this_option) == cat) {
-				//				return FolderLock_locked_with_except;
-				//			}
-				//		}
-				//		else if (this_behav == attach_or_detach+"allthis_except") {
-				//			if (isUnderFolder(getCategoryUnderRlvShare(this_option), cat)) {
-				//				return FolderLock_locked_with_except;
-				//			}
-				//		}
-				//	}
-				//}
-				// Return locked since the folder is locked and we didn't find any exception
-				//return FolderLock_locked_without_except;
 			}
 		}
 	}
 
 	// Finally, return unlocked since we didn't find any lock on this folder
-//	return FolderLock_unlocked;
 	return current_lock;
 }
 
@@ -586,7 +556,7 @@ BOOL RRInterface::add (LLUUID object_uuid, std::string action, std::string optio
 		}
 
 		// Actions to do BEFORE inserting the new behav
-		if (action=="showinv") {
+		if (action == "showinv") {
 			//LLInventoryView::cleanup ();
 			for (int i=0; i<LLInventoryView::sActiveViews.count(); ++i) {
 				if (LLInventoryView::sActiveViews.get(i)->getVisible()) {
@@ -594,7 +564,7 @@ BOOL RRInterface::add (LLUUID object_uuid, std::string action, std::string optio
 				}
 			}
 		}
-		else if (action=="showminimap") {
+		else if (action == "showminimap") {
 			gFloaterMap->setVisible(FALSE);
 		}
 		else if (action == "shownames") {
@@ -622,7 +592,7 @@ BOOL RRInterface::add (LLUUID object_uuid, std::string action, std::string optio
 				LLFloaterWorldMap::toggle(NULL);
 			}
 		}
-		else if (action=="edit") {
+		else if (action == "edit") {
 			LLPipeline::setRenderBeacons(FALSE);
 			LLPipeline::setRenderScriptedBeacons(FALSE);
 			LLPipeline::setRenderScriptedTouchBeacons(FALSE);
@@ -632,7 +602,7 @@ BOOL RRInterface::add (LLUUID object_uuid, std::string action, std::string optio
 			LLPipeline::setRenderHighlights(FALSE);
 			LLDrawPoolAlpha::sShowDebugAlpha = FALSE;
 		}
-		else if (action=="setenv") {
+		else if (action == "setenv") {
 			if (sRRNoSetEnv) {
 				return TRUE;
 			}
@@ -644,7 +614,7 @@ BOOL RRInterface::add (LLUUID object_uuid, std::string action, std::string optio
 			gSavedSettings.setBOOL("VertexShaderEnable", TRUE);
 			gSavedSettings.setBOOL("WindLightUseAtmosShaders", TRUE);
 		}
-		else if (action=="setdebug") {
+		else if (action == "setdebug") {
 			if (!sRRNoSetEnv) {
 				gSavedSettings.setBOOL("VertexShaderEnable", TRUE);
 				gSavedSettings.setBOOL("WindLightUseAtmosShaders", TRUE);
@@ -657,8 +627,8 @@ BOOL RRInterface::add (LLUUID object_uuid, std::string action, std::string optio
 		HBFloaterRLV::setDirty(NULL);
 
 		// Actions to do AFTER inserting the new behav
-		if (action=="showhovertextall" || action=="showloc" || action=="shownames"
-			|| action=="showhovertexthud" || action=="showhovertextworld" ) {
+		if (action == "showhovertextall" || action == "showloc" || action == "shownames"
+			|| action =="showhovertexthud" || action == "showhovertextworld") {
 			updateAllHudTexts();
 		}
 		if (canon_action == "showhovertext") {
@@ -1407,68 +1377,67 @@ std::string RRInterface::crunchEmote (std::string msg, unsigned int truncateTo) 
 std::string RRInterface::getOutfitLayerAsString (EWearableType layer)
 {
 	switch (layer) {
-		case WT_SKIN: return WS_SKIN;
-		case WT_GLOVES: return WS_GLOVES;
-		case WT_JACKET: return WS_JACKET;
-		case WT_PANTS: return WS_PANTS;
-		case WT_SHIRT: return WS_SHIRT;
-		case WT_SHOES: return WS_SHOES;
-		case WT_SKIRT: return WS_SKIRT;
-		case WT_SOCKS: return WS_SOCKS;
-		case WT_UNDERPANTS: return WS_UNDERPANTS;
-		case WT_UNDERSHIRT: return WS_UNDERSHIRT;
-		case WT_ALPHA: return WS_ALPHA;
-		case WT_TATTOO: return WS_TATTOO;
-		case WT_EYES: return WS_EYES;
-		case WT_HAIR: return WS_HAIR;
-		case WT_SHAPE: return WS_SHAPE;
-		default: return "";
+		case WT_SKIN:		return WS_SKIN;
+		case WT_GLOVES:		return WS_GLOVES;
+		case WT_JACKET:		return WS_JACKET;
+		case WT_PANTS:		return WS_PANTS;
+		case WT_SHIRT:		return WS_SHIRT;
+		case WT_SHOES:		return WS_SHOES;
+		case WT_SKIRT:		return WS_SKIRT;
+		case WT_SOCKS:		return WS_SOCKS;
+		case WT_UNDERPANTS:	return WS_UNDERPANTS;
+		case WT_UNDERSHIRT:	return WS_UNDERSHIRT;
+		case WT_ALPHA:		return WS_ALPHA;
+		case WT_TATTOO:		return WS_TATTOO;
+		case WT_EYES:		return WS_EYES;
+		case WT_HAIR:		return WS_HAIR;
+		case WT_SHAPE:		return WS_SHAPE;
+		default:			return "";
 	}
 }
 
 EWearableType RRInterface::getOutfitLayerAsType (std::string layer)
 {
-	if (layer==WS_SKIN) return WT_SKIN;
-	if (layer==WS_GLOVES) return WT_GLOVES;
-	if (layer==WS_JACKET) return WT_JACKET;
-	if (layer==WS_PANTS) return WT_PANTS;
-	if (layer==WS_SHIRT) return WT_SHIRT;
-	if (layer==WS_SHOES) return WT_SHOES;
-	if (layer==WS_SKIRT) return WT_SKIRT;
-	if (layer==WS_SOCKS) return WT_SOCKS;
-	if (layer==WS_UNDERPANTS) return WT_UNDERPANTS;
-	if (layer==WS_UNDERSHIRT) return WT_UNDERSHIRT;
-	if (layer==WS_ALPHA) return WT_ALPHA;
-	if (layer==WS_TATTOO) return WT_TATTOO;
-	if (layer==WS_EYES) return WT_EYES;
-	if (layer==WS_HAIR) return WT_HAIR;
-	if (layer==WS_SHAPE) return WT_SHAPE;
+	if (layer == WS_SKIN)		return WT_SKIN;
+	if (layer == WS_GLOVES)		return WT_GLOVES;
+	if (layer == WS_JACKET)		return WT_JACKET;
+	if (layer == WS_PANTS)		return WT_PANTS;
+	if (layer == WS_SHIRT)		return WT_SHIRT;
+	if (layer == WS_SHOES)		return WT_SHOES;
+	if (layer == WS_SKIRT)		return WT_SKIRT;
+	if (layer == WS_SOCKS)		return WT_SOCKS;
+	if (layer == WS_UNDERPANTS)	return WT_UNDERPANTS;
+	if (layer == WS_UNDERSHIRT)	return WT_UNDERSHIRT;
+	if (layer == WS_ALPHA)		return WT_ALPHA;
+	if (layer == WS_TATTOO)		return WT_TATTOO;
+	if (layer == WS_EYES)		return WT_EYES;
+	if (layer == WS_HAIR)		return WT_HAIR;
+	if (layer == WS_SHAPE)		return WT_SHAPE;
 	return WT_INVALID;
 }
 
 std::string RRInterface::getOutfit (std::string layer)
 {
-	if (layer==WS_SKIN) return (gAgent.getWearable (WT_SKIN) != NULL ? "1" : "0");
-	if (layer==WS_GLOVES) return (gAgent.getWearable (WT_GLOVES) != NULL ? "1" : "0");
-	if (layer==WS_JACKET) return (gAgent.getWearable (WT_JACKET) != NULL ? "1" : "0");
-	if (layer==WS_PANTS) return (gAgent.getWearable (WT_PANTS) != NULL ? "1" : "0");
-	if (layer==WS_SHIRT)return (gAgent.getWearable (WT_SHIRT) != NULL ? "1" : "0");
-	if (layer==WS_SHOES) return (gAgent.getWearable (WT_SHOES) != NULL ? "1" : "0");
-	if (layer==WS_SKIRT) return (gAgent.getWearable (WT_SKIRT) != NULL ? "1" : "0");
-	if (layer==WS_SOCKS) return (gAgent.getWearable (WT_SOCKS) != NULL ? "1" : "0");
-	if (layer==WS_UNDERPANTS) return (gAgent.getWearable (WT_UNDERPANTS) != NULL ? "1" : "0");
-	if (layer==WS_UNDERSHIRT) return (gAgent.getWearable (WT_UNDERSHIRT) != NULL ? "1" : "0");
-	if (layer==WS_ALPHA) return (gAgent.getWearable (WT_ALPHA) != NULL ? "1" : "0");
-	if (layer==WS_TATTOO) return (gAgent.getWearable (WT_TATTOO) != NULL ? "1" : "0");
-	if (layer==WS_EYES) return (gAgent.getWearable (WT_EYES) != NULL ? "1" : "0");
-	if (layer==WS_HAIR) return (gAgent.getWearable (WT_HAIR) != NULL ? "1" : "0");
-	if (layer==WS_SHAPE) return (gAgent.getWearable (WT_SHAPE) != NULL ? "1" : "0");
-	return getOutfit (WS_GLOVES)+getOutfit (WS_JACKET)+getOutfit (WS_PANTS)
-			+getOutfit (WS_SHIRT)+getOutfit (WS_SHOES)+getOutfit (WS_SKIRT)
-			+getOutfit (WS_SOCKS)+getOutfit (WS_UNDERPANTS)+getOutfit (WS_UNDERSHIRT)
-			+getOutfit (WS_SKIN)+getOutfit (WS_EYES)+getOutfit (WS_HAIR)+getOutfit (WS_SHAPE)
-			+getOutfit (WS_ALPHA)+getOutfit (WS_TATTOO)
-			;
+	if (layer == WS_SKIN)		return (gAgent.getWearable (WT_SKIN) != NULL ? "1" : "0");
+	if (layer == WS_GLOVES)		return (gAgent.getWearable (WT_GLOVES) != NULL ? "1" : "0");
+	if (layer == WS_JACKET)		return (gAgent.getWearable (WT_JACKET) != NULL ? "1" : "0");
+	if (layer == WS_PANTS)		return (gAgent.getWearable (WT_PANTS) != NULL ? "1" : "0");
+	if (layer == WS_SHIRT)		return (gAgent.getWearable (WT_SHIRT) != NULL ? "1" : "0");
+	if (layer == WS_SHOES)		return (gAgent.getWearable (WT_SHOES) != NULL ? "1" : "0");
+	if (layer == WS_SKIRT)		return (gAgent.getWearable (WT_SKIRT) != NULL ? "1" : "0");
+	if (layer == WS_SOCKS)		return (gAgent.getWearable (WT_SOCKS) != NULL ? "1" : "0");
+	if (layer == WS_UNDERPANTS)	return (gAgent.getWearable (WT_UNDERPANTS) != NULL ? "1" : "0");
+	if (layer == WS_UNDERSHIRT)	return (gAgent.getWearable (WT_UNDERSHIRT) != NULL ? "1" : "0");
+	if (layer == WS_ALPHA)		return (gAgent.getWearable (WT_ALPHA) != NULL ? "1" : "0");
+	if (layer == WS_TATTOO)		return (gAgent.getWearable (WT_TATTOO) != NULL ? "1" : "0");
+	if (layer == WS_EYES)		return (gAgent.getWearable (WT_EYES) != NULL ? "1" : "0");
+	if (layer == WS_HAIR)		return (gAgent.getWearable (WT_HAIR) != NULL ? "1" : "0");
+	if (layer == WS_SHAPE)		return (gAgent.getWearable (WT_SHAPE) != NULL ? "1" : "0");
+	return getOutfit(WS_GLOVES) + getOutfit(WS_JACKET)     + getOutfit(WS_PANTS) +
+		   getOutfit(WS_SHIRT)  + getOutfit(WS_SHOES)      + getOutfit(WS_SKIRT) +
+		   getOutfit(WS_SOCKS)  + getOutfit(WS_UNDERPANTS) + getOutfit (WS_UNDERSHIRT) +
+		   getOutfit(WS_SKIN)   + getOutfit(WS_EYES)       + getOutfit (WS_HAIR) +
+		   getOutfit(WS_SHAPE)  + getOutfit(WS_ALPHA)      + getOutfit(WS_TATTOO);
 }
 
 std::string RRInterface::getAttachments (std::string attachpt)
@@ -2197,6 +2166,7 @@ bool RRInterface::canDetachAllObjectsFromAttachment(LLViewerJointAttachment* att
 
 	return true;
 }
+
 void RRInterface::fetchInventory (LLInventoryCategory* root)
 {
 	// do this only once on login
@@ -2533,7 +2503,10 @@ std::string RRInterface::getDummyName (std::string name, EChatAudible audible /*
 {
 	int len = name.length();
 	if (len < 2) return ""; // just to avoid crashing in some cases
-	unsigned char hash = name.at(3) + len; // very lame hash function I know... but it should be linear enough (the old length method was way too gaussian with a peak at 11 to 16 characters)
+	// We use mLaunchTimestamp in order to modify the scrambling when the session restarts (it stays consistent during the session though)
+	// But in crashy situations, let's not make it change at EVERY session, more like once a day or so
+	// A day is 86400 seconds, the closest power of two is 65536, that's a 16-bit shift
+	unsigned char hash = name.at(3) + len + (mLaunchTimestamp >> 16); // very lame hash function I know... but it should be linear enough (the old length method was way too gaussian with a peak at 11 to 16 characters)
 	unsigned char mod = hash % 28;
 	std::string res = "";
 	switch (mod) {
@@ -3495,7 +3468,6 @@ bool RRInterface::canAttach(LLViewerObject* object_to_attach, std::string attach
 			if (cat_parent && !canAttachCategory(cat_parent)) return false;
 		}
 	}
-
 	return true;
 }
 

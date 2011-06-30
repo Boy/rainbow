@@ -12,15 +12,15 @@
 #ifndef Q_QTOOLALIGN_H
 #define Q_QTOOLALIGN_H
 
-#include "lltool.h"
 #include "llbbox.h"
+#include "lltoolcomp.h"
 
 class LLViewerObject;
 class LLPickInfo;
 class LLToolSelectRect;
 
 class QToolAlign
-:	public LLTool, public LLSingleton<QToolAlign>
+:	public LLToolComposite, public LLSingleton<QToolAlign>
 {
 public:
 	QToolAlign();
@@ -29,8 +29,11 @@ public:
 	virtual void	handleSelect();
 	virtual void	handleDeselect();
 	virtual BOOL	handleMouseDown(S32 x, S32 y, MASK mask);
+	virtual BOOL	handleMouseUp(S32 x, S32 y, MASK mask);
+	virtual BOOL	handleDoubleClick(S32 x, S32 y, MASK mask);
 	virtual BOOL    handleHover(S32 x, S32 y, MASK mask);
 	virtual void	render();
+	virtual LLTool*	getOverrideTool(MASK mask);
 
 	static void pickCallback(const LLPickInfo& pick_info);
 

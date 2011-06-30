@@ -9,16 +9,15 @@ include(Variables)
 
 set(CMAKE_CXX_FLAGS_DEBUG "-D_DEBUG -DLL_DEBUG=1")
 set(CMAKE_CXX_FLAGS_RELEASE
-    "-DLL_RELEASE=1 -DLL_RELEASE_FOR_DOWNLOAD=1 -DNDEBUG")
+    "-DLL_RELEASE=1 -DLL_RELEASE_FOR_DOWNLOAD=1 -DLL_SEND_CRASH_REPORTS=0 -DNDEBUG")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO 
-    "-DLL_RELEASE=1 -DNDEBUG -DLL_RELEASE_WITH_DEBUG_INFO=1")
+    "-DLL_RELEASE=1 -DLL_SEND_CRASH_REPORTS=0 -DNDEBUG -DLL_RELEASE_WITH_DEBUG_INFO=1")
 
 
 # Don't bother with a MinSizeRel build.
 
 set(CMAKE_CONFIGURATION_TYPES "RelWithDebInfo;Release;Debug" CACHE STRING
     "Supported build types." FORCE)
-
 
 # Platform-specific compilation flags.
 
@@ -32,7 +31,7 @@ if (WINDOWS)
       "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /Od /Zi /MT /fp:fast"
       CACHE STRING "C++ compiler release-with-debug options" FORCE)
   set(CMAKE_CXX_FLAGS_RELEASE
-      "${CMAKE_CXX_FLAGS_RELEASE} ${LL_CXX_FLAGS} /O2 /Oi /Ob2 /Ot /Oy /MT /arch:SSE2 /fp:fast"
+      "${CMAKE_CXX_FLAGS_RELEASE} ${LL_CXX_FLAGS} -DLL_VECTORIZE=1 /O2 /Oi /Ob2 /Ot /Og /G6 /MT /arch:SSE2 /fp:fast"
       CACHE STRING "C++ compiler release options" FORCE)
 
   add_definitions(
@@ -104,14 +103,14 @@ if (LINUX)
       add_definitions(-D_FORTIFY_SOURCE=2)
     endif (NOT ${GXX_VERSION} MATCHES " 4.1.*Red Hat")
   endif (${GXX_VERSION} STREQUAL ${CXX_VERSION})
-
-  # GCC 4.3 introduces a pile of obnoxious new warnings, which we
-  # treat as errors due to -Werror.  Quiet the most offensive and
-  # widespread of them.
-
-  if (${CXX_VERSION} MATCHES "4.3")
-    add_definitions(-Wno-deprecated -Wno-parentheses)
-  endif (${CXX_VERSION} MATCHES "4.3")
+ 
+  #Lets actualy get a numerical version of gxx's version
+  STRING(REGEX REPLACE ".* ([0-9])\\.([0-9])\\.([0-9]).*" "\\1\\2\\3" CXX_VERSION ${CXX_VERSION})
+  
+  #gcc 4.3 and above don't like the LL boost
+  if(${CXX_VERSION} GREATER 429)
+    add_definitions(-Wno-parentheses)
+  endif (${CXX_VERSION} GREATER 429)
 
   # End of hacks.
 
@@ -151,6 +150,8 @@ if (LINUX)
   if (VIEWER)
     add_definitions(-DAPPID=rainbowviewer)
     add_definitions(-fvisibility=hidden)
+    # don't catch SIGCHLD in our base application class for the viewer - some of our 3rd party libs may need their *own* SIGCHLD handler to work.  Sigh!  The viewer doesn't need to catch SIGCHLD anyway.
+    add_definitions(-DLL_IGNORE_SIGCHLD)
     if (NOT STANDALONE)
       # this stops us requiring a really recent glibc at runtime
       add_definitions(-fno-stack-protector)
@@ -176,7 +177,7 @@ endif (DARWIN)
 
 
 if (LINUX OR DARWIN)
-  set(GCC_WARNINGS "-Wall -Wno-sign-compare -Wno-trigraphs")
+  set(GCC_WARNINGS "-Wall -Wno-sign-compare -Wno-trigraphs -Wno-non-virtual-dtor -Woverloaded-virtual")
 
   if (NOT GCC_DISABLE_FATAL_WARNINGS)
     set(GCC_WARNINGS "${GCC_WARNINGS} -Werror")
@@ -186,6 +187,14 @@ if (LINUX OR DARWIN)
 
   set(CMAKE_C_FLAGS "${GCC_WARNINGS} ${CMAKE_C_FLAGS}")
   set(CMAKE_CXX_FLAGS "${GCC_CXX_WARNINGS} ${CMAKE_CXX_FLAGS}")
+
+  if (WORD_SIZE EQUAL 32)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m32")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
+  elseif (WORD_SIZE EQUAL 64)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -m64")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64")
+  endif (WORD_SIZE EQUAL 32)
 endif (LINUX OR DARWIN)
 
 

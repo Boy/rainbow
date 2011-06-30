@@ -1112,6 +1112,9 @@ void LLInventoryModel::mock(const LLUUID& root_id)
 */
 
 //If we get back a normal response, handle it here
+// Note: this is the responder used in "fetchInventory" cap, 
+// this is not responder for "WebFetchInventoryDescendents" or "agent/inventory" cap
+
 void  LLInventoryModel::fetchInventoryResponder::result(const LLSD& content)
 {	
 	llinfos << "fetch http got " << ll_pretty_print_sd(content) << llendl; // OGPX
@@ -1235,7 +1238,7 @@ class fetchDescendentsResponder: public LLHTTPClient::Responder
 // Note: this is the handler for WebFetchInventoryDescendents and agent/inventory caps
 void  fetchDescendentsResponder::result(const LLSD& content)
 {
-	llinfos << "fetch descentdents got " << ll_pretty_print_sd(content) << llendl; // OGPX
+	llinfos << "fetch descendents got " << ll_pretty_print_sd(content) << llendl; // OGPX
 	if (content.has("folders"))	
 	{
 
@@ -1592,7 +1595,7 @@ void LLInventoryModel::backgroundFetch(void*)
 			// OGPX TODO: this should change when Capabilities are refactored. 
 			// ... this is a trust/security issue. if we have an agent/inventory from the Agent Domain, 
 			// maybe we shouldn't trust WFID from region.
-			llinfos << " no agent/inventory not on AD, checking fallback to region " << llendl; 
+			//llinfos << " no agent/inventory not on AD, checking fallback to region " << llendl; 
 			url = gAgent.getRegion()->getCapability("WebFetchInventoryDescendents"); 
 		}
 		if (!url.empty()) 
@@ -1601,6 +1604,7 @@ void LLInventoryModel::backgroundFetch(void*)
 			return;
 		}
 		
+		// If there was no HTTP cap to fetch with, then do the UDP fetch
 		//DEPRECATED OLD CODE FOLLOWS.
 		// no more categories to fetch, stop fetch process
 		if (sFetchQueue.empty())
@@ -2027,6 +2031,7 @@ bool LLInventoryModel::loadSkeleton(
 	{
 		cat_array_t categories;
 		item_array_t items;
+		cat_set_t invalid_categories; // Used to mark categories that weren't successfully loaded.
 		std::string owner_id_str;
 		owner_id.toString(owner_id_str);
 		std::string path(gDirUtilp->getExpandedFilename(LL_PATH_CACHE, owner_id_str));
@@ -2112,6 +2117,7 @@ bool LLInventoryModel::loadSkeleton(
 			// Add all the items loaded which are parented to a
 			// category with a correctly cached parent
 			count = items.count();
+			S32 bad_link_count = 0;
 			cat_map_t::iterator unparented = mCategoryMap.end();
 			for (int i = 0; i < count; ++i)
 			{
@@ -2122,11 +2128,28 @@ bool LLInventoryModel::loadSkeleton(
 					LLViewerInventoryCategory* cat = cit->second;
 					if (cat->getVersion() != NO_VERSION)
 					{
+						// This can happen if the linked object's baseobj is removed from the cache but the linked object is still in the cache.
+						if (items[i]->getIsBrokenLink())
+						{
+							bad_link_count++;
+							lldebugs << "Attempted to add cached link item without baseobj present ( name: "
+									 << items[i]->getName() << " itemID: " << items[i]->getUUID()
+									 << " assetID: " << items[i]->getAssetUUID()
+									 << " ).  Ignoring and invalidating " << cat->getName() << " . " << llendl;
+							invalid_categories.insert(cit->second);
+							continue;
+						}
 						addItem(items[i]);
 						cached_item_count += 1;
 						++child_counts[cat->getUUID()];
 					}
 				}
+			}
+			if (bad_link_count > 0)
+			{
+				llinfos << "Attempted to add " << bad_link_count
+						<< " cached link items without baseobj present. "
+						<< "The corresponding categories were invalidated." << llendl;
 			}
 		}
 		else
@@ -2139,6 +2162,17 @@ bool LLInventoryModel::loadSkeleton(
 				llvic->setVersion(NO_VERSION);
 				addCategory(*it);
 			}
+		}
+
+		// Invalidate all categories that failed fetching descendents for whatever
+		// reason (e.g. one of the descendents was a broken link).
+		for (cat_set_t::iterator invalid_cat_it = invalid_categories.begin();
+			 invalid_cat_it != invalid_categories.end();
+			 invalid_cat_it++)
+		{
+			LLViewerInventoryCategory* cat = (*invalid_cat_it).get();
+			cat->setVersion(NO_VERSION);
+			llinfos << "Invalidating category name: " << cat->getName() << " UUID: " << cat->getUUID() << " due to invalid descendents cache" << llendl;
 		}
 
 		// At this point, we need to set the known descendents for each
@@ -2167,6 +2201,12 @@ bool LLInventoryModel::loadSkeleton(
 		{
 			// clean up the gunzipped file.
 			LLFile::remove(inventory_filename);
+		}
+		if (is_cache_obsolete)
+		{
+			// If out of date, remove the gzipped file too.
+			llwarns << "Inv cache out of date, removing" << llendl;
+			LLFile::remove(gzip_filename);
 		}
 		categories.clear(); // will unref and delete entries
 	}
@@ -2706,6 +2746,8 @@ void LLInventoryModel::buildParentChildMap()
 			mIsAgentInvUsable = true;
 		}
 	}
+	llinfos << " finished buildParentChildMap " << llendl;
+	// dumpInventory(); // enable this if debugging inventory or appearance issues OGPX 
 }
 
 struct LLUUIDAndName
@@ -3572,7 +3614,7 @@ void LLInventoryModel::dumpInventory()
 		if(cat)
 		{
 			llinfos << "  " <<  cat->getUUID() << " '" << cat->getName() << "' "
-					<< cat->getVersion() << " " << cat->getDescendentCount()
+				<< cat->getVersion() << " " << cat->getDescendentCount() << " parent: " << cat->getParentUUID() 
 					<< llendl;
 		}
 		else
@@ -4194,7 +4236,6 @@ void LLInventoryAddedObserver::changed(U32 mask)
 
 	// *HACK: If this was in response to a packet off
 	// the network, figure out which item was updated.
-	// Code from Gigs Taggert, sin allowed by JC.
 	LLMessageSystem* msg = gMessageSystem;
 
 	std::string msg_name;

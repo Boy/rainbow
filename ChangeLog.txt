@@ -1,5 +1,11 @@
 2011-06-15 Boy Lane <boy.lane@yahoo.com>
 
+    * RezRestoreToWorld, 00-Common.cmake and menu_login/menu_viewer, UserAgent fixes, viewer version strings, QToolAlign cleanup, new certificates CA.pem, latest RLV.
+
+
+    
+2011-06-15 Boy Lane <boy.lane@yahoo.com>
+
     * Update to RLV 2.7, fix for installer check if Rainbow is running (thanks Jon!), several cleanups
     
     modified:   ChangeLog.txt

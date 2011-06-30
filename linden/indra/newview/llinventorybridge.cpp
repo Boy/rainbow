@@ -418,6 +418,24 @@ BOOL LLInvFVBridge::isClipboardPasteable() const
 		}
 	}
 
+	if (gRRenabled)
+	{
+		// Don't allow if either the destination folder or the source folder is locked
+		LLViewerInventoryCategory *current_cat = (LLViewerInventoryCategory*)model->getCategory(mUUID);
+		if (current_cat)
+		{
+			for (S32 i = objects.count() - 1; i >= 0; --i)
+			{
+				const LLUUID &obj_id = objects.get(i);
+				if (gAgent.mRRInterface.isFolderLocked(current_cat) ||
+					gAgent.mRRInterface.isFolderLocked(gInventory.getCategory(model->getObject(obj_id)->getParentUUID())))
+				{
+					return FALSE;
+				}
+			}
+		}
+	}
+
 	return TRUE;
 }
 
@@ -456,6 +474,25 @@ BOOL LLInvFVBridge::isClipboardPasteableAsLink() const
 			return FALSE;
 		}
 	}
+
+	if (gRRenabled)
+	{
+		// Don't allow if either the destination folder or the source folder is locked
+		LLViewerInventoryCategory *current_cat = (LLViewerInventoryCategory*)model->getCategory(mUUID);
+		if (current_cat)
+		{
+			for (S32 i = objects.count() - 1; i >= 0; --i)
+			{
+				const LLUUID &obj_id = objects.get(i);
+				if (gAgent.mRRInterface.isFolderLocked(current_cat) ||
+					gAgent.mRRInterface.isFolderLocked(gInventory.getCategory(model->getObject(obj_id)->getParentUUID())))
+				{
+					return FALSE;
+				}
+			}
+		}
+	}
+
 	return TRUE;
 }
 
@@ -710,15 +747,14 @@ void LLInvFVBridge::changeItemParent(LLInventoryModel* model,
 		{
 			LLInventoryCategory* cat_parent = gInventory.getCategory(item->getParentUUID());
 			LLInventoryCategory* cat_new_parent = gInventory.getCategory(new_parent);
-			if (gAgent.mRRInterface.isUnderRlvShare(cat_new_parent))
+			// We can move this category if we are moving it from a non shared
+			// folder to another one, even if both folders are locked
+			if ((gAgent.mRRInterface.isUnderRlvShare(cat_parent) ||
+				 gAgent.mRRInterface.isUnderRlvShare(cat_new_parent)) &&
+				(gAgent.mRRInterface.isFolderLocked(cat_parent) ||
+				 gAgent.mRRInterface.isFolderLocked(cat_new_parent)))
 			{
-				if (!gAgent.mRRInterface.canAttachCategory(cat_parent, false) ||
-					!gAgent.mRRInterface.canDetachCategory(cat_parent, false) ||
-					!gAgent.mRRInterface.canAttachCategory(cat_new_parent, false) ||
-					!gAgent.mRRInterface.canDetachCategory(cat_new_parent, false))
-				{
-					return;
-				}
+				return;
 			}
 		}
 //mk
@@ -751,15 +787,14 @@ void LLInvFVBridge::changeCategoryParent(LLInventoryModel* model,
 	if (gRRenabled)
 	{
 		LLInventoryCategory* cat_new_parent = gInventory.getCategory(new_parent);
-		if (gAgent.mRRInterface.isUnderRlvShare(cat_new_parent))
+		// We can move this category if we are moving it from a non shared
+		// folder to another one, even if both folders are locked
+		if ((gAgent.mRRInterface.isUnderRlvShare(cat) ||
+			 gAgent.mRRInterface.isUnderRlvShare(cat_new_parent)) &&
+			(gAgent.mRRInterface.isFolderLocked(cat) ||
+			 gAgent.mRRInterface.isFolderLocked(cat_new_parent)))
 		{
-			if (!gAgent.mRRInterface.canAttachCategory(cat, false) ||
-				!gAgent.mRRInterface.canDetachCategory(cat, false) ||
-				!gAgent.mRRInterface.canAttachCategory(cat_new_parent, false) ||
-				!gAgent.mRRInterface.canDetachCategory(cat_new_parent, false))
-			{
-				return;
-			}
+			return;
 		}
 	}
 //mk
@@ -954,6 +989,10 @@ void LLItemBridge::performAction(LLFolderView* folder, LLInventoryModel* model, 
 		model->deleteObject(mUUID);
 		model->notifyObservers();
 	}
+	else if ("restoreToWorld" == action)
+	{
+		restoreToWorldConfirm();
+	}
 	else if ("restore" == action)
 	{
 		restoreItem();
@@ -1021,6 +1060,65 @@ void LLItemBridge::restoreItem()
 		LLInvFVBridge::changeItemParent(model, item, new_parent, FALSE);
 	}
 }
+
+// virtual
+void LLItemBridge::restoreToWorld()
+{
+	LLViewerInventoryItem* itemp = (LLViewerInventoryItem*)getItem();
+	if (itemp && !itemp->getIsLinkType())
+	{
+		LLMessageSystem* msg = gMessageSystem;
+		msg->newMessage("RezRestoreToWorld");
+		msg->nextBlockFast(_PREHASH_AgentData);
+		msg->addUUIDFast(_PREHASH_AgentID, gAgent.getID());
+		msg->addUUIDFast(_PREHASH_SessionID, gAgent.getSessionID());
+
+		msg->nextBlockFast(_PREHASH_InventoryData);
+		itemp->packMessage(msg);
+		msg->sendReliable(gAgent.getRegion()->getHost());
+	}
+
+	//Similar functionality to the drag and drop rez logic
+	BOOL remove_from_inventory = FALSE;
+
+	//remove local inventory copy, sim will deal with permissions and removing the item
+	//from the actual inventory if its a no-copy etc
+	if(!itemp->getPermissions().allowCopyBy(gAgent.getID()))
+	{
+		remove_from_inventory = TRUE;
+	}
+
+	// Check if it's in the trash. (again similar to the normal rez logic)
+	LLUUID trash_id;
+	trash_id = gInventory.findCategoryUUIDForType(LLAssetType::AT_TRASH);
+	if(gInventory.isObjectDescendentOf(itemp->getUUID(), trash_id))
+	{
+		remove_from_inventory = TRUE;
+	}
+
+	if(remove_from_inventory)
+	{
+		gInventory.deleteObject(itemp->getUUID());
+		gInventory.notifyObservers();
+	}
+}
+
+bool LLItemBridge::restoreToWorldConfirm()
+{
+	gViewerWindow->alertXml("ConfirmRestoreToWorld", restoreToWorldCallback, this);
+	return false;
+}
+
+//static
+void LLItemBridge::restoreToWorldCallback(S32 option, void *data)
+{
+	LLItemBridge* self = (LLItemBridge*)data;
+	if (option == 0)
+	{
+		self->restoreToWorld();
+	}
+}
+
 void LLItemBridge::gotoItem(LLFolderView *folder)
 {
 	LLInventoryObject *obj = getInventoryObject();
@@ -1916,13 +2014,11 @@ BOOL LLFolderBridge::isItemRenameable() const
 {
 	LLViewerInventoryCategory* cat = (LLViewerInventoryCategory*)getCategory();
 //MK
-	if (gRRenabled && gAgent.mRRInterface.isUnderRlvShare(cat))
+	if (gRRenabled &&
+		gAgent.mRRInterface.isUnderRlvShare(cat) &&
+		gAgent.mRRInterface.isFolderLocked(cat))
 	{
-		if (!gAgent.mRRInterface.canAttachCategory(cat, false) ||
-			!gAgent.mRRInterface.canDetachCategory(cat, false))
-		{
-			return FALSE;
-		}
+		return FALSE;
 	}
 //mk
 	if(cat && (cat->getPreferredType() == LLAssetType::AT_NONE)
@@ -2149,15 +2245,23 @@ void LLFolderBridge::folderOptionsMenu()
 	
 	LLInventoryModel* model = mInventoryPanel->getModel();
 	if(!model) return;
+
+	const LLInventoryCategory* category = model->getCategory(mUUID);
+	bool is_default_folder = category &&
+		(LLAssetType::AT_NONE != category->getPreferredType());
 	
 	// calling card related functionality for folders.
 
-	LLIsType is_callingcard(LLAssetType::AT_CALLINGCARD);
-	if (mCallingCards || checkFolderForContentsOfType(model, is_callingcard))
+	// Only enable calling-card related options for non-default folders.
+	if (!is_default_folder)
 	{
-		mItems.push_back(std::string("Calling Card Separator"));
-		mItems.push_back(std::string("Conference Chat Folder"));
-		mItems.push_back(std::string("IM All Contacts In Folder"));
+		LLIsType is_callingcard(LLAssetType::AT_CALLINGCARD);
+		if (mCallingCards || checkFolderForContentsOfType(model, is_callingcard))
+		{
+			mItems.push_back(std::string("Calling Card Separator"));
+			mItems.push_back(std::string("Conference Chat Folder"));
+			mItems.push_back(std::string("IM All Contacts In Folder"));
+		}
 	}
 	
 	// wearables related functionality for folders.
@@ -2177,8 +2281,7 @@ void LLFolderBridge::folderOptionsMenu()
 		mItems.push_back(std::string("Folder Wearables Separator"));
 
 		// Only enable add/replace outfit for non-default folders.
-		const LLInventoryCategory* category = model->getCategory(mUUID);
-		if (!category || (LLAssetType::AT_NONE == category->getPreferredType()))
+		if (!is_default_folder)
 		{
 			mItems.push_back(std::string("Add To Outfit"));
 			mItems.push_back(std::string("Wear Items"));
@@ -2186,7 +2289,6 @@ void LLFolderBridge::folderOptionsMenu()
 		}
 		mItems.push_back(std::string("Take Off Items"));
 	}
-//mk
 	hideContextEntries(*mMenu, mItems, disabled_items);
 }
 
@@ -2401,7 +2503,7 @@ BOOL LLFolderBridge::dragOrDrop(MASK mask, BOOL drop,
 	case DAD_BODYPART:
 	case DAD_ANIMATION:
 	case DAD_GESTURE:
-		case DAD_LINK:
+	case DAD_LINK:
 		accept = dragItemIntoFolder((LLInventoryItem*)cargo_data,
 									drop);
 		break;
@@ -3930,6 +4032,8 @@ void LLObjectBridge::buildContextMenu(LLMenuGL& menu, U32 flags)
 				}
 				items.push_back(std::string("Attach To"));
 				items.push_back(std::string("Attach To HUD"));
+				items.push_back(std::string("RestoreToWorld Separator"));
+				items.push_back(std::string("Restore to Last Position"));
 //MK
 				if (gRRenabled && gAgent.mRRInterface.mContainsDetach
 					&& (gAgent.mRRInterface.mContainsDefaultwear || !gSavedSettings.getBOOL("RestrainedLoveAllowWear"))
@@ -4898,7 +5002,7 @@ void LLWearableBridge::performAction(LLFolderView* folder, LLInventoryModel* mod
 		if(gAgent.isWearingItem(mUUID))
 		{
 //MK
-			if (item && !gRRenabled || gAgent.mRRInterface.canUnwear(item, FALSE))
+			if (item && (!gRRenabled || gAgent.mRRInterface.canUnwear(item, FALSE)))
 //mk
 			{
 				gWearableList.getAsset(item->getAssetUUID(),
@@ -5005,7 +5109,6 @@ void LLWearableBridge::buildContextMenu(LLMenuGL& menu, U32 flags)
 		
 		items.push_back(std::string("Wearable Wear"));
 		items.push_back(std::string("Wearable Edit"));
-
 
 		if ((flags & FIRST_SELECTED_ITEM) == 0)
 		{

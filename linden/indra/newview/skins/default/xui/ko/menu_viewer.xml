@@ -228,12 +228,12 @@
 		     name="Set Scripts to Not Running in Selection" />
 	</menu>
 	<menu label="도움말" name="Help">
-		<menu_item_call label="세컨드라이프 도움말" name="Second Life Help" />
+		<menu_item_call label="세컨드라이프 도움말" name="Rainbow Viewer Help" />
 		<menu_item_call label="인월드 도움말" name="In-World Help" />
 		<menu_item_call label="추가 도움말" name="Additional Help" />
 		<menu_item_call label="튜토리얼" name="Tutorial" />
 		<menu_item_separator label="-----------" name="separator" />
-		<menu_item_call label="공식 린든 블로그" name="Official Linden Blog..." />
+		<menu_item_call label="공식 린든 블로그" name="Rainbow Viewer Blog..." />
 		<menu_item_separator label="-----------" name="separator2" />
 		<menu_item_call label="스크립팅 가이드..." name="Scripting Guide..." />
 		<menu_item_call label="스크립팅 포탈" name="Scripting Portal..." />
@@ -257,6 +257,6 @@
 		</menu>
 		<menu_item_call label="출시 정보" name="Release Notes..." />
 		<menu_item_separator label="-----------" name="separator6" />
-		<menu_item_call label="세컨드라이프 정보" name="About Second Life..." />
+		<menu_item_call label="세컨드라이프 정보" name="About Rainbow Viewer..." />
 	</menu>
 </menu_bar>

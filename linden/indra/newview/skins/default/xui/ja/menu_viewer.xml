@@ -179,10 +179,10 @@
 		<menu_item_call label="選択した（オブジェクトの中の）スクリプトを停止する" name="Set Scripts to Not Running in Selection"/>
 	</menu>
 	<menu label="ヘルプ" name="Help">
-		<menu_item_call label="Second Life ヘルプ" name="Second Life Help"/>
+		<menu_item_call label="Rainbow Viewer ヘルプ" name="Rainbow Viewer Help"/>
 		<menu_item_call label="チュートリアル" name="Tutorial"/>
 		<menu_item_separator label="-----------" name="separator"/>
-		<menu_item_call label="Linden公式ブログ..." name="Official Linden Blog..."/>
+		<menu_item_call label="Rainbow Viewer公式ブログ..." name="Rainbow Viewer Blog..."/>
 		<menu_item_separator label="-----------" name="separator2"/>
 		<menu_item_call label="スクリプト・ポータル..." name="Scripting Portal..."/>
 		<menu_item_separator label="-----------" name="separator3"/>
@@ -202,6 +202,6 @@
 			<menu_item_separator label="-----------" name="separator9"/>
 			<menu_item_call label="バグの報告..." name="Report Bug..."/>
 		</menu>
-		<menu_item_call label="Second Lifeについて" name="About Second Life..."/>
+		<menu_item_call label="Rainbow Viewerについて" name="About Rainbow Viewer..."/>
 	</menu>
 </menu_bar>

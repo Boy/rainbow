@@ -228,7 +228,7 @@ LLIOPipe::EStatus LLURLRequest::process_impl(
 	PUMP_DEBUG;
 	LLMemType m1(LLMemType::MTYPE_IO_URL_REQUEST);
 	//llinfos << "LLURLRequest::process_impl()" << llendl;
-	if(!buffer) return STATUS_ERROR;
+	if (!buffer || !mDetail) return STATUS_ERROR;
 	switch(mState)
 	{
 	case STATE_INITIALIZED:

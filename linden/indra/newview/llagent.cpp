@@ -7803,6 +7803,7 @@ void LLAgent::onSetWearableDialog( S32 option, void* userdata )
 	LLInventoryItem* new_item = gInventory.getItem( data->mNewItemID );
 	if( !new_item )
 	{
+		llwarns << "Callback onSetWearableDialog() called for a NULL new item !" << llendl;
 		delete data;
 		return;
 	}
@@ -7826,7 +7827,7 @@ void LLAgent::onSetWearableDialog( S32 option, void* userdata )
 		break;
 	}
 
-	delete data;
+	return;
 }
 
 // Called from setWearable() and onSetWearableDialog() to actually set the wearable.

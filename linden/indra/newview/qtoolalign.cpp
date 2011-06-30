@@ -29,23 +29,17 @@
 #include "llviewerobject.h"
 #include "llviewerwindow.h"
 
-
 const F32 MANIPULATOR_SIZE = 5.0;
 const F32 MANIPULATOR_SELECT_SIZE = 20.0;
 
-
-
 QToolAlign::QToolAlign()
-:	LLTool(std::string("Align"))
+:	LLToolComposite(std::string("Align"))
 {
 }
-
 
 QToolAlign::~QToolAlign()
 {
 }
-
-
 
 BOOL QToolAlign::handleMouseDown(S32 x, S32 y, MASK mask)
 {
@@ -61,7 +55,40 @@ BOOL QToolAlign::handleMouseDown(S32 x, S32 y, MASK mask)
 	return TRUE;
 }
 
+BOOL QToolAlign::handleMouseUp(S32 x, S32 y, MASK mask)
+{
+	// first, perform normal processing in case this was a quick-click
+	handleHover(x, y, mask);
+	LLSelectMgr::getInstance()->updateSelectionCenter();
+	BOOL handled = FALSE;
+	if (hasMouseCapture())
+	{
+		handled = TRUE;
+		setMouseCapture(FALSE);
+	}
+	return handled;
+}
 
+BOOL QToolAlign::handleDoubleClick(S32 x, S32 y, MASK mask)
+{
+	return FALSE;
+}
+
+LLTool* QToolAlign::getOverrideTool(MASK mask)
+{
+	if (!gKeyboard->getKeyDown('A'))
+	{
+		if (mask == MASK_CONTROL)
+		{
+			return LLToolCompRotate::getInstance();
+		}
+		else if (mask == (MASK_CONTROL | MASK_SHIFT))
+		{
+			return LLToolCompScale::getInstance();
+		}
+	}
+	return LLToolComposite::getOverrideTool(mask);
+}
 
 void QToolAlign::pickCallback(const LLPickInfo& pick_info)
 {
@@ -77,7 +104,7 @@ void QToolAlign::pickCallback(const LLPickInfo& pick_info)
 		if (pick_info.mKeyMask & MASK_SHIFT)
 		{
 			// If object not selected, select it
-			if ( !object->isSelected() )
+			if (!object->isSelected())
 			{
 				LLSelectMgr::getInstance()->selectObjectAndFamily(object);
 			}
@@ -104,22 +131,19 @@ void QToolAlign::pickCallback(const LLPickInfo& pick_info)
 	LLSelectMgr::getInstance()->promoteSelectionToRoot();
 }
 
-
-
 void QToolAlign::handleSelect()
 {
 	// no parts, please
 
-	//llwarns << "in select" << llendl;
+	llwarns << "in select" << llendl;
 	LLSelectMgr::getInstance()->promoteSelectionToRoot();
+	LLSelectMgr::getInstance()->updateSelectionCenter();
 	gFloaterTools->setStatusText("align");
 }
-
 
 void QToolAlign::handleDeselect()
 {
 }
-
 
 BOOL QToolAlign::findSelectedManipulator(S32 x, S32 y)
 {
@@ -151,8 +175,6 @@ BOOL QToolAlign::findSelectedManipulator(S32 x, S32 y)
 		transform *= projection_matrix;
 	}
 
-
-	//LLRect world_view_rect = getWorldViewRectScaled();
 	F32 half_width = (F32)gViewerWindow->getWindowWidth() / 2.f;
 	F32 half_height = (F32)gViewerWindow->getWindowHeight() / 2.f;
 	LLVector2 manip2d;
@@ -190,7 +212,6 @@ BOOL QToolAlign::findSelectedManipulator(S32 x, S32 y)
 	return FALSE;
 }
 
-
 BOOL QToolAlign::handleHover(S32 x, S32 y, MASK mask)
 {
 	if (mask & MASK_SHIFT)
@@ -206,8 +227,6 @@ BOOL QToolAlign::handleHover(S32 x, S32 y, MASK mask)
 	return findSelectedManipulator(x, y);
 }
 
-
-
 void setup_transforms_bbox(LLBBox bbox)
 {
 	// translate to center
@@ -218,8 +237,8 @@ void setup_transforms_bbox(LLBBox bbox)
 	LLQuaternion rotation = bbox.getRotation();
 	F32 angle_radians, x, y, z;
 	rotation.getAngleAxis(&angle_radians, &x, &y, &z);
-	// gGL has no rotate method (despite having translate and scale) presumably because
-	// its authors smoke crack.  so we hack.
+	// gGL has no rotate method (despite having translate and scale).
+	// So we hack.
 	gGL.flush();
 	glRotatef(angle_radians * RAD_TO_DEG, x, y, z); 
 
@@ -227,7 +246,6 @@ void setup_transforms_bbox(LLBBox bbox)
 	LLVector3 scale = bbox.getMaxLocal() - bbox.getMinLocal();
 	gGL.scalef(scale.mV[VX], scale.mV[VY], scale.mV[VZ]);
 }
-
 
 void render_bbox(LLBBox bbox)
 {
@@ -255,8 +273,6 @@ void render_cone_bbox(LLBBox bbox)
 	gGL.popMatrix();
 }
 
-
-
 // the selection bbox isn't axis aligned, so we must construct one
 // should this be cached in the selection manager?  yes.
 LLBBox get_selection_axis_aligned_bbox()
@@ -283,11 +299,8 @@ LLBBox get_selection_axis_aligned_bbox()
 		}
 	}
 
-	
 	return axis_aligned_bbox;
 }
-
-
 
 void QToolAlign::computeManipulatorSize()
 {
@@ -303,7 +316,7 @@ void QToolAlign::computeManipulatorSize()
 		if (distance > 0.001f)
 		{
 			// range != zero
-			F32 fraction_of_fov = MANIPULATOR_SIZE /LLViewerCamera::getInstance()->getViewHeightInPixels();
+			F32 fraction_of_fov = MANIPULATOR_SIZE / LLViewerCamera::getInstance()->getViewHeightInPixels();
 			F32 apparent_angle = fraction_of_fov * LLViewerCamera::getInstance()->getView();  // radians
 			mManipulatorSize = MANIPULATOR_SIZE * distance * tan(apparent_angle);
 		}
@@ -315,12 +328,10 @@ void QToolAlign::computeManipulatorSize()
 	}
 }
 
-
 LLColor4 manipulator_color[3] = { LLColor4(0.7f, 0.0f, 0.0f, 0.5f),
 								   LLColor4(0.0f, 0.7f, 0.0f, 0.5f),
 								   LLColor4(0.0f, 0.0f, 0.7f, 0.5f) };
 								   
-
 void QToolAlign::renderManipulators()
 {
 	computeManipulatorSize();
@@ -328,6 +339,7 @@ void QToolAlign::renderManipulators()
 	LLVector3 bbox_scale = mBBox.getMaxLocal() - mBBox.getMinLocal();
 	
 	for (S32 axis = VX; axis <= VZ; axis++)
+	{
 		for (F32 direction = -1.0; direction <= 1.0; direction += 2.0)
 		{
 			F32 size = mManipulatorSize;
@@ -362,15 +374,15 @@ void QToolAlign::renderManipulators()
 				manipulator_bbox.addPointLocal(LLVector3(1, 1, 0.75) * size * 0.5);
 			
 				gGL.color4fv(color.mV);
-				// sadly, gCone doesn't use gGL like gBox does (presumably because its author smokes crack) so we
-				// also set the raw GL color.  hopefully this won't screw-up later rendering.
+				// sadly, gCone doesn't use gGL like gBox does so we also set the raw GL color.
+				// Hopefully this won't screw-up later rendering.
 				glColor4fv(color.mV);
 
 				render_cone_bbox(manipulator_bbox);
 			}
 		}
+	}
 }
-
 
 void QToolAlign::render()
 {
@@ -384,18 +396,18 @@ void QToolAlign::render()
 	gGL.getTexUnit(0)->unbind(LLTexUnit::TT_TEXTURE);
 
 	// render box
-	LLColor4 default_normal_color( 0.7f, 0.7f, 0.7f, 0.1f );
-	gGL.color4fv( default_normal_color.mV );
+	LLColor4 default_normal_color(0.7f, 0.7f, 0.7f, 0.1f);
+	gGL.color4fv(default_normal_color.mV);
 
 	LLObjectSelectionHandle selection = LLSelectMgr::getInstance()->getEditSelection();
- 	BOOL can_move = selection->getObjectCount() != 0;
+	BOOL can_move = (selection->getObjectCount() != 0);
 	if (can_move)
- 	{
+	{
 		struct f : public LLSelectedObjectFunctor
- 		{
- 			virtual bool apply(LLViewerObject* objectp)
- 			{
- 				return objectp->permMove() && (objectp->permModify() || !gSavedSettings.getBOOL("EditLinkedParts"));
+		{
+			virtual bool apply(LLViewerObject* objectp)
+			{
+				return objectp->permMove() && (objectp->permModify() || !gSavedSettings.getBOOL("EditLinkedParts"));
 			}
 		} func;
 		can_move = selection->applyToObjects(&func);
@@ -421,8 +433,6 @@ BOOL bbox_overlap(LLBBox bbox1, LLBBox bbox2)
 			(fabs(delta.mV[VZ]) < half_extent.mV[VZ] - FUDGE));
 }
 
-
-
 // used to sort bboxes before packing
 class BBoxCompare
 {
@@ -437,7 +447,6 @@ public:
 
 		LLVector3 corner2 = mBBoxes[object2].getCenterAgent() -
 			mDirection * mBBoxes[object2].getExtentLocal()/2.0;
-
 		
 		return mDirection * corner1.mV[mAxis] < mDirection * corner2.mV[mAxis];
 	}
@@ -446,7 +455,6 @@ public:
 	F32 mDirection;
 	std::map<LLPointer<LLViewerObject>, LLBBox >& mBBoxes;
 };
-
 
 void QToolAlign::align()
 {
@@ -578,7 +586,6 @@ void QToolAlign::align()
 		}
 	}
 
-	
 	// now move them
 	for (S32 i = 0; i < (S32)objects.size(); i++)
 	{
@@ -594,7 +601,6 @@ void QToolAlign::align()
 
 		object->setPosition(new_position);
 	}
-	
-	
+
 	LLSelectMgr::getInstance()->sendMultipleUpdate(UPD_POSITION);
 }

@@ -7,7 +7,7 @@
 		<menu_item_call label="Einstellungen..." name="Preferences..." />
 	</menu>
 	<menu label="Hilfe" name="Help">
-		<menu_item_call label="Hilfe zu Second Life" name="Second Life Help" />
-		<menu_item_call label="Über Second Life..." name="About Second Life..." />
+		<menu_item_call label="Hilfe zu Rainbow Viewer" name="Rainbow Viewer Help" />
+		<menu_item_call label="Über Rainbow Viewer..." name="About Rainbow Viewer..." />
 	</menu>
 </menu_bar>
