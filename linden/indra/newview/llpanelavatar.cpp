@@ -63,6 +63,7 @@
 #include "llpanelpick.h"
 #include "llscrolllistctrl.h"
 #include "llstatusbar.h"
+#include "llstartup.h"				// gIsInSecondLife
 #include "lltabcontainer.h"
 #include "lltabcontainervertical.h"
 #include "llimview.h"
@@ -1506,10 +1507,14 @@ void LLPanelAvatar::setAvatarID(const LLUUID &avatar_id, const std::string &name
 			childSetVisible("Pay...",TRUE);
 			childSetEnabled("Pay...",FALSE);
 		}
+		LLNameEditor* avatar_key = getChild<LLNameEditor>("avatar_key");
+		if (avatar_key)
+		{
+			avatar_key->setText(avatar_id.asString());
+		}
 	}
 	
-	BOOL is_god = FALSE;
-	if (gAgent.isGodlike()) is_god = TRUE;
+	BOOL is_god = gAgent.isGodlike();
 	
 	childSetVisible("Kick", is_god);
 	childSetEnabled("Kick", is_god);
@@ -1518,7 +1523,7 @@ void LLPanelAvatar::setAvatarID(const LLUUID &avatar_id, const std::string &name
 	childSetVisible("Unfreeze", is_god);
 	childSetEnabled("Unfreeze", is_god);
 	childSetVisible("csr_btn", is_god);
-	childSetEnabled("csr_btn", is_god);
+	childSetEnabled("csr_btn", is_god && gIsInSecondLife);
 }
 
 void LLPanelAvatar::completeNameCallback(const LLUUID& agent_id,

@@ -2458,7 +2458,7 @@
       <key>Type</key>
       <string>Boolean</string>
       <key>Value</key>
-      <integer>0</integer>
+      <integer>1</integer>
     </map>
     <key>DragAndDropToolTipDelay</key>
     <map>
@@ -8750,7 +8750,7 @@
       <key>Type</key>
       <string>U32</string>
       <key>Value</key>
-      <integer>20</integer>
+      <integer>12</integer>
     </map>
     <key>SpeedTest</key>
     <map>

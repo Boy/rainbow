@@ -79,7 +79,7 @@
 		</combo_item>
 	  </combo_box>
 	</panel>	
-	<panel border="true" left="1" bottom="-408" height="408" width="500" mouse_opaque="true"
+	<panel border="true" enabled="true" left="1" bottom="-408" height="408" width="500" mouse_opaque="true"
     	  follows="left|top|right|bottom" label="Miscellaneous" name="Miscellaneous">
           <check_box bottom_delta="-20" control_name="SaveScriptsAsMono" enabled="true"
 	           follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
@@ -138,11 +138,37 @@
 	  	   label="Rez objects with the local land group selected if member" left="10"
 	  	   mouse_opaque="true" name="rez_with_land_group" radio_style="false"
 	  	   width="400" />
-	  <check_box bottom_delta="-20" control_name="EmeraldBreastPhysicsToggle" enabled="true"
+	  <button bottom="-220" follows="left|top" font="SansSerifSmall" height="18" label="?"
+	  	name="Help_Physics" tool_tip="Click here for help regarding the settings for Avatar Physics."
+		right="470" width="22"/>
+	  <check_box bottom="-220" control_name="EmeraldBreastPhysicsToggle" enabled="true"
         	   follows="left|top" font="SansSerifSmall" height="16"  initial_value="true"
-	   	   label="Enable enhanced physics on avatar breasts" left="10"
+	   	   label="Enable enhanced physics on avatars" left="10"
                    mouse_opaque="true" name="breast_physics_check" radio_style="false"
 		   width="400"/>
+		   <slider bottom_delta="-20" left="31" name="EmeraldBoobMass" control_name="EmeraldBoobMass"
+			decimal_digits="0" enabled="true" follows="left|top" height="18" increment="1"
+			label="Mass:" label_width="100" max_val="100" min_val="1" mouse_opaque="true"
+			show_text="true" width="250" auto_resize="false" tool_tip=""/>
+		   <slider bottom_delta="-20" left_delta="0" name="EmeraldBoobHardness" control_name="EmeraldBoobHardness"
+			decimal_digits="0" enabled="true" follows="left|top" height="18" increment="1"
+		   	label="Rebound:" label_width="100" max_val="100" min_val="1" mouse_opaque="true"
+			show_text="true" width="250" auto_resize="false" tool_tip=""/>
+		   <slider bottom_delta="-20" left_delta="0" name="EmeraldBoobVelMax" control_name="EmeraldBoobVelMax"
+			decimal_digits="0" enabled="true" follows="left|top" height="18" increment="1"
+			label="Max vel:" label_width="100" max_val="100" min_val="1" mouse_opaque="true"
+			show_text="true" width="250" auto_resize="false" tool_tip=""/>
+		   <slider bottom_delta="-20" left_delta="0" name="EmeraldBoobFriction" control_name="EmeraldBoobFriction"
+			decimal_digits="0" enabled="true" follows="left|top" height="18" increment="1"
+			label="Friction:" label_width="100" max_val="100" min_val="1" mouse_opaque="true"
+			show_text="true" width="250" auto_resize="false" tool_tip=""/>
+		   <slider bottom_delta="-20" left_delta="0" name="EmeraldBoobVelMin" control_name="EmeraldBoobVelMin"
+			decimal_digits="0" enabled="true" follows="left|top" height="18" increment="1"
+			label="Min vel:" label_width="100" max_val="100" min_val="1" mouse_opaque="true"
+			show_text="true" width="250" auto_resize="false" tool_tip=""/>
+		   <button bottom_delta="-20" follows="left|top" font="SansSerifSmall" height="20" label="Default Settings"
+			name="EmeraldBreastReset" tool_tip="Revert the values to the default settings." left="150"
+		   width="100"/>
 	  </panel>
     </tab_container>
 </panel>

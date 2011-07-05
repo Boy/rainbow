@@ -144,7 +144,6 @@ LLWearable::~LLWearable()
 {
 }
 
-
 // static
 EWearableType LLWearable::typeNameToType( const std::string& type_name )
 {
@@ -158,37 +157,34 @@ EWearableType LLWearable::typeNameToType( const std::string& type_name )
 	return WT_INVALID;
 }
 
-const char* terse_F32_to_string( F32 f, char s[MAX_STRING] )		/* Flawfinder: ignore */
+std::string terse_F32_to_string( F32 f )
 {
-	char* r = s;
-	S32 len = snprintf( s, MAX_STRING, "%.2f", f );		/* Flawfinder: ignore */
-
+	std::string r = llformat( "%.2f", f );
 	// "1.20"  -> "1.2"
 	// "24.00" -> "24."
-	while( '0' == r[len - 1] )
+	S32 len = r.length();
+	while( len > 0 && '0' == r[len - 1] )
 	{
-		len--;  
-		r[len] = '\0';
+		r.erase(len-1, 1);
+		len--;
 	}
 
 	if( '.' == r[len - 1] )
 	{
 		// "24." -> "24"
-		len--;
-		r[len] = '\0';
+		r.erase(len-1, 1);
 	}
 	else
 	if( ('-' == r[0]) && ('0' == r[1]) )
 	{
 		// "-0.59" -> "-.59"
-		r++;
-		r[0] = '-';
+		r.erase(1, 1);
 	}
 	else
 	if( '0' == r[0] )
 	{
 		// "0.59" -> ".59"
-		r++;
+		r.erase(0, 1);
 	}
 
 	return r;
@@ -205,13 +201,12 @@ BOOL LLWearable::FileExportParams( FILE* file )
 	S32 num_parameters = mVisualParamMap.size();
 	fprintf( file, "parameters %d\n", num_parameters );
 
-	char s[ MAX_STRING ];		/* Flawfinder: ignore */
 	for (param_map_t::iterator iter = mVisualParamMap.begin();
 		 iter != mVisualParamMap.end(); ++iter)
 	{
 		S32 param_id = iter->first;
 		F32 param_weight = iter->second;
-		fprintf( file, "%d %s\n", param_id, terse_F32_to_string( param_weight, s ) );
+		fprintf( file, "%d %s\n", param_id, terse_F32_to_string(param_weight).c_str() );
 	}
 
 	return TRUE;
@@ -285,13 +280,12 @@ BOOL LLWearable::exportFile( LLFILE* file )
 		return FALSE;
 	}
 
-	char s[ MAX_STRING ];		/* Flawfinder: ignore */
 	for (param_map_t::iterator iter = mVisualParamMap.begin();
 		 iter != mVisualParamMap.end(); ++iter)
 	{
 		S32 param_id = iter->first;
 		F32 param_weight = iter->second;
-		if( fprintf( file, "%d %s\n", param_id, terse_F32_to_string( param_weight, s ) ) < 0 )
+		if( fprintf( file, "%d %s\n", param_id, terse_F32_to_string( param_weight ).c_str() ) < 0 )
 		{
 			return FALSE;
 		}
@@ -446,6 +440,7 @@ BOOL LLWearable::importFile( LLFILE* file )
 	}
 	else
 	{
+		mType = WT_COUNT;
 		llwarns << "Bad Wearable asset: bad type #" << type <<  llendl;
 		return FALSE;
 	}
@@ -802,7 +797,7 @@ void LLWearable::writeToAvatar( BOOL set_by_user )
 
 //	if( set_by_user )
 //	{
-//		gAgent.sendAgentSetAppearance();
+		gAgent.sendAgentSetAppearance();
 //	}
 }
 

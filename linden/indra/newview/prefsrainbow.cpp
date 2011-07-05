@@ -34,12 +34,14 @@
 
 #include "prefsrainbow.h"
 
-#include "llstartup.h"
-#include "llviewercontrol.h"
-#include "lluictrlfactory.h"
-#include "llcombobox.h"
 #include "llcolorswatch.h"
+#include "llcombobox.h"
+#include "llstartup.h"
+#include "lluictrlfactory.h"
+#include "llviewercontrol.h"
+#include "llviewerwindow.h"
 
+#include "llsliderctrl.h"
 class LLPrefsRainbowImpl : public LLPanel
 {
 public:
@@ -53,6 +55,8 @@ public:
 
 private:
 	static void onCommitCheckBox(LLUICtrl* ctrl, void* user_data);
+	static void onClickHelp(void *data);
+	static void onClickBoobReset(void* data);
 	void refreshValues();
 	BOOL mShowGrids;
 	BOOL mSaveScriptsAsMono;
@@ -88,6 +92,48 @@ private:
 	U32 mDateFormat;
 };
 
+void onOpenHelp(void* data)
+{
+	LLPrefsRainbowImpl* self = static_cast<LLPrefsRainbowImpl*>(data);
+	const char* xml_alert = "Help_Physics";
+	
+	LLAlertDialog* dialogp = gViewerWindow->alertXml(xml_alert);
+	if (dialogp)
+	{
+		LLFloater* root_floater = gFloaterView->getParentFloater(self);
+		if (root_floater)
+		{
+			root_floater->addDependentFloater(dialogp);
+		}
+	}	
+}
+
+void LLPrefsRainbowImpl::onClickBoobReset(void* data)
+{
+	LLPrefsRainbowImpl* self = (LLPrefsRainbowImpl*)data;
+	LLControlVariable *var;
+
+	var = self->findControl("EmeraldBoobMass");
+	self->getChild<LLSliderCtrl>("EmeraldBoobMass")->setValue(var->getDefault());
+	var->resetToDefault();
+
+	var = self->findControl("EmeraldBoobHardness");
+	self->getChild<LLSliderCtrl>("EmeraldBoobHardness")->setValue(var->getDefault());
+	var->resetToDefault();
+
+	var = self->findControl("EmeraldBoobVelMax");
+	self->getChild<LLSliderCtrl>("EmeraldBoobVelMax")->setValue(var->getDefault());
+	var->resetToDefault();
+
+	var = self->findControl("EmeraldBoobFriction");
+	self->getChild<LLSliderCtrl>("EmeraldBoobFriction")->setValue(var->getDefault());
+	var->resetToDefault();
+
+	var = self->findControl("EmeraldBoobVelMin");
+	self->getChild<LLSliderCtrl>("EmeraldBoobVelMin")->setValue(var->getDefault());
+	var->resetToDefault();
+}
+
 LLPrefsRainbowImpl::LLPrefsRainbowImpl()
  : LLPanel("Rainbow Prefs Panel")
 {
@@ -95,6 +141,9 @@ LLPrefsRainbowImpl::LLPrefsRainbowImpl()
 	childSetCommitCallback("restrained_love_check", onCommitCheckBox, this);
 	childSetCommitCallback("speed_rez_check", onCommitCheckBox, this);
 	childSetCommitCallback("double_click_teleport_check", onCommitCheckBox, this);
+	childSetAction("Help_Physics", onOpenHelp, this);
+	getChild<LLButton>("EmeraldBreastReset")->setClickedCallback(onClickBoobReset, this);
+
 	refresh();
 }
 

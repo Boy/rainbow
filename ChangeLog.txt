@@ -1,3 +1,27 @@
+2011-07-05 Boy Lane <boy.lane@yahoo.com>
+
+    * Getting ready for a new release :) - AvatarPhysics settings, tinted tattoos, invalid wearables fix, better login screen for "residents", radar colors fix, avatar key in profile fix, Ruth timer, misc
+
+    modified:   ChangeLog.txt
+    modified:   linden/indra/newview/app_settings/settings.xml
+    modified:   linden/indra/newview/llfloateravatarlist.cpp
+    modified:   linden/indra/newview/llfloatercustomize.cpp
+    modified:   linden/indra/newview/llpanelavatar.cpp
+    modified:   linden/indra/newview/llpaneldirfind.cpp
+    modified:   linden/indra/newview/llviewermenu.cpp
+    modified:   linden/indra/newview/llvoavatar.cpp
+    modified:   linden/indra/newview/llvoavatar.h
+    modified:   linden/indra/newview/llwearable.cpp
+    modified:   linden/indra/newview/llwearablelist.cpp
+    modified:   linden/indra/newview/prefsrainbow.cpp
+    modified:   linden/indra/newview/skins/default/xui/en-us/alerts.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/floater_customize.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/notify.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/panel_login.xml
+    modified:   linden/indra/newview/skins/default/xui/en-us/panel_preferences_rainbow.xml
+    new file:   linden/indra/newview/res/uninstall_icon.BMP
+    new file:   linden/indra/newview/res/uninstall_icon.ico
+
 2011-06-30 Boy Lane <boy.lane@yahoo.com>
 
     * NewScriptFunctions from CoolVL 

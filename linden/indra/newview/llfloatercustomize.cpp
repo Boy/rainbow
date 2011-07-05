@@ -1036,7 +1036,7 @@ void LLPanelEditWearable::draw()
 	childSetVisible("title_loading", FALSE);
 
 	childSetVisible("path", FALSE);
-	
+
 	if(has_wearable && !is_modifiable)
 	{
 		// *TODO:Translate
@@ -2507,6 +2507,7 @@ void LLFloaterCustomize::initWearablePanels()
 		panel->addTextureDropTarget(TEX_HEAD_TATTOO, "Head Tattoo",
 									LLUUID::null,
 									TRUE);
+		panel->addColorSwatch(TEX_LOWER_TATTOO, "Color/Tint");
 	}
 }
 

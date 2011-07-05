@@ -368,12 +368,16 @@ public:
 public:
 	BOOL            isFullyLoaded();
 	BOOL            updateIsFullyLoaded();
+protected:
+	bool 			sendAvatarTexturesRequest();
+	void			updateRuthTimer(bool loading);
 private:
 	BOOL            mFullyLoaded;
 	BOOL            mPreviousFullyLoaded;
 	BOOL            mFullyLoadedInitialized;
 	S32             mFullyLoadedFrameCounter;
 	LLFrameTimer    mFullyLoadedTimer;
+	LLFrameTimer	mRuthTimer;
 
 	//--------------------------------------------------------------------
 	// Collision Volumes

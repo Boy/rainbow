@@ -5090,5 +5090,22 @@ WARNING: Don't restore if you aren't sure where the object will go! It may rez a
 		When restoring objects to their last positions
 		</ignore>
 	</alert>
+  	<alert modal="true" name="Help_Physics">
+		<message name="message">
+Avatar Physics
+This enables you and other avatar's to have actual physics applied to them (breasts, butt and body fat). You can use these settings to fine-tune the physics to match your personal taste.
+
+-Mass
+   A higher value will seemingly increase the total effect
+-Rebound
+   Controls how quickly the body parts will come to rest after any movement.
+-Max Vel
+   The amount of "momentum" they can recieve. Lower for less bounce
+-Min Vel
+   Percentage of the Max Vel that doesn't effect avatar physics.
+-Friction
+   This controls the internal friction. Brings the body part movements to a halt. Higher the number, quicker they stop.
+ 		</message>
+	</alert>
 </alerts>
 

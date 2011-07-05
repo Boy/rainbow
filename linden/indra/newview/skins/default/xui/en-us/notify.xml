@@ -681,6 +681,11 @@ Don't panic.
 Try again in a minute to give things a chance to settle down.
 		</message>
 	</notify>
+	<notify name="InvalidWearable" tip="false">
+		<message name="message">
+The item you are trying to wear uses a feature that your viewer can&apos;t read. Please upgrade your viewer version to wear this item.
+		</message>
+	</notify>
 	<notify name="FailedToFindWearableUnnamed" tip="false">
 		<message name="message">
 			Failed to find [TYPE] in database.

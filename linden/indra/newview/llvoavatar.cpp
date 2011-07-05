@@ -71,7 +71,9 @@
 #include "lltoolmgr.h"		// for needsRenderBeam
 #include "lltoolmorph.h"
 #include "llviewercamera.h"
+#include "llviewergenericmessage.h"
 #include "llviewerimagelist.h"
+#include "llviewermedia.h"
 #include "llviewermenu.h"
 #include "llviewerobjectlist.h"
 #include "llviewerparcelmgr.h"
@@ -86,6 +88,10 @@
 #include "llvoiceclient.h"
 #include "llvoicevisualizer.h" // Ventrella
 
+#if LL_MSVC
+// disable boost::lexical_cast warning
+#pragma warning (disable:4702)
+#endif
 #include "boost/lexical_cast.hpp"
 
 using namespace LLVOAvatarDefines;
@@ -172,6 +178,8 @@ const F32 BUBBLE_CHAT_TIME = CHAT_FADE_TIME * 3.f;
 const S32 MAX_BUBBLES = 7;
 
 const LLColor4 DUMMY_COLOR = LLColor4(0.5,0.5,0.5,1.0);
+
+const F32 DERUTHING_TIMEOUT_SECONDS = 60.f;
 
 enum ERenderName
 {
@@ -349,7 +357,6 @@ public:
 		: LLMotion(id)
 	{
 		mName = "body_noise";
-
 		mTorsoState = new LLJointState;
 	}
 
@@ -457,12 +464,11 @@ public:
 		mCharacter(NULL)
 	{
 		mName = "breathe_rot";
-
 		mChestState = new LLJointState;
 	}
 
 	// Destructor
-	virtual ~LLBreatheMotionRot() { }
+	virtual ~LLBreatheMotionRot() {}
 
 public:
 	//-------------------------------------------------------------------------
@@ -857,6 +863,8 @@ LLVOAvatar::LLVOAvatar(const LLUUID& id,
 	mLipSyncActive = false;
 	mOohMorph      = NULL;
 	mAahMorph      = NULL;
+
+	mRuthTimer.reset();
 
 	//-------------------------------------------------------------------------
 	// initialize joint, mesh and shape members
@@ -1500,7 +1508,7 @@ void LLVOAvatar::getSpatialExtents(LLVector3& newMin, LLVector3& newMax)
 	{
 		LLViewerJointAttachment* attachment = iter->second;
 
-		if(!attachment->getValid())
+		if (!attachment->getValid())
 		{
 			continue ;
 		}
@@ -1570,7 +1578,7 @@ BOOL LLVOAvatar::lineSegmentIntersect(const LLVector3& start, const LLVector3& e
 		)
 {
 
-	if (mIsSelf && !gAgent.needsRenderAvatar() || !LLPipeline::sPickAvatar)
+	if ((mIsSelf && !gAgent.needsRenderAvatar()) || !LLPipeline::sPickAvatar)
 	{
 		return FALSE;
 	}
@@ -1631,7 +1639,6 @@ BOOL LLVOAvatar::lineSegmentIntersect(const LLVector3& start, const LLVector3& e
 
 	return FALSE;
 }
-
 
 //-----------------------------------------------------------------------------
 // parseSkeletonFile()
@@ -4837,6 +4844,12 @@ void LLVOAvatar::updateTextures(LLAgent &agent)
 				if (texture_dict->mIsLocalTexture)
 				{
 					addLocalTextureStats((ETextureIndex)index, imagep, texel_area_ratio, render_avatar, layer_baked[baked_index]);
+					// SNOW-8 : temporary snowglobe1.0 fix for baked textures
+					if (render_avatar && !gGLManager.mIsDisabled )
+					{
+						// bind the texture so that its boost level won't be slammed
+						gGL.getTexUnit(0)->bind(imagep);
+					}
 				}
 				else if (texture_dict->mIsBakedTexture)
 				{
@@ -5888,7 +5901,6 @@ BOOL LLVOAvatar::loadMeshNodes()
 		mMeshes.insert(std::make_pair(info->mMeshFileName, poly_mesh));
 	
 		mesh->setMesh( poly_mesh );
-
 		mesh->setLOD( info->mMinPixelArea );
 
 		for (LLVOAvatarXmlInfo::LLVOAvatarMeshInfo::morph_info_list_t::const_iterator xmlinfo_iter = info->mPolyMorphTargetInfoList.begin();
@@ -6752,6 +6764,7 @@ const std::string LLVOAvatar::getAttachedPointName(const LLUUID& inv_item_id)
 // static 
 // onLocalTextureLoaded()
 //-----------------------------------------------------------------------------
+
 void LLVOAvatar::onLocalTextureLoaded( BOOL success, LLViewerImage *src_vi, LLImageRaw* src_raw, LLImageRaw* aux_src, S32 discard_level, BOOL final, void* userdata )
 {
 	//llinfos << "onLocalTextureLoaded: " << src_vi->getID() << llendl;
@@ -7029,7 +7042,6 @@ void LLVOAvatar::processRebakeAvatarTextures(LLMessageSystem* msg, void**)
 	}
 }
 
-
 BOOL LLVOAvatar::getLocalTextureRaw(ETextureIndex index, LLImageRaw* image_raw)
 {
 	if (!isIndexLocalTexture(index)) return FALSE;
@@ -7173,6 +7185,7 @@ BOOL LLVOAvatar::updateIsFullyLoaded()
 		}
 	}
 
+	updateRuthTimer(loading);
 	
 	// we wait a little bit before giving the all clear,
 	// to let textures settle down
@@ -7197,6 +7210,37 @@ BOOL LLVOAvatar::updateIsFullyLoaded()
 	return changed;
 }
 
+bool LLVOAvatar::sendAvatarTexturesRequest()
+{
+	bool sent = false;
+	if (mRuthTimer.getElapsedTimeF32() > DERUTHING_TIMEOUT_SECONDS)
+	{
+		std::vector<std::string> strings;
+		strings.push_back(getID().asString());
+		send_generic_message("avatartexturesrequest", strings);
+		mRuthTimer.reset();
+		sent = true;
+	}
+	return sent;
+}
+
+void LLVOAvatar::updateRuthTimer(bool loading)
+{
+	if (isSelf() || !loading) 
+	{
+		return;
+	}
+
+	if (!mPreviousFullyLoaded && sendAvatarTexturesRequest())
+	{
+		llinfos << "Ruth Timer timeout: Missing texture data for '" << getFullname() << "' "
+				<< "( Params loaded : " << !visualParamWeightsAreDefault() << " ) "
+				<< "( Lower : " << isTextureDefined(TEX_LOWER_BAKED) << " ) "
+				<< "( Upper : " << isTextureDefined(TEX_UPPER_BAKED) << " ) "
+				<< "( Head : " << isTextureDefined(TEX_HEAD_BAKED) << " )."
+				<< llendl;
+	}
+}
 
 BOOL LLVOAvatar::isFullyLoaded()
 {
@@ -7642,6 +7686,7 @@ void LLVOAvatar::clearChat()
 
 S32 LLVOAvatar::getLocalDiscardLevel( ETextureIndex index )
 {
+	// If the texture is not local, we don't care and treat it as fully loaded
 	if (!isIndexLocalTexture(index)) return FALSE;
 
 	LocalTextureData &local_tex_data = mLocalTextureData[index];
@@ -8326,7 +8371,7 @@ void LLVOAvatar::processAvatarAppearance( LLMessageSystem* mesgsys )
 	}
 	
 	LLMemType mt(LLMemType::MTYPE_AVATAR);
-	
+
 //	llinfos << "processAvatarAppearance start " << mID << llendl;
 	BOOL is_first_appearance_message = !mFirstAppearanceMessageReceived;
 
@@ -9539,15 +9584,15 @@ void LLVOAvatar::updateFreezeCounter(S32 counter)
 {
 	if(counter)
 	{
-		sFreezeCounter = counter ;
+		sFreezeCounter = counter;
 	}
 	else if(sFreezeCounter > 0)
 	{
-		sFreezeCounter-- ;
+		sFreezeCounter--;
 	}
 	else
 	{
-		sFreezeCounter = 0 ;
+		sFreezeCounter = 0;
 	}
 }
 
@@ -9605,7 +9650,7 @@ BOOL LLVOAvatar::isImpostor() const
 
 BOOL LLVOAvatar::needsImpostorUpdate() const
 {
-	return mNeedsImpostorUpdate ;
+	return mNeedsImpostorUpdate;
 }
 
 const LLVector3& LLVOAvatar::getImpostorOffset() const

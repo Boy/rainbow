@@ -709,7 +709,7 @@ void LLFloaterAvatarList::refreshAvatarList()
 			strcpy(temp, "?");
 			if (entry->isDrawn())
 			{
-				color = LLColor4::red;
+				color = LLColor4::green2;
 			}
 		}
 		else
@@ -718,6 +718,10 @@ void LLFloaterAvatarList::refreshAvatarList()
 			{
 				snprintf(temp, sizeof(temp), "%.1f", distance);
 				if (distance > 20.0f)
+				{
+					color = LLColor4::red;
+				}
+				else if (distance > 10.0f)
 				{
 					color = LLColor4::yellow1;
 				}
@@ -730,7 +734,7 @@ void LLFloaterAvatarList::refreshAvatarList()
 			{
 				if (entry->isDrawn())
 				{
-					color = LLColor4::red;
+					color = LLColor4::green2;
 				}
 				snprintf(temp, sizeof(temp), "%d", (S32)distance);
 			}

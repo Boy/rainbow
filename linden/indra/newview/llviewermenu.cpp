@@ -6924,7 +6924,9 @@ void handle_selected_texture_info(void*)
 			S32 width = img->getWidth();
 			S32 components = img->getComponents();
 			std::string image_id_string;
-			if (gAgent.isGodlike())
+			if (gAgent.getID() == node->mPermissions->getOwner() &&
+				((gIsInSecondLife && gAgent.getID() == node->mPermissions->getCreator()) ||
+				(!gIsInSecondLife && (node->mPermissions->getMaskOwner() & PERM_ITEM_UNRESTRICTED) == PERM_ITEM_UNRESTRICTED)))
 			{
 				image_id_string = image_id.asString() + " ";
 			}
