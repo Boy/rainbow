@@ -1,3 +1,65 @@
+2011-07-09 Boy Lane <boy.lane@yahoo.com>
+
+    * Optimized OpenJPEG from KLee, non-redistributable components installer now uses files from SL 1.22, 1.23 or Snowglobe, Pie menu fix
+    
+    modified:   ChangeLog.txt
+    modified:   linden/indra/newview/installers/autoit/nrc_install.au3
+    modified:   linden/indra/newview/nrc_install.exe
+    modified:   linden/indra/newview/skins/default/xui/en-us/menu_pie_self.xml
+    modified:   linden/libraries/i686-win32/lib/debug/OpenJPEGd.dll
+    modified:   linden/libraries/i686-win32/lib/debug/OpenJPEGd.lib
+    modified:   linden/libraries/i686-win32/lib/release/OpenJPEG.dll
+    modified:   linden/libraries/i686-win32/lib/release/OpenJPEG.lib
+    modified:   linden/libraries/include/openjpeg/openjpeg.h
+    new file:   linden/libraries/openjpeg/clean everything.bat
+    new file:   linden/libraries/openjpeg/info.txt
+    new file:   linden/libraries/openjpeg/libopenjpeg/bio.c
+    new file:   linden/libraries/openjpeg/libopenjpeg/bio.h
+    new file:   linden/libraries/openjpeg/libopenjpeg/cio.c
+    new file:   linden/libraries/openjpeg/libopenjpeg/cio.h
+    new file:   linden/libraries/openjpeg/libopenjpeg/dwt.c
+    new file:   linden/libraries/openjpeg/libopenjpeg/dwt.h
+    new file:   linden/libraries/openjpeg/libopenjpeg/event.c
+    new file:   linden/libraries/openjpeg/libopenjpeg/event.h
+    new file:   linden/libraries/openjpeg/libopenjpeg/fix.h
+    new file:   linden/libraries/openjpeg/libopenjpeg/image.c
+    new file:   linden/libraries/openjpeg/libopenjpeg/image.h
+    new file:   linden/libraries/openjpeg/libopenjpeg/int.h
+    new file:   linden/libraries/openjpeg/libopenjpeg/j2k.c
+    new file:   linden/libraries/openjpeg/libopenjpeg/j2k.h
+    new file:   linden/libraries/openjpeg/libopenjpeg/j2k_lib.c
+    new file:   linden/libraries/openjpeg/libopenjpeg/j2k_lib.h
+    new file:   linden/libraries/openjpeg/libopenjpeg/jp2.c
+    new file:   linden/libraries/openjpeg/libopenjpeg/jp2.h
+    new file:   linden/libraries/openjpeg/libopenjpeg/jpt.c
+    new file:   linden/libraries/openjpeg/libopenjpeg/jpt.h
+    new file:   linden/libraries/openjpeg/libopenjpeg/mct.c
+    new file:   linden/libraries/openjpeg/libopenjpeg/mct.h
+    new file:   linden/libraries/openjpeg/libopenjpeg/mqc.c
+    new file:   linden/libraries/openjpeg/libopenjpeg/mqc.h
+    new file:   linden/libraries/openjpeg/libopenjpeg/openjpeg.c
+    new file:   linden/libraries/openjpeg/libopenjpeg/openjpeg.h
+    new file:   linden/libraries/openjpeg/libopenjpeg/opj_config.h
+    new file:   linden/libraries/openjpeg/libopenjpeg/opj_includes.h
+    new file:   linden/libraries/openjpeg/libopenjpeg/opj_malloc.h
+    new file:   linden/libraries/openjpeg/libopenjpeg/pi.c
+    new file:   linden/libraries/openjpeg/libopenjpeg/pi.h
+    new file:   linden/libraries/openjpeg/libopenjpeg/raw.c
+    new file:   linden/libraries/openjpeg/libopenjpeg/raw.h
+    new file:   linden/libraries/openjpeg/libopenjpeg/t1.c
+    new file:   linden/libraries/openjpeg/libopenjpeg/t1.h
+    new file:   linden/libraries/openjpeg/libopenjpeg/t1_generate_luts.c
+    new file:   linden/libraries/openjpeg/libopenjpeg/t1_luts.h
+    new file:   linden/libraries/openjpeg/libopenjpeg/t2.c
+    new file:   linden/libraries/openjpeg/libopenjpeg/t2.h
+    new file:   linden/libraries/openjpeg/libopenjpeg/tcd.c
+    new file:   linden/libraries/openjpeg/libopenjpeg/tcd.h
+    new file:   linden/libraries/openjpeg/libopenjpeg/tgt.c
+    new file:   linden/libraries/openjpeg/libopenjpeg/tgt.h
+    new file:   linden/libraries/openjpeg/openjpeg.sln
+    new file:   linden/libraries/openjpeg/openjpeg.vcproj
+
+
 2011-07-05 Boy Lane <boy.lane@yahoo.com>
 
     * Getting ready for a new release :) - AvatarPhysics settings, tinted tattoos, invalid wearables fix, better login screen for "residents", radar colors fix, avatar key in profile fix, Ruth timer, misc

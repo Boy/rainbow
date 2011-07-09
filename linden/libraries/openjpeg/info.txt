@@ -1,0 +1,3 @@
+This is the modified and optimized openjpeg from Kirstenlee. Compile it and replace the existing .lib and .dll with the new versions in the corresponding viewer directories before building the viewer.
+
+That's for VS2005, ignore harmless pragma warnings.

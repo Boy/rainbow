@@ -1,6 +1,6 @@
 ; Installer for non-redistributable components (nrc). Searches locally for an existing viewer
 ; installation, checks version and size and copies the files into the the Rainbow Viewer directory.
-; All credits for this small installer to the Greenlife Emerald guys!
+; All credits for this small installer to the Emerald guys!
 ; Needs to be compiled with AutoIt v3, http://www.autoitscript.com
 #NoTrayIcon
 #RequireAdmin
@@ -11,11 +11,11 @@ $SLDIR = RegRead("HKLM\SOFTWARE\Linden Research, Inc.\SecondLife", "")
 CHECKFILES()
 $SLDIR = RegRead("HKLM\SOFTWARE\Linden Research, Inc.\SecondLifeReleaseCandidate", "")
 CHECKFILES()
+$SLDIR = RegRead("HKLM\SOFTWARE\Linden Research, Inc.\Snowglobe", "")
+CHECKFILES()
 $SLDIR = RegRead("HKLM\SOFTWARE\CoolViewer\CoolViewer", "")
 CHECKFILES()
 $SLDIR = RegRead("HKLM\SOFTWARE\RainbowViewer\RainbowViewer", "")
-CHECKFILES()
-$SLDIR = RegRead("HKLM\SOFTWARE\ModularSystems.sl\GreenLife Emerald Viewer", "")
 CHECKFILES()
 If $LLKDU <> "" Then
 	$FOUND &= "KDU "
@@ -43,14 +43,14 @@ Func CHECKFILES()
 	Local $LEN
 	If $LLKDU = "" Then
 		$LEN = FileGetSize($SLDIR & "\llkdu.dll")
-		If $LEN = 753664 Then
+		If ($LEN = 753664 Or $LEN = 1208320 Or $LEN = 1175552) Then
 			$LLKDU = $SLDIR & "\llkdu.dll"
 		EndIf
 	EndIf
 	If $SLVOICE = "" Then
 		$VER = FileGetVersion($SLDIR & "\vivoxsdk.dll")
 		$LEN1 = FileGetSize($SLDIR & "\SLVoice.exe")
-		If $VER = "2.1.3010.6151" And $LEN1 = 946176 Then
+		If ($VER = "2.1.3010.6151" Or $VER = "2.1.3010.6270") And $LEN1 = 946176 Then
 			$SLVOICE = $SLDIR
 		EndIf
 	EndIf
