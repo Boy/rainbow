@@ -90,6 +90,8 @@ public:
 		FFLOAD_XML = 6,
 		FFLOAD_SLOBJECT = 7,
 		FFLOAD_RAW = 8,
+		FFLOAD_TEXT = 9,
+		FFLOAD_HPA = 10,
 	};
 
 	enum ESaveFilter
@@ -109,6 +111,8 @@ public:
 		FFSAVE_J2C = 12,
 		FFSAVE_PNG = 13,
 		FFSAVE_JPEG = 14,
+		FFSAVE_HPA = 15,
+		FFSAVE_TEXT = 16,
 	};
 
 	// open the dialog. This is a modal operation
@@ -129,6 +133,11 @@ public:
 	// This utility function extracts the current file name without
 	// doing any incrementing.
 	const std::string getCurFile();
+
+	// Returns the index of the current file.
+	S32 getCurFileNum() const { return mCurrentFile; }
+
+	S32 getFileCount() const { return (S32)mFiles.size(); }
 
 	// See llvfs/lldir.h : getBaseFileName and getDirName to extract base or directory names
 	

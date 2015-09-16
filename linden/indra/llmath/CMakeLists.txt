@@ -11,6 +11,8 @@ include_directories(
 
 set(llmath_SOURCE_FILES
     llbboxlocal.cpp
+    llcalc.cpp
+    llcalcparser.cpp
     llcamera.cpp
     llcoordframe.cpp
     llline.cpp
@@ -41,6 +43,8 @@ set(llmath_HEADER_FILES
     coordframe.h
     llbboxlocal.h
     llcamera.h
+    llcalc.h
+    llcalcparser.h
     llcoord.h
     llcoordframe.h
     llinterp.h

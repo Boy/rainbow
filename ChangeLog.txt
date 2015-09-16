@@ -1,3 +1,46 @@
+2009-12-29 Boy Lane <boy.lane@yahoo.com>
+
+    * backport of HPA_Backup from Imprudence
+    * import not fully working for content in prims (e.g. notecards)
+    
+    new file: linden/indra/llmath/llcalc.cpp
+    new file: linden/indra/llmath/llcalc.h
+    new file: linden/indra/llmath/llcalcparser.cpp
+    new file: linden/indra/llmath/llcalcparser.h
+    new file: linden/indra/newview/chatbar_as_cmdline.cpp
+    new file: linden/indra/newview/chatbar_as_cmdline.h
+    new file: linden/indra/newview/exporttracker.cpp
+    new file: linden/indra/newview/exporttracker.h
+    new file: linden/indra/newview/importtracker.cpp
+    new file: linden/indra/newview/importtracker.h
+    new file: linden/indra/newview/skins/default/xui/en-us/floater_prim_export.xml
+
+    modified: linden/indra/llmath/CMakeLists.txt
+    modified: linden/indra/llxml/llxmlnode.cpp
+    modified: linden/indra/newview/CMakeLists.txt
+    modified: linden/indra/newview/app_settings/settings.xml
+    modified: linden/indra/newview/llfilepicker.cpp
+    modified: linden/indra/newview/llfilepicker.h
+    modified: linden/indra/newview/llstartup.cpp
+    modified: linden/indra/newview/llviewermenu.cpp
+    modified: linden/indra/newview/llviewermenufile.cpp
+    modified: linden/indra/newview/llviewerobjectlist.cpp
+    modified: linden/indra/newview/llwearable.h
+    modified: linden/indra/newview/skins/default/xui/en-us/floater_prim_import.xml
+    modified: linden/indra/newview/skins/default/xui/en-us/menu_pie_object.xml
+    modified: linden/indra/newview/skins/default/xui/en-us/menu_viewer.xml
+    modified: linden/indra/newview/viewer_manifest.py
+
+    deleted:  primbackup.cpp
+    deleted:  primbackup.h
+  
+        
+    * added the fixes for saving of preferences to master
+    
+    modified: linden/indra/newviewer/llfloaterpreference.cpp
+    modified: linden/indra/newviewer/prefsrainbow.cpp
+
+
 2009-12-25 Boy Lane <boy.lane@yahoo.com>
     
     * added the fixes for saving of preferences to master

@@ -51,9 +51,8 @@
 				<on_click function="Object.ReportAbuse" />
 				<on_enable function="Object.EnableReportAbuse" />
 			</menu_item_call>
-			<menu_item_call enabled="false" hidden="false" label="Export" mouse_opaque="true" name="Export">
+			<menu_item_call hidden="false" label="Export" mouse_opaque="true" name="Export">
        				<on_click function="Object.Export" />
-       				<on_enable function="Object.EnableExport" />
 			</menu_item_call>
 			<menu_item_separator />
 			<menu_item_call enabled="false" label="Mute" mouse_opaque="true" name="Object Mute">
